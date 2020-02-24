@@ -1,0 +1,1 @@
+("~/Documents/placementAssignments/" "~/Documents/familyImages/")

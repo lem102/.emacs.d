@@ -1,0 +1,124 @@
+cd
+ls
+cd
+autoarg-kp-mode -save-list  elpa  eshell  ido.last  ido.last~  init.el  url
+good
+man
+cd ../../emacs-26.2-x86_64/
+ls
+ll
+ls -la
+fotnet
+dotnet
+ll
+ls
+rm #config.org#
+rm
+rm -h
+rm -i #config.org#
+ls
+exit
+man alias
+alias up eshell-up $1
+up
+alias pk eshell-up-peek $1
+pk
+up
+up
+up
+cd Users/lem/Documents/EMACS/gitEmacs/emacshome/.emacs.d/
+up Documents
+pwd
+up do
+up le
+up us
+up
+up 2
+up
+cd Users/lem/Documents/EMACS/gitEmacs/emacshome/.emacs.d/
+up le
+pk doc
+up 4
+up Users
+up /Doc
+up /Users/
+cd Users/lem/Documents/EMACS/gitEmacs/emacshome/.emacs.d/
+up le
+up
+up Do
+cd EMACS/gitEmacs/emacshome/.emacs.d/
+up doc
+pwd
+up doc
+up
+up
+up le
+cd Documents/EMACS/gitEmacs/
+pk le
+up
+pk
+man alias
+alias ll 'ls -l $*'
+ll
+ls
+alias ff 'find-file'
+ff
+ff eula.3082.txt 
+alias ff 'find-file $1'
+ff eula.3082.txt 
+dired
+dired pwd
+alias d 'dired $1'
+dotnet new 
+dotnet new console
+dotnet add package Serilog
+dotnet add package Serilog.Sinks.Console
+ls
+ff Program.cs
+dotnet run
+dotnet add package Serilog.Sinks.File
+dotnet run
+ls]
+ls
+ff logtest.csproj
+cd logs
+ls
+ls
+ff myapp20191111.txt
+ll
+cd Users/lem/Documents/Python/PROGRAMS/
+ll
+ff familyImages.py 
+ff familyImages.py 
+mkdir familyImages
+mv familyImages.py ./familyImages/familyImages.py
+ll
+cd familyImages/
+ll
+ff familyImages.py 
+touch file1
+touch file2
+touch file3
+touch file4
+touch file5
+ll
+ll
+cd fileDump/
+ll
+ff file1
+ff file2
+ff file3
+ll
+ff file2
+ll
+pdflatex TaskAnalysis.tex
+xreader TaskAnalysis.pdf
+pdflatex TaskAnalysis.tex
+pdflatex TaskAnalysis.tex
+pdflatex *.tex
+man xr
+xr
+xreader *.pdf
+up Doc
+cd ~/Documents/commonLisp/
+ls

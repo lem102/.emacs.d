@@ -1,0 +1,622 @@
+* Emacs built-in settings
+** ido
+ #+BEGIN_SRC emacs-lisp
+   (setq ido-enable-flex-matching t)
+   (setq ido-create-new-buffer 'always)
+   (setq ido-everywhere t)
+   (ido-mode 1)
+ #+END_SRC
+
+** Highlight current line but only in graphical mode
+#+BEGIN_SRC emacs-lisp
+  (when window-system (global-hl-line-mode t))
+#+END_SRC
+
+** stop the bell ringing all the time
+#+BEGIN_SRC emacs-lisp
+  (setq ring-bell-function 'ignore)
+#+END_SRC
+
+** prevent the view of the screen jumping to the middle when scrolling out of the view.
+#+BEGIN_SRC emacs-lisp
+  (setq scroll-conservatively 100)
+#+END_SRC
+
+** get rid of toolbar
+#+BEGIN_SRC emacs-lisp
+  (tool-bar-mode -1)
+#+END_SRC
+
+** get rid of menubar
+#+BEGIN_SRC emacs-lisp
+  (menu-bar-mode -1)
+#+END_SRC
+
+** get rid of scrollbar
+#+BEGIN_SRC emacs-lisp
+  (scroll-bar-mode -1)
+#+END_SRC
+
+** auto insert closing bracket (electric pair) 
+#+BEGIN_SRC emacs-lisp
+  (electric-pair-mode 1)
+#+END_SRC
+
+** make cursor movement stop in between camelCase words.
+#+BEGIN_SRC emacs-lisp
+  (global-subword-mode 1)
+#+END_SRC
+
+** make typing delete/overwrite region
+#+BEGIN_SRC emacs-lisp
+  (delete-selection-mode 1)
+#+END_SRC
+
+** turn on bracket match highlight
+#+BEGIN_SRC emacs-lisp
+  (show-paren-mode 1)
+#+END_SRC
+
+** stop emacs creating backups~
+#+BEGIN_SRC emacs-lisp
+  (setq make-backup-files nil)
+#+END_SRC
+
+** stop emacs creating #autosaves#
+#+BEGIN_SRC emacs-lisp
+  (setq auto-save-default nil)
+#+END_SRC
+
+** stop emacs from creating .#lock file links
+#+BEGIN_SRC emacs-lisp
+  (setq create-lockfiles nil)
+#+END_SRC
+
+** backups don't destroy original file's creation date
+#+BEGIN_SRC emacs-lisp
+  (setq backyp-by-copying t)
+#+END_SRC
+
+** y/n instead of yes/no
+#+BEGIN_SRC emacs-lisp
+  (defalias 'yes-or-no-p 'y-or-n-p)
+#+END_SRC
+
+** show the current time
+#+BEGIN_SRC emacs-lisp
+  (setq display-time-24hr-format t)
+  (display-time-mode 1)
+#+END_SRC
+
+** Expert mode for ibuffer
+#+BEGIN_SRC emacs-lisp
+  (setq ibuffer-expert t)
+#+END_SRC
+
+** Dired open new directory in same buffer
+#+BEGIN_SRC emacs-lisp
+  (require 'dired)
+  (define-key dired-mode-map (kbd "RET") 'dired-find-alternate-file)
+  (define-key dired-mode-map (kbd "^")(lambda () (interactive)(find-alternate-file "..")))
+#+END_SRC
+
+** Dired default copy location is next open dired buffer
+#+BEGIN_SRC emacs-lisp
+  (setq dired-dwim-target t)
+#+END_SRC
+
+** Dired Hide Details Always
+#+BEGIN_SRC emacs-lisp
+  (defun xah-dired-mode-setup()
+	(dired-hide-details-mode 1))
+  (add-hook 'dired-mode-hook 'xah-dired-mode-setup)
+#+END_SRC
+
+** don't truncate
+#+BEGIN_SRC emacs-lisp
+  (toggle-truncate-lines)
+#+END_SRC
+
+** Add lisp folder to load path
+#+BEGIN_SRC emacs-lisp
+  (add-to-list 'load-path "~/.emacs.d/lisp/")
+#+END_SRC
+
+** Font Setup
+#+BEGIN_SRC emacs-lisp
+  (when (member "DejaVu Sans Mono" (font-family-list))
+	  (add-to-list 'initial-frame-alist '(font . "DejaVu Sans Mono-10"))
+	  (add-to-list 'default-frame-alist '(font . "DejaVu Sans Mono-10")))
+#+END_SRC
+
+* General Keybindings
+** Setting right windows key to act as super key
+#+BEGIN_SRC emacs-lisp
+  (setq w32-pass-rwindow-to-system nil
+		w32-rwindow-modifier 'super)
+#+END_SRC
+
+** Setting app key to act as hyper key
+#+BEGIN_SRC emacs-lisp
+  (setq w32-pass-apps-to-system nil)
+  (setq w32-apps-modifier 'hyper)
+#+END_SRC
+
+** Tabs
+#+BEGIN_SRC emacs-lisp
+  ;; use spaces to indent
+  (progn
+    (setq-default indent-tabs-mode nil))
+
+  ;; set default tab char's display width to 4 spaces
+  (setq-default tab-width 4)
+
+  ;; (defun my-insert-tab-char ()
+    ;; "Insert a tab char. (ASCII 9, \t)"
+    ;; (interactive)
+    ;; (insert "\t"))
+
+  ;; (global-set-key (kbd "TAB") 'my-insert-tab-char) ; same as Ctrl+i
+
+  ;; make tab key call indent command or insert tab character, depending on cursor position
+  (setq-default tab-always-indent nil)
+#+END_SRC
+
+* Xah Fly Keys
+#+BEGIN_SRC emacs-lisp
+  (use-package xah-fly-keys
+    :ensure t
+
+    :demand
+
+    :custom
+    (xah-fly-use-control-key nil)
+
+    :config 
+    (defun config-visit ()
+      (interactive)
+      (find-file "~/.emacs.d/config.org"))
+
+    (defun config-reload ()
+      (interactive)
+      (org-babel-load-file (expand-file-name "~/.emacs.d/config.org")))
+
+    (defun jacob-org-src-block ()
+      (interactive)
+      (if (bound-and-true-p org-src-mode)
+          (org-edit-src-exit)
+        (if (equal major-mode 'org-mode)
+            (org-edit-special))))
+
+    (define-prefix-command 'jacob-config-keymap)
+    (xah-fly-keys-set-layout "qwerty")
+    (xah-fly-keys 1)
+
+    (defun jacob-turn-off-xah ()
+      (interactive)
+      (xah-fly-insert-mode-activate))
+
+    (add-hook 'dired-mode-hook 'jacob-turn-off-xah)
+    (add-hook 'eww-mode-hook 'jacob-turn-off-xah)
+    (add-hook 'dashboard-mode-hook 'jacob-turn-off-xah)
+    (add-hook 'ibuffer-mode-hook 'jacob-turn-off-xah)
+    (add-hook 'custom-mode-hook 'jacob-turn-off-xah)
+
+    :bind (:map jacob-config-keymap
+                ("r" . config-reload)
+                ("R" . restart-emacs)
+                ("e" . config-visit)
+                ("c" . jacob-org-src-block))
+    (:map xah-fly-dot-keymap
+          ("c" . jacob-config-keymap)))
+#+END_SRC
+
+* Major Mode Packages
+** Sunrise
+#+BEGIN_SRC emacs-lisp
+  ;; (use-package sunrise
+    ;; :bind
+    ;; (:map xah-fly-leader-key-map
+          ;; ("m" . sunrise)))
+#+END_SRC
+
+** Org
+*** org snippets?
+ #+BEGIN_SRC emacs-lisp
+   (add-to-list 'org-structure-template-alist
+				'("el" "#+BEGIN_SRC emacs-lisp\n?\n#+END_SRC"))
+ #+END_SRC
+
+** yaml-Mode
+ #+BEGIN_SRC emacs-lisp
+   (use-package yaml-mode
+	 :ensure t
+	 :config (add-to-list 'auto-mode-alist '("\\.yml\\'" . yaml-mode)))
+ #+END_SRC
+
+** c-mode
+*** tab width
+ #+BEGIN_SRC emacs-lisp
+   (setq-default c-basic-offset 4)
+ #+END_SRC
+
+** csharp-mode
+ #+BEGIN_SRC emacs-lisp
+   (defun my-csharp-mode-setup ()
+	 (setq c-syntactic-indentation t)
+	 (c-set-style "ellemtel")
+	 (setq c-basic-offset 4))
+
+   (add-hook 'csharp-mode-hook 'my-csharp-mode-setup t)
+ #+END_SRC
+
+** lilypond-mode
+#+BEGIN_SRC emacs-lisp
+  (setq load-path (append (list (expand-file-name "~/.emacs.d/LilyPond/")) load-path))
+
+  (autoload 'LilyPond-mode "lilypond-mode" "LilyPond Editing Mode" t)
+  (add-to-list 'auto-mode-alist '("\\.ly$" . LilyPond-mode))
+  (add-to-list 'auto-mode-alist '("\\.ily$" . LilyPond-mode))
+  (add-hook 'LilyPond-mode-hook (lambda () (turn-on-font-lock)))
+
+#+END_SRC
+
+** web-mode
+#+BEGIN_SRC emacs-lisp
+  (use-package web-mode
+    :ensure t
+
+    :preface (defun jacob-web-mode-config ()
+               (interactive)
+               (setq-local electric-pair-pairs '((?\" . ?\") (?\< . ?\>)))
+               (yas-activate-extra-mode 'html-mode))
+
+    :config (setq web-mode-engines-alist
+                  '(("razor"	. "\\.cshtml\\'")))
+
+    :hook (web-mode . jacob-web-mode-config)
+
+    :custom (web-mode-markup-indent-offset 2)
+    (web-mode-css-indent-offset 2)
+    (web-mode-code-indent-offset 2)
+
+    :mode (("\\.html?\\'" . web-mode)
+           ("\\.cshtml\\'" . web-mode)
+           ("\\.css\\'" . web-mode)))
+#+END_SRC
+
+** javascript
+*** js2-mode
+#+BEGIN_SRC emacs-lisp
+  (use-package js2-mode
+    :ensure t
+    :mode ("\\.js\\'" . js2-mode)
+    :hook (js2-mode . js2-imenu-extras-mode))
+#+END_SRC
+
+*** js2-refactor
+#+BEGIN_SRC emacs-lisp
+  (use-package js2-refactor
+    :ensure t
+    :hook (js2-mode . js2-refactor-mode)
+    :config (js2r-add-keybindings-with-prefix "C-c C-r"))
+#+END_SRC
+
+* Minor Mode Packages
+** beacon
+ #+BEGIN_SRC emacs-lisp
+   (use-package beacon
+	 :ensure t
+	 :diminish
+	 :config
+	 (beacon-mode 1))
+ #+END_SRC
+
+** which-key
+ #+BEGIN_SRC emacs-lisp
+   (use-package which-key
+	 :ensure t
+	 :diminish
+	 :config
+	 (which-key-mode))
+ #+END_SRC
+
+** ido-vertical-mode
+#+BEGIN_SRC emacs-lisp
+  (use-package ido-vertical-mode
+	:ensure t
+	:config
+	(ido-vertical-mode 1))
+#+END_SRC
+
+** company
+ #+BEGIN_SRC emacs-lisp
+   (use-package company
+	 :ensure t
+	 :diminish
+	 :config
+	 (setq company-idle-delay 0.5)
+	 (setq company-minimum-prefix-length 3)
+	 (global-company-mode t)
+	 (add-hook 'eshell-mode-hook (lambda () (company-mode -1))))
+ #+END_SRC
+
+** projectile
+#+BEGIN_SRC emacs-lisp
+  (use-package projectile
+    :ensure t
+    :diminish
+    :bind
+    (:map xah-fly-dot-keymap
+          ("p" . projectile-command-map))
+    :config
+    (projectile-mode t))
+#+END_SRC
+
+** avy
+ #+BEGIN_SRC emacs-lisp
+   (use-package avy
+     :ensure t
+
+     :init
+     (define-prefix-command 'jacob-avy-keymap)
+
+     :bind
+     (:map xah-fly-dot-keymap
+           ("a" . jacob-avy-keymap)
+           :map jacob-avy-keymap
+           ("a" . avy-goto-char)
+           ("s" . avy-goto-word-1)
+           ("d" . avy-goto-line)
+           ("f" . avy-goto-end-of-line)))
+ #+END_SRC
+
+** rainbow-mode
+ #+BEGIN_SRC emacs-lisp
+   (use-package rainbow-mode
+	 :ensure t
+	 :diminish
+	 :hook prog-mode)
+ #+END_SRC
+
+** dimmer
+#+BEGIN_SRC emacs-lisp
+  (use-package dimmer
+	:ensure t
+	:config
+	(dimmer-mode))
+#+END_SRC
+
+** highLight-parentheses
+#+BEGIN_SRC emacs-lisp
+  (use-package highlight-parentheses
+	:ensure t
+	:diminish
+	:init
+	(define-globalized-minor-mode global-highlight-parentheses-mod
+	  highlight-parentheses-mode
+	  (lambda ()
+		(highlight-parentheses-mode t)))
+	(global-highlight-parentheses-mode t))
+#+END_SRC
+
+** omnisharp
+#+BEGIN_SRC emacs-lisp
+   (use-package omnisharp
+	  :ensure t
+	  :hook (csharp-mode . omnisharp-mode)
+	  :config
+	  (add-hook 'omnisharp-mode-hook (lambda ()
+									   (add-to-list (make-local-variable 'company-backends)
+													'(company-omnisharp))))
+	  (setq omnisharp-server-executable-path "~\\..\\omnisharp-win-x86\\OmniSharp.exe"))
+#+END_SRC
+
+** yasnippet
+#+BEGIN_SRC emacs-lisp
+  (use-package yasnippet
+    :ensure t
+    :hook ((csharp-mode . yas-minor-mode)
+           (web-mode . yas-minor-mode)))
+#+END_SRC
+
+** yasnippet-snippets
+#+BEGIN_SRC emacs-lisp
+  (use-package yasnippet-snippets
+	:ensure t)
+#+END_SRC
+
+** key-chord
+#+BEGIN_SRC emacs-lisp
+  (use-package key-chord
+    :config
+    (key-chord-mode 1)
+    (key-chord-define xah-fly-key-map "fd" 'xah-fly-command-mode-activate-no-hook))
+#+END_SRC
+
+** elpy
+#+BEGIN_SRC emacs-lisp
+  (use-package elpy
+    :ensure t
+    :init
+    (elpy-enable))
+#+END_SRC
+
+** flycheck
+#+BEGIN_SRC emacs-lisp
+  (use-package flycheck
+	:ensure t
+	:init
+	(global-flycheck-mode t)
+	;; For some reason, I am unable to diminish flycheck with :diminish
+	(diminish 'flycheck-mode)
+	:config
+	(when (require 'flycheck nil t)
+	  (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
+	  (add-hook 'elpy-mode-hook 'flycheck-mode)))
+#+END_SRC
+
+** slime
+#+BEGIN_SRC emacs-lisp
+  (use-package slime
+    :ensure t
+    :config
+    (setq inferior-lisp-program "sbcl")
+    (setq slime-cobtribs '(slime-fancy))
+    :bind
+    (:map slime-mode-map
+          ("SPC" . nil)))
+#+END_SRC
+
+* Non-mode Packages
+** restart-emacs
+#+BEGIN_SRC emacs-lisp
+  (use-package restart-emacs
+	:ensure t
+	:defer t)
+#+END_SRC
+
+** smex
+ #+BEGIN_SRC emacs-lisp
+   (use-package smex
+     :ensure t
+     :config (smex-initialize)
+     :bind
+     ("M-x" . smex))
+ #+END_SRC
+
+** spaceline
+#+BEGIN_SRC emacs-lisp
+  (use-package spaceline
+	:ensure t
+	:config
+	(setq powerline-default-seperator (quote arrow))
+	:init
+	(spaceline-spacemacs-theme)
+	)
+#+END_SRC
+
+** diminish
+#+BEGIN_SRC emacs-lisp
+  (use-package diminish
+	:ensure t
+	:defer t
+	:config
+	(diminish 'subword-mode)
+	(diminish 'org-src-mode)
+	(diminish 'eldoc-mode))
+#+END_SRC
+
+** switch-window
+ #+BEGIN_SRC emacs-lisp
+   (use-package switch-window
+	 :ensure t
+	 :defer t
+	 :config
+	 (setq switch-window-input-style 'minibuffer)
+	 (setq switch-window-threshold 2)
+	 (setq switch-window-multiple-frames t)
+	 (setq switch-window-shortcut-style 'qwerty)
+	 (setq switch-window-qwerty-shortcuts
+		   '("q" "w" "e" "r" "a" "s" "d" "f" "z" "x" "c" "v"))
+	 :bind
+	 ([remap xah-next-window-or-frame] . switch-window))
+ #+END_SRC
+
+** dashboard
+  #+BEGIN_SRC emacs-lisp
+    (use-package dashboard
+      :ensure t
+      :config
+
+      (defun jacob-go-to-dashboard ()
+        (interactive)
+        (switch-to-buffer "*dashboard*"))
+
+      (define-key 'xah-fly-dot-keymap (kbd "d") 'jacob-go-to-dashboard)
+
+      (dashboard-setup-startup-hook)
+      (setq dashboard-items '((recents . 10)
+                              (projects . 5)))
+      (setq dashboard-set-footer nil)
+      (setq dashboard-banner-logo-title "千里之行，始於足下")
+      (setq dashboard-center-content t))
+  #+END_SRC
+
+** popup-kill-ring
+ #+BEGIN_SRC emacs-lisp
+   (use-package popup-kill-ring
+	 :ensure t
+	 :bind
+	 (:map xah-fly-dot-keymap ("v" . popup-kill-ring)))
+ #+END_SRC
+
+** swiper
+ #+BEGIN_SRC emacs-lisp
+   (use-package swiper
+     :ensure t
+     :bind (
+            :map xah-fly-dot-keymap
+                 ("s" . swiper)))
+ #+END_SRC
+
+** multiple-cursors
+ #+BEGIN_SRC emacs-lisp
+   (use-package multiple-cursors
+	 :ensure t
+	 :bind
+	 (:map xah-fly-dot-keymap
+		   ("m" . jacob-multiple-cursors-keymap)
+	 :map jacob-multiple-cursors-keymap
+		   ("l" . mc/edit-lines)
+		   (">" . mc/mark-next-like-this)
+		   ("<" . mc/mark-previous-like-this)
+		   ("a" . mc/mark-all-like-this))
+	 :init
+	 (define-prefix-command 'jacob-multiple-cursors-keymap))
+ #+END_SRC
+
+** expand region
+ #+BEGIN_SRC emacs-lisp
+   (use-package expand-region
+	 :ensure t
+	 :bind
+	 (:map xah-fly-dot-keymap
+		   ("=" . 'er/expand-region)))
+ #+END_SRC
+
+** shell-pop
+#+BEGIN_SRC emacs-lisp
+  (use-package shell-pop
+	:ensure t
+	:bind
+	(:map xah-fly-n-keymap
+		  ("d" . shell-pop)))
+#+END_SRC
+
+** move-text
+#+BEGIN_SRC emacs-lisp
+  (use-package move-text
+	:ensure t
+    :defer t
+	:config
+	(move-text-default-bindings))
+#+END_SRC
+
+** eshell-up
+#+BEGIN_SRC emacs-lisp
+  (use-package eshell-up
+	:ensure t
+    :defer t)
+#+END_SRC
+
+** langtool
+#+BEGIN_SRC emacs-lisp
+  (use-package langtool
+	;; :ensure t
+	:defer t
+	:config
+	(setq langtool-language-tool-jar
+		  "/home/lem/Documents/LanguageTool-4.8/languagetool-commandline.jar"))
+#+END_SRC
+
