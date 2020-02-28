@@ -380,11 +380,18 @@
   :bind
   (:map xah-fly-dot-keymap ("v" . popup-kill-ring)))
 
-(use-package swiper
+(use-package ivy
   :ensure t
-  :bind (
-         :map xah-fly-dot-keymap
-              ("s" . swiper)))
+  :bind (:map xah-fly-dot-keymap
+              ("s" . swiper))
+  :config
+  (ivy-mode 1)
+  (setq ivy-use-virtual-buffers t)
+  (setq enable-recursive-minibuffers t))
+
+(use-package counsel
+  :ensure t
+  :config (counsel-mode 1))
 
 (use-package multiple-cursors
   :ensure t
