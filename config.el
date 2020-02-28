@@ -262,10 +262,19 @@
 (use-package omnisharp
    :ensure t
    :hook (csharp-mode . omnisharp-mode)
+   :init (define-prefix-command 'jacob-omnisharp-keymap)
+   :bind
+   (:map xah-fly-dot-keymap
+         ("o" . jacob-omnisharp-keymap)
+         :map jacob-omnisharp-keymap
+         ("u" . omnisharp-fix-usings)
+         ("d" . omnisharp-go-to-definition)
+         ("s" . omnisharp-start-omnisharp-server)
+         ("S" . omnisharp-stop-server))
    :config
    (add-hook 'omnisharp-mode-hook (lambda ()
-									(add-to-list (make-local-variable 'company-backends)
-												 '(company-omnisharp))))
+                                    (add-to-list (make-local-variable 'company-backends)
+                                                 '(company-omnisharp))))
    (setq omnisharp-server-executable-path "~\\..\\omnisharp-win-x86\\OmniSharp.exe"))
 
 (use-package yasnippet
