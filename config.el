@@ -189,6 +189,10 @@
   :hook (js2-mode . js2-refactor-mode)
   :config (js2r-add-keybindings-with-prefix "C-c C-r"))
 
+(use-package json-mode
+  :ensure t
+  :mode ("\\.json\\$" . json-mode))
+
 (use-package beacon
   :ensure t
   :diminish

@@ -39,7 +39,7 @@
     ("ab2cbf30ab758c5e936b527377d543ce4927001742f79519b62c45ba9dd9f55e" "fa2b58bb98b62c3b8cf3b6f02f058ef7827a8e497125de0254f56e373abee088" "bffa9739ce0752a37d9b1eee78fc00ba159748f50dc328af4be661484848e476" default)))
  '(package-selected-packages
    (quote
-    (slime use-package-chords langtool elpy swiper magit yasnippet-snippets yasnippet web-mode move-text vertigo shell-pop restart-emacs highlight-parentheses dimmer projectile dashboard pretty-mode expand-region multiple-cursors popup-kill-ring symon-mode diminish spaceline switch-window rainbow-mode avy company-mode smex ido-vertical-mode beacon spacemacs-theme which-key use-package yaml-mode xah-fly-keys company omnisharp csharp-mode)))
+    (json-mode slime use-package-chords langtool elpy swiper magit yasnippet-snippets yasnippet web-mode move-text vertigo shell-pop restart-emacs highlight-parentheses dimmer projectile dashboard pretty-mode expand-region multiple-cursors popup-kill-ring symon-mode diminish spaceline switch-window rainbow-mode avy company-mode smex ido-vertical-mode beacon spacemacs-theme which-key use-package yaml-mode xah-fly-keys company omnisharp csharp-mode)))
  '(shell-pop-autocd-to-working-dir nil)
  '(shell-pop-shell-type (quote ("eshell" "*eshell*" (lambda nil (eshell)))))
  '(shell-pop-universal-key "<H-return>")

@@ -307,6 +307,13 @@
     :config (js2r-add-keybindings-with-prefix "C-c C-r"))
 #+END_SRC
 
+** json-mode
+#+BEGIN_SRC emacs-lisp
+  (use-package json-mode
+    :ensure t
+    :mode ("\\.json\\$" . json-mode))
+#+END_SRC
+
 * Minor Mode Packages
 ** beacon
  #+BEGIN_SRC emacs-lisp
