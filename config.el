@@ -103,6 +103,10 @@
       (if (equal major-mode 'org-mode)
           (org-edit-special))))
 
+  (defun jacob-recompile-packages ()
+    (interactive)
+    (byte-recompile-directory package-user-dir nil 'force))
+
   (define-prefix-command 'jacob-config-keymap)
   (xah-fly-keys-set-layout "qwerty")
   (xah-fly-keys 1)
@@ -121,7 +125,8 @@
               ("r" . config-reload)
               ("R" . restart-emacs)
               ("e" . config-visit)
-              ("c" . jacob-org-src-block))
+              ("c" . jacob-org-src-block)
+              ("p" . jacob-recompile-packages))
   (:map xah-fly-dot-keymap
         ("c" . jacob-config-keymap)))
 
