@@ -1,4 +1,4 @@
-* built-in settings
+* Built-in settings
 ** ido
  #+BEGIN_SRC emacs-lisp
    (setq ido-enable-flex-matching t)
@@ -378,7 +378,7 @@
            ("a" . jacob-avy-keymap)
            :map jacob-avy-keymap
            ("a" . avy-goto-char)
-           ("s" . avy-goto-word-1)
+           ("s" . avy-goto-subword-1)
            ("d" . avy-goto-line)
            ("f" . avy-goto-end-of-line)))
  #+END_SRC
