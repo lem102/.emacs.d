@@ -154,7 +154,7 @@
   :hook
   (csharp-mode . my-csharp-mode-setup)
   :mode
-  ("\\.cs\\$" . csharp . mode))
+  ("\\.cs\\$" . csharp-mode))
 
 (setq load-path (append (list (expand-file-name "~/.emacs.d/LilyPond/")) load-path))
 

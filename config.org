@@ -257,7 +257,7 @@
      :hook
      (csharp-mode . my-csharp-mode-setup)
      :mode
-     ("\\.cs\\$" . csharp . mode))
+     ("\\.cs\\$" . csharp-mode))
  #+END_SRC
 
 ** lilypond-mode

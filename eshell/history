@@ -1,9 +1,3 @@
-pk
-man alias
-alias ll 'ls -l $*'
-ll
-ls
-alias ff 'find-file'
 ff
 ff eula.3082.txt 
 alias ff 'find-file $1'
@@ -126,3 +120,9 @@ git push
 git
 git status
 git pull
+git status
+git checkout modify
+git add -A
+git commit -m "improved implementation of csharp mode in config file"
+git pusgh
+git push
