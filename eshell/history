@@ -1,61 +1,3 @@
-cd
-ls
-cd
-autoarg-kp-mode -save-list  elpa  eshell  ido.last  ido.last~  init.el  url
-good
-man
-cd ../../emacs-26.2-x86_64/
-ls
-ll
-ls -la
-fotnet
-dotnet
-ll
-ls
-rm #config.org#
-rm
-rm -h
-rm -i #config.org#
-ls
-exit
-man alias
-alias up eshell-up $1
-up
-alias pk eshell-up-peek $1
-pk
-up
-up
-up
-cd Users/lem/Documents/EMACS/gitEmacs/emacshome/.emacs.d/
-up Documents
-pwd
-up do
-up le
-up us
-up
-up 2
-up
-cd Users/lem/Documents/EMACS/gitEmacs/emacshome/.emacs.d/
-up le
-pk doc
-up 4
-up Users
-up /Doc
-up /Users/
-cd Users/lem/Documents/EMACS/gitEmacs/emacshome/.emacs.d/
-up le
-up
-up Do
-cd EMACS/gitEmacs/emacshome/.emacs.d/
-up doc
-pwd
-up doc
-up
-up
-up le
-cd Documents/EMACS/gitEmacs/
-pk le
-up
 pk
 man alias
 alias ll 'ls -l $*'
@@ -122,3 +64,65 @@ xreader *.pdf
 up Doc
 cd ~/Documents/commonLisp/
 ls
+git status
+git status
+git add -A
+git commit -m "adding recompiled files"
+git checkout -b addRecompileLispKeyBind
+git status
+git add -A
+git commit -m "recompile function defined and bound"
+git merge
+man git merge
+git checkout master
+git push
+git branch -l
+git merge addRecompileLispKeyBind
+git status
+git checkout -b addOmnisharpBinds
+git status
+git add -A
+git commit -m "added binds for starting and stopping the server, goto definition and fix usings"
+git checkout master
+git merge addOmnisharpBinds
+git push
+git checkout -b addJsonMode
+git staus
+git statsu
+git status
+git add -A
+git commit -m "Json mode added"
+git checkout master
+git merge addJsonMode
+git psuh
+git push
+git checkout -b addAggressiveIndent
+git status
+cd ~
+cd .emacs.d/
+git status
+git checkout
+git branch
+git checkout master
+git status
+git reset --hard
+git stats
+git status
+git reset --hard
+git status
+git reset --hard
+git status
+git rm elpa/aggressive-indent-20190828.1828/
+git status
+git status
+git checkout -b addIvyandCounsel
+git status
+git add -A
+git commit -m "added"
+git checkout master
+git branch -l
+git merge addIvyandCounsel
+git push
+git
+git status
+git pull
