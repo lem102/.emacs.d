@@ -2,18 +2,15 @@
 ;; Automatically generated file!!! DO NOT EDIT!!!
 
 (setq url-cookie-storage
- '((".stackexchange.com"
-  [url-cookie "prov" "d9bc9f21-12a2-9c9a-f9b0-418298521b59" "Fri, 01-Jan-2055 00:00:00 GMT" "/" ".stackexchange.com" nil])
- (".internetofbusiness.com"
-  [url-cookie "__cfduid" "d4d1097484f44934682e2ab70bbad90c31575928445" "Wed, 08-Jan-20 21:54:05 GMT" "/" ".internetofbusiness.com" nil])
- (".stackoverflow.com"
-  [url-cookie "prov" "7cb87f77-f788-67c2-61d7-2801ea1972a3" "Fri, 01-Jan-2055 00:00:00 GMT" "/" ".stackoverflow.com" nil]))
+ '((".stackoverflow.com"
+  [url-cookie "prov" "7cb87f77-f788-67c2-61d7-2801ea1972a3" "Fri, 01-Jan-2055 00:00:00 GMT" "/" ".stackoverflow.com" nil])
+ (".stackexchange.com"
+  [url-cookie "prov" "d9bc9f21-12a2-9c9a-f9b0-418298521b59" "Fri, 01-Jan-2055 00:00:00 GMT" "/" ".stackexchange.com" nil]))
 )
 (setq url-cookie-secure-storage
- '((".wikipedia.org"
-  [url-cookie "WMF-Last-Access-Global" "30-Nov-2019" "Wed, 01 Jan 2020 12:00:00 GMT" "/" ".wikipedia.org" t])
- ("en.wikipedia.org"
-  [url-cookie "WMF-Last-Access" "30-Nov-2019" "Wed, 01 Jan 2020 12:00:00 GMT" "/" "en.wikipedia.org" t]))
+ '(("github.com"
+  [url-cookie "_octo" "GH1.1.1571007277.1582995999" "Mon, 01 Mar 2021 17:06:39 GMT" "/" "github.com" t]
+  [url-cookie "logged_in" "no" "Mon, 01 Mar 2021 17:06:39 GMT" "/" "github.com" t]))
 )
 
 ;; Local Variables:

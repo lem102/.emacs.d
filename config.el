@@ -144,12 +144,17 @@
 
 (setq-default c-basic-offset 4)
 
-(defun my-csharp-mode-setup ()
-  (setq c-syntactic-indentation t)
-  (c-set-style "ellemtel")
-  (setq c-basic-offset 4))
-
-(add-hook 'csharp-mode-hook 'my-csharp-mode-setup t)
+(use-package csharp-mode
+  :ensure t
+  :config
+  (defun my-csharp-mode-setup ()
+    (setq c-syntactic-indentation t)
+    (c-set-style "ellemtel")
+    (setq c-basic-offset 4))
+  :hook
+  (csharp-mode . my-csharp-mode-setup)
+  :mode
+  ("\\.cs\\$" . csharp . mode))
 
 (setq load-path (append (list (expand-file-name "~/.emacs.d/LilyPond/")) load-path))
 
