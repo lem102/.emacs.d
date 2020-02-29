@@ -577,7 +577,9 @@
    (use-package ivy
      :ensure t
      :bind (:map xah-fly-dot-keymap
-                 ("s" . swiper))
+                 ("s" . swiper)
+                 :map xah-fly-key-map
+                 ("a" . counsel-M-x))
      :config
      (ivy-mode 1)
      (setq ivy-use-virtual-buffers t)
