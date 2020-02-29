@@ -449,8 +449,7 @@
   (move-text-default-bindings))
 
 (use-package eshell-up
-  :ensure t
-  :defer t)
+  :ensure t)
 
 (use-package langtool
   ;; :ensure t
