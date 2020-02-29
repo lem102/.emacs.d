@@ -444,7 +444,6 @@
 
 (use-package move-text
   :ensure t
-  :defer t
   :config
   (move-text-default-bindings))
 
