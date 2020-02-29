@@ -627,10 +627,26 @@
 ** shell-pop
 #+BEGIN_SRC emacs-lisp
   (use-package shell-pop
-	:ensure t
-	:bind
-	(:map xah-fly-n-keymap
-		  ("d" . shell-pop)))
+    :ensure t
+    :init
+    (defun jacob-shell-pop-eshell ()
+    (interactive)
+    (let ((shell-pop-shell-type '("eshell" "*eshell*" (lambda () (eshell))))
+          (shell-pop-term-shell "eshell"))
+      (shell-pop--set-shell-type 'shell-pop-shell-type shell-pop-shell-type)
+      (call-interactively 'shell-pop)))
+
+    (defun jacob-shell-pop-shell ()
+      (interactive)
+      (let ((shell-file-name "/bin/bash")
+            (shell-pop-shell-type '("shell" "*shell*" (lambda () (shell))))
+            (shell-pop-term-shell "shell"))
+        (shell-pop--set-shell-type 'shell-pop-shell-type shell-pop-shell-type)
+        (call-interactively 'shell-pop)))
+    :bind
+    (:map xah-fly-n-keymap
+          ("d" . jacob-shell-pop-eshell)
+          ("f" . jacob-shell-pop-shell)))
 #+END_SRC
 
 ** move-text
