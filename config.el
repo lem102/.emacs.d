@@ -383,9 +383,7 @@
 (use-package ivy
   :ensure t
   :bind (:map xah-fly-dot-keymap
-              ("s" . swiper)
-              :map xah-fly-key-map
-              ("a" . counsel-M-x))
+              ("s" . swiper))
   :config
   (ivy-mode 1)
   (setq ivy-use-virtual-buffers t)
@@ -393,7 +391,10 @@
 
 (use-package counsel
   :ensure t
-  :config (counsel-mode 1))
+  :config (counsel-mode 1)
+  :bind
+  (:map xah-fly-key-map
+        ("a" . counsel-M-x)))
 
 (use-package multiple-cursors
   :ensure t
