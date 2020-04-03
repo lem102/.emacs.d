@@ -45,7 +45,7 @@
 (setq dired-dwim-target t)
 
 (defun xah-dired-mode-setup()
-  (dired-hide-details-mode 1))
+      (dired-hide-details-mode 1))
 (add-hook 'dired-mode-hook 'xah-dired-mode-setup)
 
 (toggle-truncate-lines)
@@ -57,7 +57,7 @@
 	(add-to-list 'default-frame-alist '(font . "DejaVu Sans Mono-10")))
 
 (setq w32-pass-rwindow-to-system nil
-	  w32-rwindow-modifier 'super)
+	      w32-rwindow-modifier 'super)
 
 (setq w32-pass-apps-to-system nil)
 (setq w32-apps-modifier 'hyper)
@@ -117,7 +117,6 @@
 
   (add-hook 'dired-mode-hook 'jacob-turn-off-xah)
   (add-hook 'eww-mode-hook 'jacob-turn-off-xah)
-  (add-hook 'dashboard-mode-hook 'jacob-turn-off-xah)
   (add-hook 'ibuffer-mode-hook 'jacob-turn-off-xah)
   (add-hook 'custom-mode-hook 'jacob-turn-off-xah)
 
@@ -136,11 +135,11 @@
         ;; ("m" . sunrise)))
 
 (add-to-list 'org-structure-template-alist
-			 '("el" "#+BEGIN_SRC emacs-lisp\n?\n#+END_SRC"))
+			     '("el" "#+BEGIN_SRC emacs-lisp\n?\n#+END_SRC"))
 
 (use-package yaml-mode
-  :ensure t
-  :config (add-to-list 'auto-mode-alist '("\\.yml\\'" . yaml-mode)))
+      :ensure t
+      :config (add-to-list 'auto-mode-alist '("\\.yml\\'" . yaml-mode)))
 
 (setq-default c-basic-offset 4)
 
@@ -202,30 +201,30 @@
   :ensure t)
 
 (use-package beacon
-  :ensure t
-  :diminish
-  :config
-  (beacon-mode 1))
+      :ensure t
+      :diminish
+      :config
+      (beacon-mode 1))
 
 (use-package which-key
-  :ensure t
-  :diminish
-  :config
-  (which-key-mode))
+      :ensure t
+      :diminish
+      :config
+      (which-key-mode))
 
 (use-package ido-vertical-mode
-  :ensure t
-  :config
-  (ido-vertical-mode 1))
+      :ensure t
+      :config
+      (ido-vertical-mode 1))
 
 (use-package company
-  :ensure t
-  :diminish
-  :config
-  (setq company-idle-delay 0.5)
-  (setq company-minimum-prefix-length 3)
-  (global-company-mode t)
-  (add-hook 'eshell-mode-hook (lambda () (company-mode -1))))
+      :ensure t
+      :diminish
+      :config
+      (setq company-idle-delay 0.5)
+      (setq company-minimum-prefix-length 3)
+      (global-company-mode t)
+      (add-hook 'eshell-mode-hook (lambda () (company-mode -1))))
 
 (use-package projectile
   :ensure t
@@ -252,24 +251,24 @@
         ("f" . avy-goto-end-of-line)))
 
 (use-package rainbow-mode
-  :ensure t
-  :diminish
-  :hook prog-mode)
+      :ensure t
+      :diminish
+      :hook prog-mode)
 
 (use-package dimmer
-  :ensure t
-  :config
-  (dimmer-mode))
+      :ensure t
+      :config
+      (dimmer-mode))
 
 (use-package highlight-parentheses
-  :ensure t
-  :diminish
-  :init
-  (define-globalized-minor-mode global-highlight-parentheses-mod
+      :ensure t
+      :diminish
+      :init
+      (define-globalized-minor-mode global-highlight-parentheses-mod
 	highlight-parentheses-mode
 	(lambda ()
-	  (highlight-parentheses-mode t)))
-  (global-highlight-parentheses-mode t))
+	      (highlight-parentheses-mode t)))
+      (global-highlight-parentheses-mode t))
 
 (use-package omnisharp
    :ensure t
@@ -295,7 +294,7 @@
          (web-mode . yas-minor-mode)))
 
 (use-package yasnippet-snippets
-  :ensure t)
+      :ensure t)
 
 (use-package key-chord
   :config
@@ -308,13 +307,13 @@
   (elpy-enable))
 
 (use-package flycheck
-  :ensure t
-  :init
-  (global-flycheck-mode t)
-  ;; For some reason, I am unable to diminish flycheck with :diminish
-  (diminish 'flycheck-mode)
-  :config
-  (when (require 'flycheck nil t)
+      :ensure t
+      :init
+      (global-flycheck-mode t)
+      ;; For some reason, I am unable to diminish flycheck with :diminish
+      (diminish 'flycheck-mode)
+      :config
+      (when (require 'flycheck nil t)
 	(setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
 	(add-hook 'elpy-mode-hook 'flycheck-mode)))
 
@@ -331,8 +330,8 @@
   :ensure t)
 
 (use-package restart-emacs
-  :ensure t
-  :defer t)
+      :ensure t
+      :defer t)
 
 (use-package smex
   :ensure t
@@ -341,55 +340,38 @@
   ("M-x" . smex))
 
 (use-package spaceline
-  :ensure t
-  :config
-  (setq powerline-default-seperator (quote arrow))
-  :init
-  (spaceline-spacemacs-theme)
-  )
+      :ensure t
+      :config
+      (setq powerline-default-seperator (quote arrow))
+      :init
+      (spaceline-spacemacs-theme)
+      )
 
 (use-package diminish
-  :ensure t
-  :defer t
-  :config
-  (diminish 'subword-mode)
-  (diminish 'org-src-mode)
-  (diminish 'eldoc-mode))
+      :ensure t
+      :defer t
+      :config
+      (diminish 'subword-mode)
+      (diminish 'org-src-mode)
+      (diminish 'eldoc-mode))
 
 (use-package switch-window
-  :ensure t
-  :defer t
-  :config
-  (setq switch-window-input-style 'minibuffer)
-  (setq switch-window-threshold 2)
-  (setq switch-window-multiple-frames t)
-  (setq switch-window-shortcut-style 'qwerty)
-  (setq switch-window-qwerty-shortcuts
+      :ensure t
+      :defer t
+      :config
+      (setq switch-window-input-style 'minibuffer)
+      (setq switch-window-threshold 2)
+      (setq switch-window-multiple-frames t)
+      (setq switch-window-shortcut-style 'qwerty)
+      (setq switch-window-qwerty-shortcuts
 		'("q" "w" "e" "r" "a" "s" "d" "f" "z" "x" "c" "v"))
-  :bind
-  ([remap xah-next-window-or-frame] . switch-window))
-
-(use-package dashboard
-  :ensure t
-  :config
-
-  (defun jacob-go-to-dashboard ()
-    (interactive)
-    (switch-to-buffer "*dashboard*"))
-
-  (define-key 'xah-fly-dot-keymap (kbd "d") 'jacob-go-to-dashboard)
-
-  (dashboard-setup-startup-hook)
-  (setq dashboard-items '((recents . 10)
-                          (projects . 5)))
-  (setq dashboard-set-footer nil)
-  (setq dashboard-banner-logo-title "千里之行，始於足下")
-  (setq dashboard-center-content t))
+      :bind
+      ([remap xah-next-window-or-frame] . switch-window))
 
 (use-package popup-kill-ring
-  :ensure t
-  :bind
-  (:map xah-fly-dot-keymap ("v" . popup-kill-ring)))
+      :ensure t
+      :bind
+      (:map xah-fly-dot-keymap ("v" . popup-kill-ring)))
 
 (use-package ivy
   :ensure t
@@ -405,22 +387,22 @@
   :init (counsel-mode 1))
 
 (use-package multiple-cursors
-  :ensure t
-  :bind
-  (:map xah-fly-dot-keymap
+      :ensure t
+      :bind
+      (:map xah-fly-dot-keymap
 		("m" . jacob-multiple-cursors-keymap)
-  :map jacob-multiple-cursors-keymap
+      :map jacob-multiple-cursors-keymap
 		("l" . mc/edit-lines)
 		(">" . mc/mark-next-like-this)
 		("<" . mc/mark-previous-like-this)
 		("a" . mc/mark-all-like-this))
-  :init
-  (define-prefix-command 'jacob-multiple-cursors-keymap))
+      :init
+      (define-prefix-command 'jacob-multiple-cursors-keymap))
 
 (use-package expand-region
-  :ensure t
-  :bind
-  (:map xah-fly-dot-keymap
+      :ensure t
+      :bind
+      (:map xah-fly-dot-keymap
 		("=" . 'er/expand-region)))
 
 (use-package shell-pop
@@ -446,16 +428,16 @@
         ("f" . jacob-shell-pop-shell)))
 
 (use-package move-text
-  :ensure t
-  :config
-  (move-text-default-bindings))
+      :ensure t
+      :config
+      (move-text-default-bindings))
 
 (use-package eshell-up
-  :ensure t)
+      :ensure t)
 
 (use-package langtool
-  ;; :ensure t
-  :defer t
-  :config
-  (setq langtool-language-tool-jar
+      ;; :ensure t
+      :defer t
+      :config
+      (setq langtool-language-tool-jar
 		"/home/lem/Documents/LanguageTool-4.8/languagetool-commandline.jar"))

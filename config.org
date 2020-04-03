@@ -202,7 +202,6 @@
 
     (add-hook 'dired-mode-hook 'jacob-turn-off-xah)
     (add-hook 'eww-mode-hook 'jacob-turn-off-xah)
-    (add-hook 'dashboard-mode-hook 'jacob-turn-off-xah)
     (add-hook 'ibuffer-mode-hook 'jacob-turn-off-xah)
     (add-hook 'custom-mode-hook 'jacob-turn-off-xah)
 
@@ -560,26 +559,6 @@
 	 :bind
 	 ([remap xah-next-window-or-frame] . switch-window))
  #+END_SRC
-
-** dashboard
-  #+BEGIN_SRC emacs-lisp
-    (use-package dashboard
-      :ensure t
-      :config
-
-      (defun jacob-go-to-dashboard ()
-        (interactive)
-        (switch-to-buffer "*dashboard*"))
-
-      (define-key 'xah-fly-dot-keymap (kbd "d") 'jacob-go-to-dashboard)
-
-      (dashboard-setup-startup-hook)
-      (setq dashboard-items '((recents . 10)
-                              (projects . 5)))
-      (setq dashboard-set-footer nil)
-      (setq dashboard-banner-logo-title "千里之行，始於足下")
-      (setq dashboard-center-content t))
-  #+END_SRC
 
 ** popup-kill-ring
  #+BEGIN_SRC emacs-lisp
