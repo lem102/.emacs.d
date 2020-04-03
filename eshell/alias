@@ -1,5 +1,5 @@
-alias d dired $1
-alias ff find-file $1
-alias ll ls -l $*
-alias up eshell-up $1
+alias ll ls -la
 alias pk eshell-up-peek $1
+alias up eshell-up $1
+alias ff find-file $1
+alias d dired $1

@@ -1,49 +1,3 @@
-ff
-ff eula.3082.txt 
-alias ff 'find-file $1'
-ff eula.3082.txt 
-dired
-dired pwd
-alias d 'dired $1'
-dotnet new 
-dotnet new console
-dotnet add package Serilog
-dotnet add package Serilog.Sinks.Console
-ls
-ff Program.cs
-dotnet run
-dotnet add package Serilog.Sinks.File
-dotnet run
-ls]
-ls
-ff logtest.csproj
-cd logs
-ls
-ls
-ff myapp20191111.txt
-ll
-cd Users/lem/Documents/Python/PROGRAMS/
-ll
-ff familyImages.py 
-ff familyImages.py 
-mkdir familyImages
-mv familyImages.py ./familyImages/familyImages.py
-ll
-cd familyImages/
-ll
-ff familyImages.py 
-touch file1
-touch file2
-touch file3
-touch file4
-touch file5
-ll
-ll
-cd fileDump/
-ll
-ff file1
-ff file2
-ff file3
 ll
 ff file2
 ll
@@ -126,3 +80,49 @@ git add -A
 git commit -m "improved implementation of csharp mode in config file"
 git pusgh
 git push
+up
+up
+git status
+cd .emacs.d/
+git status
+git add -A
+git commit -m "fixed eshell up"
+git push
+git status
+git add -A
+git commit -m "fixed move-text"
+git push
+git status
+git reset --hard
+git checkout -b clojureDevelopmentSetup
+lein
+echo $PATH
+cd ..
+cd bin
+ls
+sudo mv lein /usr/bin/
+ls
+cd ..
+rm bin
+rm -r bin
+ls
+ll
+ls -la
+alias ll ls -la
+ll
+shutdown now
+shutdown now
+git pull
+git status
+git add -A
+git commit -m "work finished 01/04/2020"
+git push
+git status
+git add -A
+git commit -m "work completed 02/04/2020"
+git push
+git status
+ls
+cd ../../
+ll
+ls

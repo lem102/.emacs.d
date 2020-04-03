@@ -198,6 +198,9 @@
   :ensure t
   :mode ("\\.json\\$" . json-mode))
 
+(use-package clojure-mode
+  :ensure t)
+
 (use-package beacon
   :ensure t
   :diminish
@@ -324,6 +327,9 @@
   (:map slime-mode-map
         ("SPC" . nil)))
 
+(use-package cider
+  :ensure t)
+
 (use-package restart-emacs
   :ensure t
   :defer t)
@@ -396,10 +402,7 @@
 
 (use-package counsel
   :ensure t
-  :config (counsel-mode 1)
-  :bind
-  (:map xah-fly-key-map
-        ("a" . counsel-M-x)))
+  :init (counsel-mode 1))
 
 (use-package multiple-cursors
   :ensure t
