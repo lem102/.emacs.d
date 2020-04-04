@@ -301,7 +301,7 @@
 (use-package key-chord
   :config
   (key-chord-mode 1)
-  (key-chord-define xah-fly-key-map "fd" 'xah-fly-command-mode-activate-no-hook))
+  (key-chord-define xah-fly-key-map "fd" 'xah-fly-command-mode-activate))
 
 (use-package elpy
   :ensure t
