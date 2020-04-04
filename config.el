@@ -122,7 +122,11 @@
     (interactive)
     (define-key xah-fly-key-map (kbd "a") 'counsel-M-x)
     (define-key xah-fly-key-map (kbd "n") 'swiper)
-    (define-key xah-fly-key-map (kbd "8") 'er/expand-region))
+    (define-key xah-fly-key-map (kbd "8") 'er/expand-region)
+    (define-key xah-fly-key-map (kbd "1") 'avy-goto-char)
+    (define-key xah-fly-key-map (kbd "2") 'avy-goto-subword-1)
+    (define-key xah-fly-key-map (kbd "3") 'avy-goto-line)
+    (define-key xah-fly-key-map (kbd "4") 'avy-goto-end-of-line))
 
   (add-hook 'xah-fly-command-mode-activate-hook 'jacob-xah-command-binds)
   (jacob-xah-command-binds) ;; call it on startup so binds are set without calling xah-fly-command-mode-activate first.
