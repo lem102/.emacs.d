@@ -82,6 +82,7 @@
 (setq-default tab-always-indent nil)
 
 (use-package xah-fly-keys
+
   :ensure t
 
   :demand
@@ -117,17 +118,27 @@
     (interactive)
     (xah-fly-insert-mode-activate))
 
+  (defun jacob-xah-command-binds ()
+    (interactive)
+    (define-key xah-fly-key-map (kbd "a") 'counsel-M-x)
+    (define-key xah-fly-key-map (kbd "n") 'swiper)
+    (define-key xah-fly-key-map (kbd "8") 'er/expand-region))
+
+  (add-hook 'xah-fly-command-mode-activate-hook 'jacob-xah-command-binds)
+  (jacob-xah-command-binds) ;; call it on startup so binds are set without calling xah-fly-command-mode-activate first.
+
   (add-hook 'dired-mode-hook 'jacob-turn-off-xah)
   (add-hook 'eww-mode-hook 'jacob-turn-off-xah)
   (add-hook 'ibuffer-mode-hook 'jacob-turn-off-xah)
   (add-hook 'custom-mode-hook 'jacob-turn-off-xah)
 
-  :bind (:map jacob-config-keymap
-              ("r" . config-reload)
-              ("R" . restart-emacs)
-              ("e" . config-visit)
-              ("c" . jacob-org-src-block)
-              ("p" . jacob-recompile-packages))
+  :bind
+  (:map jacob-config-keymap
+        ("r" . config-reload)
+        ("R" . restart-emacs)
+        ("e" . config-visit)
+        ("c" . jacob-org-src-block)
+        ("p" . jacob-recompile-packages))
   (:map xah-fly-dot-keymap
         ("c" . jacob-config-keymap)))
 
@@ -403,9 +414,8 @@
 
 (use-package expand-region
   :ensure t
-  :bind
-  (:map xah-fly-dot-keymap
-		("=" . 'er/expand-region)))
+  :custom
+  (expand-region-contract-fast-key "9"))
 
 (use-package shell-pop
   :ensure t

@@ -1,15 +1,3 @@
-ll
-ff file2
-ll
-pdflatex TaskAnalysis.tex
-xreader TaskAnalysis.pdf
-pdflatex TaskAnalysis.tex
-pdflatex TaskAnalysis.tex
-pdflatex *.tex
-man xr
-xr
-xreader *.pdf
-up Doc
 cd ~/Documents/commonLisp/
 ls
 git status
@@ -126,3 +114,15 @@ ls
 cd ../../
 ll
 ls
+git status
+git status
+git add -A
+git commit -m "made emacs remember my last opened files and open them on startup"
+git push
+git checkout -b bigBindingRevolution
+git status
+git status
+git add -A
+git commit -m "swapped the fd key chord to xah-fly-command-mode-activate"
+git push
+git push --set-upstream origin bigBindingRevolution
