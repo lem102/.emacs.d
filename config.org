@@ -129,6 +129,10 @@
 	  (add-to-list 'default-frame-alist '(font . "DejaVu Sans Mono-10")))
 #+END_SRC
 
+** Open last opened files on startup
+#+BEGIN_SRC emacs-lisp
+  (desktop-save-mode 1)
+#+END_SRC
 * General Keybindings
 ** Setting right windows key to act as super key
 #+BEGIN_SRC emacs-lisp
