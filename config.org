@@ -209,11 +209,7 @@
       (interactive)
       (define-key xah-fly-key-map (kbd "a") 'counsel-M-x)
       (define-key xah-fly-key-map (kbd "n") 'swiper)
-      (define-key xah-fly-key-map (kbd "8") 'er/expand-region)
-      (define-key xah-fly-key-map (kbd "1") 'avy-goto-char)
-      (define-key xah-fly-key-map (kbd "2") 'avy-goto-subword-1)
-      (define-key xah-fly-key-map (kbd "3") 'avy-goto-line)
-      (define-key xah-fly-key-map (kbd "4") 'avy-goto-end-of-line))
+      (define-key xah-fly-key-map (kbd "8") 'er/expand-region))
 
     (add-hook 'xah-fly-command-mode-activate-hook 'jacob-xah-command-binds)
     (jacob-xah-command-binds) ;; call it on startup so binds are set without calling xah-fly-command-mode-activate first.
@@ -397,19 +393,7 @@
 ** avy
  #+BEGIN_SRC emacs-lisp
    (use-package avy
-     :ensure t
-
-     :init
-     (define-prefix-command 'jacob-avy-keymap)
-
-     :bind
-     (:map xah-fly-dot-keymap
-           ("a" . jacob-avy-keymap)
-           :map jacob-avy-keymap
-           ("a" . avy-goto-char)
-           ("s" . avy-goto-subword-1)
-           ("d" . avy-goto-line)
-           ("f" . avy-goto-end-of-line)))
+     :ensure t)
  #+END_SRC
 
 ** rainbow-mode
@@ -481,7 +465,11 @@
   (use-package key-chord
     :config
     (key-chord-mode 1)
-    (key-chord-define xah-fly-key-map "fd" 'xah-fly-command-mode-activate))
+    (key-chord-define xah-fly-key-map "fd" 'xah-fly-command-mode-activate)
+    (key-chord-define xah-fly-key-map "aj" 'avy-goto-char)
+    (key-chord-define xah-fly-key-map "au" 'avy-goto-subword-1)
+    (key-chord-define xah-fly-key-map "ah" 'avy-goto-line)
+    (key-chord-define xah-fly-key-map "a;" 'avy-goto-end-of-line))
 #+END_SRC
 
 ** elpy
