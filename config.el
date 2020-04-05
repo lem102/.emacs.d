@@ -303,6 +303,7 @@
   (key-chord-define xah-fly-key-map "fd" 'xah-fly-command-mode-activate)
   (key-chord-define xah-fly-key-map "aj" 'avy-goto-char)
   (key-chord-define xah-fly-key-map "au" 'avy-goto-subword-1)
+  (key-chord-define xah-fly-key-map "ao" 'avy-goto-word-1)
   (key-chord-define xah-fly-key-map "ah" 'avy-goto-line)
   (key-chord-define xah-fly-key-map "a;" 'avy-goto-end-of-line))
 
