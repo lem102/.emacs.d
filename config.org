@@ -133,6 +133,7 @@
 #+BEGIN_SRC emacs-lisp
   (desktop-save-mode 1)
 #+END_SRC
+
 * General Keybindings
 ** Setting right windows key to act as super key
 #+BEGIN_SRC emacs-lisp
@@ -218,6 +219,8 @@
     (add-hook 'eww-mode-hook 'jacob-turn-off-xah)
     (add-hook 'ibuffer-mode-hook 'jacob-turn-off-xah)
     (add-hook 'custom-mode-hook 'jacob-turn-off-xah)
+
+    (key-chord-define xah-fly-key-map "fd" 'xah-fly-command-mode-activate)
 
     :bind
     (:map jacob-config-keymap
@@ -395,18 +398,12 @@
    (use-package avy
      :ensure t
 
-     :init
-     (define-prefix-command 'jacob-jump-keymap)
-
-     :bind
-     (:map xah-fly-dot-keymap
-           ("j" . jacob-jump-keymap)
-           :map jacob-jump-keymap
-           ("j" . avy-goto-char-timer)
-           ("u" . avy-goto-word-or-subword-1)
-           ("o" . avy-goto-word-1)
-           ("h" . avy-goto-line)
-           (";" . avy-goto-end-of-line)))
+     :config
+     (key-chord-define xah-fly-key-map "fj" 'avy-goto-char-timer)
+     (key-chord-define xah-fly-key-map "fk" 'avy-goto-subword-1)
+     (key-chord-define xah-fly-key-map "fl" 'avy-goto-word-1)
+     (key-chord-define xah-fly-key-map "fh" 'avy-goto-line)
+     (key-chord-define xah-fly-key-map "f;" 'avy-goto-end-of-line))
  #+END_SRC
 
 ** rainbow-mode
@@ -477,13 +474,7 @@
 #+BEGIN_SRC emacs-lisp
   (use-package key-chord
     :config
-    (key-chord-mode 1)
-    (key-chord-define xah-fly-key-map "fd" 'xah-fly-command-mode-activate)
-    (key-chord-define xah-fly-key-map "aj" 'avy-goto-char)
-    (key-chord-define xah-fly-key-map "au" 'avy-goto-subword-1)
-    (key-chord-define xah-fly-key-map "ao" 'avy-goto-word-1)
-    (key-chord-define xah-fly-key-map "ah" 'avy-goto-line)
-    (key-chord-define xah-fly-key-map "a;" 'avy-goto-end-of-line))
+    (key-chord-mode 1))
 #+END_SRC
 
 ** elpy

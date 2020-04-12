@@ -1,22 +1,3 @@
-git status
-git add -A
-git commit -m "recompile function defined and bound"
-git merge
-man git merge
-git checkout master
-git push
-git branch -l
-git merge addRecompileLispKeyBind
-git status
-git checkout -b addOmnisharpBinds
-git status
-git add -A
-git commit -m "added binds for starting and stopping the server, goto definition and fix usings"
-git checkout master
-git merge addOmnisharpBinds
-git push
-git checkout -b addJsonMode
-git staus
 git statsu
 git status
 git add -A
@@ -126,3 +107,22 @@ xreader instructions.p
 xreader instructions.pdf
 pdflatex instructions.tex
 xreader instructions.pdf
+git stats
+git staus
+git status
+git add -A
+git commit -m "new keys again"
+git push
+git status
+git status
+cd image-dired/
+git rm .image-dired_db 
+ls
+ls
+cd ..
+git status
+git add -A
+git commit -m "removed some files"
+git status
+git status
+git status
