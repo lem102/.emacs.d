@@ -134,6 +134,10 @@
   (desktop-save-mode 1)
 #+END_SRC
 
+** Save minibuffer history (useful for compile)
+#+BEGIN_SRC emacs-lisp
+  (savehist-mode 1)
+#+END_SRC
 * General Keybindings
 ** Setting right windows key to act as super key
 #+BEGIN_SRC emacs-lisp
