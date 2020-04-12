@@ -249,7 +249,20 @@
   (projectile-mode t))
 
 (use-package avy
-  :ensure t)
+  :ensure t
+
+  :init
+  (define-prefix-command 'jacob-jump-keymap)
+
+  :bind
+  (:map xah-fly-dot-keymap
+        ("j" . jacob-jump-keymap)
+        :map jacob-jump-keymap
+        ("j" . avy-goto-char-timer)
+        ("u" . avy-goto-word-or-subword-1)
+        ("o" . avy-goto-word-1)
+        ("h" . avy-goto-line)
+        (";" . avy-goto-end-of-line)))
 
 (use-package rainbow-mode
   :ensure t

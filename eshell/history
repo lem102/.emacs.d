@@ -1,10 +1,3 @@
-cd ~/Documents/commonLisp/
-ls
-git status
-git status
-git add -A
-git commit -m "adding recompiled files"
-git checkout -b addRecompileLispKeyBind
 git status
 git add -A
 git commit -m "recompile function defined and bound"
@@ -126,3 +119,10 @@ git add -A
 git commit -m "swapped the fd key chord to xah-fly-command-mode-activate"
 git push
 git push --set-upstream origin bigBindingRevolution
+pdflatex instructions.tex
+docview instructions.tex
+xreader instructions.tex
+xreader instructions.p
+xreader instructions.pdf
+pdflatex instructions.tex
+xreader instructions.pdf
