@@ -2,56 +2,44 @@
 ;; --------------------------------------------------------------------------
 ;; Desktop File for Emacs
 ;; --------------------------------------------------------------------------
-;; Created Sun Apr 12 12:45:01 2020
+;; Created Mon Apr 13 14:07:50 2020
 ;; Desktop file format version 208
 ;; Emacs version 26.3
 
 ;; Global section:
-(setq desktop-saved-frameset [frameset 1 (24210 65341 773765 0) (desktop . "208") "lem@LEM-PC" nil nil ((((minibuffer . t) (undecorated) (skip-taskbar) (font-backend uniscribe gdi) (font . "-outline-DejaVu Sans Mono-normal-normal-normal-mono-13-*-*-*-c-*-iso8859-1") (border-width . 0) (internal-border-width . 0) (right-divider-width . 0) (bottom-divider-width . 0) (vertical-scroll-bars) (horizontal-scroll-bars) (foreground-color . "#b2b2b2") (background-color . "#292b2e") (mouse-color . "black") (border-color . "black") (screen-gamma) (line-spacing) (left-fringe . 8) (right-fringe . 8) (no-focus-on-map) (no-accept-focus) (no-special-glyphs) (alpha) (menu-bar-lines . 0) (tool-bar-lines . 0) (height . 72) (title) (icon-type) (auto-raise) (auto-lower) (cursor-type . box) (scroll-bar-width . 0) (scroll-bar-height . 0) (fullscreen . fullboth) (z-group) (visibility . t) (display-type . color) (background-mode . dark) (cursor-color . "#e3dedd") (environment) (powerline-cache) (fullscreen-restore) (frameset--id . "07F6-2BB0-6F75-1D1D") (frameset--mini t . t) (modeline . t) (unsplittable) (icon-name) (display . "w32") (explicit-name) (tool-bar-position . top) (width . 238) (left . 0) (top . 0)) ((min-height . 4) (min-width . 10) (min-height-ignore . 3) (min-width-ignore . 4) (min-height-safe . 1) (min-width-safe . 2) (min-pixel-height . 60) (min-pixel-width . 80) (min-pixel-height-ignore . 45) (min-pixel-width-ignore . 32) (min-pixel-height-safe . 15) (min-pixel-width-safe . 16)) leaf (pixel-width . 1920) (pixel-height . 1065) (total-width . 240) (total-height . 71) (normal-height . 1.0) (normal-width . 1.0) (buffer "config.org" (selected . t) (hscroll . 0) (fringes 8 8 nil) (margins nil) (scroll-bars nil 0 t nil 0 t) (vscroll . 0) (dedicated) (point . 3132) (start . 1))))])
+(setq desktop-saved-frameset [frameset 1 (24212 25638 224125 0) (desktop . "208") "lem@LEM-PC" nil nil ((((minibuffer . t) (undecorated) (skip-taskbar) (font-backend uniscribe gdi) (font . "-outline-DejaVu Sans Mono-normal-normal-normal-mono-13-*-*-*-c-*-iso8859-1") (border-width . 0) (internal-border-width . 0) (right-divider-width . 0) (bottom-divider-width . 0) (vertical-scroll-bars) (horizontal-scroll-bars) (foreground-color . "#b2b2b2") (background-color . "#292b2e") (mouse-color . "black") (border-color . "black") (screen-gamma) (line-spacing) (left-fringe . 8) (right-fringe . 8) (no-focus-on-map) (no-accept-focus) (no-special-glyphs) (alpha) (menu-bar-lines . 0) (tool-bar-lines . 0) (height . 72) (title) (icon-type) (auto-raise) (auto-lower) (cursor-type . box) (scroll-bar-width . 0) (scroll-bar-height . 0) (fullscreen . fullboth) (z-group) (visibility . t) (display-type . color) (background-mode . dark) (cursor-color . "#e3dedd") (environment) (powerline-cache) (fullscreen-restore) (frameset--id . "07F6-2BB0-6F75-1D1D") (frameset--mini t . t) (modeline . t) (unsplittable) (icon-name) (display . "w32") (explicit-name) (tool-bar-position . top) (width . 238) (left . 0) (top . 0)) ((min-height . 8) (min-width . 20) (min-height-ignore . 6) (min-width-ignore . 8) (min-height-safe . 2) (min-width-safe . 4) (min-pixel-height . 120) (min-pixel-width . 160) (min-pixel-height-ignore . 90) (min-pixel-width-ignore . 64) (min-pixel-height-safe . 30) (min-pixel-width-safe . 32)) hc (pixel-width . 1920) (pixel-height . 1065) (total-width . 240) (total-height . 71) (normal-height . 1.0) (normal-width . 1.0) (combination-limit) (vc (pixel-width . 960) (pixel-height . 1065) (total-width . 120) (total-height . 71) (normal-height . 1.0) (normal-width . 0.5) (combination-limit) (leaf (pixel-width . 960) (pixel-height . 540) (total-width . 120) (total-height . 36) (normal-height . 0.5) (normal-width . 1.0) (buffer "Competencies.org" (selected) (hscroll . 0) (fringes 8 8 nil) (margins nil) (scroll-bars nil 0 t nil 0 t) (vscroll . 0) (dedicated) (point . 1) (start . 1))) (leaf (last . t) (pixel-width . 960) (pixel-height . 525) (total-width . 120) (total-height . 35) (normal-height . 0.5) (normal-width . 1.0) (buffer "objectives.org" (selected) (hscroll . 0) (fringes 8 8 nil) (margins nil) (scroll-bars nil 0 t nil 0 t) (vscroll . 0) (dedicated) (point . 5327) (start . 1)))) (leaf (last . t) (pixel-width . 960) (pixel-height . 1065) (total-width . 120) (total-height . 71) (normal-height . 1.0) (normal-width . 0.5) (buffer "TaskAnalysis.tex" (selected . t) (hscroll . 0) (fringes 8 8 nil) (margins nil) (scroll-bars nil 0 t nil 0 t) (vscroll . 0) (dedicated) (point . 15888) (start . 13897)))))])
 (setq desktop-missing-file-warning nil)
 (setq tags-file-name nil)
 (setq tags-table-list nil)
 (setq search-ring nil)
-(setq regexp-search-ring nil)
+(setq regexp-search-ring '("avy" "\\(*\\).*?\\(xah\\)" "avy" "\\(dired\\).*?\\(xah\\)" "hercules"))
 (setq register-alist nil)
 (setq file-name-history '("c:/Users/lem/Documents/University/PLACEMENT ASSESSMENTS/My Content/Task Analysis/objectives.org" "c:/Users/lem/Documents/University/PLACEMENT ASSESSMENTS/My Content/Task Analysis/Competencies.org" "c:/Users/lem/Documents/University/PLACEMENT ASSESSMENTS/My Content/Task Analysis/TaskAnalysis.tex"))
 
 ;; Buffer section -- buffers listed in same order as in buffer list:
 (desktop-create-buffer 208
-  "c:/Users/lem/Documents/EMACS/emacshome/.emacs.d/config.org"
-  "config.org"
-  'org-mode
-  '(subword-mode override-global-mode xah-fly-keys beacon-mode which-key-mode company-mode dimmer-mode highlight-parentheses-mode flycheck-mode ivy-mode counsel-mode)
-  3132
-  '(2 nil)
-  nil
-  nil
-  '((buffer-display-time 24210 65336 269859 0) (buffer-file-coding-system . undecided-dos) (truncate-lines))
-  '((mark-ring nil)))
-
-(desktop-create-buffer 208
   "c:/Users/lem/Documents/University/PLACEMENT ASSESSMENTS/My Content/Task Analysis/TaskAnalysis.tex"
   "TaskAnalysis.tex"
   'latex-mode
   '(subword-mode override-global-mode xah-fly-keys beacon-mode which-key-mode company-mode dimmer-mode highlight-parentheses-mode flycheck-mode ivy-mode counsel-mode)
-  15286
-  '(15288 nil)
+  15888
+  '(15320 nil)
   nil
   nil
-  '((indent-tabs-mode) (buffer-display-time 24210 64929 861983 0) (buffer-file-coding-system . undecided-dos))
-  '((mark-ring (14866 15322 15288 14866 15286 15459 733 15286 15118 14770 14770 14770 14623 14719 15459 15320))))
+  '((indent-tabs-mode) (buffer-display-time 24212 25606 220218 0) (buffer-file-coding-system . undecided-dos))
+  '((mark-ring (16011 15890 15320 16011 15890 15320 16011 15890 15288 14866 15890 15288 14866 15286 16027 733))))
 
 (desktop-create-buffer 208
   "c:/Users/lem/Documents/University/PLACEMENT ASSESSMENTS/My Content/Task Analysis/objectives.org"
   "objectives.org"
   'org-mode
   '(subword-mode override-global-mode xah-fly-keys beacon-mode which-key-mode company-mode dimmer-mode highlight-parentheses-mode flycheck-mode ivy-mode counsel-mode)
-  3315
-  '(3315 nil)
+  5327
+  '(5057 nil)
   nil
   nil
-  '((buffer-display-time 24210 64929 938155 0) (buffer-file-coding-system . undecided-dos) (truncate-lines . t))
-  '((mark-ring (3315 4881 4155))))
+  '((buffer-display-time 24212 25159 687992 0) (buffer-file-coding-system . undecided-dos) (truncate-lines . t))
+  '((mark-ring (3315 3315 4881 4155))))
 
 (desktop-create-buffer 208
   "c:/Users/lem/Documents/University/PLACEMENT ASSESSMENTS/My Content/Task Analysis/Competencies.org"
@@ -62,6 +50,42 @@
   '(nil nil)
   nil
   nil
-  '((buffer-display-time 24210 65333 217125 0) (buffer-file-coding-system . utf-8-dos) (truncate-lines . t))
+  '((buffer-display-time 24212 25159 687992 0) (buffer-file-coding-system . utf-8-dos) (truncate-lines . t))
+  '((mark-ring nil)))
+
+(desktop-create-buffer 208
+  nil
+  ".emacs.d"
+  'dired-mode
+  '(subword-mode override-global-mode beacon-mode which-key-mode company-mode dimmer-mode highlight-parentheses-mode ivy-mode counsel-mode)
+  908
+  '(nil nil)
+  t
+  '("c:/Users/lem/Documents/EMACS/emacshome/.emacs.d/")
+  '((buffer-display-time 24212 22443 713390 0))
+  '((mark-ring nil)))
+
+(desktop-create-buffer 208
+  "c:/Users/lem/Documents/EMACS/emacshome/.emacs.d/config.el"
+  "config.el"
+  'emacs-lisp-mode
+  '(eldoc-mode subword-mode override-global-mode xah-fly-keys beacon-mode which-key-mode company-mode dimmer-mode highlight-parentheses-mode flycheck-mode ivy-mode counsel-mode rainbow-mode)
+  311
+  '(nil nil)
+  nil
+  nil
+  '((buffer-display-time 24212 22304 750499 0) (buffer-file-coding-system . prefer-utf-8-dos))
+  '((mark-ring nil)))
+
+(desktop-create-buffer 208
+  nil
+  "Task Analysis"
+  'dired-mode
+  '(subword-mode override-global-mode beacon-mode which-key-mode company-mode dimmer-mode highlight-parentheses-mode ivy-mode counsel-mode)
+  329
+  '(nil nil)
+  t
+  '("c:/Users/lem/Documents/University/PLACEMENT ASSESSMENTS/My Content/Task Analysis/")
+  '((buffer-display-time 24212 22724 205570 0))
   '((mark-ring nil)))
 

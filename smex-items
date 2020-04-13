@@ -1,16 +1,20 @@
 
 ;; ----- smex-history -----
 (
+ which-key-show-keymap
+ which-key-mode
+ command-history
+ which-key-show-top-level
  compile
  cd
  5x5
- arp
- dbx
- dig
- erc
 )
 
 ;; ----- smex-data -----
 (
  (compile . 2)
+ (which-key-show-top-level . 4)
+ (command-history . 1)
+ (which-key-mode . 2)
+ (which-key-show-keymap . 3)
 )

@@ -206,10 +206,6 @@
     (xah-fly-keys-set-layout "qwerty")
     (xah-fly-keys 1)
 
-    (defun jacob-turn-off-xah ()
-      (interactive)
-      (xah-fly-insert-mode-activate))
-
     (defun jacob-xah-command-binds ()
       (interactive)
       (define-key xah-fly-key-map (kbd "a") 'counsel-M-x)
@@ -219,10 +215,10 @@
     (add-hook 'xah-fly-command-mode-activate-hook 'jacob-xah-command-binds)
     (jacob-xah-command-binds) ;; call it on startup so binds are set without calling xah-fly-command-mode-activate first.
 
-    (add-hook 'dired-mode-hook 'jacob-turn-off-xah)
-    (add-hook 'eww-mode-hook 'jacob-turn-off-xah)
-    (add-hook 'ibuffer-mode-hook 'jacob-turn-off-xah)
-    (add-hook 'custom-mode-hook 'jacob-turn-off-xah)
+    (add-hook 'dired-mode-hook 'xah-fly-keys-off)
+    (add-hook 'eww-mode-hook 'xah-fly-keys-off)
+    (add-hook 'ibuffer-mode-hook 'xah-fly-keys-off)
+    (add-hook 'custom-mode-hook 'xah-fly-keys-off)
 
     (key-chord-define xah-fly-key-map "fd" 'xah-fly-command-mode-activate)
 
@@ -404,9 +400,8 @@
 
      :config
      (key-chord-define xah-fly-key-map "fj" 'avy-goto-char-timer)
-     (key-chord-define xah-fly-key-map "fk" 'avy-goto-subword-1)
-     (key-chord-define xah-fly-key-map "fl" 'avy-goto-word-1)
-     (key-chord-define xah-fly-key-map "fh" 'avy-goto-line)
+     (key-chord-define xah-fly-key-map "fk" 'avy-goto-word-or-subword-1)
+     (key-chord-define xah-fly-key-map "fl" 'avy-goto-line)
      (key-chord-define xah-fly-key-map "f;" 'avy-goto-end-of-line))
  #+END_SRC
 
@@ -675,4 +670,3 @@
 	(setq langtool-language-tool-jar
 		  "/home/lem/Documents/LanguageTool-4.8/languagetool-commandline.jar"))
 #+END_SRC
-
