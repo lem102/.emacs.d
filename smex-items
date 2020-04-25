@@ -1,13 +1,13 @@
 
 ;; ----- smex-history -----
 (
+ customize-themes
+ display-time
+ package-delete
  which-key-show-keymap
- which-key-mode
- command-history
- which-key-show-top-level
- compile
- cd
- 5x5
+ swiper
+ browse-url-of-file
+ dired
 )
 
 ;; ----- smex-data -----
@@ -16,5 +16,13 @@
  (which-key-show-top-level . 4)
  (command-history . 1)
  (which-key-mode . 2)
- (which-key-show-keymap . 3)
+ (which-key-show-keymap . 8)
+ (xah-copy-line-or-region . 1)
+ (dired . 7)
+ (shell-pop . 1)
+ (browse-url-of-file . 2)
+ (swiper . 1)
+ (package-delete . 1)
+ (customize-themes . 2)
+ (display-time . 1)
 )

@@ -1,4 +1,20 @@
 * Built-in settings
+** modeline
+#+BEGIN_SRC emacs-lisp
+  (setq-default mode-line-format
+                (list
+                 ;; saved, readonly
+                 "%*"
+                 ;; major mode
+                 "%m: "
+                 ;; buffer name
+                 "%b "
+                 ;; position of point
+                 "(%c,%l) "
+                 ;; time
+                 '(:eval (format-time-string "%H:%M" (current-time)))))
+#+END_SRC
+
 ** ido
  #+BEGIN_SRC emacs-lisp
    (setq ido-enable-flex-matching t)
@@ -138,6 +154,7 @@
 #+BEGIN_SRC emacs-lisp
   (savehist-mode 1)
 #+END_SRC
+
 * General Keybindings
 ** Setting right windows key to act as super key
 #+BEGIN_SRC emacs-lisp
@@ -154,19 +171,9 @@
 ** Tabs
 #+BEGIN_SRC emacs-lisp
   ;; use spaces to indent
-  (progn
-    (setq-default indent-tabs-mode nil))
-
+  (setq-default indent-tabs-mode nil)
   ;; set default tab char's display width to 4 spaces
   (setq-default tab-width 4)
-
-  ;; (defun my-insert-tab-char ()
-    ;; "Insert a tab char. (ASCII 9, \t)"
-    ;; (interactive)
-    ;; (insert "\t"))
-
-  ;; (global-set-key (kbd "TAB") 'my-insert-tab-char) ; same as Ctrl+i
-
   ;; make tab key call indent command or insert tab character, depending on cursor position
   (setq-default tab-always-indent nil)
 #+END_SRC
@@ -533,17 +540,6 @@
      ("M-x" . smex))
  #+END_SRC
 
-** spaceline
-#+BEGIN_SRC emacs-lisp
-  (use-package spaceline
-	:ensure t
-	:config
-	(setq powerline-default-seperator (quote arrow))
-	:init
-	(spaceline-spacemacs-theme)
-	)
-#+END_SRC
-
 ** diminish
 #+BEGIN_SRC emacs-lisp
   (use-package diminish
@@ -670,3 +666,11 @@
 	(setq langtool-language-tool-jar
 		  "/home/lem/Documents/LanguageTool-4.8/languagetool-commandline.jar"))
 #+END_SRC
+
+* Appearance
+** Theme (sanityinc-tomorrow)
+#+BEGIN_SRC emacs-lisp
+  (use-package color-theme-sanityinc-tomorrow
+    :ensure t)
+#+END_SRC
+
