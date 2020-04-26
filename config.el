@@ -333,6 +333,7 @@
         ("SPC" . nil)))
 
 (use-package cider
+  :diminish
   :ensure t)
 
 (use-package restart-emacs

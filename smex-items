@@ -1,13 +1,13 @@
 
 ;; ----- smex-history -----
 (
- which-key-show-keymap
- which-key-mode
- command-history
- which-key-show-top-level
- compile
- cd
- 5x5
+ swiper
+ cider-jack-in
+ process-menu-delete-process
+ process-menu-mode
+ eww-top-url
+ xah-fly-keys-off
+ restart-emacs
 )
 
 ;; ----- smex-data -----
@@ -17,4 +17,11 @@
  (command-history . 1)
  (which-key-mode . 2)
  (which-key-show-keymap . 3)
+ (restart-emacs . 1)
+ (swiper . 4)
+ (cider-jack-in . 3)
+ (xah-fly-keys-off . 1)
+ (eww-top-url . 1)
+ (process-menu-mode . 1)
+ (process-menu-delete-process . 1)
 )
