@@ -1,16 +1,20 @@
 * Built-in settings
-** modeline
+** Modeline
 #+BEGIN_SRC emacs-lisp
   (defun jacob-day-suffix (day)
     "returns the suffix for a day, e.g. a day of 17 would return th."
-    (let ((unit (% day 10)))
-      (if (= unit 1)
-          "st"
-        (if (= unit 2)
-            "nd"
-          (if (= unit 3)
-              "rd"
-            "th")))))
+    (if (or (= day 11)
+            (= day 12)
+            (= day 13))
+        "th"
+      (let ((unit (% day 10)))
+        (if (= unit 1)
+            "st"
+          (if (= unit 2)
+              "nd"
+            (if (= unit 3)
+                "rd"
+              "th"))))))
 
   (setq-default mode-line-format
                 (list
@@ -27,7 +31,8 @@
                                  (jacob-day-suffix (string-to-number (format-time-string "%e")))
                                  (format-time-string " %B, %Y ")))
                  ;; time
-                 '(:eval (format-time-string "%H:%M" (current-time)))))
+                 '(:eval (concat "at "
+                                 (format-time-string "%H:%M" (current-time))))))
 #+END_SRC
 
 ** Highlight current line but only in graphical mode
@@ -250,14 +255,6 @@
 #+END_SRC
 
 * Major Mode Packages
-** Sunrise
-#+BEGIN_SRC emacs-lisp
-  ;; (use-package sunrise
-    ;; :bind
-    ;; (:map xah-fly-leader-key-map
-          ;; ("m" . sunrise)))
-#+END_SRC
-
 ** Org
 *** org snippets?
  #+BEGIN_SRC emacs-lisp

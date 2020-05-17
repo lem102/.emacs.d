@@ -24,7 +24,8 @@
                                (jacob-day-suffix (string-to-number (format-time-string "%e")))
                                (format-time-string " %B, %Y ")))
                ;; time
-               '(:eval (format-time-string "%H:%M" (current-time)))))
+               '(:eval (concat "at "
+                               (format-time-string "%H:%M" (current-time))))))
 
 (when window-system (global-hl-line-mode t))
 
@@ -155,11 +156,6 @@
 (setq-default tab-width 4)
 ;; make tab key call indent command or insert tab character, depending on cursor position
 (setq-default tab-always-indent nil)
-
-;; (use-package sunrise
-  ;; :bind
-  ;; (:map xah-fly-leader-key-map
-        ;; ("m" . sunrise)))
 
 (add-to-list 'org-structure-template-alist
 			     '("el" "#+BEGIN_SRC emacs-lisp\n?\n#+END_SRC"))
