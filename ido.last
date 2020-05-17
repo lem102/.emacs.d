@@ -21,6 +21,10 @@
 
 ;; ----- ido-dir-file-cache -----
 (
+ ("/home/lem/" (24251 43163 304001 15000) ".wget-hsts" ".lein/" ".git-credentials" ".texlive2017/" "gitEmacs/" ".bashrc" ".vmware/" ".Xauthority" ".dmrc" ".steampid" ".python_history" ".gimp-2.8/" ".mozilla/" ".cache/" "Music/" "./" ".hplip/" ".local/" "Pictures/" ".linuxmint/" ".m2/" "Desktop/" ".pulse-cookie" ".gconf/" "Videos/" ".config/" ".profile" "../" ".pki/" ".gtkrc-xfce" ".bash_logout" ".emacs.d/" ".klei/" "winehq.key" ".gtkrc-2.0" ".aptitude/" ".ICEauthority" ".gitconfig" "texmf/" ".steampath" "Firefox_wallpaper.png" "Public/" ".sudo_as_admin_successful" ".xsession-errors" "Templates/" "mpv" ".minecraft/" ".xsession-errors.old" ".cinnamon/" ".bash_history" "Downloads/" ".steam/" ".slime/" "Documents/" ".wine/" ".gnupg/" ".thumbnails/")
+
+ ("/home/lem/.emacs.d/" (24237 24033 226054 337000) "smex-items" "elpa/" "LilyPond/" "lisp/" "config.el" ".emacs.desktop" "history" "Thumbs.db" "elpy/" "ido.last" "init.el" ".emacs.desktop.lock" "./" "config.org" "url/" ".git/" "bookmarks" "../" "runemacs.bat" "recentf" "eshell/" "projectile-bookmarks.eld" "auto-save-list/" "snippets/")
+
  ("c:/Users/lem/" (24214 11605 0 0) "Videos/" "Templates/" "Start Menu/" "SendTo/" "Searches/" "Saved Games/" "Recent/" "PrintHood/" "Pictures/" "ntuser.ini" "NTUSER.DAT{fd9a35db-49fe-11e9-aa2c-248a07783950}.TMContainer00000000000000000002.regtrans-ms" "NTUSER.DAT{fd9a35db-49fe-11e9-aa2c-248a07783950}.TMContainer00000000000000000001.regtrans-ms" "NTUSER.DAT{fd9a35db-49fe-11e9-aa2c-248a07783950}.TM.blf" "ntuser.dat.LOG2" "ntuser.dat.LOG1" "NTUSER.DAT" "NetHood/" "My Documents/" "Music/" "MicrosoftEdgeBackups/" "Local Settings/" "Links/" "Favorites/" "Downloads/" "Documents/" "Desktop/" "Cookies/" "Contacts/" "Application Data/" "AppData/" "ansel/" "3D Objects/" ".dotnet/" ".bash_history" "../" "./")
 
  ("c:/Users/" (24213 63048 0 0) "Public/" "lem/" "desktop.ini" "Default User/" "Default/" "All Users/" "../" "./")

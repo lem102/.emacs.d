@@ -1,3 +1,14 @@
+(defun jacob-day-suffix (day)
+  "returns the suffix for a day, e.g. a day of 17 would return th."
+  (let ((unit (% day 10)))
+    (if (= unit 1)
+        "st"
+      (if (= unit 2)
+          "nd"
+        (if (= unit 3)
+            "rd"
+          "th")))))
+
 (setq-default mode-line-format
               (list
                ;; saved, readonly
@@ -7,14 +18,13 @@
                ;; buffer name
                "%b "
                ;; position of point
-               "(%c,%l) "
+               "(%l,%c) "
+               ;; date
+               '(:eval (concat (format-time-string "%A the %e")
+                               (jacob-day-suffix (string-to-number (format-time-string "%e")))
+                               (format-time-string " %B, %Y ")))
                ;; time
                '(:eval (format-time-string "%H:%M" (current-time)))))
-
-(setq ido-enable-flex-matching t)
-(setq ido-create-new-buffer 'always)
-(setq ido-everywhere t)
-(ido-mode 1)
 
 (when window-system (global-hl-line-mode t))
 
@@ -73,18 +83,30 @@
 
 (savehist-mode 1)
 
-(setq w32-pass-rwindow-to-system nil
-	      w32-rwindow-modifier 'super)
+(defun config-visit ()
+  (interactive)
+  (find-file "~/.emacs.d/config.org"))
 
-(setq w32-pass-apps-to-system nil)
-(setq w32-apps-modifier 'hyper)
+(defun config-reload ()
+  (interactive)
+  (org-babel-load-file (expand-file-name "~/.emacs.d/config.org")))
 
-;; use spaces to indent
-(setq-default indent-tabs-mode nil)
-;; set default tab char's display width to 4 spaces
-(setq-default tab-width 4)
-;; make tab key call indent command or insert tab character, depending on cursor position
-(setq-default tab-always-indent nil)
+(defun jacob-org-src-block ()
+  (interactive)
+  (if (bound-and-true-p org-src-mode)
+      (org-edit-src-exit)
+    (if (equal major-mode 'org-mode)
+        (org-edit-special))))
+
+(defun jacob-recompile-packages ()
+  (interactive)
+  (byte-recompile-directory package-user-dir nil 'force))
+
+(defun jacob-xah-command-binds ()
+  (interactive)
+  (define-key xah-fly-key-map (kbd "a") 'counsel-M-x)
+  (define-key xah-fly-key-map (kbd "n") 'swiper)
+  (define-key xah-fly-key-map (kbd "8") 'er/expand-region))
 
 (use-package xah-fly-keys
 
@@ -95,35 +117,10 @@
   :custom
   (xah-fly-use-control-key nil)
 
-  :config 
-  (defun config-visit ()
-    (interactive)
-    (find-file "~/.emacs.d/config.org"))
-
-  (defun config-reload ()
-    (interactive)
-    (org-babel-load-file (expand-file-name "~/.emacs.d/config.org")))
-
-  (defun jacob-org-src-block ()
-    (interactive)
-    (if (bound-and-true-p org-src-mode)
-        (org-edit-src-exit)
-      (if (equal major-mode 'org-mode)
-          (org-edit-special))))
-
-  (defun jacob-recompile-packages ()
-    (interactive)
-    (byte-recompile-directory package-user-dir nil 'force))
-
+  :config
   (define-prefix-command 'jacob-config-keymap)
   (xah-fly-keys-set-layout "qwerty")
   (xah-fly-keys 1)
-
-  (defun jacob-xah-command-binds ()
-    (interactive)
-    (define-key xah-fly-key-map (kbd "a") 'counsel-M-x)
-    (define-key xah-fly-key-map (kbd "n") 'swiper)
-    (define-key xah-fly-key-map (kbd "8") 'er/expand-region))
 
   (add-hook 'xah-fly-command-mode-activate-hook 'jacob-xah-command-binds)
   (jacob-xah-command-binds) ;; call it on startup so binds are set without calling xah-fly-command-mode-activate first.
@@ -143,7 +140,21 @@
         ("c" . jacob-org-src-block)
         ("p" . jacob-recompile-packages))
   (:map xah-fly-dot-keymap
-        ("c" . jacob-config-keymap)))
+        ("c" . jacob-config-keymap)
+        ("t" . jacob-theme-switch)))
+
+(setq w32-pass-rwindow-to-system nil
+	      w32-rwindow-modifier 'super)
+
+(setq w32-pass-apps-to-system nil)
+(setq w32-apps-modifier 'hyper)
+
+;; use spaces to indent
+(setq-default indent-tabs-mode nil)
+;; set default tab char's display width to 4 spaces
+(setq-default tab-width 4)
+;; make tab key call indent command or insert tab character, depending on cursor position
+(setq-default tab-always-indent nil)
 
 ;; (use-package sunrise
   ;; :bind
@@ -227,11 +238,6 @@
       :diminish
       :config
       (which-key-mode))
-
-(use-package ido-vertical-mode
-      :ensure t
-      :config
-      (ido-vertical-mode 1))
 
 (use-package company
       :ensure t

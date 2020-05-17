@@ -30,7 +30,7 @@
  '(ansi-color-names-vector
    ["black" "#d55e00" "#009e73" "#f8ec59" "#0072b2" "#cc79a7" "#56b4e9" "white"])
  '(beacon-color "#f2777a")
- '(custom-enabled-themes (quote (spacemacs-dark)))
+ '(custom-enabled-themes (quote (sanityinc-tomorrow-blue)))
  '(custom-safe-themes
    (quote
     ("628278136f88aa1a151bb2d6c8a86bf2b7631fbea5f0f76cba2a0079cd910f7d" "82d2cac368ccdec2fcc7573f24c3f79654b78bf133096f9b40c20d97ec1d8016" "ab2cbf30ab758c5e936b527377d543ce4927001742f79519b62c45ba9dd9f55e" "fa2b58bb98b62c3b8cf3b6f02f058ef7827a8e497125de0254f56e373abee088" "bffa9739ce0752a37d9b1eee78fc00ba159748f50dc328af4be661484848e476" default)))
@@ -57,7 +57,7 @@
      ("\\?\\?\\?+" . "#dc752f"))))
  '(package-selected-packages
    (quote
-    (color-theme-sanityinc-tomorrow cider clojure-mode counsel json-mode slime use-package-chords langtool elpy swiper magit yasnippet-snippets yasnippet web-mode move-text vertigo shell-pop restart-emacs highlight-parentheses dimmer projectile pretty-mode expand-region multiple-cursors popup-kill-ring symon-mode diminish switch-window rainbow-mode company-mode smex ido-vertical-mode beacon spacemacs-theme which-key use-package yaml-mode xah-fly-keys company omnisharp csharp-mode)))
+    (color-theme-sanityinc-tomorrow cider clojure-mode counsel json-mode slime use-package-chords langtool elpy swiper magit yasnippet-snippets yasnippet web-mode move-text vertigo shell-pop restart-emacs highlight-parentheses dimmer projectile pretty-mode expand-region multiple-cursors popup-kill-ring symon-mode diminish switch-window rainbow-mode company-mode smex beacon spacemacs-theme which-key use-package yaml-mode xah-fly-keys company omnisharp csharp-mode)))
  '(pdf-view-midnight-colors (quote ("#b2b2b2" . "#292b2e")))
  '(shell-pop-autocd-to-working-dir nil)
  '(shell-pop-shell-type (quote ("eshell" "*eshell*" (lambda nil (eshell)))))
