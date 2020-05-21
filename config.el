@@ -1,31 +1,116 @@
 (defun jacob-day-suffix (day)
   "returns the suffix for a day, e.g. a day of 17 would return th."
-  (let ((unit (% day 10)))
-    (if (= unit 1)
-        "st"
-      (if (= unit 2)
-          "nd"
-        (if (= unit 3)
-            "rd"
-          "th")))))
+  (if (or (= day 11)
+          (= day 12)
+          (= day 13))
+      "th"
+    (let ((unit (% day 10)))
+      (if (= unit 1)
+          "st"
+        (if (= unit 2)
+            "nd"
+          (if (= unit 3)
+              "rd"
+            "th"))))))
 
-(setq-default mode-line-format
-              (list
-               ;; saved, readonly
-               "%*"
-               ;; major mode
-               "%m: "
-               ;; buffer name
-               "%b "
-               ;; position of point
-               "(%l,%c) "
-               ;; date
-               '(:eval (concat (format-time-string "%A the %e")
-                               (jacob-day-suffix (string-to-number (format-time-string "%e")))
-                               (format-time-string " %B, %Y ")))
-               ;; time
-               '(:eval (concat "at "
-                               (format-time-string "%H:%M" (current-time))))))
+(defun jacob-long-time-minutes (minute)
+  "gets minutes for jacob long time."
+  (if (= minute 0)
+      ""
+    (if (= minute 1)
+        "1 minute"
+      (if (= minute 30)
+          "Half"
+        (if (or (= minute 15) (= minute 45))
+            "Quarter"
+          (if (and (< minute 30) (= (% minute 10) 0))
+              (concat (number-to-string minute) " minutes")
+            (if (< minute 30)
+                (concat (number-to-string (% minute 10)) (if (> minute 10)
+                                                             (concat " and " (number-to-string (- minute (% minute 10))) " minutes")
+                                                           " minutes"))
+              (if (and (> minute 30) (= (% minute 10) 0))
+                  (concat (number-to-string minute) " minutes")
+                (concat (number-to-string (- 10 (% minute 10))) (if (< minute 50)
+                                                                    (concat " and " (number-to-string (- 50 (- minute (% minute 10)))) " minutes")
+                                                                  " minutes"))))))))))
+
+(defun jacob-long-time-past-or-to (minute)
+  "returns past or to depending on the value of minutes."
+  (if (= minute 0)
+      ""
+    (if (< minute 31)
+      "past"
+      "to")))
+
+(defun jacob-long-time-hour (hour minute)
+  "returns the hour"
+  (if (< minute 31)
+      (jacob-long-time-12-hour hour)
+    (jacob-long-time-12-hour (+ hour 1))))
+
+(defun jacob-long-time-part-of-day (hour minute)
+  "Returns either morning, afternoon or evening."
+  (let ((true-hour (jacob-long-time-hour hour minute)))
+    (if (< true-hour 12)
+        "morning"
+      (if (< true-hour 18)
+          "aternoon"
+        "evening"))))
+
+(defun jacob-long-time-12-hour (hour)
+  (if (> hour 12)
+      (- hour 12)
+    hour))
+
+(defun jacob-long-time (hour minute)
+  "Return an overly complex string for the time."
+  (concat (jacob-long-time-minutes minute)
+          " "
+          (jacob-long-time-past-or-to minute)
+          " "
+          (number-to-string (jacob-long-time-hour hour minute))
+          " in the "
+          (jacob-long-time-part-of-day hour minute)))
+
+(defun jacob-long-time-toggle ()
+  "Toggle between long and short form time in the modeline."
+  (interactive)
+  (let ((current-format mode-line-format)
+        (long-format (list
+                      ;; saved, readonly
+                      "%*"
+                      ;; major mode
+                      "%m: "
+                      ;; buffer name
+                      "%b "
+                      ;; position of point
+                      "(%l,%c) "
+                      ;; date
+                      '(:eval (concat (format-time-string "%A the %e")
+                                      (jacob-day-suffix (string-to-number (format-time-string "%e")))
+                                      (format-time-string " of %B %Y, ")))
+                      ;; time
+                      '(:eval (concat "at "
+                                      (jacob-long-time (string-to-number (format-time-string "%H")) (string-to-number (format-time-string "%M")))))))
+        (short-format (list
+                       ;; saved, readonly
+                       "%*"
+                       ;; major mode
+                       "%m: "
+                       ;; buffer name
+                       "%b "
+                       ;; position of point
+                       "(%l,%c) "
+                       ;; date
+                       '(:eval (format-time-string " %d/%m/%y "))
+                       ;; time
+                       '(:eval (format-time-string " %H:%M")))))
+    (if (string= (format-mode-line current-format) (format-mode-line long-format))
+        (setq-default mode-line-format short-format)
+      (setq-default mode-line-format long-format))))
+
+(jacob-long-time-toggle)
 
 (when window-system (global-hl-line-mode t))
 
@@ -69,7 +154,7 @@
 (setq dired-dwim-target t)
 
 (defun xah-dired-mode-setup()
-      (dired-hide-details-mode 1))
+  (dired-hide-details-mode 1))
 (add-hook 'dired-mode-hook 'xah-dired-mode-setup)
 
 (toggle-truncate-lines)
@@ -139,13 +224,13 @@
         ("R" . restart-emacs)
         ("e" . config-visit)
         ("c" . jacob-org-src-block)
-        ("p" . jacob-recompile-packages))
+        ("p" . jacob-recompile-packages)
+        ("t" . jacob-long-time-toggle))
   (:map xah-fly-dot-keymap
-        ("c" . jacob-config-keymap)
-        ("t" . jacob-theme-switch)))
+        ("c" . jacob-config-keymap)))
 
 (setq w32-pass-rwindow-to-system nil
-	      w32-rwindow-modifier 'super)
+	  w32-rwindow-modifier 'super)
 
 (setq w32-pass-apps-to-system nil)
 (setq w32-apps-modifier 'hyper)
@@ -158,11 +243,11 @@
 (setq-default tab-always-indent nil)
 
 (add-to-list 'org-structure-template-alist
-			     '("el" "#+BEGIN_SRC emacs-lisp\n?\n#+END_SRC"))
+			 '("el" "#+BEGIN_SRC emacs-lisp\n?\n#+END_SRC"))
 
 (use-package yaml-mode
-      :ensure t
-      :config (add-to-list 'auto-mode-alist '("\\.yml\\'" . yaml-mode)))
+  :ensure t
+  :config (add-to-list 'auto-mode-alist '("\\.yml\\'" . yaml-mode)))
 
 (setq-default c-basic-offset 4)
 
@@ -224,29 +309,31 @@
   :ensure t)
 
 (use-package beacon
-      :ensure t
-      :diminish
-      :config
-      (beacon-mode 1))
+  :ensure t
+  :diminish
+  :config
+  (beacon-mode 1))
 
 (use-package which-key
-      :ensure t
-      :diminish
-      :config
-      (which-key-mode))
+  :ensure t
+  :diminish
+  :config
+  (which-key-mode))
 
 (use-package company
-      :ensure t
-      :diminish
-      :config
-      (setq company-idle-delay 0.5)
-      (setq company-minimum-prefix-length 3)
-      (global-company-mode t)
-      (add-hook 'eshell-mode-hook (lambda () (company-mode -1))))
+  :ensure t
+  :diminish
+  :config
+  (setq company-idle-delay 0.5)
+  (setq company-minimum-prefix-length 3)
+  (global-company-mode t)
+  (add-hook 'eshell-mode-hook (lambda () (company-mode -1))))
 
 (use-package projectile
   :ensure t
   :diminish
+  :custom
+  (projectile-completion-system 'ivy)
   :bind
   (:map xah-fly-dot-keymap
         ("p" . projectile-command-map))
@@ -263,24 +350,24 @@
   (key-chord-define xah-fly-key-map "f;" 'avy-goto-end-of-line))
 
 (use-package rainbow-mode
-      :ensure t
-      :diminish
-      :hook prog-mode)
+  :ensure t
+  :diminish
+  :hook prog-mode)
 
 (use-package dimmer
-      :ensure t
-      :config
-      (dimmer-mode))
+  :ensure t
+  :config
+  (dimmer-mode))
 
 (use-package highlight-parentheses
-      :ensure t
-      :diminish
-      :init
-      (define-globalized-minor-mode global-highlight-parentheses-mod
+  :ensure t
+  :diminish
+  :init
+  (define-globalized-minor-mode global-highlight-parentheses-mod
 	highlight-parentheses-mode
 	(lambda ()
-	      (highlight-parentheses-mode t)))
-      (global-highlight-parentheses-mode t))
+	  (highlight-parentheses-mode t)))
+  (global-highlight-parentheses-mode t))
 
 (use-package omnisharp
    :ensure t
@@ -306,7 +393,7 @@
          (web-mode . yas-minor-mode)))
 
 (use-package yasnippet-snippets
-      :ensure t)
+  :ensure t)
 
 (use-package key-chord
   :config
@@ -318,13 +405,13 @@
   (elpy-enable))
 
 (use-package flycheck
-      :ensure t
-      :init
-      (global-flycheck-mode t)
-      ;; For some reason, I am unable to diminish flycheck with :diminish
-      (diminish 'flycheck-mode)
-      :config
-      (when (require 'flycheck nil t)
+  :ensure t
+  :init
+  (global-flycheck-mode t)
+  ;; For some reason, I am unable to diminish flycheck with :diminish
+  (diminish 'flycheck-mode)
+  :config
+  (when (require 'flycheck nil t)
 	(setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
 	(add-hook 'elpy-mode-hook 'flycheck-mode)))
 
@@ -342,8 +429,8 @@
   :ensure t)
 
 (use-package restart-emacs
-      :ensure t
-      :defer t)
+  :ensure t
+  :defer t)
 
 (use-package smex
   :ensure t
@@ -352,30 +439,25 @@
   ("M-x" . smex))
 
 (use-package diminish
-      :ensure t
-      :defer t
-      :config
-      (diminish 'subword-mode)
-      (diminish 'org-src-mode)
-      (diminish 'eldoc-mode))
+  :ensure t
+  :defer t
+  :config
+  (diminish 'subword-mode)
+  (diminish 'org-src-mode)
+  (diminish 'eldoc-mode))
 
 (use-package switch-window
-      :ensure t
-      :defer t
-      :config
-      (setq switch-window-input-style 'minibuffer)
-      (setq switch-window-threshold 2)
-      (setq switch-window-multiple-frames t)
-      (setq switch-window-shortcut-style 'qwerty)
-      (setq switch-window-qwerty-shortcuts
+  :ensure t
+  :defer t
+  :config
+  (setq switch-window-input-style 'minibuffer)
+  (setq switch-window-threshold 2)
+  (setq switch-window-multiple-frames t)
+  (setq switch-window-shortcut-style 'qwerty)
+  (setq switch-window-qwerty-shortcuts
 		'("q" "w" "e" "r" "a" "s" "d" "f" "z" "x" "c" "v"))
-      :bind
-      ([remap xah-next-window-or-frame] . switch-window))
-
-(use-package popup-kill-ring
-      :ensure t
-      :bind
-      (:map xah-fly-dot-keymap ("v" . popup-kill-ring)))
+  :bind
+  ([remap xah-next-window-or-frame] . switch-window))
 
 (use-package ivy
   :ensure t
@@ -383,7 +465,10 @@
   :config
   (ivy-mode 1)
   (setq ivy-use-virtual-buffers t)
-  (setq enable-recursive-minibuffers t))
+  (setq enable-recursive-minibuffers t)
+  :bind
+  (:map xah-fly-leader-key-map
+        ("v" . counsel-yank-pop)))
 
 (use-package counsel
   :ensure t
@@ -391,17 +476,17 @@
   :init (counsel-mode 1))
 
 (use-package multiple-cursors
-      :ensure t
-      :bind
-      (:map xah-fly-dot-keymap
+  :ensure t
+  :bind
+  (:map xah-fly-dot-keymap
 		("m" . jacob-multiple-cursors-keymap)
-      :map jacob-multiple-cursors-keymap
+  :map jacob-multiple-cursors-keymap
 		("l" . mc/edit-lines)
 		(">" . mc/mark-next-like-this)
 		("<" . mc/mark-previous-like-this)
 		("a" . mc/mark-all-like-this))
-      :init
-      (define-prefix-command 'jacob-multiple-cursors-keymap))
+  :init
+  (define-prefix-command 'jacob-multiple-cursors-keymap))
 
 (use-package expand-region
   :ensure t
@@ -431,18 +516,18 @@
         ("f" . jacob-shell-pop-shell)))
 
 (use-package move-text
-      :ensure t
-      :config
-      (move-text-default-bindings))
+  :ensure t
+  :config
+  (move-text-default-bindings))
 
 (use-package eshell-up
-      :ensure t)
+  :ensure t)
 
 (use-package langtool
-      ;; :ensure t
-      :defer t
-      :config
-      (setq langtool-language-tool-jar
+  ;; :ensure t
+  :defer t
+  :config
+  (setq langtool-language-tool-jar
 		"/home/lem/Documents/LanguageTool-4.8/languagetool-commandline.jar"))
 
 (use-package color-theme-sanityinc-tomorrow

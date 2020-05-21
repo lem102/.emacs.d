@@ -57,8 +57,9 @@
      ("\\?\\?\\?+" . "#dc752f"))))
  '(package-selected-packages
    (quote
-    (color-theme-sanityinc-tomorrow cider clojure-mode counsel json-mode slime use-package-chords langtool elpy swiper magit yasnippet-snippets yasnippet web-mode move-text vertigo shell-pop restart-emacs highlight-parentheses dimmer projectile pretty-mode expand-region multiple-cursors popup-kill-ring symon-mode diminish switch-window rainbow-mode company-mode smex beacon spacemacs-theme which-key use-package yaml-mode xah-fly-keys company omnisharp csharp-mode)))
+    (color-theme-sanityinc-tomorrow cider clojure-mode counsel json-mode slime use-package-chords langtool elpy swiper magit yasnippet-snippets yasnippet web-mode move-text vertigo shell-pop restart-emacs highlight-parentheses dimmer projectile pretty-mode expand-region multiple-cursors symon-mode diminish switch-window rainbow-mode company-mode smex beacon spacemacs-theme which-key use-package yaml-mode xah-fly-keys company omnisharp csharp-mode)))
  '(pdf-view-midnight-colors (quote ("#b2b2b2" . "#292b2e")))
+ '(projectile-completion-system (quote ivy))
  '(shell-pop-autocd-to-working-dir nil)
  '(shell-pop-shell-type (quote ("eshell" "*eshell*" (lambda nil (eshell)))))
  '(shell-pop-universal-key "<H-return>")
