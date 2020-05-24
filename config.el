@@ -46,8 +46,8 @@
 (defun jacob-long-time-hour (hour minute)
   "returns the hour"
   (if (< minute 31)
-      (jacob-long-time-12-hour hour)
-    (jacob-long-time-12-hour (+ hour 1))))
+      hour
+    (+ hour 1)))
 
 (defun jacob-long-time-part-of-day (hour minute)
   "Returns either morning, afternoon or evening."
@@ -69,7 +69,7 @@
           " "
           (jacob-long-time-past-or-to minute)
           " "
-          (number-to-string (jacob-long-time-hour hour minute))
+          (number-to-string (jacob-long-time-12-hour (jacob-long-time-hour hour minute)))
           " in the "
           (jacob-long-time-part-of-day hour minute)))
 
@@ -138,7 +138,7 @@
 
 (setq create-lockfiles nil)
 
-(setq backyp-by-copying t)
+(setq backup-by-copying t)
 
 (defalias 'yes-or-no-p 'y-or-n-p)
 
@@ -154,7 +154,7 @@
 (setq dired-dwim-target t)
 
 (defun xah-dired-mode-setup()
-  (dired-hide-details-mode 1))
+      (dired-hide-details-mode 1))
 (add-hook 'dired-mode-hook 'xah-dired-mode-setup)
 
 (toggle-truncate-lines)
@@ -165,9 +165,16 @@
 	(add-to-list 'initial-frame-alist '(font . "DejaVu Sans Mono-10"))
 	(add-to-list 'default-frame-alist '(font . "DejaVu Sans Mono-10")))
 
-(desktop-save-mode 1)
-
 (savehist-mode 1)
+
+;; loading without config takes 0.7 seconds
+(add-hook 'emacs-startup-hook
+          (lambda ()
+            (message "Emacs ready in %s with %d garbage collections."
+                     (format "%.2f seconds"
+                             (float-time
+                              (time-subtract after-init-time before-init-time)))
+                     gcs-done)))
 
 (defun config-visit ()
   (interactive)
@@ -230,7 +237,7 @@
         ("c" . jacob-config-keymap)))
 
 (setq w32-pass-rwindow-to-system nil
-	  w32-rwindow-modifier 'super)
+	      w32-rwindow-modifier 'super)
 
 (setq w32-pass-apps-to-system nil)
 (setq w32-apps-modifier 'hyper)
@@ -243,16 +250,18 @@
 (setq-default tab-always-indent nil)
 
 (add-to-list 'org-structure-template-alist
-			 '("el" "#+BEGIN_SRC emacs-lisp\n?\n#+END_SRC"))
+			     '("el" "#+BEGIN_SRC emacs-lisp\n?\n#+END_SRC"))
 
 (use-package yaml-mode
   :ensure t
-  :config (add-to-list 'auto-mode-alist '("\\.yml\\'" . yaml-mode)))
+  :defer t
+  :mode ("\\.yml\\'" . csharp-mode))
 
 (setq-default c-basic-offset 4)
 
 (use-package csharp-mode
   :ensure t
+  :defer t
   :config
   (defun my-csharp-mode-setup ()
     (setq c-syntactic-indentation t)
@@ -262,13 +271,6 @@
   (csharp-mode . my-csharp-mode-setup)
   :mode
   ("\\.cs\\$" . csharp-mode))
-
-(setq load-path (append (list (expand-file-name "~/.emacs.d/LilyPond/")) load-path))
-
-(autoload 'LilyPond-mode "lilypond-mode" "LilyPond Editing Mode" t)
-(add-to-list 'auto-mode-alist '("\\.ly$" . LilyPond-mode))
-(add-to-list 'auto-mode-alist '("\\.ily$" . LilyPond-mode))
-(add-hook 'LilyPond-mode-hook (lambda () (turn-on-font-lock)))
 
 (use-package web-mode
   :ensure t
@@ -291,58 +293,55 @@
          ("\\.cshtml\\'" . web-mode)
          ("\\.css\\'" . web-mode)))
 
-(use-package js2-mode
-  :ensure t
-  :mode ("\\.js\\'" . js2-mode)
-  :hook (js2-mode . js2-imenu-extras-mode))
-
-(use-package js2-refactor
-  :ensure t
-  :hook (js2-mode . js2-refactor-mode)
-  :config (js2r-add-keybindings-with-prefix "C-c C-r"))
-
 (use-package json-mode
   :ensure t
   :mode ("\\.json\\$" . json-mode))
 
 (use-package clojure-mode
-  :ensure t)
+  :ensure t
+  :mode ("\\.clj\\$" . clojure-mode))
 
 (use-package beacon
-  :ensure t
-  :diminish
-  :config
-  (beacon-mode 1))
+      :ensure t
+      :diminish
+      :config
+      (beacon-mode 1))
 
 (use-package which-key
-  :ensure t
-  :diminish
-  :config
-  (which-key-mode))
+      :ensure t
+  :defer 2
+      :diminish
+      :config
+      (which-key-mode))
 
 (use-package company
   :ensure t
   :diminish
-  :config
-  (setq company-idle-delay 0.5)
-  (setq company-minimum-prefix-length 3)
-  (global-company-mode t)
-  (add-hook 'eshell-mode-hook (lambda () (company-mode -1))))
+  :hook ((elisp-mode . company-mode)
+         (csharp-mode . company-mode))
+  :custom
+  (company-idle-delay 0.5)
+  (company-minimum-prefix-length 3))
 
 (use-package projectile
   :ensure t
+  :commands (projectile-find-file)
   :diminish
   :custom
   (projectile-completion-system 'ivy)
+  :init
+  (define-prefix-command 'fake-projectile-command-map)
+  (define-key xah-fly-dot-keymap (kbd "p") fake-projectile-command-map)
   :bind
-  (:map xah-fly-dot-keymap
-        ("p" . projectile-command-map))
+  (:map fake-projectile-command-map
+        ("f" . projectile-find-file))
   :config
-  (projectile-mode t))
+  (projectile-mode t)
+  (define-key xah-fly-dot-keymap (kbd "p") projectile-command-map))
 
 (use-package avy
   :ensure t
-
+  :defer 1
   :config
   (key-chord-define xah-fly-key-map "fj" 'avy-goto-char-timer)
   (key-chord-define xah-fly-key-map "fk" 'avy-goto-word-or-subword-1)
@@ -350,27 +349,19 @@
   (key-chord-define xah-fly-key-map "f;" 'avy-goto-end-of-line))
 
 (use-package rainbow-mode
-  :ensure t
-  :diminish
-  :hook prog-mode)
+      :ensure t
+      :diminish
+      :hook prog-mode)
 
 (use-package dimmer
-  :ensure t
-  :config
-  (dimmer-mode))
-
-(use-package highlight-parentheses
-  :ensure t
-  :diminish
-  :init
-  (define-globalized-minor-mode global-highlight-parentheses-mod
-	highlight-parentheses-mode
-	(lambda ()
-	  (highlight-parentheses-mode t)))
-  (global-highlight-parentheses-mode t))
+      :ensure t
+  :defer 5
+      :config
+      (dimmer-mode))
 
 (use-package omnisharp
    :ensure t
+   :defer t
    :hook (csharp-mode . omnisharp-mode)
    :init (define-prefix-command 'jacob-omnisharp-keymap)
    :bind
@@ -393,44 +384,27 @@
          (web-mode . yas-minor-mode)))
 
 (use-package yasnippet-snippets
-  :ensure t)
+      :ensure t)
 
 (use-package key-chord
   :config
   (key-chord-mode 1))
 
-(use-package elpy
-  :ensure t
-  :init
-  (elpy-enable))
-
+;; manually setup flycheck to turn on in certain modes to improve startup time
 (use-package flycheck
   :ensure t
-  :init
-  (global-flycheck-mode t)
   ;; For some reason, I am unable to diminish flycheck with :diminish
-  (diminish 'flycheck-mode)
-  :config
-  (when (require 'flycheck nil t)
-	(setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
-	(add-hook 'elpy-mode-hook 'flycheck-mode)))
-
-(use-package slime
-  :ensure t
-  :config
-  (setq inferior-lisp-program "sbcl")
-  (setq slime-cobtribs '(slime-fancy))
-  :bind
-  (:map slime-mode-map
-        ("SPC" . nil)))
+  :config (diminish 'flycheck-mode)
+  :hook ((csharp-mode emacs-lisp-mode) . flycheck-mode)) ;; TODO this hook is fugged
 
 (use-package cider
   :diminish
-  :ensure t)
+  :ensure t
+  :mode ("\\.clj\\$" . clojure-mode))
 
 (use-package restart-emacs
-  :ensure t
-  :defer t)
+      :ensure t
+      :defer t)
 
 (use-package smex
   :ensure t
@@ -439,25 +413,25 @@
   ("M-x" . smex))
 
 (use-package diminish
-  :ensure t
-  :defer t
-  :config
-  (diminish 'subword-mode)
-  (diminish 'org-src-mode)
-  (diminish 'eldoc-mode))
+      :ensure t
+      :defer t
+      :config
+      (diminish 'subword-mode)
+      (diminish 'org-src-mode)
+      (diminish 'eldoc-mode))
 
 (use-package switch-window
-  :ensure t
-  :defer t
-  :config
-  (setq switch-window-input-style 'minibuffer)
-  (setq switch-window-threshold 2)
-  (setq switch-window-multiple-frames t)
-  (setq switch-window-shortcut-style 'qwerty)
-  (setq switch-window-qwerty-shortcuts
+      :ensure t
+      :defer t
+      :config
+      (setq switch-window-input-style 'minibuffer)
+      (setq switch-window-threshold 2)
+      (setq switch-window-multiple-frames t)
+      (setq switch-window-shortcut-style 'qwerty)
+      (setq switch-window-qwerty-shortcuts
 		'("q" "w" "e" "r" "a" "s" "d" "f" "z" "x" "c" "v"))
-  :bind
-  ([remap xah-next-window-or-frame] . switch-window))
+      :bind
+      ([remap xah-next-window-or-frame] . switch-window))
 
 (use-package ivy
   :ensure t
@@ -476,17 +450,17 @@
   :init (counsel-mode 1))
 
 (use-package multiple-cursors
-  :ensure t
-  :bind
-  (:map xah-fly-dot-keymap
+      :ensure t
+      :bind
+      (:map xah-fly-dot-keymap
 		("m" . jacob-multiple-cursors-keymap)
-  :map jacob-multiple-cursors-keymap
+      :map jacob-multiple-cursors-keymap
 		("l" . mc/edit-lines)
 		(">" . mc/mark-next-like-this)
 		("<" . mc/mark-previous-like-this)
 		("a" . mc/mark-all-like-this))
-  :init
-  (define-prefix-command 'jacob-multiple-cursors-keymap))
+      :init
+      (define-prefix-command 'jacob-multiple-cursors-keymap))
 
 (use-package expand-region
   :ensure t
@@ -516,18 +490,18 @@
         ("f" . jacob-shell-pop-shell)))
 
 (use-package move-text
-  :ensure t
-  :config
-  (move-text-default-bindings))
+      :ensure t
+      :config
+      (move-text-default-bindings))
 
 (use-package eshell-up
-  :ensure t)
+      :ensure t)
 
 (use-package langtool
-  ;; :ensure t
-  :defer t
-  :config
-  (setq langtool-language-tool-jar
+      ;; :ensure t
+      :defer t
+      :config
+      (setq langtool-language-tool-jar
 		"/home/lem/Documents/LanguageTool-4.8/languagetool-commandline.jar"))
 
 (use-package color-theme-sanityinc-tomorrow

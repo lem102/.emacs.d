@@ -1,3 +1,5 @@
+(setq gc-cons-threshold (* 50 1000 1000))
+
 (require 'package)
 (setq package-enable-at-startup nil)
 (add-to-list 'package-archives
@@ -30,6 +32,8 @@
  '(ansi-color-names-vector
    ["black" "#d55e00" "#009e73" "#f8ec59" "#0072b2" "#cc79a7" "#56b4e9" "white"])
  '(beacon-color "#f2777a")
+ '(company-idle-delay 0.5 t)
+ '(company-minimum-prefix-length 3 t)
  '(custom-enabled-themes (quote (sanityinc-tomorrow-blue)))
  '(custom-safe-themes
    (quote
@@ -57,9 +61,9 @@
      ("\\?\\?\\?+" . "#dc752f"))))
  '(package-selected-packages
    (quote
-    (color-theme-sanityinc-tomorrow cider clojure-mode counsel json-mode slime use-package-chords langtool elpy swiper magit yasnippet-snippets yasnippet web-mode move-text vertigo shell-pop restart-emacs highlight-parentheses dimmer projectile pretty-mode expand-region multiple-cursors symon-mode diminish switch-window rainbow-mode company-mode smex beacon spacemacs-theme which-key use-package yaml-mode xah-fly-keys company omnisharp csharp-mode)))
+    (color-theme-sanityinc-tomorrow cider clojure-mode counsel json-mode use-package-chords langtool swiper magit yasnippet-snippets yasnippet web-mode move-text vertigo shell-pop restart-emacs dimmer projectile pretty-mode expand-region multiple-cursors symon-mode diminish switch-window rainbow-mode company-mode smex beacon spacemacs-theme which-key use-package yaml-mode xah-fly-keys company omnisharp csharp-mode)))
  '(pdf-view-midnight-colors (quote ("#b2b2b2" . "#292b2e")))
- '(projectile-completion-system (quote ivy))
+ '(projectile-completion-system (quote ivy) t)
  '(shell-pop-autocd-to-working-dir nil)
  '(shell-pop-shell-type (quote ("eshell" "*eshell*" (lambda nil (eshell)))))
  '(shell-pop-universal-key "<H-return>")
@@ -100,3 +104,5 @@
  ;; If there is more than one, they won't work right.
  '(default ((t (:inherit nil :stipple nil :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 120 :width normal :foundry "outline" :family "Courier New")))))
 (put 'dired-find-alternate-file 'disabled nil)
+
+(setq gc-cons-threshold (* 2 1000 1000))

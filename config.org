@@ -238,14 +238,20 @@
 	  (add-to-list 'default-frame-alist '(font . "DejaVu Sans Mono-10")))
 #+END_SRC
 
-** Open last opened files on startup
-#+BEGIN_SRC emacs-lisp
-  (desktop-save-mode 1)
-#+END_SRC
-
 ** Save minibuffer history (useful for compile)
 #+BEGIN_SRC emacs-lisp
   (savehist-mode 1)
+#+END_SRC
+** Startup time
+#+BEGIN_SRC emacs-lisp
+;; loading without config takes 0.7 seconds
+(add-hook 'emacs-startup-hook
+          (lambda ()
+            (message "Emacs ready in %s with %d garbage collections."
+                     (format "%.2f seconds"
+                             (float-time
+                              (time-subtract after-init-time before-init-time)))
+                     gcs-done)))
 #+END_SRC
 * Personal Functions
 #+BEGIN_SRC emacs-lisp
@@ -346,8 +352,9 @@
 ** yaml-Mode
  #+BEGIN_SRC emacs-lisp
    (use-package yaml-mode
-	 :ensure t
-	 :config (add-to-list 'auto-mode-alist '("\\.yml\\'" . yaml-mode)))
+     :ensure t
+     :defer t
+     :mode ("\\.yml\\'" . csharp-mode))
  #+END_SRC
 
 ** c-mode
@@ -360,6 +367,7 @@
  #+BEGIN_SRC emacs-lisp
    (use-package csharp-mode
      :ensure t
+     :defer t
      :config
      (defun my-csharp-mode-setup ()
        (setq c-syntactic-indentation t)
@@ -370,17 +378,6 @@
      :mode
      ("\\.cs\\$" . csharp-mode))
  #+END_SRC
-
-** lilypond-mode
-#+BEGIN_SRC emacs-lisp
-  (setq load-path (append (list (expand-file-name "~/.emacs.d/LilyPond/")) load-path))
-
-  (autoload 'LilyPond-mode "lilypond-mode" "LilyPond Editing Mode" t)
-  (add-to-list 'auto-mode-alist '("\\.ly$" . LilyPond-mode))
-  (add-to-list 'auto-mode-alist '("\\.ily$" . LilyPond-mode))
-  (add-hook 'LilyPond-mode-hook (lambda () (turn-on-font-lock)))
-
-#+END_SRC
 
 ** web-mode
 #+BEGIN_SRC emacs-lisp
@@ -405,24 +402,6 @@
            ("\\.cshtml\\'" . web-mode)
            ("\\.css\\'" . web-mode)))
 #+END_SRC
-
-** javascript
-*** js2-mode
-#+BEGIN_SRC emacs-lisp
-  (use-package js2-mode
-    :ensure t
-    :mode ("\\.js\\'" . js2-mode)
-    :hook (js2-mode . js2-imenu-extras-mode))
-#+END_SRC
-
-*** js2-refactor
-#+BEGIN_SRC emacs-lisp
-  (use-package js2-refactor
-    :ensure t
-    :hook (js2-mode . js2-refactor-mode)
-    :config (js2r-add-keybindings-with-prefix "C-c C-r"))
-#+END_SRC
-
 ** json-mode
 #+BEGIN_SRC emacs-lisp
   (use-package json-mode
@@ -433,7 +412,8 @@
 ** clojure-mode
 #+BEGIN_SRC emacs-lisp
   (use-package clojure-mode
-    :ensure t)
+    :ensure t
+    :mode ("\\.clj\\$" . clojure-mode))
 #+END_SRC
 
 * Minor Mode Packages
@@ -450,6 +430,7 @@
  #+BEGIN_SRC emacs-lisp
    (use-package which-key
 	 :ensure t
+     :defer 2
 	 :diminish
 	 :config
 	 (which-key-mode))
@@ -458,34 +439,39 @@
 ** company
  #+BEGIN_SRC emacs-lisp
    (use-package company
-	 :ensure t
-	 :diminish
-	 :config
-	 (setq company-idle-delay 0.5)
-	 (setq company-minimum-prefix-length 3)
-	 (global-company-mode t)
-	 (add-hook 'eshell-mode-hook (lambda () (company-mode -1))))
+     :ensure t
+     :diminish
+     :hook ((elisp-mode . company-mode)
+            (csharp-mode . company-mode))
+     :custom
+     (company-idle-delay 0.5)
+     (company-minimum-prefix-length 3))
  #+END_SRC
 
 ** projectile
 #+BEGIN_SRC emacs-lisp
   (use-package projectile
     :ensure t
+    :commands (projectile-find-file)
     :diminish
     :custom
     (projectile-completion-system 'ivy)
+    :init
+    (define-prefix-command 'fake-projectile-command-map)
+    (define-key xah-fly-dot-keymap (kbd "p") fake-projectile-command-map)
     :bind
-    (:map xah-fly-dot-keymap
-          ("p" . projectile-command-map))
+    (:map fake-projectile-command-map
+          ("f" . projectile-find-file))
     :config
-    (projectile-mode t))
+    (projectile-mode t)
+    (define-key xah-fly-dot-keymap (kbd "p") projectile-command-map))
 #+END_SRC
 
 ** avy
  #+BEGIN_SRC emacs-lisp
    (use-package avy
      :ensure t
-
+     :defer 1
      :config
      (key-chord-define xah-fly-key-map "fj" 'avy-goto-char-timer)
      (key-chord-define xah-fly-key-map "fk" 'avy-goto-word-or-subword-1)
@@ -505,27 +491,16 @@
 #+BEGIN_SRC emacs-lisp
   (use-package dimmer
 	:ensure t
+    :defer 5
 	:config
 	(dimmer-mode))
-#+END_SRC
-
-** highlight-parentheses
-#+BEGIN_SRC emacs-lisp
-  (use-package highlight-parentheses
-	:ensure t
-	:diminish
-	:init
-	(define-globalized-minor-mode global-highlight-parentheses-mod
-	  highlight-parentheses-mode
-	  (lambda ()
-		(highlight-parentheses-mode t)))
-	(global-highlight-parentheses-mode t))
 #+END_SRC
 
 ** omnisharp
 #+BEGIN_SRC emacs-lisp
   (use-package omnisharp
      :ensure t
+     :defer t
      :hook (csharp-mode . omnisharp-mode)
      :init (define-prefix-command 'jacob-omnisharp-keymap)
      :bind
@@ -564,45 +539,22 @@
     (key-chord-mode 1))
 #+END_SRC
 
-** elpy
-#+BEGIN_SRC emacs-lisp
-  (use-package elpy
-    :ensure t
-    :init
-    (elpy-enable))
-#+END_SRC
-
 ** flycheck
 #+BEGIN_SRC emacs-lisp
+  ;; manually setup flycheck to turn on in certain modes to improve startup time
   (use-package flycheck
-	:ensure t
-	:init
-	(global-flycheck-mode t)
-	;; For some reason, I am unable to diminish flycheck with :diminish
-	(diminish 'flycheck-mode)
-	:config
-	(when (require 'flycheck nil t)
-	  (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
-	  (add-hook 'elpy-mode-hook 'flycheck-mode)))
-#+END_SRC
-
-** slime
-#+BEGIN_SRC emacs-lisp
-  (use-package slime
     :ensure t
-    :config
-    (setq inferior-lisp-program "sbcl")
-    (setq slime-cobtribs '(slime-fancy))
-    :bind
-    (:map slime-mode-map
-          ("SPC" . nil)))
+    ;; For some reason, I am unable to diminish flycheck with :diminish
+    :config (diminish 'flycheck-mode)
+    :hook ((csharp-mode emacs-lisp-mode) . flycheck-mode)) ;; TODO this hook is fugged
 #+END_SRC
 
 ** cider
 #+BEGIN_SRC emacs-lisp
   (use-package cider
     :diminish
-    :ensure t)
+    :ensure t
+    :mode ("\\.clj\\$" . clojure-mode))
 #+END_SRC
 
 * Non-mode Packages
