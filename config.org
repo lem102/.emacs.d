@@ -118,7 +118,9 @@
 
 ** Highlight current line but only in graphical mode
 #+BEGIN_SRC emacs-lisp
-  (when window-system (global-hl-line-mode t))
+  (use-package hl-line
+    :defer 2
+    :config (when window-system (global-hl-line-mode t)))
 #+END_SRC
 
 ** stop the bell ringing all the time
@@ -341,6 +343,34 @@
   (setq-default tab-always-indent nil)
 #+END_SRC
 
+* WDired
+#+BEGIN_SRC emacs-lisp
+  (defun jacob-teardown-xah-for-wdired ()
+    (interactive)
+    (xah-fly-keys-off)
+    (wdired-exit))
+
+  (defun jacob-setup-xah-for-wdired ()
+    (interactive)
+    (xah-fly-keys)
+    (define-key xah-fly-key-map (kbd "q") 'jacob-teardown-xah-for-wdired))
+
+  (add-hook 'wdired-mode-hook 'jacob-setup-xah-for-wdired)
+#+END_SRC
+* Dired
+#+BEGIN_SRC emacs-lisp
+    (use-package dired
+      :bind
+      (:map dired-mode-map
+            ("," . switch-window)
+            ("SPC" . xah-fly-leader-key-map)
+            ("p" . dired-maybe-insert-subdir)
+            ("i" . dired-previous-line)
+            ("k" . dired-next-line)
+            ("n" . swiper)
+            ("f" . dired-toggle-read-only)
+            ("q" . xah-close-current-buffer)))
+#+END_SRC
 * Major Mode Packages
 ** Org
 *** org snippets?
@@ -421,6 +451,7 @@
  #+BEGIN_SRC emacs-lisp
    (use-package beacon
 	 :ensure t
+     :defer 2
 	 :diminish
 	 :config
 	 (beacon-mode 1))
@@ -441,8 +472,7 @@
    (use-package company
      :ensure t
      :diminish
-     :hook ((elisp-mode . company-mode)
-            (csharp-mode . company-mode))
+     :hook ((emacs-lisp-mode csharp-mode) . company-mode)
      :custom
      (company-idle-delay 0.5)
      (company-minimum-prefix-length 3))
@@ -461,7 +491,8 @@
     (define-key xah-fly-dot-keymap (kbd "p") fake-projectile-command-map)
     :bind
     (:map fake-projectile-command-map
-          ("f" . projectile-find-file))
+          ("f" . projectile-find-file)
+          ("p" . projectile-switch-project))
     :config
     (projectile-mode t)
     (define-key xah-fly-dot-keymap (kbd "p") projectile-command-map))
@@ -501,6 +532,7 @@
   (use-package omnisharp
      :ensure t
      :defer t
+     :after company
      :hook (csharp-mode . omnisharp-mode)
      :init (define-prefix-command 'jacob-omnisharp-keymap)
      :bind
@@ -515,15 +547,14 @@
      (add-hook 'omnisharp-mode-hook (lambda ()
                                       (add-to-list (make-local-variable 'company-backends)
                                                    '(company-omnisharp))))
-     (setq omnisharp-server-executable-path "~\\..\\omnisharp-win-x86\\OmniSharp.exe"))
+     (setq omnisharp-server-executable-path "D:\\Programming\\OmniSharp\\omnisharp-roslyn\\bin\\Debug\\OmniSharp.Stdio.Driver\\net472\\OmniSharp.exe"))
 #+END_SRC
 
 ** yasnippet
 #+BEGIN_SRC emacs-lisp
   (use-package yasnippet
     :ensure t
-    :hook ((csharp-mode . yas-minor-mode)
-           (web-mode . yas-minor-mode)))
+    :hook (((csharp-mode web-mode) . yas-minor-mode)))
 #+END_SRC
 
 ** yasnippet-snippets
@@ -541,7 +572,6 @@
 
 ** flycheck
 #+BEGIN_SRC emacs-lisp
-  ;; manually setup flycheck to turn on in certain modes to improve startup time
   (use-package flycheck
     :ensure t
     ;; For some reason, I am unable to diminish flycheck with :diminish

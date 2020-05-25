@@ -1,0 +1,22 @@
+
+;; ----- smex-history -----
+(
+ xah-fly-keys
+ which-key-show-top-level
+ check-parens
+ company-mode
+ omnisharp-mode
+ flycheck-mode
+ restart-emacs
+)
+
+;; ----- smex-data -----
+(
+ (restart-emacs . 1)
+ (omnisharp-mode . 17)
+ (flycheck-mode . 2)
+ (company-mode . 1)
+ (check-parens . 1)
+ (which-key-show-top-level . 7)
+ (xah-fly-keys . 1)
+)

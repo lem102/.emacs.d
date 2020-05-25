@@ -112,7 +112,9 @@
 
 (jacob-long-time-toggle)
 
-(when window-system (global-hl-line-mode t))
+(use-package hl-line
+  :defer 2
+  :config (when window-system (global-hl-line-mode t)))
 
 (setq ring-bell-function 'ignore)
 
@@ -154,7 +156,7 @@
 (setq dired-dwim-target t)
 
 (defun xah-dired-mode-setup()
-      (dired-hide-details-mode 1))
+  (dired-hide-details-mode 1))
 (add-hook 'dired-mode-hook 'xah-dired-mode-setup)
 
 (toggle-truncate-lines)
@@ -237,7 +239,7 @@
         ("c" . jacob-config-keymap)))
 
 (setq w32-pass-rwindow-to-system nil
-	      w32-rwindow-modifier 'super)
+	  w32-rwindow-modifier 'super)
 
 (setq w32-pass-apps-to-system nil)
 (setq w32-apps-modifier 'hyper)
@@ -249,8 +251,32 @@
 ;; make tab key call indent command or insert tab character, depending on cursor position
 (setq-default tab-always-indent nil)
 
+(defun jacob-teardown-xah-for-wdired ()
+  (interactive)
+  (xah-fly-keys-off)
+  (wdired-exit))
+
+(defun jacob-setup-xah-for-wdired ()
+  (interactive)
+  (xah-fly-keys)
+  (define-key xah-fly-key-map (kbd "q") 'jacob-teardown-xah-for-wdired))
+
+(add-hook 'wdired-mode-hook 'jacob-setup-xah-for-wdired)
+
+(use-package dired
+  :bind
+  (:map dired-mode-map
+        ("," . switch-window)
+        ("SPC" . xah-fly-leader-key-map)
+        ("p" . dired-maybe-insert-subdir)
+        ("i" . dired-previous-line)
+        ("k" . dired-next-line)
+        ("n" . swiper)
+        ("f" . dired-toggle-read-only)
+        ("q" . xah-close-current-buffer)))
+
 (add-to-list 'org-structure-template-alist
-			     '("el" "#+BEGIN_SRC emacs-lisp\n?\n#+END_SRC"))
+			 '("el" "#+BEGIN_SRC emacs-lisp\n?\n#+END_SRC"))
 
 (use-package yaml-mode
   :ensure t
@@ -302,23 +328,23 @@
   :mode ("\\.clj\\$" . clojure-mode))
 
 (use-package beacon
-      :ensure t
-      :diminish
-      :config
-      (beacon-mode 1))
+  :ensure t
+  :defer 2
+  :diminish
+  :config
+  (beacon-mode 1))
 
 (use-package which-key
-      :ensure t
+  :ensure t
   :defer 2
-      :diminish
-      :config
-      (which-key-mode))
+  :diminish
+  :config
+  (which-key-mode))
 
 (use-package company
   :ensure t
   :diminish
-  :hook ((elisp-mode . company-mode)
-         (csharp-mode . company-mode))
+  :hook ((emacs-lisp-mode csharp-mode) . company-mode)
   :custom
   (company-idle-delay 0.5)
   (company-minimum-prefix-length 3))
@@ -334,7 +360,8 @@
   (define-key xah-fly-dot-keymap (kbd "p") fake-projectile-command-map)
   :bind
   (:map fake-projectile-command-map
-        ("f" . projectile-find-file))
+        ("f" . projectile-find-file)
+        ("p" . projectile-switch-project))
   :config
   (projectile-mode t)
   (define-key xah-fly-dot-keymap (kbd "p") projectile-command-map))
@@ -349,19 +376,20 @@
   (key-chord-define xah-fly-key-map "f;" 'avy-goto-end-of-line))
 
 (use-package rainbow-mode
-      :ensure t
-      :diminish
-      :hook prog-mode)
+  :ensure t
+  :diminish
+  :hook prog-mode)
 
 (use-package dimmer
-      :ensure t
+  :ensure t
   :defer 5
-      :config
-      (dimmer-mode))
+  :config
+  (dimmer-mode))
 
 (use-package omnisharp
    :ensure t
    :defer t
+   :after company
    :hook (csharp-mode . omnisharp-mode)
    :init (define-prefix-command 'jacob-omnisharp-keymap)
    :bind
@@ -376,21 +404,19 @@
    (add-hook 'omnisharp-mode-hook (lambda ()
                                     (add-to-list (make-local-variable 'company-backends)
                                                  '(company-omnisharp))))
-   (setq omnisharp-server-executable-path "~\\..\\omnisharp-win-x86\\OmniSharp.exe"))
+   (setq omnisharp-server-executable-path "D:\\Programming\\OmniSharp\\omnisharp-roslyn\\bin\\Debug\\OmniSharp.Stdio.Driver\\net472\\OmniSharp.exe"))
 
 (use-package yasnippet
   :ensure t
-  :hook ((csharp-mode . yas-minor-mode)
-         (web-mode . yas-minor-mode)))
+  :hook (((csharp-mode web-mode) . yas-minor-mode)))
 
 (use-package yasnippet-snippets
-      :ensure t)
+  :ensure t)
 
 (use-package key-chord
   :config
   (key-chord-mode 1))
 
-;; manually setup flycheck to turn on in certain modes to improve startup time
 (use-package flycheck
   :ensure t
   ;; For some reason, I am unable to diminish flycheck with :diminish
@@ -403,8 +429,8 @@
   :mode ("\\.clj\\$" . clojure-mode))
 
 (use-package restart-emacs
-      :ensure t
-      :defer t)
+  :ensure t
+  :defer t)
 
 (use-package smex
   :ensure t
@@ -413,25 +439,25 @@
   ("M-x" . smex))
 
 (use-package diminish
-      :ensure t
-      :defer t
-      :config
-      (diminish 'subword-mode)
-      (diminish 'org-src-mode)
-      (diminish 'eldoc-mode))
+  :ensure t
+  :defer t
+  :config
+  (diminish 'subword-mode)
+  (diminish 'org-src-mode)
+  (diminish 'eldoc-mode))
 
 (use-package switch-window
-      :ensure t
-      :defer t
-      :config
-      (setq switch-window-input-style 'minibuffer)
-      (setq switch-window-threshold 2)
-      (setq switch-window-multiple-frames t)
-      (setq switch-window-shortcut-style 'qwerty)
-      (setq switch-window-qwerty-shortcuts
+  :ensure t
+  :defer t
+  :config
+  (setq switch-window-input-style 'minibuffer)
+  (setq switch-window-threshold 2)
+  (setq switch-window-multiple-frames t)
+  (setq switch-window-shortcut-style 'qwerty)
+  (setq switch-window-qwerty-shortcuts
 		'("q" "w" "e" "r" "a" "s" "d" "f" "z" "x" "c" "v"))
-      :bind
-      ([remap xah-next-window-or-frame] . switch-window))
+  :bind
+  ([remap xah-next-window-or-frame] . switch-window))
 
 (use-package ivy
   :ensure t
@@ -450,17 +476,17 @@
   :init (counsel-mode 1))
 
 (use-package multiple-cursors
-      :ensure t
-      :bind
-      (:map xah-fly-dot-keymap
+  :ensure t
+  :bind
+  (:map xah-fly-dot-keymap
 		("m" . jacob-multiple-cursors-keymap)
-      :map jacob-multiple-cursors-keymap
+  :map jacob-multiple-cursors-keymap
 		("l" . mc/edit-lines)
 		(">" . mc/mark-next-like-this)
 		("<" . mc/mark-previous-like-this)
 		("a" . mc/mark-all-like-this))
-      :init
-      (define-prefix-command 'jacob-multiple-cursors-keymap))
+  :init
+  (define-prefix-command 'jacob-multiple-cursors-keymap))
 
 (use-package expand-region
   :ensure t
@@ -490,18 +516,18 @@
         ("f" . jacob-shell-pop-shell)))
 
 (use-package move-text
-      :ensure t
-      :config
-      (move-text-default-bindings))
+  :ensure t
+  :config
+  (move-text-default-bindings))
 
 (use-package eshell-up
-      :ensure t)
+  :ensure t)
 
 (use-package langtool
-      ;; :ensure t
-      :defer t
-      :config
-      (setq langtool-language-tool-jar
+  ;; :ensure t
+  :defer t
+  :config
+  (setq langtool-language-tool-jar
 		"/home/lem/Documents/LanguageTool-4.8/languagetool-commandline.jar"))
 
 (use-package color-theme-sanityinc-tomorrow
