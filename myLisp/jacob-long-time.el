@@ -8,8 +8,6 @@
 
 ;;; Code:
 
-;; TODO Add Midnight
-
 (defun jacob-day-suffix (day)
   "Return the suffix for a DAY, e.g. a DAY of 17 would return th."
   (if (or (= day 11)
@@ -30,30 +28,30 @@
   (if (= minute 0)
       ""
     (if (= minute (or 1 59))
-        "1 minute"
+        "1 minute "
       (if (= minute 30)
-          "Half"
+          "Half "
         (if (or (= minute 15) (= minute 45))
-            "Quarter"
+            "Quarter "
           (if (and (< minute 30) (= (% minute 10) 0))
-              (concat (number-to-string minute) " minutes")
+              (concat (number-to-string minute) " minutes ")
             (if (< minute 30)
                 (concat (number-to-string (% minute 10)) (if (> minute 10)
                                                              (concat " and " (number-to-string (- minute (% minute 10))) " minutes")
-                                                           " minutes"))
+                                                           " minutes "))
               (if (and (> minute 30) (= (% minute 10) 0))
-                  (concat (number-to-string (- 60 minute)) " minutes")
+                  (concat (number-to-string (- 60 minute)) " minutes ")
                 (concat (number-to-string (- 10 (% minute 10))) (if (< minute 50)
-                                                                    (concat " and " (number-to-string (- 50 (- minute (% minute 10)))) " minutes")
-                                                                  " minutes"))))))))))
+                                                                    (concat " and " (number-to-string (- 50 (- minute (% minute 10)))) " minutes ")
+                                                                  " minutes "))))))))))
 
 (defun jacob-long-time-past-or-to (minute)
   "Return past or to depending on the value of MINUTE."
   (if (= minute 0)
       ""
     (if (< minute 31)
-        "past"
-      "to")))
+        "past "
+      "to ")))
 
 (defun jacob-long-time-display-hour (hour minute)
   ""
@@ -75,15 +73,12 @@
             (concat (number-to-string display-hour) " in the morning")
           (if (< hour 18)
               (concat (number-to-string display-hour) " in the afternoon")
-            (concat (number-to-string display-hour) " in the evening"))))))) ;; to midnight is still bugged
+            (concat (number-to-string display-hour) " in the evening")))))))
 
-;; hour section needs rewrite
 (defun jacob-long-time (hour minute)
   "Return an overly complex string for the time with input of HOUR and MINUTE."
   (concat (jacob-long-time-minutes minute)
-          " "
           (jacob-long-time-past-or-to minute)
-          " "
           (jacob-long-time-hour hour minute)))
 
 (defun jacob-long-time-toggle ()
@@ -116,9 +111,9 @@
                        ;; position of point
                        "(%l,%c) "
                        ;; date
-                       '(:eval (format-time-string " %d/%m/%y "))
+                       '(:eval (format-time-string "%d/%m/%y "))
                        ;; time
-                       '(:eval (format-time-string " %H:%M")))))
+                       '(:eval (format-time-string "%H:%M")))))
     (if (string= (format-mode-line current-format) (format-mode-line long-format))
         (setq-default mode-line-format short-format)
       (setq-default mode-line-format long-format))))

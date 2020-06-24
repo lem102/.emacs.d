@@ -1,3 +1,10 @@
+(setq initial-buffer-choice 'eshell)
+
+(setq inhibit-startup-message t)
+
+(setq auto-window-vscroll nil)
+(setq redisplay-dont-pause t)
+
 (load "~/.emacs.d/myLisp/jacob-long-time")
 (jacob-long-time-toggle)
 
@@ -45,7 +52,7 @@
 (setq dired-dwim-target t)
 
 (defun xah-dired-mode-setup()
-      (dired-hide-details-mode 1))
+  (dired-hide-details-mode 1))
 (add-hook 'dired-mode-hook 'xah-dired-mode-setup)
 
 (toggle-truncate-lines)
@@ -73,9 +80,11 @@
 
 (defun config-reload ()
   (interactive)
+  (save-buffer)
   (org-babel-load-file (expand-file-name "~/.emacs.d/config.org")))
 
 (defun jacob-org-src-block ()
+  "Replacement for C-c ' in both \"org-mode\" and when editing code blocks within \"org-mode\"."
   (interactive)
   (if (bound-and-true-p org-src-mode)
       (org-edit-src-exit)
@@ -83,14 +92,22 @@
         (org-edit-special))))
 
 (defun jacob-recompile-packages ()
+  "Recompile all packages."
   (interactive)
   (byte-recompile-directory package-user-dir nil 'force))
 
-(defun jacob-xah-command-binds ()
+(defun jacob-split-window-below-select-new ()
+  "Splits current window vertically, then switch to new window."
   (interactive)
-  (define-key xah-fly-key-map (kbd "a") 'counsel-M-x)
-  (define-key xah-fly-key-map (kbd "n") 'swiper)
-  (define-key xah-fly-key-map (kbd "8") 'er/expand-region))
+  (split-window-below)
+  (other-window 1))
+
+
+(defun jacob-split-window-right-select-new ()
+  "Splits current window horizontally, then switch to new window."
+  (interactive)
+  (split-window-right)
+  (other-window 1))
 
 (use-package xah-fly-keys
 
@@ -100,6 +117,14 @@
 
   :custom
   (xah-fly-use-control-key nil)
+
+  :init
+  (defun jacob-xah-command-binds ()
+    "Set custom keys for xah-fly-keys keybindings."
+    (define-key xah-fly-key-map (kbd "a") 'counsel-M-x)
+    (define-key xah-fly-key-map (kbd "n") 'swiper)
+    (define-key xah-fly-key-map (kbd "8") 'er/expand-region)
+    (define-key xah-fly-key-map (kbd "4") 'jacob-split-window-below-select-new))
 
   :config
   (define-prefix-command 'jacob-config-keymap)
@@ -125,10 +150,12 @@
         ("p" . jacob-recompile-packages)
         ("t" . jacob-long-time-toggle))
   (:map xah-fly-dot-keymap
-        ("c" . jacob-config-keymap)))
+        ("c" . jacob-config-keymap))
+  (:map xah-fly-leader-key-map
+        ("4" . jacob-split-window-right-select-new)))
 
 (setq w32-pass-rwindow-to-system nil
-	      w32-rwindow-modifier 'super)
+	  w32-rwindow-modifier 'super)
 
 (setq w32-pass-apps-to-system nil)
 (setq w32-apps-modifier 'hyper)
@@ -165,8 +192,11 @@
         ("f" . dired-toggle-read-only)
         ("q" . xah-close-current-buffer)))
 
-(add-to-list 'org-structure-template-alist
-			     '("el" "#+BEGIN_SRC emacs-lisp\n?\n#+END_SRC"))
+(use-package org
+  :mode ("\\.org\\'" . org-mode)
+  :config
+  (add-to-list 'org-structure-template-alist
+             '("el" "#+BEGIN_SRC emacs-lisp\n?\n#+END_SRC")))
 
 (use-package yaml-mode
   :ensure t
@@ -217,19 +247,23 @@
   :ensure t
   :mode ("\\.clj\\$" . clojure-mode))
 
+(use-package gdscript-mode
+  :ensure t
+  :custom (gdscript-use-tab-indents nil))
+
 (use-package beacon
-      :ensure t
+  :ensure t
   :defer 2
-      :diminish
-      :config
-      (beacon-mode 1))
+  :diminish
+  :config
+  (beacon-mode 1))
 
 (use-package which-key
-      :ensure t
+  :ensure t
   :defer 2
-      :diminish
-      :config
-      (which-key-mode))
+  :diminish
+  :config
+  (which-key-mode))
 
 (use-package company
   :ensure t
@@ -266,42 +300,43 @@
   (key-chord-define xah-fly-key-map "f;" 'avy-goto-end-of-line))
 
 (use-package rainbow-mode
-      :ensure t
-      :diminish
-      :hook prog-mode)
+  :ensure t
+  :diminish
+  :hook prog-mode)
 
 (use-package dimmer
-      :ensure t
+  :ensure t
   :defer 5
-      :config
-      (dimmer-mode))
+  :config
+  (dimmer-mode))
 
 (use-package omnisharp
    :ensure t
    :defer t
    :after company
    :hook (csharp-mode . omnisharp-mode)
-   :init (define-prefix-command 'jacob-omnisharp-keymap)
    :bind
-   (:map xah-fly-dot-keymap
-         ("o" . jacob-omnisharp-keymap)
-         :map jacob-omnisharp-keymap
+   (:map jacob-omnisharp-keymap
          ("u" . omnisharp-fix-usings)
          ("d" . omnisharp-go-to-definition)
          ("s" . omnisharp-start-omnisharp-server)
          ("S" . omnisharp-stop-server))
    :config
+   (define-prefix-command 'jacob-omnisharp-keymap)
+   (define-key xah-fly-dot-keymap (kbd "o") jacob-omnisharp-keymap)
    (add-hook 'omnisharp-mode-hook (lambda ()
                                     (add-to-list (make-local-variable 'company-backends)
                                                  '(company-omnisharp))))
-   (setq omnisharp-server-executable-path "D:\\Programming\\OmniSharp\\omnisharp-roslyn\\bin\\Debug\\OmniSharp.Stdio.Driver\\net472\\OmniSharp.exe"))
+   :custom
+   (omnisharp-company-ignore-case nil)
+   (omnisharp-server-executable-path "D:\\Programming\\OmniSharp\\omnisharp-roslyn\\bin\\Debug\\OmniSharp.Stdio.Driver\\net472\\OmniSharp.exe"))
 
 (use-package yasnippet
   :ensure t
   :hook (((csharp-mode web-mode) . yas-minor-mode)))
 
 (use-package yasnippet-snippets
-      :ensure t)
+  :ensure t)
 
 (use-package key-chord
   :config
@@ -319,8 +354,8 @@
   :mode ("\\.clj\\$" . clojure-mode))
 
 (use-package restart-emacs
-      :ensure t
-      :defer t)
+  :ensure t
+  :defer t)
 
 (use-package smex
   :ensure t
@@ -329,25 +364,25 @@
   ("M-x" . smex))
 
 (use-package diminish
-      :ensure t
-      :defer t
-      :config
-      (diminish 'subword-mode)
-      (diminish 'org-src-mode)
-      (diminish 'eldoc-mode))
+  :ensure t
+  :defer t
+  :config
+  (diminish 'subword-mode)
+  (diminish 'org-src-mode)
+  (diminish 'eldoc-mode))
 
 (use-package switch-window
-      :ensure t
-      :defer t
-      :config
-      (setq switch-window-input-style 'minibuffer)
-      (setq switch-window-threshold 2)
-      (setq switch-window-multiple-frames t)
-      (setq switch-window-shortcut-style 'qwerty)
-      (setq switch-window-qwerty-shortcuts
+  :ensure t
+  :defer t
+  :config
+  (setq switch-window-input-style 'minibuffer)
+  (setq switch-window-threshold 2)
+  (setq switch-window-multiple-frames t)
+  (setq switch-window-shortcut-style 'qwerty)
+  (setq switch-window-qwerty-shortcuts
 		'("q" "w" "e" "r" "a" "s" "d" "f" "z" "x" "c" "v"))
-      :bind
-      ([remap xah-next-window-or-frame] . switch-window))
+  :bind
+  ([remap xah-next-window-or-frame] . switch-window))
 
 (use-package ivy
   :ensure t
@@ -366,17 +401,17 @@
   :init (counsel-mode 1))
 
 (use-package multiple-cursors
-      :ensure t
-      :bind
-      (:map xah-fly-dot-keymap
+  :ensure t
+  :bind
+  (:map xah-fly-dot-keymap
 		("m" . jacob-multiple-cursors-keymap)
-      :map jacob-multiple-cursors-keymap
+  :map jacob-multiple-cursors-keymap
 		("l" . mc/edit-lines)
 		(">" . mc/mark-next-like-this)
 		("<" . mc/mark-previous-like-this)
 		("a" . mc/mark-all-like-this))
-      :init
-      (define-prefix-command 'jacob-multiple-cursors-keymap))
+  :init
+  (define-prefix-command 'jacob-multiple-cursors-keymap))
 
 (use-package expand-region
   :ensure t
@@ -406,18 +441,18 @@
         ("f" . jacob-shell-pop-shell)))
 
 (use-package move-text
-      :ensure t
-      :config
-      (move-text-default-bindings))
+  :ensure t
+  :config
+  (move-text-default-bindings))
 
 (use-package eshell-up
-      :ensure t)
+  :ensure t)
 
 (use-package langtool
-      ;; :ensure t
-      :defer t
-      :config
-      (setq langtool-language-tool-jar
+  ;; :ensure t
+  :defer t
+  :config
+  (setq langtool-language-tool-jar
 		"/home/lem/Documents/LanguageTool-4.8/languagetool-commandline.jar"))
 
 (use-package color-theme-sanityinc-tomorrow
