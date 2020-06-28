@@ -1,1 +1,1 @@
-("~/.emacs.d/" "d:/Programming/csharp/SudokuSolver/" "d:/Programming/OmniSharp/omnisharp-roslyn/" "d:/University/placementassignments/")
+("~/.emacs.d/")

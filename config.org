@@ -378,6 +378,14 @@
   :custom (gdscript-use-tab-indents nil))
 #+END_SRC
 * Minor Mode Packages
+** zoom (not to be confused with the popular VOIP service)
+#+BEGIN_SRC emacs-lisp
+  (use-package zoom
+    :ensure t
+    :defer 3
+    :custom
+    (zoom-mode t))
+#+END_SRC
 ** beacon
  #+BEGIN_SRC emacs-lisp
    (use-package beacon
@@ -520,6 +528,12 @@
 #+END_SRC
 
 * Non-mode Packages
+** try
+#+BEGIN_SRC emacs-lisp
+  (use-package try
+    :ensure t
+    :defer 5)
+#+END_SRC
 ** restart-emacs
 #+BEGIN_SRC emacs-lisp
   (use-package restart-emacs

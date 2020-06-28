@@ -1,16 +1,3 @@
-git commit -m "fixed move-text"
-git push
-git status
-git reset --hard
-git checkout -b clojureDevelopmentSetup
-lein
-echo $PATH
-cd ..
-cd bin
-ls
-sudo mv lein /usr/bin/
-ls
-cd ..
 rm bin
 rm -r bin
 ls
@@ -126,3 +113,16 @@ pdflatex *.tex
 pdflatex *.tex
 cp TaskAnalysis.pdf Jacob_Leeming_1758933_Task_Analysis.pdf
 ll
+git status
+git pull
+pip3 install --user jedhy
+hy hellWorld.hy 
+hy -spy hellWorld.hy 
+man hy
+cd .emacs.d/
+git pull
+git status
+git pull
+git reset --hard
+git pull
+shutdown now
