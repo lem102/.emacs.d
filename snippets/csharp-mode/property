@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: jacob public property
+# key: prop
+# --
+public $1 { get; set; }$0

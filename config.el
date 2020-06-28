@@ -333,10 +333,9 @@
 
 (use-package yasnippet
   :ensure t
+  :config
+  (yas-reload-all)
   :hook (((csharp-mode web-mode) . yas-minor-mode)))
-
-(use-package yasnippet-snippets
-  :ensure t)
 
 (use-package key-chord
   :config

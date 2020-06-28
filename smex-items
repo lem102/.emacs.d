@@ -1,22 +1,43 @@
 
 ;; ----- smex-history -----
 (
- xah-fly-keys
- which-key-show-top-level
- check-parens
- company-mode
- omnisharp-mode
- flycheck-mode
+ revert-buffer
+ balance-windows
+ describe-symbol
+ yas-reload-all
+ compile
  restart-emacs
+ config-reload
 )
 
 ;; ----- smex-data -----
 (
- (restart-emacs . 1)
- (omnisharp-mode . 17)
- (flycheck-mode . 2)
- (company-mode . 1)
+ (restart-emacs . 3)
+ (omnisharp-mode . 19)
+ (flycheck-mode . 4)
+ (company-mode . 3)
  (check-parens . 1)
  (which-key-show-top-level . 7)
  (xah-fly-keys . 1)
+ (recentf-mode . 4)
+ (revert-buffer . 35)
+ (omnisharp-run-code-action-refactoring . 46)
+ (omnisharp-rename . 4)
+ (recentf-open-files . 1)
+ (rename-file . 3)
+ (compile . 4)
+ (recompile . 2)
+ (omnisharp-start-omnisharp-server . 1)
+ (flycheck-next-error . 17)
+ (flycheck-version . 2)
+ (flycheck-compile . 1)
+ (make-directory . 1)
+ (python-mode . 1)
+ (company-complete . 1)
+ (customize . 1)
+ (customize-group . 1)
+ (config-reload . 1)
+ (yas-reload-all . 2)
+ (describe-symbol . 1)
+ (balance-windows . 1)
 )
