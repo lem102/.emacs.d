@@ -3,14 +3,17 @@
 # name: class ... { ... }
 # key: class
 # --
-// TODO handle no .cs files existing in current dir
-namespace ${1:`(with-temp-buffer
-                (insert-file-contents (car (directory-files "." :match-regexp "\\.cs$")))
-                (search-forward "namespace")
-                (forward-char)
-                (set-mark-command nil)
-                (end-of-line nil)
-                (buffer-substring (region-beginning) (region-end)))`}
+namespace ${1:`
+(if (> (length (directory-files "d:/Programming/csharp/" :match-regexp "\\.cs$")) 0)
+    (with-temp-buffer
+      (insert-file-contents (car (directory-files "d:/Programming/csharp/SudokuSolver" :match-regexp "\\.cs$")))
+      (search-forward "namespace")
+      (forward-char)
+      (set-mark-command nil)
+      (end-of-line nil)
+      (buffer-substring (region-beginning) (region-end)))
+  "")
+`}
 {
     public class `(file-name-sans-extension (file-name-nondirectory (buffer-file-name)))`
     {
