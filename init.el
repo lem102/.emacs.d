@@ -62,7 +62,7 @@
      ("\\?\\?\\?+" . "#dc752f"))))
  '(package-selected-packages
    (quote
-    (gdscript-mode color-theme-sanityinc-tomorrow cider clojure-mode counsel json-mode use-package-chords langtool swiper magit yasnippet web-mode move-text vertigo shell-pop restart-emacs dimmer projectile pretty-mode expand-region multiple-cursors symon-mode diminish switch-window rainbow-mode company-mode smex beacon spacemacs-theme which-key use-package yaml-mode xah-fly-keys company omnisharp csharp-mode)))
+    (zoom try gdscript-mode color-theme-sanityinc-tomorrow cider clojure-mode counsel json-mode use-package-chords langtool swiper magit yasnippet-snippets yasnippet web-mode move-text vertigo shell-pop restart-emacs dimmer projectile pretty-mode expand-region multiple-cursors symon-mode diminish switch-window rainbow-mode company-mode smex beacon spacemacs-theme which-key use-package yaml-mode xah-fly-keys company omnisharp csharp-mode)))
  '(pdf-view-midnight-colors (quote ("#b2b2b2" . "#292b2e")))
  '(projectile-completion-system (quote ivy))
  '(shell-pop-autocd-to-working-dir nil)
