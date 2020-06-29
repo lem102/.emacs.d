@@ -4,19 +4,16 @@
 (setq mc/cmds-to-run-for-all
       '(
         count-words-region
-        org-self-insert-command
         xah-backward-kill-word
         xah-backward-left-bracket
         xah-copy-line-or-region
         xah-cut-line-or-region
         xah-delete-backward-char-or-bracket-text
-        xah-end-of-line-or-block
         xah-fly-command-mode-activate
         xah-fly-insert-mode-activate
         xah-forward-right-bracket
         xah-goto-matching-bracket
         xah-kill-word
-        xah-toggle-letter-case
         xah-toggle-previous-letter-case
         ))
 

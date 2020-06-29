@@ -1323,7 +1323,7 @@
 	      ("Michael Abraham Shulman" . "viritrilbia@gmail.com"))
 	     (:keywords "convenience" "faces" "languages" "tools"))])
  (modus-operandi-theme .
-		       [(0 9 0)
+		       [(0 10 0)
 			((emacs
 			  (26 1)))
 			"Accessible light theme (WCAG AAA)" single
@@ -1333,7 +1333,7 @@
 			 (:maintainer "Protesilaos Stavrou" . "info@protesilaos.com")
 			 (:url . "https://gitlab.com/protesilaos/modus-themes"))])
  (modus-vivendi-theme .
-		      [(0 9 0)
+		      [(0 10 0)
 		       ((emacs
 			 (26 1)))
 		       "Accessible dark theme (WCAG AAA)" single
@@ -1634,11 +1634,7 @@
 	     (:maintainer "Feng Shu" . "tumashu@163.com")
 	     (:url . "https://github.com/tumashu/posframe"))])
  (project .
-<<<<<<< HEAD
-	  [(0 3 0)
-=======
 	  [(0 4 0)
->>>>>>> master
 	   ((emacs
 	     (26 3)))
 	   "Operations on the current project" single
@@ -1826,11 +1822,7 @@
 		   ("Bastien Guerry" . "bzg@gnu.org"))
 		  (:maintainer "Bastien Guerry" . "bzg@gnu.org"))])
  (relint .
-<<<<<<< HEAD
-	 [(1 17)
-=======
 	 [(1 18)
->>>>>>> master
 	  ((xr
 	    (1 19))
 	   (emacs

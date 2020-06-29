@@ -8,6 +8,10 @@
 
 ;;; Code:
 
+;; TODO bugs
+;; midnight and middday are used incorrectly (jacob-long-time 0 41) and (jacob-long-time 12 41) are good examples
+;; also there are some dodgy spacing issues
+
 (defun jacob-day-suffix (day)
   "Return the suffix for a DAY, e.g. a DAY of 17 would return th."
   (if (or (= day 11)
@@ -67,9 +71,9 @@
 (defun jacob-long-time-hour (hour minute)
   ""
   (let ((display-hour (jacob-long-time-display-hour hour minute)))
-    (if (or (= hour 0) (and (= hour 23) (> minute 30)))
+    (if (or (= display-hour 0) (and (= hour 23) (> minute 30)))
         "Midnight"
-      (if (= hour 12)
+      (if (or (= display-hour 12) (and (= hour 11) (> minute 30)))
           "Midday"
         (if (< hour 12)
             (concat (number-to-string display-hour) " in the morning")
