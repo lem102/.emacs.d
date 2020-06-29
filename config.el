@@ -78,7 +78,6 @@
 
 (defun config-reload ()
   (interactive)
-  (save-buffer)
   (org-babel-load-file (expand-file-name "~/.emacs.d/config.org")))
 
 (defun jacob-org-src-block ()
@@ -273,12 +272,19 @@
 
 (use-package projectile
   :ensure t
-  :defer 2
+  :commands (projectile-find-file)
   :diminish
   :custom
   (projectile-completion-system 'ivy)
+  :init
+  (define-prefix-command 'fake-projectile-command-map)
+  (define-key xah-fly-dot-keymap (kbd "p") fake-projectile-command-map)
+  :bind
+  (:map fake-projectile-command-map
+        ("f" . projectile-find-file)
+        ("p" . projectile-switch-project))
   :config
-  (projectile-mode 1)
+  (projectile-mode t)
   (define-key xah-fly-dot-keymap (kbd "p") projectile-command-map))
 
 (use-package avy
