@@ -272,17 +272,10 @@
 
 (use-package projectile
   :ensure t
-  :commands (projectile-find-file)
+  :defer 2
   :diminish
   :custom
   (projectile-completion-system 'ivy)
-  :init
-  (define-prefix-command 'fake-projectile-command-map)
-  (define-key xah-fly-dot-keymap (kbd "p") fake-projectile-command-map)
-  :bind
-  (:map fake-projectile-command-map
-        ("f" . projectile-find-file)
-        ("p" . projectile-switch-project))
   :config
   (projectile-mode t)
   (define-key xah-fly-dot-keymap (kbd "p") projectile-command-map))
