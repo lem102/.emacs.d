@@ -1,4 +1,4 @@
-(setq inhibit-startup-message t)
+;; (setq inhibit-startup-message t)
 
 (setq auto-window-vscroll nil)
 (setq redisplay-dont-pause t)
@@ -273,19 +273,12 @@
 
 (use-package projectile
   :ensure t
+  :defer 2
   :diminish
-  :defer t
   :custom
   (projectile-completion-system 'ivy)
-  :init
-  (define-prefix-command 'fake-projectile-command-map)
-  (define-key xah-fly-dot-keymap (kbd "p") fake-projectile-command-map)
-  :bind
-  (:map fake-projectile-command-map
-        ("f" . projectile-find-file)
-        ("p" . projectile-switch-project))
   :config
-  (projectile-mode t)
+  (projectile-mode 1)
   (define-key xah-fly-dot-keymap (kbd "p") projectile-command-map))
 
 (use-package avy
