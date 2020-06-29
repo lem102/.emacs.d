@@ -1,8 +1,4 @@
 * Built-in settings
-** Open Terminal On Startup
-#+BEGIN_SRC emacs-lisp
-  (setq initial-buffer-choice 'eshell)
-#+END_SRC
 ** Inhibit Startup Message
 #+BEGIN_SRC emacs-lisp
   (setq inhibit-startup-message t)

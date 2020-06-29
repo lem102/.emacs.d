@@ -1,5 +1,3 @@
-(setq initial-buffer-choice 'eshell)
-
 (setq inhibit-startup-message t)
 
 (setq auto-window-vscroll nil)
