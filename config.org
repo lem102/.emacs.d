@@ -474,18 +474,19 @@
 #+BEGIN_SRC emacs-lisp
   (use-package yasnippet
     :ensure t
-    :hook (((csharp-mode web-mode) . yas-minor-mode)))
-#+END_SRC
 
-** yasnippet-snippets
-#+BEGIN_SRC emacs-lisp
-  (use-package yasnippet-snippets
-	:ensure t)
+    :hook
+    (((csharp-mode web-mode) . yas-minor-mode))
+    
+    :config
+    (yas-reload-all))
 #+END_SRC
 
 ** key-chord
 #+BEGIN_SRC emacs-lisp
   (use-package key-chord
+    :defer 1
+
     :config
     (key-chord-mode 1))
 #+END_SRC

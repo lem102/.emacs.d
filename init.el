@@ -38,6 +38,7 @@
  '(custom-safe-themes
    (quote
     ("628278136f88aa1a151bb2d6c8a86bf2b7631fbea5f0f76cba2a0079cd910f7d" "82d2cac368ccdec2fcc7573f24c3f79654b78bf133096f9b40c20d97ec1d8016" "ab2cbf30ab758c5e936b527377d543ce4927001742f79519b62c45ba9dd9f55e" "fa2b58bb98b62c3b8cf3b6f02f058ef7827a8e497125de0254f56e373abee088" "bffa9739ce0752a37d9b1eee78fc00ba159748f50dc328af4be661484848e476" default)))
+ '(enable-recursive-minibuffers t)
  '(expand-region-contract-fast-key "9")
  '(fci-rule-color "#515151")
  '(flycheck-color-mode-line-face-to-color (quote mode-line-buffer-id))
@@ -62,7 +63,7 @@
      ("\\?\\?\\?+" . "#dc752f"))))
  '(package-selected-packages
    (quote
-    (projectile gdscript-mode color-theme-sanityinc-tomorrow cider clojure-mode counsel json-mode use-package-chords langtool swiper magit yasnippet-snippets yasnippet web-mode move-text vertigo shell-pop restart-emacs dimmer pretty-mode expand-region multiple-cursors symon-mode diminish switch-window rainbow-mode company-mode smex beacon spacemacs-theme which-key use-package yaml-mode xah-fly-keys company omnisharp csharp-mode)))
+    (projectile gdscript-mode color-theme-sanityinc-tomorrow cider clojure-mode counsel json-mode use-package-chords langtool swiper magit yasnippet web-mode move-text vertigo shell-pop restart-emacs dimmer pretty-mode expand-region multiple-cursors symon-mode diminish switch-window rainbow-mode company-mode smex beacon spacemacs-theme which-key use-package yaml-mode xah-fly-keys company omnisharp csharp-mode)))
  '(pdf-view-midnight-colors (quote ("#b2b2b2" . "#292b2e")))
  '(projectile-completion-system (quote ivy))
  '(shell-pop-autocd-to-working-dir nil)
