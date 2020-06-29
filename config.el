@@ -1,4 +1,4 @@
-;; (setq inhibit-startup-message t)
+(setq inhibit-startup-message t)
 
 (setq auto-window-vscroll nil)
 (setq redisplay-dont-pause t)
@@ -377,18 +377,28 @@
 (use-package ivy
   :ensure t
   :diminish
-  :config
-  (ivy-mode 1)
-  (setq ivy-use-virtual-buffers t)
-  (setq enable-recursive-minibuffers t)
+  :defer 1
+
   :bind
   (:map xah-fly-leader-key-map
-        ("v" . counsel-yank-pop)))
+        ("v" . counsel-yank-pop))
+
+  :custom
+  (enable-recursive-minibuffers t)
+
+  :config
+  (ivy-mode 1))
+
+(use-package swiper
+  :ensure t
+  :after ivy)
 
 (use-package counsel
   :ensure t
   :diminish
-  :init (counsel-mode 1))
+  :after ivy
+
+  :config (counsel-mode))
 
 (use-package multiple-cursors
   :ensure t

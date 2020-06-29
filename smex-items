@@ -1,13 +1,13 @@
 
 ;; ----- smex-history -----
 (
+ package-list-packages
  package-refresh-contents
  xah-fly-keys
  which-key-show-top-level
  check-parens
  company-mode
  omnisharp-mode
- flycheck-mode
 )
 
 ;; ----- smex-data -----
@@ -20,4 +20,5 @@
  (which-key-show-top-level . 7)
  (xah-fly-keys . 1)
  (package-refresh-contents . 1)
+ (package-list-packages . 1)
 )

@@ -1,7 +1,7 @@
 * Built-in settings
 ** Inhibit Startup Message
 #+BEGIN_SRC emacs-lisp
-  ;; (setq inhibit-startup-message t)
+  (setq inhibit-startup-message t)
 #+END_SRC
 ** Reduce lag
 #+BEGIN_SRC emacs-lisp
@@ -556,21 +556,34 @@
    (use-package ivy
      :ensure t
      :diminish
-     :config
-     (ivy-mode 1)
-     (setq ivy-use-virtual-buffers t)
-     (setq enable-recursive-minibuffers t)
+     :defer 1
+
      :bind
      (:map xah-fly-leader-key-map
-           ("v" . counsel-yank-pop)))
+           ("v" . counsel-yank-pop))
+
+     :custom
+     (enable-recursive-minibuffers t)
+
+     :config
+     (ivy-mode 1))
  #+END_SRC
+
+** swiper
+#+BEGIN_SRC emacs-lisp
+  (use-package swiper
+    :ensure t
+    :after ivy)
+#+END_SRC
 
 ** counsel
 #+BEGIN_SRC emacs-lisp
   (use-package counsel
     :ensure t
     :diminish
-    :init (counsel-mode 1))
+    :after ivy
+  
+    :config (counsel-mode))
 #+END_SRC
 
 ** multiple-cursors
