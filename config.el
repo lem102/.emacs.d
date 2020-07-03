@@ -214,7 +214,7 @@
 (use-package yaml-mode
   :ensure t
   :defer t
-  :mode ("\\.yml\\'" . csharp-mode))
+  :mode ("\\.yml\\'" . yaml-mode))
 
 (setq-default c-basic-offset 4)
 

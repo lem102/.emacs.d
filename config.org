@@ -320,7 +320,7 @@
    (use-package yaml-mode
      :ensure t
      :defer t
-     :mode ("\\.yml\\'" . csharp-mode))
+     :mode ("\\.yml\\'" . yaml-mode))
  #+END_SRC
 
 ** c-mode

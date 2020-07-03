@@ -8,10 +8,6 @@
 
 ;;; Code:
 
-;; TODO bugs
-;; midnight and middday are used incorrectly (jacob-long-time 0 41) and (jacob-long-time 12 41) are good examples
-;; also there are some dodgy spacing issues
-
 (defun jacob-day-suffix (day)
   "Return the suffix for a DAY, e.g. a DAY of 17 would return th."
   (if (or (= day 11)
@@ -101,7 +97,7 @@
                       ;; position of point
                       "(%l,%c) "
                       ;; date
-                      '(:eval (concat (format-time-string "%A the %e")
+                      '(:eval (concat (format-time-string "%A the%e")
                                       (jacob-day-suffix (string-to-number (format-time-string "%e")))
                                       (format-time-string " of %B %Y, ")))
                       ;; time
