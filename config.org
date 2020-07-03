@@ -155,10 +155,20 @@
 #+END_SRC
 * Personal Functions
 #+BEGIN_SRC emacs-lisp
-  (defun jacob-quit-other-window ()
+  (defun jacob-quit-popup-window ()
     (interactive)
-    (other-window 1)
-    (quit-window))
+    (let ((loop-list (window-list))
+          (window-not-found t))
+      (while (and loop-list window-not-found)
+        (let* ((window (car loop-list))
+               (mode (buffer-mode (window-buffer window))))
+          (if (or (eq mode 'help-mode)
+                  (eq mode 'compilation-mode)
+                  (eq mode 'special-mode))
+              (progn
+                (quit-window :window window)
+                (setq window-found nil))))
+        (setq loop-list (cdr loop-list)))))
 
   (defun config-visit ()
     (interactive)
@@ -213,7 +223,7 @@
       (define-key xah-fly-key-map (kbd "n") 'swiper)
       (define-key xah-fly-key-map (kbd "8") 'er/expand-region)
       (define-key xah-fly-key-map (kbd "4") 'jacob-split-window-below-select-new)
-      (define-key xah-fly-key-map (kbd "2") 'jacob-quit-other-window))
+      (define-key xah-fly-key-map (kbd "2") 'jacob-quit-popup-window)) ;; 1 can be rebound, is bound to a inferior version of expand region
 
     :config
     (define-prefix-command 'jacob-config-keymap)
