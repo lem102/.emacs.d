@@ -127,9 +127,6 @@
 
   :demand
 
-  :custom
-  (xah-fly-use-control-key nil)
-
   :init
   (defun jacob-xah-command-binds ()
     "Set custom keys for xah-fly-keys keybindings."
@@ -153,6 +150,7 @@
   (add-hook 'custom-mode-hook 'xah-fly-keys-off)
 
   (key-chord-define xah-fly-key-map "fd" 'xah-fly-command-mode-activate)
+  (setq xah-fly-use-control-key nil)
 
   :bind
   (:map jacob-config-keymap
@@ -239,14 +237,14 @@
              (setq-local electric-pair-pairs '((?\" . ?\") (?\< . ?\>)))
              (yas-activate-extra-mode 'html-mode))
 
-  :config (setq web-mode-engines-alist
+  :config
+  (setq web-mode-engines-alist
                 '(("razor"	. "\\.cshtml\\'")))
+  (setq web-mode-markup-indent-offset 2)
+  (setq web-mode-css-indent-offset 2)
+  (setq web-mode-code-indent-offset 2)
 
   :hook (web-mode . jacob-web-mode-config)
-
-  :custom (web-mode-markup-indent-offset 2)
-  (web-mode-css-indent-offset 2)
-  (web-mode-code-indent-offset 2)
 
   :mode (("\\.html?\\'" . web-mode)
          ("\\.cshtml\\'" . web-mode)
@@ -262,7 +260,9 @@
 
 (use-package gdscript-mode
   :ensure t
-  :custom (gdscript-use-tab-indents nil))
+
+  :config 
+  (setq gdscript-use-tab-indents nil))
 
 (use-package beacon
   :ensure t
@@ -282,19 +282,18 @@
   :ensure t
   :diminish
   :hook ((emacs-lisp-mode csharp-mode) . company-mode)
-  :custom
-  (company-idle-delay 0.5)
-  (company-minimum-prefix-length 3))
+  :config
+  (setq company-idle-delay 0.5)
+  (setq company-minimum-prefix-length 3))
 
 (use-package projectile
   :ensure t
   :defer 2
   :diminish
-  :custom
-  (projectile-completion-system 'ivy)
   :config
   (projectile-mode t)
-  (define-key xah-fly-dot-keymap (kbd "p") projectile-command-map))
+  (define-key xah-fly-dot-keymap (kbd "p") projectile-command-map)
+  (setq projectile-completion-system 'ivy))
 
 (use-package avy
   :ensure t
@@ -333,9 +332,8 @@
    (add-hook 'omnisharp-mode-hook (lambda ()
                                     (add-to-list (make-local-variable 'company-backends)
                                                  '(company-omnisharp))))
-   :custom
-   (omnisharp-company-ignore-case nil)
-   (omnisharp-server-executable-path "D:\\Programming\\OmniSharp\\omnisharp-roslyn\\bin\\Debug\\OmniSharp.Stdio.Driver\\net472\\OmniSharp.exe"))
+   (setq omnisharp-company-ignore-case nil)
+   (setq omnisharp-server-executable-path "D:\\Programming\\OmniSharp\\omnisharp-roslyn\\bin\\Debug\\OmniSharp.Stdio.Driver\\net472\\OmniSharp.exe"))
 
 (use-package yasnippet
   :ensure t
@@ -403,13 +401,10 @@
   (:map xah-fly-leader-key-map
         ("v" . counsel-yank-pop))
 
-  :custom
-  (enable-recursive-minibuffers t)
-
-
   :config
   (ivy-mode 1)
-  (setq ivy-initial-inputs-alist nil))
+  (setq ivy-initial-inputs-alist nil)
+  (setq enable-recursive-minibuffers t))
 
 (use-package swiper
   :ensure t
@@ -437,8 +432,9 @@
 
 (use-package expand-region
   :ensure t
-  :custom
-  (expand-region-contract-fast-key "9"))
+
+  :config
+  (setq expand-region-contract-fast-key "9"))
 
 (use-package shell-pop
   :ensure t
