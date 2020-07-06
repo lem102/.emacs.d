@@ -579,11 +579,10 @@
      (:map xah-fly-leader-key-map
            ("v" . counsel-yank-pop))
 
-     :custom
-     (enable-recursive-minibuffers t)
-
      :config
-     (ivy-mode 1))
+     (ivy-mode 1)
+     (setq ivy-initial-inputs-alist nil)
+     (setq enable-recursive-minibuffers t))
  #+END_SRC
 
 ** swiper

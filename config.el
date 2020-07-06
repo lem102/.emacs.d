@@ -406,8 +406,10 @@
   :custom
   (enable-recursive-minibuffers t)
 
+
   :config
-  (ivy-mode 1))
+  (ivy-mode 1)
+  (setq ivy-initial-inputs-alist nil))
 
 (use-package swiper
   :ensure t
