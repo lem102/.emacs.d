@@ -1,4 +1,4 @@
-(setq inhibit-startup-message t)
+;; (setq inhibit-startup-message t)
 
 (setq auto-window-vscroll nil)
 (setq redisplay-dont-pause t)
@@ -31,13 +31,8 @@
 
 (add-to-list 'load-path "~/.emacs.d/lisp/")
 
-(when (member "DejaVu Sans Mono" (font-family-list))
-	(add-to-list 'initial-frame-alist '(font . "DejaVu Sans Mono-10"))
-	(add-to-list 'default-frame-alist '(font . "DejaVu Sans Mono-10")))
-
 (savehist-mode 1)
 
-;; loading without config takes 0.7 seconds
 (add-hook 'emacs-startup-hook
           (lambda ()
             (message "Emacs ready in %s with %d garbage collections."
@@ -57,7 +52,7 @@
 ;; set default tab char's display width to 4 spaces
 (setq-default tab-width 4)
 ;; make tab key call indent command or insert tab character, depending on cursor position
-(setq-default tab-always-indent nil)
+(setq-default tab-always-indent t)
 
 (defun jacob-quit-popup-window ()
   (interactive)
@@ -109,7 +104,6 @@
   (other-window 1))
 
 (use-package xah-fly-keys
-
   :ensure t
 
   :demand
@@ -211,10 +205,11 @@
 (use-package web-mode
   :ensure t
 
-  :preface (defun jacob-web-mode-config ()
-             (interactive)
-             (setq-local electric-pair-pairs '((?\" . ?\") (?\< . ?\>)))
-             (yas-activate-extra-mode 'html-mode))
+  :preface
+  (defun jacob-web-mode-config ()
+    (interactive)
+    (setq-local electric-pair-pairs '((?\" . ?\") (?\< . ?\>)))
+    (yas-activate-extra-mode 'html-mode))
 
   :config
   (setq web-mode-engines-alist
@@ -259,6 +254,7 @@
 
 (use-package company
   :ensure t
+  :defer t
   :diminish
   :hook ((emacs-lisp-mode csharp-mode) . company-mode)
   :config
@@ -467,3 +463,7 @@
 (menu-bar-mode -1)
 
 (scroll-bar-mode -1)
+
+(when (member "DejaVu Sans Mono" (font-family-list))
+	(add-to-list 'initial-frame-alist '(font . "DejaVu Sans Mono-10"))
+	(add-to-list 'default-frame-alist '(font . "DejaVu Sans Mono-10")))
