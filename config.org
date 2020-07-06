@@ -8,120 +8,65 @@
   (setq auto-window-vscroll nil)
   (setq redisplay-dont-pause t)
 #+END_SRC
-** Modeline
-#+BEGIN_SRC emacs-lisp
-  (load "~/.emacs.d/myLisp/jacob-long-time")
-  (jacob-long-time-toggle)
-#+END_SRC
-
-** Highlight current line but only in graphical mode
-#+BEGIN_SRC emacs-lisp
-  (use-package hl-line
-    :defer 2
-    :config (when window-system (global-hl-line-mode t)))
-#+END_SRC
-
-** stop the bell ringing all the time
+** Stop the bell ringing all the time
 #+BEGIN_SRC emacs-lisp
   (setq ring-bell-function 'ignore)
 #+END_SRC
 
-** prevent the view of the screen jumping to the middle when scrolling out of the view.
+** Prevent the view of the screen jumping to the middle when scrolling out of the view.
 #+BEGIN_SRC emacs-lisp
   (setq scroll-conservatively 100)
 #+END_SRC
-
-** get rid of toolbar
-#+BEGIN_SRC emacs-lisp
-  (tool-bar-mode -1)
-#+END_SRC
-
-** get rid of menubar
-#+BEGIN_SRC emacs-lisp
-  (menu-bar-mode -1)
-#+END_SRC
-
-** get rid of scrollbar
-#+BEGIN_SRC emacs-lisp
-  (scroll-bar-mode -1)
-#+END_SRC
-
-** auto insert closing bracket (electric pair)
+** Auto insert closing bracket (electric pair)
 #+BEGIN_SRC emacs-lisp
   (electric-pair-mode 1)
 #+END_SRC
 
-** make cursor movement stop in between camelCase words.
+** Make cursor movement stop in between camelCase words.
 #+BEGIN_SRC emacs-lisp
   (global-subword-mode 1)
 #+END_SRC
 
-** make typing delete/overwrite region
+** Make typing delete/overwrite region
 #+BEGIN_SRC emacs-lisp
   (delete-selection-mode 1)
 #+END_SRC
 
-** turn on bracket match highlight
+** Turn on bracket match highlight
 #+BEGIN_SRC emacs-lisp
   (show-paren-mode 1)
 #+END_SRC
 
-** stop emacs creating backups~
+** Stop emacs creating backups~
 #+BEGIN_SRC emacs-lisp
   (setq make-backup-files nil)
 #+END_SRC
 
-** stop emacs creating #autosaves#
+** Stop emacs creating #autosaves#
 #+BEGIN_SRC emacs-lisp
   (setq auto-save-default nil)
 #+END_SRC
 
-** stop emacs from creating .#lock file links
+** Stop emacs from creating .#lock file links
 #+BEGIN_SRC emacs-lisp
   (setq create-lockfiles nil)
 #+END_SRC
 
-** backups don't destroy original file's creation date
+** Backups don't destroy original file's creation date
 #+BEGIN_SRC emacs-lisp
   (setq backup-by-copying t)
 #+END_SRC
 
-** y/n instead of yes/no
+** Y/n instead of yes/no
 #+BEGIN_SRC emacs-lisp
   (defalias 'yes-or-no-p 'y-or-n-p)
-#+END_SRC
-
-** show the current time
-#+BEGIN_SRC emacs-lisp
-  (setq display-time-24hr-format t)
-  (display-time-mode 1)
 #+END_SRC
 
 ** Expert mode for ibuffer
 #+BEGIN_SRC emacs-lisp
   (setq ibuffer-expert t)
 #+END_SRC
-
-** Dired open new directory in same buffer
-#+BEGIN_SRC emacs-lisp
-  (require 'dired)
-  (define-key dired-mode-map (kbd "RET") 'dired-find-alternate-file)
-  (define-key dired-mode-map (kbd "^")(lambda () (interactive)(find-alternate-file "..")))
-#+END_SRC
-
-** Dired default copy location is next open dired buffer
-#+BEGIN_SRC emacs-lisp
-  (setq dired-dwim-target t)
-#+END_SRC
-
-** Dired Hide Details Always
-#+BEGIN_SRC emacs-lisp
-  (defun xah-dired-mode-setup()
-	(dired-hide-details-mode 1))
-  (add-hook 'dired-mode-hook 'xah-dired-mode-setup)
-#+END_SRC
-
-** don't truncate
+** Don't truncate
 #+BEGIN_SRC emacs-lisp
   (toggle-truncate-lines)
 #+END_SRC
@@ -152,6 +97,26 @@
                              (float-time
                               (time-subtract after-init-time before-init-time)))
                      gcs-done)))
+#+END_SRC
+** Setting right windows key to act as super key
+#+BEGIN_SRC emacs-lisp
+  (setq w32-pass-rwindow-to-system nil
+		w32-rwindow-modifier 'super)
+#+END_SRC
+
+** Setting app key to act as hyper key
+#+BEGIN_SRC emacs-lisp
+  (setq w32-pass-apps-to-system nil)
+  (setq w32-apps-modifier 'hyper)
+#+END_SRC
+** Tabs
+#+BEGIN_SRC emacs-lisp
+  ;; use spaces to indent
+  (setq-default indent-tabs-mode nil)
+  ;; set default tab char's display width to 4 spaces
+  (setq-default tab-width 4)
+  ;; make tab key call indent command or insert tab character, depending on cursor position
+  (setq-default tab-always-indent nil)
 #+END_SRC
 * Personal Functions
 #+BEGIN_SRC emacs-lisp
@@ -251,57 +216,37 @@
     (:map xah-fly-leader-key-map
           ("4" . jacob-split-window-right-select-new)))
 #+END_SRC
-* General Keybindings
-** Setting right windows key to act as super key
-#+BEGIN_SRC emacs-lisp
-  (setq w32-pass-rwindow-to-system nil
-		w32-rwindow-modifier 'super)
-#+END_SRC
-
-** Setting app key to act as hyper key
-#+BEGIN_SRC emacs-lisp
-  (setq w32-pass-apps-to-system nil)
-  (setq w32-apps-modifier 'hyper)
-#+END_SRC
-
-** Tabs
-#+BEGIN_SRC emacs-lisp
-  ;; use spaces to indent
-  (setq-default indent-tabs-mode nil)
-  ;; set default tab char's display width to 4 spaces
-  (setq-default tab-width 4)
-  ;; make tab key call indent command or insert tab character, depending on cursor position
-  (setq-default tab-always-indent nil)
-#+END_SRC
-
-* WDired
-#+BEGIN_SRC emacs-lisp
-  (defun jacob-teardown-xah-for-wdired ()
-    (interactive)
-    (wdired-finish-edit)
-    (define-key xah-fly-leader-key-map (kbd ";") 'save-buffer)
-    (xah-fly-keys-off))
-
-  (defun jacob-setup-xah-for-wdired ()
-    (interactive)
-    (xah-fly-keys)
-    (define-key xah-fly-leader-key-map (kbd ";") 'jacob-teardown-xah-for-wdired))
-
-  (add-hook 'wdired-mode-hook 'jacob-setup-xah-for-wdired)
-#+END_SRC
 * Dired
 #+BEGIN_SRC emacs-lisp
-    (use-package dired
-      :bind
-      (:map dired-mode-map
-            ("," . switch-window)
-            ("SPC" . xah-fly-leader-key-map)
-            ("p" . dired-maybe-insert-subdir)
-            ("i" . dired-previous-line)
-            ("k" . dired-next-line)
-            ("n" . swiper)
-            ("f" . dired-toggle-read-only)
-            ("q" . xah-close-current-buffer)))
+  (use-package dired
+    :config
+    (defun jacob-teardown-xah-for-wdired ()
+      (interactive)
+      (wdired-finish-edit)
+      (define-key xah-fly-leader-key-map (kbd ";") 'save-buffer)
+      (xah-fly-keys-off))
+
+    (defun jacob-setup-xah-for-wdired ()
+      (interactive)
+      (xah-fly-keys)
+      (define-key xah-fly-leader-key-map (kbd ";") 'jacob-teardown-xah-for-wdired))
+
+    (add-hook 'wdired-mode-hook 'jacob-setup-xah-for-wdired)
+
+    (define-key dired-mode-map (kbd "RET") 'dired-find-alternate-file)
+    (define-key dired-mode-map (kbd "^")(lambda () (interactive)(find-alternate-file "..")))
+    (setq dired-dwim-target t)
+
+    :bind
+    (:map dired-mode-map
+          ("," . switch-window)
+          ("SPC" . xah-fly-leader-key-map)
+          ("p" . dired-maybe-insert-subdir)
+          ("i" . dired-previous-line)
+          ("k" . dired-next-line)
+          ("n" . swiper)
+          ("f" . dired-toggle-read-only)
+          ("q" . xah-close-current-buffer)))
 #+END_SRC
 * Major Mode Packages
 ** Org
@@ -681,3 +626,28 @@
     :ensure t)
 #+END_SRC
 
+** Modeline
+#+BEGIN_SRC emacs-lisp
+  (load "~/.emacs.d/myLisp/jacob-long-time")
+  (jacob-long-time-toggle)
+#+END_SRC
+** Highlight current line but only in graphical mode
+#+BEGIN_SRC emacs-lisp
+  (use-package hl-line
+    :defer 2
+    :config (when window-system (global-hl-line-mode t)))
+#+END_SRC
+** Get rid of toolbar
+#+BEGIN_SRC emacs-lisp
+  (tool-bar-mode -1)
+#+END_SRC
+
+** Get rid of menubar
+#+BEGIN_SRC emacs-lisp
+  (menu-bar-mode -1)
+#+END_SRC
+
+** Get rid of scrollbar
+#+BEGIN_SRC emacs-lisp
+  (scroll-bar-mode -1)
+#+END_SRC
