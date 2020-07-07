@@ -126,6 +126,11 @@
                 (setq window-found nil))))
         (setq loop-list (cdr loop-list)))))
 
+  (defun jacob-buffer-mode (buffer-or-string)
+    "Returns the major mode associated with a buffer."
+    (with-current-buffer buffer-or-string
+       major-mode))
+
   (defun config-visit ()
     (interactive)
     (find-file "~/.emacs.d/config.org"))
@@ -376,6 +381,10 @@
      :defer 1
      :config
      (setq avy-keys (number-sequence ?a ?z))
+     (setq avy-all-windows t)
+     (setq avy-orders-alist
+           '((avy-goto-char-timer . avy-order-closest)
+             (avy-goto-end-of-line . avy-order-closest)))
      (key-chord-define xah-fly-key-map "fj" 'avy-goto-char-timer)
      (key-chord-define xah-fly-key-map "fk" 'avy-goto-word-or-subword-1)
      (key-chord-define xah-fly-key-map "fl" 'avy-goto-line)
