@@ -375,6 +375,7 @@
      :ensure t
      :defer 1
      :config
+     (setq avy-keys (number-sequence ?a ?z))
      (key-chord-define xah-fly-key-map "fj" 'avy-goto-char-timer)
      (key-chord-define xah-fly-key-map "fk" 'avy-goto-word-or-subword-1)
      (key-chord-define xah-fly-key-map "fl" 'avy-goto-line)
