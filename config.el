@@ -1,3 +1,5 @@
+(setq read-process-output-max (* 1024 1024))
+
 ;; (setq inhibit-startup-message t)
 
 (setq auto-window-vscroll nil)
@@ -244,6 +246,32 @@
   :config 
   (setq gdscript-use-tab-indents nil))
 
+(setq lsp-keymap-prefix "s-l")
+
+  (use-package lsp-mode
+    :ensure t
+    :hook
+    (java-mode . lsp)
+    (lsp-mode . lsp-enable-which-key-integration)
+    :commands lsp
+    :config
+    (setq lsp-completion-enable-additional-text-edit nil)
+    (setq lsp-prefer-capf t))
+
+  (use-package lsp-ui
+    :ensure t
+    :commands lsp-ui-mode)
+
+  (use-package lsp-ivy
+    :ensure t
+    :commands lsp-ivy-workspace-symbol)
+
+  (use-package lsp-java
+    :ensure t)
+
+(setq lsp-ui-flycheck-enable t)
+(setq lsp-enable-links nil)
+
 (use-package beacon
   :ensure t
   :defer 2
@@ -262,7 +290,7 @@
   :ensure t
   :defer t
   :diminish
-  :hook ((emacs-lisp-mode csharp-mode) . company-mode)
+  :hook ((emacs-lisp-mode csharp-mode java-mode) . company-mode)
   :config
   (setq company-idle-delay 0.5)
   (setq company-minimum-prefix-length 3))
@@ -338,9 +366,9 @@
 
 (use-package flycheck
   :ensure t
-  ;; For some reason, I am unable to diminish flycheck with :diminish
-  :config (diminish 'flycheck-mode)
-  :hook ((csharp-mode emacs-lisp-mode) . flycheck-mode)) ;; TODO this hook is fugged
+  :defer 2
+  :config
+  (global-flycheck-mode))
 
 (use-package cider
   :diminish
