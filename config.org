@@ -335,6 +335,15 @@
   (setq gdscript-use-tab-indents nil))
 #+END_SRC
 * Minor Mode Packages
+** flycheck
+#+BEGIN_SRC emacs-lisp
+  (use-package flycheck
+    :ensure t
+    :defer 2
+    :config
+    (global-flycheck-mode))
+#+END_SRC
+
 ** lsp-mode
 #+BEGIN_SRC emacs-lisp
     (setq lsp-keymap-prefix "s-l")
@@ -345,9 +354,10 @@
       (java-mode . lsp)
       (lsp-mode . lsp-enable-which-key-integration)
       :commands lsp
-      :config
+      :init
       (setq lsp-completion-enable-additional-text-edit nil)
-      (setq lsp-prefer-capf t))
+      (setq lsp-prefer-capf t)
+      (setq lsp-prefer-flymake nil))
 
     (use-package lsp-ui
       :ensure t
@@ -483,15 +493,6 @@
 
     :config
     (key-chord-mode 1))
-#+END_SRC
-
-** flycheck
-#+BEGIN_SRC emacs-lisp
-  (use-package flycheck
-    :ensure t
-    :defer 2
-    :config
-    (global-flycheck-mode))
 #+END_SRC
 
 ** cider
