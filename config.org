@@ -216,6 +216,58 @@
     (:map xah-fly-leader-key-map
           ("4" . jacob-split-window-right-select-new)))
 #+END_SRC
+* Language Server Protocol & Debug Adapter Protocol
+Language Server Protocol is an excellent way to get autocompletion, documentation and linting for many programming languages within emacs. Therefore this will eventually be quite a busy section.
+** Base lsp-mode
+*** lsp-mode
+ #+BEGIN_SRC emacs-lisp
+   (use-package lsp-mode
+     :ensure t
+     :hook
+     (java-mode . lsp)
+     (lsp-mode . lsp-enable-which-key-integration)
+     :commands lsp
+     :init
+     (setq lsp-completion-enable-additional-text-edit nil)
+     (setq lsp-prefer-capf t)
+     (setq lsp-prefer-flymake nil)
+     :config
+     (define-key xah-fly-dot-keymap (kbd "l") lsp-command-map))
+ #+END_SRC
+
+*** lsp-ui
+ #+BEGIN_SRC emacs-lisp
+   (use-package lsp-ui
+     :ensure t
+     :commands lsp-ui-mode)
+ #+END_SRC
+
+*** lsp-ivy
+ #+BEGIN_SRC emacs-lisp
+   (use-package lsp-ivy
+     :ensure t
+     :commands lsp-ivy-workspace-symbol)
+ #+END_SRC
+** Base dsp-mode
+#+BEGIN_SRC emacs-lisp
+  (use-package dap-mode
+    :ensure t
+    :hook java-mode
+    :config
+    (use-package dap-java)
+    (dap-mode 1)
+    (dap-ui-mode 1)
+    (dap-tooltip-mode 1)
+    (tooltip-mode 1)
+    (dap-ui-controls-mode 1))
+#+END_SRC
+
+** Language Specific
+*** lsp-java
+ #+BEGIN_SRC emacs-lisp
+   (use-package lsp-java
+     :ensure t)
+ #+END_SRC
 * Dired
 #+BEGIN_SRC emacs-lisp
   (use-package dired
@@ -344,35 +396,6 @@
     (global-flycheck-mode))
 #+END_SRC
 
-** lsp-mode
-#+BEGIN_SRC emacs-lisp
-    (setq lsp-keymap-prefix "s-l")
-
-    (use-package lsp-mode
-      :ensure t
-      :hook
-      (java-mode . lsp)
-      (lsp-mode . lsp-enable-which-key-integration)
-      :commands lsp
-      :init
-      (setq lsp-completion-enable-additional-text-edit nil)
-      (setq lsp-prefer-capf t)
-      (setq lsp-prefer-flymake nil))
-
-    (use-package lsp-ui
-      :ensure t
-      :commands lsp-ui-mode)
-
-    (use-package lsp-ivy
-      :ensure t
-      :commands lsp-ivy-workspace-symbol)
-
-    (use-package lsp-java
-      :ensure t)
-
-  (setq lsp-ui-flycheck-enable t)
-  (setq lsp-enable-links nil)
-#+END_SRC
 ** beacon
  #+BEGIN_SRC emacs-lisp
    (use-package beacon

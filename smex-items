@@ -1,13 +1,13 @@
 
 ;; ----- smex-history -----
 (
+ lsp-install-server
+ package-refresh-contents
  package-list-packages
  revert-buffer
+ customize-group
  csharp-mode
  package-delete
- package-refresh-contents
- xah-fly-keys
- which-key-show-top-level
 )
 
 ;; ----- smex-data -----
@@ -19,10 +19,12 @@
  (check-parens . 1)
  (which-key-show-top-level . 7)
  (xah-fly-keys . 1)
- (package-refresh-contents . 1)
- (package-list-packages . 2)
+ (package-refresh-contents . 2)
+ (package-list-packages . 3)
  (csharp-mode . 3)
  (package-delete . 3)
  (yas-reload-all . 2)
- (revert-buffer . 1)
+ (revert-buffer . 2)
+ (customize-group . 1)
+ (lsp-install-server . 1)
 )

@@ -154,6 +154,41 @@
   (:map xah-fly-leader-key-map
         ("4" . jacob-split-window-right-select-new)))
 
+(use-package lsp-mode
+  :ensure t
+  :hook
+  (java-mode . lsp)
+  (lsp-mode . lsp-enable-which-key-integration)
+  :commands lsp
+  :init
+  (setq lsp-completion-enable-additional-text-edit nil)
+  (setq lsp-prefer-capf t)
+  (setq lsp-prefer-flymake nil)
+  :config
+  (define-key xah-fly-dot-keymap (kbd "l") lsp-command-map))
+
+(use-package lsp-ui
+  :ensure t
+  :commands lsp-ui-mode)
+
+(use-package lsp-ivy
+  :ensure t
+  :commands lsp-ivy-workspace-symbol)
+
+(use-package dap-mode
+  :ensure t
+  :hook java-mode
+  :config
+  (use-package dap-java)
+  (dap-mode 1)
+  (dap-ui-mode 1)
+  (dap-tooltip-mode 1)
+  (tooltip-mode 1)
+  (dap-ui-controls-mode 1))
+
+(use-package lsp-java
+  :ensure t)
+
 (use-package dired
   :config
   (defun jacob-teardown-xah-for-wdired ()
@@ -251,33 +286,6 @@
   :defer 2
   :config
   (global-flycheck-mode))
-
-(setq lsp-keymap-prefix "s-l")
-
-  (use-package lsp-mode
-    :ensure t
-    :hook
-    (java-mode . lsp)
-    (lsp-mode . lsp-enable-which-key-integration)
-    :commands lsp
-    :init
-    (setq lsp-completion-enable-additional-text-edit nil)
-    (setq lsp-prefer-capf t)
-    (setq lsp-prefer-flymake nil))
-
-  (use-package lsp-ui
-    :ensure t
-    :commands lsp-ui-mode)
-
-  (use-package lsp-ivy
-    :ensure t
-    :commands lsp-ivy-workspace-symbol)
-
-  (use-package lsp-java
-    :ensure t)
-
-(setq lsp-ui-flycheck-enable t)
-(setq lsp-enable-links nil)
 
 (use-package beacon
       :ensure t
