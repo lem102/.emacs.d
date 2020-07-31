@@ -115,6 +115,16 @@
 #+END_SRC
 * Personal Functions
 #+BEGIN_SRC emacs-lisp
+  (defun eval-and-replace ()
+    "Replace the preceding sexp with its value."
+    (interactive)
+    (backward-kill-sexp)
+    (condition-case nil
+        (prin1 (eval (read (current-kill 0)))
+               (current-buffer))
+      (error (message "Invalid expression")
+             (insert (current-kill 0)))))
+
   (defun jacob-quit-popup-window ()
     (interactive)
     (let ((loop-list (window-list))
@@ -172,49 +182,51 @@
 
 * Xah Fly Keys
 #+BEGIN_SRC emacs-lisp
-  (use-package xah-fly-keys
-    :ensure t
+    (use-package xah-fly-keys
+      :ensure t
 
-    :demand
+      :demand
 
-    :init
-    (setq xah-fly-use-control-key nil)
+      :init
+      (setq xah-fly-use-control-key nil)
 
-    (defun jacob-xah-command-binds ()
-      "Set custom keys for xah-fly-keys keybindings."
-      (define-key xah-fly-key-map (kbd "a") 'counsel-M-x)
-      (define-key xah-fly-key-map (kbd "n") 'swiper)
-      (define-key xah-fly-key-map (kbd "8") 'er/expand-region)
-      (define-key xah-fly-key-map (kbd "4") 'jacob-split-window-below-select-new)
-      (define-key xah-fly-key-map (kbd "2") 'jacob-quit-popup-window)) ;; 1 can be rebound, is bound to a inferior version of expand region
+      (defun jacob-xah-command-binds ()
+        "Set custom keys for xah-fly-keys keybindings."
+        (define-key xah-fly-key-map (kbd "a") 'counsel-M-x)
+        (define-key xah-fly-key-map (kbd "n") 'swiper)
+        (define-key xah-fly-key-map (kbd "8") 'er/expand-region)
+        (define-key xah-fly-key-map (kbd "4") 'jacob-split-window-below-select-new)
+        (define-key xah-fly-key-map (kbd "2") 'jacob-quit-popup-window)) ;; 1 can be rebound, is bound to a inferior version of expand region
 
-    :config
-    (define-prefix-command 'jacob-config-keymap)
-    (xah-fly-keys-set-layout "qwerty")
-    (xah-fly-keys 1)
+      :config
+      (define-prefix-command 'jacob-config-keymap)
+      (xah-fly-keys-set-layout "qwerty")
+      (xah-fly-keys 1)
 
-    (add-hook 'xah-fly-command-mode-activate-hook 'jacob-xah-command-binds)
-    (jacob-xah-command-binds) ;; call it on startup so binds are set without calling xah-fly-command-mode-activate first.
+      (add-hook 'xah-fly-command-mode-activate-hook 'jacob-xah-command-binds)
+      (jacob-xah-command-binds) ;; call it on startup so binds are set without calling xah-fly-command-mode-activate first.
 
-    (add-hook 'dired-mode-hook 'xah-fly-keys-off)
-    (add-hook 'eww-mode-hook 'xah-fly-keys-off)
-    (add-hook 'ibuffer-mode-hook 'xah-fly-keys-off)
-    (add-hook 'custom-mode-hook 'xah-fly-keys-off)
+      (add-hook 'dired-mode-hook 'xah-fly-keys-off)
+      (add-hook 'eww-mode-hook 'xah-fly-keys-off)
+      (add-hook 'ibuffer-mode-hook 'xah-fly-keys-off)
+      (add-hook 'custom-mode-hook 'xah-fly-keys-off)
 
-    (key-chord-define xah-fly-key-map "fd" 'xah-fly-command-mode-activate)
+      (key-chord-define xah-fly-key-map "fd" 'xah-fly-command-mode-activate)
 
-    :bind
-    (:map jacob-config-keymap
-          ("r" . config-reload)
-          ("R" . restart-emacs)
-          ("e" . config-visit)
-          ("c" . jacob-org-src-block)
-          ("p" . jacob-recompile-packages)
-          ("t" . jacob-long-time-toggle))
-    (:map xah-fly-dot-keymap
-          ("c" . jacob-config-keymap))
-    (:map xah-fly-leader-key-map
-          ("4" . jacob-split-window-right-select-new)))
+      :bind
+      (:map jacob-config-keymap
+            ("r" . config-reload)
+            ("R" . restart-emacs)
+            ("e" . config-visit)
+            ("c" . jacob-org-src-block)
+            ("p" . jacob-recompile-packages)
+            ("t" . jacob-long-time-toggle))
+      (:map xah-fly-dot-keymap
+            ("c" . jacob-config-keymap))
+      (:map xah-fly-leader-key-map
+            ("4" . jacob-split-window-right-select-new))
+      (:map xah-fly-w-keymap
+            ("n" . eval-and-replace)))
 #+END_SRC
 * Language Server Protocol & Debug Adapter Protocol
 Language Server Protocol is an excellent way to get autocompletion, documentation and linting for many programming languages within emacs. Therefore this will eventually be quite a busy section.
