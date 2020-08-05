@@ -3,17 +3,25 @@
 
 (setq mc/cmds-to-run-for-all
       '(
+        c-electric-semi&comma
         count-words-region
+        csharp-maybe-insert-codedoc
+        dabbrev-expand
         xah-backward-kill-word
         xah-backward-left-bracket
         xah-copy-line-or-region
         xah-cut-line-or-region
         xah-delete-backward-char-or-bracket-text
+        xah-end-of-line-or-block
         xah-fly-command-mode-activate
         xah-fly-insert-mode-activate
         xah-forward-right-bracket
         xah-goto-matching-bracket
+        xah-insert-brace
+        xah-insert-space-before
         xah-kill-word
+        xah-paste-or-paste-previous
+        xah-shrink-whitespaces
         xah-toggle-previous-letter-case
         ))
 

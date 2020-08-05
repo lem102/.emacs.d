@@ -1,128 +1,128 @@
-ll
-ls -la
-alias ll ls -la
-ll
-shutdown now
-shutdown now
-git pull
-git status
-git add -A
-git commit -m "work finished 01/04/2020"
-git push
-git status
-git add -A
-git commit -m "work completed 02/04/2020"
-git push
-git status
-ls
-cd ../../
-ll
-ls
-git status
-git status
-git add -A
-git commit -m "made emacs remember my last opened files and open them on startup"
-git push
-git checkout -b bigBindingRevolution
-git status
-git status
-git add -A
-git commit -m "swapped the fd key chord to xah-fly-command-mode-activate"
-git push
-git push --set-upstream origin bigBindingRevolution
-pdflatex instructions.tex
-docview instructions.tex
-xreader instructions.tex
-xreader instructions.p
-xreader instructions.pdf
-pdflatex instructions.tex
-xreader instructions.pdf
-git stats
-git staus
-git status
-git add -A
-git commit -m "new keys again"
-git push
-git status
-git status
-cd image-dired/
-git rm .image-dired_db 
-ls
+rm *
+rm -rf *
 ls
 cd ..
-git status
-git add -A
-git commit -m "removed some files"
-git status
-git status
-git status
-git status
-cd ../../
-git status
-git pull
-git status
-git pull
-pdflatex TaskAnalysis.tex
-pdflatex TaskAnalysis.tex
-pdflatex TaskAnalysis.tex
-pdflatex TaskAnalysis.tex
-pdflatex TaskAnalysis.tex
-git status
-git add -A
-git commit -m "spellchecked"
-git push
-git status
-git add -A
-git commit -m "work completed 4/5/2020"
-git push
-cd Downloads/
+rmdir test
+dotnet run
+dotnet add package MonoGame.Framework.DesktopGL --version 3.7.1.189
+dotnet run
+dotnet add package MonoGame.Framework.DesktopGL --version 3.7.1.189
+dotnet build
+cd d:/Programming/monogame/
 ls
-git status
-git add -A
-git commit -m "refined config.org's organisation, also added a neat date thing for formatiing"
-git push
-git add -A
-pdflatex finalYearProjectSubmission.tex 
-xreader finalYearProjectSubmission.pdf 
-pdflatex finalYearProjectSubmission.tex 
-xreader finalYearProjectSubmission.pdf 
+rm test
+rm -rf test
 ls
+dotnet new --install MonoGame.Templates.CSharp
+ls
+dotnet new mgdesktopgl -o test
+cd test/
+ls
+dotnet run
+ff Game1.cs 
+dotnet tool install -g dotnet-mgcb-editor
+dotnet tool install -g dotnet-mgcb-editor 3.8.0.1375-develop
+dotnet tool install -g dotnet-mgcb-editor --version 3.8.0.1375-develop
+dotnet run
+dotnet run
+dotnet run
+dotnet run
+dotnet run
+dotnet run
+dotnet run
+dotnet run
+dotnet run
+dotnet run
+dotnet run
+dotnet run
+dotnet run
+dotnet run
+dotnet run
+dotnet run
+dotnet run
+dotnet run
+dotnet run
+dotnet run
+dotnet run
+dotnet run
+dotnet run
+dotnet run
+dotnet run
+dotnet run
+dotnet run
+dotnet run
+dotnet run
+dotnet run
+dotnet run
+dotnet run
+dotnet run
+dotnet run
 cd ..
-cd placementAssignments/
-cd My\ Content/Task\ Analysis/
+dotnet new mgdesktopgl -o test2
+cd test2/
 ls
-ll
-pdflatex TaskAnalysis.tex 
-xreader TaskAnalysis.pdf
-git add -A
-git commit -m "work finished 19/05/2020"
-git push
-git status
-git add -A
-git commit -m "Added a long time modeline"
-git push
-git pull
-git status
-pdflatex *.tex
-bibtex TaskAnalysis.tex
-bibtex TaskAnalysis
-pdflatex *.tex
-pdflatex *.tex
-cp TaskAnalysis.pdf Jacob_Leeming_1758933_Task_Analysis.pdf
-ll
-javac HelloWorld.jar 
-javac HelloWorld.java
 ls
-java HelloWorld.class
-java HelloWorld
-ll
-rm *.class
-ls
-javac HelloWorld.java
-ls
-javac HelloWorld.java
-java HelloWorld
-git status
-git add -A
-git commit -m "successful linting achieved!"
-git status
+dotnet run
+dotnet run
+dotnet run
+dotnet run
+dotnet run
+dotnet run
+dotnet run
+dotnet run
+dotnet run
+dotnet run
+dotnet run
+dotnet run
+dotnet run
+dotnet run
+dotnet run -v diag
+dotnet run -v normal
+dotnet run -v d
+dotnet run -v d
+dotnet run
+dotnet run
+dotnet run
+dotnet run
+dotnet run
+cd ..
+dotnet new mgdesktopgl -o FirstGameAttempt
+cd FirstGameAttempt/
+dotnet run
+ff Game1.cs 
+ff Game1.cs 
+dotnet run
+dotnet run
+dotnet run
+dotnet run
+dotnet run
+dotnet run
+dotnet run
+dotnet run
+dotnet run
+dotnet run
+dotnet run
+dotnet run
+dotnet run
+dotnet run
+dotnet run
+dotnet run
+dotnet run
+dotnet run
+dotnet run
+dotnet run
+dotnet run
+dotnet run
+dotnet run
+dotnet run
+dotnet run
+dotnet run
+dotnet run
+dotnet run
+dotnet run
+dotnet run
+dotnet run
+dotnet run
+dotnet run
+dotnet run
+dotnet run
