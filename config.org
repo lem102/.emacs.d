@@ -1,4 +1,15 @@
 * Built-in settings
+** Isolate Custom paraphenalia
+#+BEGIN_SRC emacs-lisp
+  (use-package cus-edit
+    :config
+    (defun prot/cus-edit ()
+      (let ((custom-file "~/.emacs.d/custom.el"))
+        (unless (file-exists-p custom-file)
+          (write-region "" nil custom-file))
+        (load-file custom-file)))
+    :hook (after-init . prot/cus-edit))
+#+END_SRC
 ** Read more data from process
 #+BEGIN_SRC emacs-lisp
   (setq read-process-output-max (* 1024 1024))
