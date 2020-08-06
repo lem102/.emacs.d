@@ -1,14 +1,15 @@
 * Built-in settings
 ** Isolate Custom paraphenalia
 #+BEGIN_SRC emacs-lisp
+  ;; This code was nicked from Protesilaos's .emacs
   (use-package cus-edit
     :config
-    (defun prot/cus-edit ()
+    (defun jacob-cus-edit ()
       (let ((custom-file "~/.emacs.d/custom.el"))
         (unless (file-exists-p custom-file)
           (write-region "" nil custom-file))
         (load-file custom-file)))
-    :hook (after-init . prot/cus-edit))
+    :hook (after-init . jacob-cus-edit))
 #+END_SRC
 ** Read more data from process
 #+BEGIN_SRC emacs-lisp
@@ -413,11 +414,12 @@ Language Server Protocol is an excellent way to get autocompletion, documentatio
 ** beacon
  #+BEGIN_SRC emacs-lisp
    (use-package beacon
-	 :ensure t
+     :ensure t
      :defer 2
-	 :diminish
-	 :config
-	 (beacon-mode 1))
+     :diminish
+     :config
+     (setq beacon-color "#f2777a")
+     (beacon-mode 1))
  #+END_SRC
 
 ** which-key
@@ -653,6 +655,14 @@ Language Server Protocol is an excellent way to get autocompletion, documentatio
             (shell-pop-term-shell "shell"))
         (shell-pop--set-shell-type 'shell-pop-shell-type shell-pop-shell-type)
         (call-interactively 'shell-pop)))
+
+    :config
+    (setq shell-pop-autocd-to-working-dir nil)
+    (setq shell-pop-shell-type (quote ("eshell" "eshell*" (lambda nil (eshell)))))
+    (setq shell-pop-universal-key "<H-return>")
+    (setq shell-pop-window-position "bottom")
+    (setq shell-pop-window-size 50)
+
     :bind
     (:map xah-fly-n-keymap
           ("d" . jacob-shell-pop-eshell)

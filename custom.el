@@ -7,9 +7,6 @@
    [default default default italic underline success warning error])
  '(ansi-color-names-vector
    ["black" "#d55e00" "#009e73" "#f8ec59" "#0072b2" "#cc79a7" "#56b4e9" "white"])
- '(beacon-color "#f2777a")
- '(company-idle-delay 0.5)
- '(company-minimum-prefix-length 3)
  '(custom-enabled-themes (quote (sanityinc-tomorrow-blue)))
  '(custom-safe-themes
    (quote
@@ -19,7 +16,6 @@
  '(fci-rule-color "#515151")
  '(flycheck-color-mode-line-face-to-color (quote mode-line-buffer-id))
  '(frame-background-mode (quote dark))
- '(gdscript-use-tab-indents nil)
  '(hl-todo-keyword-faces
    (quote
     (("TODO" . "#dc752f")
@@ -41,12 +37,6 @@
    (quote
     (dap-java dap-mode flycheck lsp-ui lsp-java lsp-mode lsp-ivy projectile color-theme-sanityinc-tomorrow cider clojure-mode counsel json-mode use-package-chords langtool swiper magit yasnippet web-mode vertigo shell-pop restart-emacs dimmer pretty-mode expand-region multiple-cursors symon-mode diminish switch-window company-mode smex beacon spacemacs-theme which-key use-package yaml-mode xah-fly-keys company omnisharp csharp-mode)))
  '(pdf-view-midnight-colors (quote ("#b2b2b2" . "#292b2e")))
- '(projectile-completion-system (quote ivy))
- '(shell-pop-autocd-to-working-dir nil)
- '(shell-pop-shell-type (quote ("eshell" "*eshell*" (lambda nil (eshell)))))
- '(shell-pop-universal-key "<H-return>")
- '(shell-pop-window-position "bottom")
- '(shell-pop-window-size 50)
  '(vc-annotate-background nil)
  '(vc-annotate-color-map
    (quote
@@ -68,12 +58,7 @@
      (320 . "#f99157")
      (340 . "#ffcc66")
      (360 . "#99cc99"))))
- '(vc-annotate-very-old-color nil)
- '(web-mode-code-indent-offset 2 t)
- '(web-mode-css-indent-offset 2 t)
- '(web-mode-markup-indent-offset 2 t)
- '(window-divider-mode nil)
- '(xah-fly-use-control-key nil t))
+ '(vc-annotate-very-old-color nil))
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
