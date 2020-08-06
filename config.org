@@ -510,7 +510,7 @@ Language Server Protocol is an excellent way to get autocompletion, documentatio
     :ensure t
 
     :hook
-    (((csharp-mode web-mode) . yas-minor-mode))
+    (((csharp-mode web-mode python-mode java-mode) . yas-minor-mode))
     
     :config
     (yas-reload-all))
