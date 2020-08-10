@@ -1,3 +1,6 @@
+(setq ls-lisp-use-insert-directory-program nil)
+(setq ls-lisp-dirs-first t)
+
 ;; This code was nicked from Protesilaos's .emacs
 (use-package cus-edit
   :config
@@ -141,7 +144,6 @@
   (defun jacob-xah-command-binds ()
     "Set custom keys for xah-fly-keys keybindings."
     (define-key xah-fly-key-map (kbd "a") 'counsel-M-x)
-    (define-key xah-fly-key-map (kbd "n") 'swiper)
     (define-key xah-fly-key-map (kbd "8") 'er/expand-region)
     (define-key xah-fly-key-map (kbd "4") 'jacob-split-window-below-select-new)
     (define-key xah-fly-key-map (kbd "2") 'jacob-quit-popup-window)) ;; 1 can be rebound, is bound to a inferior version of expand region
@@ -346,8 +348,8 @@
         '((avy-goto-char-timer . avy-order-closest)
           (avy-goto-end-of-line . avy-order-closest)))
   (key-chord-define xah-fly-key-map "fj" 'avy-goto-char-timer)
-  (key-chord-define xah-fly-key-map "fk" 'avy-goto-word-or-subword-1)
-  (key-chord-define xah-fly-key-map "fl" 'avy-goto-line)
+  ;; (key-chord-define xah-fly-key-map "fk" 'avy-goto-word-or-subword-1)
+  ;; (key-chord-define xah-fly-key-map "fl" 'avy-goto-line)
   (key-chord-define xah-fly-key-map "f;" 'avy-goto-end-of-line))
 
 (use-package dimmer
@@ -380,7 +382,7 @@
   :ensure t
 
   :hook
-  (((csharp-mode web-mode) . yas-minor-mode))
+  (((csharp-mode web-mode python-mode java-mode) . yas-minor-mode))
 
   :config
   (yas-reload-all))
@@ -443,7 +445,10 @@
 
 (use-package swiper
   :ensure t
-  :after ivy)
+  :after ivy
+  :bind
+  (:map xah-fly-dot-keymap
+        ("s" . swiper)))
 
 (use-package counsel
   :ensure t
@@ -473,28 +478,28 @@
 
 (use-package shell-pop
   :ensure t
-  :init
+
+  :config
+  (setq shell-pop-autocd-to-working-dir nil)
+  (setq shell-pop-shell-type (quote ("eshell" "*eshell*" (lambda nil (eshell)))))
+  (setq shell-pop-universal-key "<H-return>")
+  (setq shell-pop-window-position "bottom")
+  (setq shell-pop-window-size 50)
+
   (defun jacob-shell-pop-eshell ()
-  (interactive)
-  (let ((shell-pop-shell-type '("eshell" "*eshell*" (lambda () (eshell))))
-        (shell-pop-term-shell "eshell"))
-    (shell-pop--set-shell-type 'shell-pop-shell-type shell-pop-shell-type)
-    (call-interactively 'shell-pop)))
+    (interactive)
+    (let ((shell-pop-shell-type '("eshell" "*eshell*" (lambda () (eshell))))
+          (shell-pop-term-shell "eshell"))
+      (shell-pop--set-shell-type 'shell-pop-shell-type shell-pop-shell-type)
+      (call-interactively 'shell-pop)))
 
   (defun jacob-shell-pop-shell ()
     (interactive)
-    (let ((shell-file-name "/bin/bash")
+    (let ((shell-file-name "C:/Windows/System32/Cmd.exe")
           (shell-pop-shell-type '("shell" "*shell*" (lambda () (shell))))
           (shell-pop-term-shell "shell"))
       (shell-pop--set-shell-type 'shell-pop-shell-type shell-pop-shell-type)
       (call-interactively 'shell-pop)))
-
-  :config
-  (setq shell-pop-autocd-to-working-dir nil)
-  (setq shell-pop-shell-type (quote ("eshell" "eshell*" (lambda nil (eshell)))))
-  (setq shell-pop-universal-key "<H-return>")
-  (setq shell-pop-window-position "bottom")
-  (setq shell-pop-window-size 50)
 
   :bind
   (:map xah-fly-n-keymap
