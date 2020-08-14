@@ -2,4 +2,4 @@
 # name: jacob public property
 # key: prop
 # --
-public $1 { get; set; }$0
+public ${1:string} ${2:PropertyName} ${3:{ get; set; }}$0

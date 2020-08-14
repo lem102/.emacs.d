@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: jacob private field ....;
+# key: field
+# --
+private ${1:string} _${2:fieldName};$0

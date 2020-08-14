@@ -324,7 +324,7 @@ Language Server Protocol is an excellent way to get autocompletion, documentatio
           ("p" . dired-maybe-insert-subdir)
           ("i" . dired-previous-line)
           ("k" . dired-next-line)
-          ("n" . swiper)
+          ("n" . isearch-forward)
           ("f" . dired-toggle-read-only)
           ("q" . xah-close-current-buffer)))
 #+END_SRC
