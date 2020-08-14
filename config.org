@@ -471,9 +471,7 @@ Language Server Protocol is an excellent way to get autocompletion, documentatio
      (setq avy-orders-alist
            '((avy-goto-char-timer . avy-order-closest)
              (avy-goto-end-of-line . avy-order-closest)))
-     (key-chord-define xah-fly-key-map "fj" 'avy-goto-char-timer)
-     ;; (key-chord-define xah-fly-key-map "fk" 'avy-goto-word-or-subword-1)
-     ;; (key-chord-define xah-fly-key-map "fl" 'avy-goto-line)
+     (key-chord-define xah-fly-key-map "fj" 'avy-goto-word-or-subword-1)
      (key-chord-define xah-fly-key-map "f;" 'avy-goto-end-of-line))
  #+END_SRC
 ** dimmer
