@@ -1,4 +1,8 @@
 * Built-in settings
+** move by logical lines
+#+BEGIN_SRC emacs-lisp
+  (setq line-move-visual nil)
+#+END_SRC
 ** Use ls implemented in elisp to have consistent behaviour across platforms
 #+BEGIN_SRC emacs-lisp
   (setq ls-lisp-use-insert-directory-program nil)
@@ -22,7 +26,7 @@
 #+END_SRC
 ** Inhibit Startup Message
 #+BEGIN_SRC emacs-lisp
-  ;; (setq inhibit-startup-message t)
+  (setq inhibit-startup-message t)
 #+END_SRC
 ** Reduce lag
 #+BEGIN_SRC emacs-lisp
@@ -87,11 +91,6 @@
 #+BEGIN_SRC emacs-lisp
   (setq ibuffer-expert t)
 #+END_SRC
-** Don't truncate
-#+BEGIN_SRC emacs-lisp
-  (toggle-truncate-lines)
-#+END_SRC
-
 ** Add lisp folder to load path
 #+BEGIN_SRC emacs-lisp
   (add-to-list 'load-path "~/.emacs.d/lisp/")
@@ -419,7 +418,7 @@ Language Server Protocol is an excellent way to get autocompletion, documentatio
  #+BEGIN_SRC emacs-lisp
    (use-package beacon
      :ensure t
-     :defer 2
+     :demand
      :diminish
      :config
      (setq beacon-color "#f2777a")

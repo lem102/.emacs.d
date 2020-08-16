@@ -19,7 +19,7 @@
 
 ;; go to the nice org file :)
 (org-babel-load-file (expand-file-name "~/.emacs.d/config.org"))
-
+;; (load-file (expand-file-name "~/.emacs.d/config.el"))
 ;;;;
 
 
