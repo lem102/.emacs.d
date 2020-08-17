@@ -1,5 +1,15 @@
 * Built-in settings
-
+** default frame size on startup
+#+BEGIN_SRC emacs-lisp
+  (if (display-graphic-p)
+      (setq initial-frame-alist
+            '(
+              (tool-bar-lines . 0)
+              (width . 116)
+              (fullscreen . fullheight)
+              (left . 0)
+              (top . 0))))
+#+END_SRC
 ** move by logical lines
 #+BEGIN_SRC emacs-lisp
   (setq line-move-visual nil)
