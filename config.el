@@ -162,8 +162,8 @@
     "Set custom keys for xah-fly-keys keybindings."
     (interactive)
     (define-key xah-fly-key-map (kbd "a") 'counsel-M-x)
-    (define-key xah-fly-key-map (kbd "d") 'backspace)
-    (define-key xah-fly-key-map (kbd "s") 'enter)
+    ;; (define-key xah-fly-key-map (kbd "d") 'backspace)
+    ;; (define-key xah-fly-key-map (kbd "s") 'enter)
     (define-key xah-fly-key-map (kbd "8") 'er/expand-region)
     (define-key xah-fly-key-map (kbd "4") 'jacob-split-window-below-select-new)
     (define-key xah-fly-key-map (kbd "2") 'jacob-quit-popup-window)) ;; 1 can be rebound, is bound to a inferior version of expand region
@@ -291,7 +291,8 @@
   (defun my-csharp-mode-setup ()
     (setq c-syntactic-indentation t)
     (c-set-style "ellemtel")
-    (setq c-basic-offset 4))
+    (setq c-basic-offset 4)
+    (load-file "~/.emacs.d/myLisp/namespace.el"))
   :hook
   (csharp-mode . my-csharp-mode-setup)
   :mode

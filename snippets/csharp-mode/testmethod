@@ -1,0 +1,9 @@
+# -*- mode: snippet -*-
+# name: [testmethod] public void Method { ... }
+# key: testmethod
+# --
+[TestMethod]
+${1:public} ${2:void} ${3:MethodName}($4)
+{
+    $0
+}

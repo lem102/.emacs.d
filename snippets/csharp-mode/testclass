@@ -1,9 +1,10 @@
 # -*- mode: snippet -*-
-# name: class ... { ... }
-# key: class
+# name: testclass ... { ... }
+# key: testclass
 # --
 namespace ${1:`(namespace-get)`}
 {
+    [TestClass]
     public class ${2: `(file-name-sans-extension (file-name-nondirectory (buffer-file-name)))`}
     {
         $0

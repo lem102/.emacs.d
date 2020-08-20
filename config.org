@@ -209,69 +209,69 @@
 
 * Xah Fly Keys
 #+BEGIN_SRC emacs-lisp
-    (use-package xah-fly-keys
-      :ensure t
+  (use-package xah-fly-keys
+    :ensure t
 
-      :demand
+    :demand
 
-      :init
-      (setq xah-fly-use-control-key nil)
+    :init
+    (setq xah-fly-use-control-key nil)
 
-      ;; This is a keyboard macro that enters insert mode, presses a backspace, then returns to command mode.
-      ;; It's purpose is so I can bind "d" in command mode to whatever backspace does in any given buffer.
-      (fset 'backspace
-            [?f backspace home])
+    ;; This is a keyboard macro that enters insert mode, presses a backspace, then returns to command mode.
+    ;; It's purpose is so I can bind "d" in command mode to whatever backspace does in any given buffer.
+    (fset 'backspace
+          [?f backspace home])
 
-      (fset 'enter
-            [return])
+    (fset 'enter
+          [return])
 
-      (defun jacob-xah-command-binds ()
-        "Set custom keys for xah-fly-keys keybindings."
-        (interactive)
-        (define-key xah-fly-key-map (kbd "a") 'counsel-M-x)
-        (define-key xah-fly-key-map (kbd "d") 'backspace)
-        (define-key xah-fly-key-map (kbd "s") 'enter)
-        (define-key xah-fly-key-map (kbd "8") 'er/expand-region)
-        (define-key xah-fly-key-map (kbd "4") 'jacob-split-window-below-select-new)
-        (define-key xah-fly-key-map (kbd "2") 'jacob-quit-popup-window)) ;; 1 can be rebound, is bound to a inferior version of expand region
+    (defun jacob-xah-command-binds ()
+      "Set custom keys for xah-fly-keys keybindings."
+      (interactive)
+      (define-key xah-fly-key-map (kbd "a") 'counsel-M-x)
+      ;; (define-key xah-fly-key-map (kbd "d") 'backspace)
+      ;; (define-key xah-fly-key-map (kbd "s") 'enter)
+      (define-key xah-fly-key-map (kbd "8") 'er/expand-region)
+      (define-key xah-fly-key-map (kbd "4") 'jacob-split-window-below-select-new)
+      (define-key xah-fly-key-map (kbd "2") 'jacob-quit-popup-window)) ;; 1 can be rebound, is bound to a inferior version of expand region
 
-      :config
-      (load-file (expand-file-name "~/.emacs.d/myLisp/jacob-xah-modified-commands.el"))
+    :config
+    (load-file (expand-file-name "~/.emacs.d/myLisp/jacob-xah-modified-commands.el"))
 
-      (define-prefix-command 'jacob-config-keymap)
-      (xah-fly-keys-set-layout "qwerty")
-      (xah-fly-keys 1)
+    (define-prefix-command 'jacob-config-keymap)
+    (xah-fly-keys-set-layout "qwerty")
+    (xah-fly-keys 1)
 
-      (add-hook 'xah-fly-command-mode-activate-hook 'jacob-xah-command-binds)
-      (jacob-xah-command-binds) ;; call it on startup so binds are set without calling xah-fly-command-mode-activate first.
+    (add-hook 'xah-fly-command-mode-activate-hook 'jacob-xah-command-binds)
+    (jacob-xah-command-binds) ;; call it on startup so binds are set without calling xah-fly-command-mode-activate first.
 
-      (add-hook 'dired-mode-hook 'xah-fly-keys-off)
-      (add-hook 'eww-mode-hook 'xah-fly-keys-off)
-      (add-hook 'ibuffer-mode-hook 'xah-fly-keys-off)
-      (add-hook 'custom-mode-hook 'xah-fly-keys-off)
+    (add-hook 'dired-mode-hook 'xah-fly-keys-off)
+    (add-hook 'eww-mode-hook 'xah-fly-keys-off)
+    (add-hook 'ibuffer-mode-hook 'xah-fly-keys-off)
+    (add-hook 'custom-mode-hook 'xah-fly-keys-off)
 
-      (key-chord-define xah-fly-key-map "fd" 'xah-fly-command-mode-activate)
+    (key-chord-define xah-fly-key-map "fd" 'xah-fly-command-mode-activate)
 
-      :bind
-      (:map jacob-config-keymap
-            ("r" . config-reload)
-            ("R" . restart-emacs)
-            ("e" . config-visit)
-            ("c" . jacob-org-src-block)
-            ("p" . jacob-recompile-packages)
-            ("t" . jacob-long-time-toggle))
-      (:map xah-fly-e-keymap
-            ("k". jacob-xah-insert-paren)
-            ("l". jacob-xah-insert-square-bracket)
-            ("j". jacob-xah-insert-brace)
-            ("u". jacob-xah-insert-ascii-double-quote)
-            ("i". jacob-xah-insert-ascii-single-quote))
-      (:map xah-fly-dot-keymap
-            ("c" . jacob-config-keymap))
-      (:map xah-fly-leader-key-map
-            ("4" . jacob-split-window-right-select-new))
-      (:map xah-fly-w-keymap
-            ("n" . eval-and-replace)))
+    :bind
+    (:map jacob-config-keymap
+          ("r" . config-reload)
+          ("R" . restart-emacs)
+          ("e" . config-visit)
+          ("c" . jacob-org-src-block)
+          ("p" . jacob-recompile-packages)
+          ("t" . jacob-long-time-toggle))
+    (:map xah-fly-e-keymap
+          ("k". jacob-xah-insert-paren)
+          ("l". jacob-xah-insert-square-bracket)
+          ("j". jacob-xah-insert-brace)
+          ("u". jacob-xah-insert-ascii-double-quote)
+          ("i". jacob-xah-insert-ascii-single-quote))
+    (:map xah-fly-dot-keymap
+          ("c" . jacob-config-keymap))
+    (:map xah-fly-leader-key-map
+          ("4" . jacob-split-window-right-select-new))
+    (:map xah-fly-w-keymap
+          ("n" . eval-and-replace)))
 #+END_SRC
 * Language Server Protocol & Debug Adapter Protocol
 Language Server Protocol is an excellent way to get autocompletion, documentation and linting for many programming languages within emacs. Therefore this will eventually be quite a busy section.
@@ -390,7 +390,8 @@ Language Server Protocol is an excellent way to get autocompletion, documentatio
      (defun my-csharp-mode-setup ()
        (setq c-syntactic-indentation t)
        (c-set-style "ellemtel")
-       (setq c-basic-offset 4))
+       (setq c-basic-offset 4)
+       (load-file "~/.emacs.d/myLisp/namespace.el"))
      :hook
      (csharp-mode . my-csharp-mode-setup)
      :mode
