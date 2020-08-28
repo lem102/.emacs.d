@@ -292,7 +292,7 @@
     (setq c-syntactic-indentation t)
     (c-set-style "ellemtel")
     (setq c-basic-offset 4)
-    (load-file "~/.emacs.d/myLisp/namespace.el"))
+    (require "~/.emacs.d/myLisp/namespace.el"))
   :hook
   (csharp-mode . my-csharp-mode-setup)
   :mode
@@ -393,9 +393,13 @@
    :bind
    (:map jacob-omnisharp-keymap
          ("u" . omnisharp-fix-usings)
+         ("U" . omnisharp-find-usages)
+         ("i" . omnisharp-find-implementations)
          ("d" . omnisharp-go-to-definition)
-         ("s" . omnisharp-start-omnisharp-server)
-         ("S" . omnisharp-stop-server))
+         ("r" . omnisharp-rename)
+         ("a" . omnisharp-run-code-action-refactoring)
+         ("o" . omnisharp-start-omnisharp-server)
+         ("O" . omnisharp-stop-server))
    :config
    (define-prefix-command 'jacob-omnisharp-keymap)
    (define-key xah-fly-dot-keymap (kbd "o") jacob-omnisharp-keymap)

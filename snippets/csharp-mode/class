@@ -4,7 +4,7 @@
 # --
 namespace ${1:`(namespace-get)`}
 {
-    public class ${2: `(file-name-sans-extension (file-name-nondirectory (buffer-file-name)))`}
+    public class ${2:`(file-name-sans-extension (file-name-nondirectory (buffer-file-name)))`}
     {
         $0
     }
