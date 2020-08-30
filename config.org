@@ -358,6 +358,11 @@ Language Server Protocol is an excellent way to get autocompletion, documentatio
           ("q" . xah-close-current-buffer)))
 #+END_SRC
 * Major Mode Packages
+** bnf-mode
+#+BEGIN_SRC emacs-lisp
+  (use-package bnf-mode
+    :ensure t)
+#+END_SRC
 ** Org
  #+BEGIN_SRC emacs-lisp
    (use-package org
@@ -391,7 +396,7 @@ Language Server Protocol is an excellent way to get autocompletion, documentatio
        (setq c-syntactic-indentation t)
        (c-set-style "ellemtel")
        (setq c-basic-offset 4)
-       (require "~/.emacs.d/myLisp/namespace.el"))
+       (load-file "~/.emacs.d/myLisp/namespace.el"))
      :hook
      (csharp-mode . my-csharp-mode-setup)
      :mode
