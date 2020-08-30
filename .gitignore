@@ -1,0 +1,19 @@
+# Directories
+games
+auto-save-list
+server
+workspace
+url
+
+# Files in root directory
+bookmarks
+.dap-breakpoints
+history
+ido.last
+.lsp-session-v1
+.mc-lists.el
+projectile-bookmarks.eld
+projectile.cache
+recentf
+smex-items
+Thumbs.db

@@ -1,6 +1,0 @@
-# -*- mode: snippet -*-
-# contributor : Alejandro Espinoza Esparza <aespinoza@structum.com.mx>
-# name: jacob private attribute ....;
-# key: attrib
-# --
-private $1 _$2;$0

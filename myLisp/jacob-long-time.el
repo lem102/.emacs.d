@@ -97,7 +97,7 @@
                       ;; position of point
                       "(%l,%c) "
                       ;; date
-                      '(:eval (concat (format-time-string "%A the%e")
+                      '(:eval (concat (format-time-string "%A the %e")
                                       (jacob-day-suffix (string-to-number (format-time-string "%e")))
                                       (format-time-string " of %B %Y, ")))
                       ;; time

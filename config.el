@@ -1,6 +1,30 @@
+(if (display-graphic-p)
+    (setq initial-frame-alist
+          '(
+            (tool-bar-lines . 0)
+            (width . 116)
+            (fullscreen . fullheight)
+            (left . 0)
+            (top . 0))))
+
+(setq line-move-visual nil)
+
+(setq ls-lisp-use-insert-directory-program nil)
+(setq ls-lisp-dirs-first t)
+
+;; This code was nicked from Protesilaos's .emacs
+(use-package cus-edit
+  :config
+  (defun jacob-cus-edit ()
+    (let ((custom-file "~/.emacs.d/custom.el"))
+      (unless (file-exists-p custom-file)
+        (write-region "" nil custom-file))
+      (load-file custom-file)))
+  :hook (after-init . jacob-cus-edit))
+
 (setq read-process-output-max (* 1024 1024))
 
-;; (setq inhibit-startup-message t)
+(setq inhibit-startup-message t)
 
 (setq auto-window-vscroll nil)
 (setq redisplay-dont-pause t)
@@ -29,8 +53,6 @@
 
 (setq ibuffer-expert t)
 
-(toggle-truncate-lines)
-
 (add-to-list 'load-path "~/.emacs.d/lisp/")
 
 (savehist-mode 1)
@@ -55,6 +77,16 @@
 (setq-default tab-width 4)
 ;; make tab key call indent command or insert tab character, depending on cursor position
 (setq-default tab-always-indent t)
+
+(defun eval-and-replace ()
+  "Replace the preceding sexp with its value."
+  (interactive)
+  (backward-kill-sexp)
+  (condition-case nil
+      (prin1 (eval (read (current-kill 0)))
+             (current-buffer))
+    (error (message "Invalid expression")
+           (insert (current-kill 0)))))
 
 (defun jacob-quit-popup-window ()
   (interactive)
@@ -118,15 +150,27 @@
   :init
   (setq xah-fly-use-control-key nil)
 
+  ;; This is a keyboard macro that enters insert mode, presses a backspace, then returns to command mode.
+  ;; It's purpose is so I can bind "d" in command mode to whatever backspace does in any given buffer.
+  (fset 'backspace
+        [?f backspace home])
+
+  (fset 'enter
+        [return])
+
   (defun jacob-xah-command-binds ()
     "Set custom keys for xah-fly-keys keybindings."
+    (interactive)
     (define-key xah-fly-key-map (kbd "a") 'counsel-M-x)
-    (define-key xah-fly-key-map (kbd "n") 'swiper)
+    ;; (define-key xah-fly-key-map (kbd "d") 'backspace)
+    ;; (define-key xah-fly-key-map (kbd "s") 'enter)
     (define-key xah-fly-key-map (kbd "8") 'er/expand-region)
     (define-key xah-fly-key-map (kbd "4") 'jacob-split-window-below-select-new)
     (define-key xah-fly-key-map (kbd "2") 'jacob-quit-popup-window)) ;; 1 can be rebound, is bound to a inferior version of expand region
 
   :config
+  (load-file (expand-file-name "~/.emacs.d/myLisp/jacob-xah-modified-commands.el"))
+
   (define-prefix-command 'jacob-config-keymap)
   (xah-fly-keys-set-layout "qwerty")
   (xah-fly-keys 1)
@@ -149,10 +193,18 @@
         ("c" . jacob-org-src-block)
         ("p" . jacob-recompile-packages)
         ("t" . jacob-long-time-toggle))
+  (:map xah-fly-e-keymap
+        ("k". jacob-xah-insert-paren)
+        ("l". jacob-xah-insert-square-bracket)
+        ("j". jacob-xah-insert-brace)
+        ("u". jacob-xah-insert-ascii-double-quote)
+        ("i". jacob-xah-insert-ascii-single-quote))
   (:map xah-fly-dot-keymap
         ("c" . jacob-config-keymap))
   (:map xah-fly-leader-key-map
-        ("4" . jacob-split-window-right-select-new)))
+        ("4" . jacob-split-window-right-select-new))
+  (:map xah-fly-w-keymap
+        ("n" . eval-and-replace)))
 
 (use-package lsp-mode
   :ensure t
@@ -219,9 +271,12 @@
         ("p" . dired-maybe-insert-subdir)
         ("i" . dired-previous-line)
         ("k" . dired-next-line)
-        ("n" . swiper)
+        ("n" . isearch-forward)
         ("f" . dired-toggle-read-only)
         ("q" . xah-close-current-buffer)))
+
+(use-package bnf-mode
+  :ensure t)
 
 (use-package org
   :mode ("\\.org\\'" . org-mode)
@@ -243,7 +298,8 @@
   (defun my-csharp-mode-setup ()
     (setq c-syntactic-indentation t)
     (c-set-style "ellemtel")
-    (setq c-basic-offset 4))
+    (setq c-basic-offset 4)
+    (load-file "~/.emacs.d/myLisp/namespace.el"))
   :hook
   (csharp-mode . my-csharp-mode-setup)
   :mode
@@ -279,12 +335,6 @@
   :ensure t
   :mode ("\\.clj\\$" . clojure-mode))
 
-(use-package gdscript-mode
-  :ensure t
-
-  :config 
-  (setq gdscript-use-tab-indents nil))
-
 (use-package flycheck
   :ensure t
   :defer 2
@@ -293,9 +343,10 @@
 
 (use-package beacon
   :ensure t
-  :defer 2
+  :demand
   :diminish
   :config
+  (setq beacon-color "#f2777a")
   (beacon-mode 1))
 
 (use-package which-key
@@ -332,15 +383,8 @@
   (setq avy-orders-alist
         '((avy-goto-char-timer . avy-order-closest)
           (avy-goto-end-of-line . avy-order-closest)))
-  (key-chord-define xah-fly-key-map "fj" 'avy-goto-char-timer)
-  (key-chord-define xah-fly-key-map "fk" 'avy-goto-word-or-subword-1)
-  (key-chord-define xah-fly-key-map "fl" 'avy-goto-line)
+  (key-chord-define xah-fly-key-map "fj" 'avy-goto-word-or-subword-1)
   (key-chord-define xah-fly-key-map "f;" 'avy-goto-end-of-line))
-
-(use-package rainbow-mode
-  :ensure t
-  :diminish
-  :hook prog-mode)
 
 (use-package dimmer
   :ensure t
@@ -356,9 +400,13 @@
    :bind
    (:map jacob-omnisharp-keymap
          ("u" . omnisharp-fix-usings)
+         ("U" . omnisharp-find-usages)
+         ("i" . omnisharp-find-implementations)
          ("d" . omnisharp-go-to-definition)
-         ("s" . omnisharp-start-omnisharp-server)
-         ("S" . omnisharp-stop-server))
+         ("r" . omnisharp-rename)
+         ("a" . omnisharp-run-code-action-refactoring)
+         ("o" . omnisharp-start-omnisharp-server)
+         ("O" . omnisharp-stop-server))
    :config
    (define-prefix-command 'jacob-omnisharp-keymap)
    (define-key xah-fly-dot-keymap (kbd "o") jacob-omnisharp-keymap)
@@ -372,7 +420,7 @@
   :ensure t
 
   :hook
-  (((csharp-mode web-mode python-mode) . yas-minor-mode))
+  (((csharp-mode web-mode python-mode java-mode) . yas-minor-mode))
 
   :config
   (yas-reload-all))
@@ -435,7 +483,10 @@
 
 (use-package swiper
   :ensure t
-  :after ivy)
+  :after ivy
+  :bind
+  (:map xah-fly-dot-keymap
+        ("s" . swiper)))
 
 (use-package counsel
   :ensure t
@@ -465,30 +516,33 @@
 
 (use-package shell-pop
   :ensure t
-  :init
+
+  :config
+  (setq shell-pop-autocd-to-working-dir nil)
+  (setq shell-pop-shell-type (quote ("eshell" "*eshell*" (lambda nil (eshell)))))
+  (setq shell-pop-universal-key "<H-return>")
+  (setq shell-pop-window-position "bottom")
+  (setq shell-pop-window-size 50)
+
   (defun jacob-shell-pop-eshell ()
-  (interactive)
-  (let ((shell-pop-shell-type '("eshell" "*eshell*" (lambda () (eshell))))
-        (shell-pop-term-shell "eshell"))
-    (shell-pop--set-shell-type 'shell-pop-shell-type shell-pop-shell-type)
-    (call-interactively 'shell-pop)))
+    (interactive)
+    (let ((shell-pop-shell-type '("eshell" "*eshell*" (lambda () (eshell))))
+          (shell-pop-term-shell "eshell"))
+      (shell-pop--set-shell-type 'shell-pop-shell-type shell-pop-shell-type)
+      (call-interactively 'shell-pop)))
 
   (defun jacob-shell-pop-shell ()
     (interactive)
-    (let ((shell-file-name "/bin/bash")
+    (let ((shell-file-name "C:/Windows/System32/Cmd.exe")
           (shell-pop-shell-type '("shell" "*shell*" (lambda () (shell))))
           (shell-pop-term-shell "shell"))
       (shell-pop--set-shell-type 'shell-pop-shell-type shell-pop-shell-type)
       (call-interactively 'shell-pop)))
+
   :bind
   (:map xah-fly-n-keymap
         ("d" . jacob-shell-pop-eshell)
         ("f" . jacob-shell-pop-shell)))
-
-(use-package move-text
-  :ensure t
-  :config
-  (move-text-default-bindings))
 
 (use-package eshell-up
   :ensure t)
@@ -505,10 +559,6 @@
 
 (load "~/.emacs.d/myLisp/jacob-long-time")
 (jacob-long-time-toggle)
-
-(use-package hl-line
-  :defer 2
-  :config (when window-system (global-hl-line-mode t)))
 
 (tool-bar-mode -1)
 

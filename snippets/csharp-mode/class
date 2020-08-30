@@ -1,21 +1,10 @@
 # -*- mode: snippet -*-
-# contributor : Alejandro Espinoza Esparza <aespinoza@structum.com.mx>
 # name: class ... { ... }
 # key: class
 # --
-namespace ${1:`
-(if (> (length (directory-files "d:/Programming/csharp/" :match-regexp "\\.cs$")) 0)
-    (with-temp-buffer
-      (insert-file-contents (car (directory-files "d:/Programming/csharp/SudokuSolver" :match-regexp "\\.cs$")))
-      (search-forward "namespace")
-      (forward-char)
-      (set-mark-command nil)
-      (end-of-line nil)
-      (buffer-substring (region-beginning) (region-end)))
-  "")
-`}
+namespace ${1:`(namespace-get)`}
 {
-    public class `(file-name-sans-extension (file-name-nondirectory (buffer-file-name)))`
+    public class ${2:`(file-name-sans-extension (file-name-nondirectory (buffer-file-name)))`}
     {
         $0
     }

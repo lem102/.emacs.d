@@ -1,32 +1,3 @@
-(setq gc-cons-threshold (* 50 1000 1000))
-
-(require 'package)
-(setq package-enable-at-startup nil)
-(add-to-list 'package-archives
-			 '("melpa" . "https://melpa.org/packages/"))
-
-;; Added by Package.el.  This must come before configurations of
-;; installed packages.  Don't delete this line.  If you don't want it,
-;; just comment it out by adding a semicolon to the start of the line.
-;; You may delete these explanatory comments.
-(package-initialize)
-
-(unless (package-installed-p 'use-package)
-  (package-refresh-contents)
-  (package-install 'use-package))
-
-;;;;
-
-;; go to the nice org file :)
-(org-babel-load-file (expand-file-name "~/.emacs.d/config.org"))
-;; (load-file (expand-file-name "~/.emacs.d/config.el"))
-;;;;
-
-
-(put 'dired-find-alternate-file 'disabled nil)
-
-(setq gc-cons-threshold (* 2 1000 1000))
-(put 'narrow-to-page 'disabled nil)
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -64,7 +35,7 @@
      ("\\?\\?\\?+" . "#dc752f"))))
  '(package-selected-packages
    (quote
-    (dap-java dap-mode flycheck lsp-ui lsp-java lsp-mode lsp-ivy projectile color-theme-sanityinc-tomorrow cider clojure-mode counsel json-mode use-package-chords langtool swiper magit yasnippet web-mode vertigo shell-pop restart-emacs dimmer pretty-mode expand-region multiple-cursors symon-mode diminish switch-window company-mode smex beacon spacemacs-theme which-key use-package yaml-mode xah-fly-keys company omnisharp)))
+    (dap-java dap-mode flycheck lsp-ui lsp-java lsp-mode lsp-ivy projectile color-theme-sanityinc-tomorrow cider clojure-mode counsel json-mode use-package-chords langtool swiper magit yasnippet web-mode vertigo shell-pop restart-emacs dimmer pretty-mode expand-region multiple-cursors symon-mode diminish switch-window company-mode smex beacon spacemacs-theme which-key use-package yaml-mode xah-fly-keys company omnisharp csharp-mode)))
  '(pdf-view-midnight-colors (quote ("#b2b2b2" . "#292b2e")))
  '(vc-annotate-background nil)
  '(vc-annotate-color-map
@@ -88,10 +59,10 @@
      (340 . "#ffcc66")
      (360 . "#99cc99"))))
  '(vc-annotate-very-old-color nil))
+
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(default ((t (:inherit nil :stipple nil :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 120 :width normal :foundry "outline" :family "Courier New")))))
-(put 'narrow-to-region 'disabled nil)
