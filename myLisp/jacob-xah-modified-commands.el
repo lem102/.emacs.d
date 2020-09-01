@@ -27,3 +27,28 @@ URL `http://ergoemacs.org/emacs/elisp_insert_brackets_by_pair.html'"
 (defun jacob-xah-insert-brace () (interactive) (jacob-xah-insert-bracket-pair "{" "}"))
 (defun jacob-xah-insert-ascii-double-quote () (interactive) (jacob-xah-insert-bracket-pair "\"" "\""))
 (defun jacob-xah-insert-ascii-single-quote () (interactive) (jacob-xah-insert-bracket-pair "'" "'"))
+
+
+(defun jacob-insert-plus ()
+  (interactive)
+  (insert "+"))
+
+(defun jacob-insert-equals ()
+  (interactive)
+  (insert "="))
+
+(defun jacob-insert-apostrophe ()
+  (interactive)
+  (insert "'"))
+
+(defun jacob-insert-at ()
+  (interactive)
+  (insert "@"))
+
+(defun jacob-insert-tilde ()
+  (interactive)
+  (insert "~"))
+
+(defun jacob-insert-hash ()
+  (interactive)
+  (insert "#"))

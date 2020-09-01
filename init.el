@@ -64,7 +64,7 @@
      ("\\?\\?\\?+" . "#dc752f"))))
  '(package-selected-packages
    (quote
-    (dap-java dap-mode flycheck lsp-ui lsp-java lsp-mode lsp-ivy projectile color-theme-sanityinc-tomorrow cider clojure-mode counsel json-mode use-package-chords langtool swiper magit yasnippet web-mode vertigo shell-pop restart-emacs dimmer pretty-mode expand-region multiple-cursors symon-mode diminish switch-window company-mode smex beacon spacemacs-theme which-key use-package yaml-mode xah-fly-keys company omnisharp)))
+    (bnf-mode dap-java dap-mode flycheck lsp-ui lsp-java lsp-mode lsp-ivy projectile color-theme-sanityinc-tomorrow cider clojure-mode counsel json-mode use-package-chords langtool swiper magit yasnippet web-mode vertigo shell-pop restart-emacs dimmer pretty-mode expand-region multiple-cursors symon-mode diminish switch-window company-mode smex beacon spacemacs-theme which-key use-package yaml-mode xah-fly-keys company omnisharp csharp-mode)))
  '(pdf-view-midnight-colors (quote ("#b2b2b2" . "#292b2e")))
  '(vc-annotate-background nil)
  '(vc-annotate-color-map

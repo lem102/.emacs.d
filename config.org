@@ -218,7 +218,7 @@
     (setq xah-fly-use-control-key nil)
 
     ;; This is a keyboard macro that enters insert mode, presses a backspace, then returns to command mode.
-    ;; It's purpose is so I can bind "d" in command mode to whatever backspace does in any given buffer.
+    ;; It's purpose is so I can bind "D" in command mode to whatever backspace does in any given buffer.
     (fset 'backspace
           [?f backspace home])
 
@@ -229,11 +229,12 @@
       "Set custom keys for xah-fly-keys keybindings."
       (interactive)
       (define-key xah-fly-key-map (kbd "a") 'counsel-M-x)
-      ;; (define-key xah-fly-key-map (kbd "d") 'backspace)
-      ;; (define-key xah-fly-key-map (kbd "s") 'enter)
+      (define-key xah-fly-key-map (kbd "D") 'backspace)
+      (define-key xah-fly-key-map (kbd "s") 'enter)
       (define-key xah-fly-key-map (kbd "8") 'er/expand-region)
       (define-key xah-fly-key-map (kbd "4") 'jacob-split-window-below-select-new)
-      (define-key xah-fly-key-map (kbd "2") 'jacob-quit-popup-window)) ;; 1 can be rebound, is bound to a inferior version of expand region
+      ;; 1 can be rebound, is bound to a inferior version of expand region
+      (define-key xah-fly-key-map (kbd "2") 'jacob-quit-popup-window)) 
 
     :config
     (load-file (expand-file-name "~/.emacs.d/myLisp/jacob-xah-modified-commands.el"))
@@ -265,7 +266,15 @@
           ("l". jacob-xah-insert-square-bracket)
           ("j". jacob-xah-insert-brace)
           ("u". jacob-xah-insert-ascii-double-quote)
-          ("i". jacob-xah-insert-ascii-single-quote))
+          ("i". jacob-xah-insert-ascii-single-quote)
+          ("m" . xah-insert-hyphen)
+          ("," . xah-insert-low-line)
+          ("." . jacob-insert-equals)
+          ("/" . jacob-insert-plus)
+          ("z" . jacob-insert-apostrophe)
+          ("x" . jacob-insert-at)
+          ("c" . jacob-insert-hash)
+          ("v" . jacob-insert-tilde))
     (:map xah-fly-dot-keymap
           ("c" . jacob-config-keymap))
     (:map xah-fly-leader-key-map
