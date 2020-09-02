@@ -66,7 +66,7 @@
                      gcs-done)))
 
 (setq w32-pass-rwindow-to-system nil
-	  w32-rwindow-modifier 'super)
+	      w32-rwindow-modifier 'super)
 
 (setq w32-pass-apps-to-system nil)
 (setq w32-apps-modifier 'hyper)
@@ -162,7 +162,6 @@
     "Set custom keys for xah-fly-keys keybindings."
     (interactive)
     (define-key xah-fly-key-map (kbd "a") 'counsel-M-x)
-    (define-key xah-fly-key-map (kbd "D") 'backspace)
     (define-key xah-fly-key-map (kbd "s") 'enter)
     (define-key xah-fly-key-map (kbd "8") 'er/expand-region)
     (define-key xah-fly-key-map (kbd "4") 'jacob-split-window-below-select-new)
@@ -207,6 +206,7 @@
         ("z" . jacob-insert-apostrophe)
         ("x" . jacob-insert-at)
         ("c" . jacob-insert-hash)
+        ("d" . backspace)
         ("v" . jacob-insert-tilde))
   (:map xah-fly-dot-keymap
         ("c" . jacob-config-keymap))
@@ -359,11 +359,11 @@
   (beacon-mode 1))
 
 (use-package which-key
-  :ensure t
+      :ensure t
   :defer 2
-  :diminish
-  :config
-  (which-key-mode))
+      :diminish
+      :config
+      (which-key-mode))
 
 (use-package company
   :ensure t
@@ -396,10 +396,10 @@
   (key-chord-define xah-fly-key-map "f;" 'avy-goto-end-of-line))
 
 (use-package dimmer
-  :ensure t
+      :ensure t
   :defer 5
-  :config
-  (dimmer-mode))
+      :config
+      (dimmer-mode))
 
 (use-package omnisharp
    :ensure t
@@ -445,9 +445,27 @@
   :ensure t
   :mode ("\\.clj\\$" . clojure-mode))
 
-(use-package restart-emacs
+(use-package minibuffer-line
   :ensure t
-  :defer t)
+  :init
+  (minibuffer-line-mode)
+  :config
+  (load "~/.emacs.d/myLisp/jacob-long-time")
+
+  (setq-default minibuffer-line-format (list
+                                ;; date
+                                '(:eval (concat (format-time-string "%A the %e")
+                                                (jacob-day-suffix (string-to-number (format-time-string "%e")))
+                                                (format-time-string " of %B %Y, ")))
+                                ;; time
+                                '(:eval (concat "at "
+                                                (jacob-long-time (string-to-number (format-time-string "%H")) (string-to-number (format-time-string "%M")))))))
+  (face-remap-reset-base 'minibuffer-line)
+  (minibuffer-line--update))
+
+(use-package restart-emacs
+      :ensure t
+      :defer t)
 
 (use-package smex
   :ensure t
@@ -456,25 +474,25 @@
   ("M-x" . smex))
 
 (use-package diminish
-  :ensure t
-  :defer t
-  :config
-  (diminish 'subword-mode)
-  (diminish 'org-src-mode)
-  (diminish 'eldoc-mode))
+      :ensure t
+      :defer t
+      :config
+      (diminish 'subword-mode)
+      (diminish 'org-src-mode)
+      (diminish 'eldoc-mode))
 
 (use-package switch-window
-  :ensure t
-  :defer t
-  :config
-  (setq switch-window-input-style 'minibuffer)
-  (setq switch-window-threshold 2)
-  (setq switch-window-multiple-frames t)
-  (setq switch-window-shortcut-style 'qwerty)
-  (setq switch-window-qwerty-shortcuts
+      :ensure t
+      :defer t
+      :config
+      (setq switch-window-input-style 'minibuffer)
+      (setq switch-window-threshold 2)
+      (setq switch-window-multiple-frames t)
+      (setq switch-window-shortcut-style 'qwerty)
+      (setq switch-window-qwerty-shortcuts
 		'("q" "w" "e" "r" "a" "s" "d" "f" "z" "x" "c" "v"))
-  :bind
-  ([remap xah-next-window-or-frame] . switch-window))
+      :bind
+      ([remap xah-next-window-or-frame] . switch-window))
 
 (use-package ivy
   :ensure t
@@ -505,17 +523,17 @@
   :config (counsel-mode))
 
 (use-package multiple-cursors
-  :ensure t
-  :bind
-  (:map xah-fly-dot-keymap
+      :ensure t
+      :bind
+      (:map xah-fly-dot-keymap
 		("m" . jacob-multiple-cursors-keymap)
-  :map jacob-multiple-cursors-keymap
+      :map jacob-multiple-cursors-keymap
 		("l" . mc/edit-lines)
 		(">" . mc/mark-next-like-this)
 		("<" . mc/mark-previous-like-this)
 		("a" . mc/mark-all-like-this))
-  :init
-  (define-prefix-command 'jacob-multiple-cursors-keymap))
+      :init
+      (define-prefix-command 'jacob-multiple-cursors-keymap))
 
 (use-package expand-region
   :ensure t
@@ -554,20 +572,27 @@
         ("f" . jacob-shell-pop-shell)))
 
 (use-package eshell-up
-  :ensure t)
+      :ensure t)
 
 (use-package langtool
-  ;; :ensure t
-  :defer t
-  :config
-  (setq langtool-language-tool-jar
+      ;; :ensure t
+      :defer t
+      :config
+      (setq langtool-language-tool-jar
 		"/home/lem/Documents/LanguageTool-4.8/languagetool-commandline.jar"))
 
 (use-package color-theme-sanityinc-tomorrow
   :ensure t)
 
-(load "~/.emacs.d/myLisp/jacob-long-time")
-(jacob-long-time-toggle)
+(setq-default mode-line-format (list
+                                ;; saved, readonly
+                                "%*"
+                                ;; major mode
+                                "%m: "
+                                ;; buffer name
+                                "%b "
+                                ;; position of point
+                                "(%l,%c) "))
 
 (tool-bar-mode -1)
 

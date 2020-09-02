@@ -229,7 +229,6 @@
       "Set custom keys for xah-fly-keys keybindings."
       (interactive)
       (define-key xah-fly-key-map (kbd "a") 'counsel-M-x)
-      (define-key xah-fly-key-map (kbd "D") 'backspace)
       (define-key xah-fly-key-map (kbd "s") 'enter)
       (define-key xah-fly-key-map (kbd "8") 'er/expand-region)
       (define-key xah-fly-key-map (kbd "4") 'jacob-split-window-below-select-new)
@@ -274,6 +273,7 @@
           ("z" . jacob-insert-apostrophe)
           ("x" . jacob-insert-at)
           ("c" . jacob-insert-hash)
+          ("d" . backspace)
           ("v" . jacob-insert-tilde))
     (:map xah-fly-dot-keymap
           ("c" . jacob-config-keymap))
@@ -590,6 +590,26 @@ Language Server Protocol is an excellent way to get autocompletion, documentatio
 #+END_SRC
 
 * Non-mode Packages
+** minibuffer-line
+#+BEGIN_SRC emacs-lisp
+  (use-package minibuffer-line
+    :ensure t
+    :init
+    (minibuffer-line-mode)
+    :config
+    (load "~/.emacs.d/myLisp/jacob-long-time")
+
+    (setq-default minibuffer-line-format (list
+                                  ;; date
+                                  '(:eval (concat (format-time-string "%A the %e")
+                                                  (jacob-day-suffix (string-to-number (format-time-string "%e")))
+                                                  (format-time-string " of %B %Y, ")))
+                                  ;; time
+                                  '(:eval (concat "at "
+                                                  (jacob-long-time (string-to-number (format-time-string "%H")) (string-to-number (format-time-string "%M")))))))
+    (face-remap-reset-base 'minibuffer-line)
+    (minibuffer-line--update))
+#+END_SRC
 ** restart-emacs
 #+BEGIN_SRC emacs-lisp
   (use-package restart-emacs
@@ -752,8 +772,15 @@ Language Server Protocol is an excellent way to get autocompletion, documentatio
 
 ** Modeline
 #+BEGIN_SRC emacs-lisp
-  (load "~/.emacs.d/myLisp/jacob-long-time")
-  (jacob-long-time-toggle)
+  (setq-default mode-line-format (list
+                                  ;; saved, readonly
+                                  "%*"
+                                  ;; major mode
+                                  "%m: "
+                                  ;; buffer name
+                                  "%b "
+                                  ;; position of point
+                                  "(%l,%c) "))
 #+END_SRC
 ** Get rid of toolbar
 #+BEGIN_SRC emacs-lisp

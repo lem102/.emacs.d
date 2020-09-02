@@ -83,41 +83,4 @@
           (jacob-long-time-past-or-to minute)
           (jacob-long-time-hour hour minute)))
 
-(defun jacob-long-time-toggle ()
-  "Toggle between long and short form time in the modeline."
-  (interactive)
-  (let ((current-format mode-line-format)
-        (long-format (list
-                      ;; saved, readonly
-                      "%*"
-                      ;; major mode
-                      "%m: "
-                      ;; buffer name
-                      "%b "
-                      ;; position of point
-                      "(%l,%c) "
-                      ;; date
-                      '(:eval (concat (format-time-string "%A the %e")
-                                      (jacob-day-suffix (string-to-number (format-time-string "%e")))
-                                      (format-time-string " of %B %Y, ")))
-                      ;; time
-                      '(:eval (concat "at "
-                                      (jacob-long-time (string-to-number (format-time-string "%H")) (string-to-number (format-time-string "%M")))))))
-        (short-format (list
-                       ;; saved, readonly
-                       "%*"
-                       ;; major mode
-                       "%m: "
-                       ;; buffer name
-                       "%b "
-                       ;; position of point
-                       "(%l,%c) "
-                       ;; date
-                       '(:eval (format-time-string "%d/%m/%y "))
-                       ;; time
-                       '(:eval (format-time-string "%H:%M")))))
-    (if (string= (format-mode-line current-format) (format-mode-line long-format))
-        (setq-default mode-line-format short-format)
-      (setq-default mode-line-format long-format))))
-
 ;;; jacob-long-time.el ends here
