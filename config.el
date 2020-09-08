@@ -452,6 +452,8 @@
   :config
   (load "~/.emacs.d/myLisp/jacob-long-time")
 
+  (set-face-attribute 'minibuffer-line nil :foreground "#ffffff" :background "#002451")
+
   (setq-default minibuffer-line-format (list
                                 ;; date
                                 '(:eval (concat (format-time-string "%A the %e")
