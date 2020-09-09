@@ -603,7 +603,7 @@ Language Server Protocol is an excellent way to get autocompletion, documentatio
 
     (setq-default minibuffer-line-format (list
                                   ;; date
-                                  '(:eval (concat (format-time-string "%A the%e")
+                                  '(:eval (concat (format-time-string "%A the %e")
                                                   (jacob-day-suffix (string-to-number (format-time-string "%e")))
                                                   (format-time-string " of %B %Y, ")))
                                   ;; time
