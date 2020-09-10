@@ -425,6 +425,7 @@
 
 (use-package avy
   :ensure t
+  :defer 0.1
   :config
   (setq avy-keys (number-sequence ?a ?z))
   (setq avy-all-windows t)
@@ -432,8 +433,7 @@
         '((avy-goto-char-timer . avy-order-closest)
           (avy-goto-end-of-line . avy-order-closest)))
   (key-chord-define xah-fly-key-map "fj" 'avy-goto-word-or-subword-1)
-  (key-chord-define xah-fly-key-map "f;" 'avy-goto-end-of-line)
-  :hook after-init-hook)
+  (key-chord-define xah-fly-key-map "f;" 'avy-goto-end-of-line))
 
 (use-package minibuffer-line
   :ensure t
