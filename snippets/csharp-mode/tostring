@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: tostring
+# key: tostring
+# --
+public override string ToString()
+{
+    $0
+}

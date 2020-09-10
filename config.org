@@ -19,18 +19,6 @@
   (setq ls-lisp-use-insert-directory-program nil)
   (setq ls-lisp-dirs-first t)
 #+END_SRC
-** Isolate Custom paraphenalia
-#+BEGIN_SRC emacs-lisp
-  ;; This code was nicked from Protesilaos's .emacs
-  (use-package cus-edit
-    :config
-    (defun jacob-cus-edit ()
-      (let ((custom-file "~/.emacs.d/custom.el"))
-        (unless (file-exists-p custom-file)
-          (write-region "" nil custom-file))
-        (load-file custom-file)))
-    :hook (after-init . jacob-cus-edit))
-#+END_SRC
 ** Read more data from process
 #+BEGIN_SRC emacs-lisp
   (setq read-process-output-max (* 1024 1024))
@@ -509,21 +497,6 @@ Language Server Protocol is an excellent way to get autocompletion, documentatio
     (define-key xah-fly-dot-keymap (kbd "p") projectile-command-map)
     (setq projectile-completion-system 'ivy))
 #+END_SRC
-
-** avy
- #+BEGIN_SRC emacs-lisp
-   (use-package avy
-     :ensure t
-     :defer 1
-     :config
-     (setq avy-keys (number-sequence ?a ?z))
-     (setq avy-all-windows t)
-     (setq avy-orders-alist
-           '((avy-goto-char-timer . avy-order-closest)
-             (avy-goto-end-of-line . avy-order-closest)))
-     (key-chord-define xah-fly-key-map "fj" 'avy-goto-word-or-subword-1)
-     (key-chord-define xah-fly-key-map "f;" 'avy-goto-end-of-line))
- #+END_SRC
 ** dimmer
 #+BEGIN_SRC emacs-lisp
   (use-package dimmer
@@ -590,6 +563,20 @@ Language Server Protocol is an excellent way to get autocompletion, documentatio
 #+END_SRC
 
 * Non-mode Packages
+** avy
+ #+BEGIN_SRC emacs-lisp
+   (use-package avy
+     :ensure t
+     :config
+     (setq avy-keys (number-sequence ?a ?z))
+     (setq avy-all-windows t)
+     (setq avy-orders-alist
+           '((avy-goto-char-timer . avy-order-closest)
+             (avy-goto-end-of-line . avy-order-closest)))
+     (key-chord-define xah-fly-key-map "fj" 'avy-goto-word-or-subword-1)
+     (key-chord-define xah-fly-key-map "f;" 'avy-goto-end-of-line)
+     :hook after-init-hook)
+ #+END_SRC
 ** minibuffer-line
 #+BEGIN_SRC emacs-lisp
   (use-package minibuffer-line
@@ -655,42 +642,45 @@ Language Server Protocol is an excellent way to get autocompletion, documentatio
 	 ([remap xah-next-window-or-frame] . switch-window))
  #+END_SRC
 
-** ivy
+** ivy and friends
+*** ivy
  #+BEGIN_SRC emacs-lisp
    (use-package ivy
      :ensure t
      :diminish
-     :defer 1
+     :defer 0.1
 
      :bind
      (:map xah-fly-leader-key-map
            ("v" . counsel-yank-pop))
 
      :config
-     (ivy-mode 1)
      (setq ivy-initial-inputs-alist nil)
      (setq enable-recursive-minibuffers t))
  #+END_SRC
 
-** swiper
-#+BEGIN_SRC emacs-lisp
-  (use-package swiper
-    :ensure t
-    :after ivy
-    :bind
-    (:map xah-fly-dot-keymap
-          ("s" . swiper)))
-#+END_SRC
+*** swiper
+ #+BEGIN_SRC emacs-lisp
+   (use-package swiper
+     :ensure t
+     :after ivy
+     :bind
+     (:map xah-fly-dot-keymap
+           ("s" . swiper)))
+ #+END_SRC
 
-** counsel
-#+BEGIN_SRC emacs-lisp
-  (use-package counsel
-    :ensure t
-    :diminish
-    :after ivy
+*** counsel
+ #+BEGIN_SRC emacs-lisp
+   (use-package counsel
+     :ensure t
+     :diminish
+     :after ivy
   
-    :config (counsel-mode))
-#+END_SRC
+     :config (counsel-mode)
+     :bind
+     (:map xah-fly-c-keymap
+           ("e" . counsel-find-file)))
+ #+END_SRC
 
 ** multiple-cursors
  #+BEGIN_SRC emacs-lisp
