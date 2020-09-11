@@ -7,7 +7,7 @@
             (left . 0)
             (top . 0))))
 
-(setq line-move-visual nil)
+(setq line-move-visual t)
 
 (setq ls-lisp-use-insert-directory-program nil)
 (setq ls-lisp-dirs-first t)
@@ -23,9 +23,9 @@
 
 (setq scroll-conservatively 100)
 
-(electric-pair-mode 1)
-
-(global-subword-mode 1)
+(use-package subword
+  :diminish
+  :hook (prog-mode . subword-mode))
 
 (delete-selection-mode 1)
 
@@ -497,7 +497,8 @@
 
   :config
   (setq ivy-initial-inputs-alist nil)
-  (setq enable-recursive-minibuffers t))
+  (setq enable-recursive-minibuffers t)
+  (ivy-mode 1))
 
 (use-package swiper
   :ensure t

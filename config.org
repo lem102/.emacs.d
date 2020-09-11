@@ -12,7 +12,7 @@
 #+END_SRC
 ** move by logical lines
 #+BEGIN_SRC emacs-lisp
-  (setq line-move-visual nil)
+  (setq line-move-visual t)
 #+END_SRC
 ** Use ls implemented in elisp to have consistent behaviour across platforms
 #+BEGIN_SRC emacs-lisp
@@ -36,19 +36,15 @@
 #+BEGIN_SRC emacs-lisp
   (setq ring-bell-function 'ignore)
 #+END_SRC
-
 ** Prevent the view of the screen jumping to the middle when scrolling out of the view.
 #+BEGIN_SRC emacs-lisp
   (setq scroll-conservatively 100)
 #+END_SRC
-** Auto insert closing bracket (electric pair)
+** subword-mode
 #+BEGIN_SRC emacs-lisp
-  (electric-pair-mode 1)
-#+END_SRC
-
-** Make cursor movement stop in between camelCase words.
-#+BEGIN_SRC emacs-lisp
-  (global-subword-mode 1)
+  (use-package subword
+    :diminish
+    :hook (prog-mode . subword-mode))
 #+END_SRC
 
 ** Make typing delete/overwrite region
@@ -271,7 +267,9 @@
           ("n" . eval-and-replace)))
 #+END_SRC
 * Language Server Protocol & Debug Adapter Protocol
-Language Server Protocol is an excellent way to get autocompletion, documentation and linting for many programming languages within emacs. Therefore this will eventually be quite a busy section.
+Language Server Protocol is an excellent way to get autocompletion, documentation
+and linting for many programming languages within emacs. Therefore this
+will eventually be quite a busy section.
 ** Base lsp-mode
 *** lsp-mode
  #+BEGIN_SRC emacs-lisp
@@ -656,7 +654,8 @@ Language Server Protocol is an excellent way to get autocompletion, documentatio
 
      :config
      (setq ivy-initial-inputs-alist nil)
-     (setq enable-recursive-minibuffers t))
+     (setq enable-recursive-minibuffers t)
+     (ivy-mode 1))
  #+END_SRC
 
 *** swiper
