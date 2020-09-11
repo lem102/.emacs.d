@@ -1,4 +1,8 @@
 * Built-in settings
+** prevent emacs from disabling commands.
+#+BEGIN_SRC emacs-lisp
+  (setq disabled-command-function nil)
+#+END_SRC
 ** default frame size on startup
 #+BEGIN_SRC emacs-lisp
   (if (display-graphic-p)
@@ -758,7 +762,10 @@ will eventually be quite a busy section.
 ** Theme (sanityinc-tomorrow)
 #+BEGIN_SRC emacs-lisp
   (use-package color-theme-sanityinc-tomorrow
-    :ensure t)
+    :ensure t
+    :defer 0.1
+    :config
+    (load-theme 'sanityinc-tomorrow-blue t))
 #+END_SRC
 
 ** Modeline

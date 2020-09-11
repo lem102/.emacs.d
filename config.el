@@ -1,3 +1,5 @@
+(setq disabled-command-function nil)
+
 (if (display-graphic-p)
     (setq initial-frame-alist
           '(
@@ -577,7 +579,10 @@
 		"/home/lem/Documents/LanguageTool-4.8/languagetool-commandline.jar"))
 
 (use-package color-theme-sanityinc-tomorrow
-  :ensure t)
+  :ensure t
+  :defer 0.1
+  :config
+  (load-theme 'sanityinc-tomorrow-blue t))
 
 (setq-default mode-line-format (list
                                 ;; saved, readonly
