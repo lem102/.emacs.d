@@ -178,7 +178,21 @@
 #+END_SRC
 ** Save minibuffer history (useful for compile)
 #+BEGIN_SRC emacs-lisp
-  (savehist-mode 1)
+  (use-package savehist
+    :config
+    (setq savehist-file "~/.emacs.d/savehist")
+    (setq history-length 1000)
+    (setq history-delete-duplicates t)
+    (setq savehist-save-minibuffer-history t)
+    :hook (after-init-hook . savehist-mode))
+#+END_SRC
+** Save cursor position in files
+#+BEGIN_SRC emacs-lisp
+  (use-package saveplace
+    :config
+    (setq save-place-file "~/.emacs.d/saveplace")
+    (setq save-place-forget-unreadable-files t)
+    (save-place-mode 1))
 #+END_SRC
 ** Startup time
 #+BEGIN_SRC emacs-lisp
