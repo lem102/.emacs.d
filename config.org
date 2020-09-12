@@ -319,7 +319,7 @@
       (define-key xah-fly-key-map (kbd "8") 'er/expand-region)
       (define-key xah-fly-key-map (kbd "4") 'jacob-split-window-below-select-new)
       ;; 1 can be rebound, is bound to a inferior version of expand region
-      (define-key xah-fly-key-map (kbd "2") 'jacob-quit-popup-window)) 
+      (define-key xah-fly-key-map (kbd "2") 'jacob-quit-popup-window))
 
     :config
     (load-file (expand-file-name "~/.emacs.d/myLisp/jacob-xah-modified-commands.el"))
@@ -764,13 +764,10 @@ will eventually be quite a busy section.
      :ensure t
      :diminish
      :after ivy
-  
-     :config (counsel-mode)
-     :bind
-     (:map xah-fly-c-keymap
-           ("e" . counsel-find-file)))
- #+END_SRC
 
+     :config (counsel-mode))
+ #+END_SRC
+ 
 ** multiple-cursors
  #+BEGIN_SRC emacs-lisp
    (use-package multiple-cursors
@@ -843,4 +840,3 @@ will eventually be quite a busy section.
 	(setq langtool-language-tool-jar
 		  "/home/lem/Documents/LanguageTool-4.8/languagetool-commandline.jar"))
 #+END_SRC
-
