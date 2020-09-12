@@ -1,4 +1,98 @@
+* Use-Package
+#+BEGIN_SRC emacs-lisp
+  ;; Make sure use package is available.
+  (unless (package-installed-p 'use-package)
+    (package-refresh-contents)
+    (package-install 'use-package))
+
+  ;; Configure use-package prior to loading it.
+  (eval-and-compile
+    (setq use-package-always-ensure nil)
+    (setq use-package-always-defer nil)
+    (setq use-package-always-demand nil)
+    (setq use-package-enable-imenu-support t)
+    ;; use real name of hook instead of shorter version.
+    (setq use-package-hook-name-suffix nil))
+
+  (eval-when-compile
+    (require 'use-package))
+#+END_SRC
+
+* Appearance
+** Disable GUI components
+#+BEGIN_SRC emacs-lisp
+  (use-package emacs
+    :init
+    (tool-bar-mode -1)
+    (menu-bar-mode -1)
+    (scroll-bar-mode -1)
+    :config
+    (setq use-file-dialog nil)
+    (setq use-dialog-box t)
+    (setq inhibit-startup-message t)
+    :bind
+    (("C-z" . nil)
+     ("C-c C-z" . nil)
+     ("C-h h" . nil)))
+#+END_SRC
+** diminish
+#+BEGIN_SRC emacs-lisp
+  (use-package diminish
+    :ensure
+    :after use-package)
+#+END_SRC
+** Theme (sanityinc-tomorrow)
+#+BEGIN_SRC emacs-lisp
+  (use-package color-theme-sanityinc-tomorrow
+    :ensure t
+    :defer 0.1
+    :config
+    (load-theme 'sanityinc-tomorrow-blue t))
+#+END_SRC
+
+** Modeline
+#+BEGIN_SRC emacs-lisp
+  (setq-default mode-line-format (list
+                                  ;; saved, readonly
+                                  "%*"
+                                  ;; major mode
+                                  "%m: "
+                                  ;; buffer name
+                                  "%b "
+                                  ;; position of point
+                                  "(%l,%c) "))
+#+END_SRC
+** Font Setup
+#+BEGIN_SRC emacs-lisp
+  (when (member "DejaVu Sans Mono" (font-family-list))
+	  (add-to-list 'initial-frame-alist '(font . "DejaVu Sans Mono-10"))
+	  (add-to-list 'default-frame-alist '(font . "DejaVu Sans Mono-10")))
+#+END_SRC
 * Built-in settings
+** put custom stuff in custom.el
+#+BEGIN_SRC emacs-lisp
+  (use-package cus-edit
+    :config
+    (defvar prot/custom-file "~/.emacs.d/custom.el")
+    (setq custom-file prot/custom-file)
+    (defun prot/cus-edit ()
+      (let ((custom-file prot/custom-file))
+        (unless (file-exists-p custom-file)
+          (make-empty-file custom-file))
+        (load-file custom-file))))
+#+END_SRC
+** always rebuild init
+#+BEGIN_SRC emacs-lisp
+  (use-package emacs
+    :config
+    (defun prot/rebuild-emacs-init ()
+      (let ((config-el "~/.emacs.d/config.el")
+            (config-org "~/.emacs.d/config.org"))
+        (when config-el
+          (delete-file config-el))
+        (org-babel-tangle-file config-org config-el)))
+    :hook ((kill-emacs-hook . prot/rebuild-emacs-init)))
+#+END_SRC
 ** prevent emacs from disabling commands.
 #+BEGIN_SRC emacs-lisp
   (setq disabled-command-function nil)
@@ -27,10 +121,6 @@
 #+BEGIN_SRC emacs-lisp
   (setq read-process-output-max (* 1024 1024))
 #+END_SRC
-** Inhibit Startup Message
-#+BEGIN_SRC emacs-lisp
-  (setq inhibit-startup-message t)
-#+END_SRC
 ** Reduce lag
 #+BEGIN_SRC emacs-lisp
   (setq auto-window-vscroll nil)
@@ -48,7 +138,7 @@
 #+BEGIN_SRC emacs-lisp
   (use-package subword
     :diminish
-    :hook (prog-mode . subword-mode))
+    :hook (prog-mode-hook . subword-mode))
 #+END_SRC
 
 ** Make typing delete/overwrite region
@@ -60,22 +150,14 @@
 #+BEGIN_SRC emacs-lisp
   (show-paren-mode 1)
 #+END_SRC
-
-** Stop emacs creating backups~
+** Prevent emacs from creating debris when editing files
 #+BEGIN_SRC emacs-lisp
-  (setq make-backup-files nil)
+  (use-package emacs
+    :config
+    (setq make-backup-files nil)
+    (setq auto-save-default nil)
+    (setq create-lockfiles nil))
 #+END_SRC
-
-** Stop emacs creating #autosaves#
-#+BEGIN_SRC emacs-lisp
-  (setq auto-save-default nil)
-#+END_SRC
-
-** Stop emacs from creating .#lock file links
-#+BEGIN_SRC emacs-lisp
-  (setq create-lockfiles nil)
-#+END_SRC
-
 ** Backups don't destroy original file's creation date
 #+BEGIN_SRC emacs-lisp
   (setq backup-by-copying t)
@@ -121,12 +203,14 @@
 #+END_SRC
 ** Tabs
 #+BEGIN_SRC emacs-lisp
-  ;; use spaces to indent
-  (setq-default indent-tabs-mode nil)
-  ;; set default tab char's display width to 4 spaces
-  (setq-default tab-width 4)
-  ;; make tab key call indent command or insert tab character, depending on cursor position
-  (setq-default tab-always-indent t)
+  (use-package emacs
+    :config
+    ;; use spaces to indent
+    (setq-default indent-tabs-mode nil)
+    ;; set default tab char's display width to 4 spaces
+    (setq-default tab-width 4)
+    ;; make tab key call indent command or insert tab character, depending on cursor position
+    (setq-default tab-always-indent 'complete))
 #+END_SRC
 * Personal Functions
 #+BEGIN_SRC emacs-lisp
@@ -280,8 +364,8 @@ will eventually be quite a busy section.
    (use-package lsp-mode
      :ensure t
      :hook
-     ((java-mode python-mode) . lsp)
-     (lsp-mode . lsp-enable-which-key-integration)
+     ((java-mode-hook python-mode-hook) . lsp)
+     (lsp-mode-hook . lsp-enable-which-key-integration)
      :commands lsp
      :init
      (setq lsp-completion-enable-additional-text-edit nil)
@@ -308,7 +392,7 @@ will eventually be quite a busy section.
 #+BEGIN_SRC emacs-lisp
   (use-package dap-mode
     :ensure t
-    :hook java-mode
+    :hook java-mode-hook
     :config
     (use-package dap-java)
     (dap-mode 1)
@@ -403,7 +487,7 @@ will eventually be quite a busy section.
        (setq c-basic-offset 4)
        (load-file "~/.emacs.d/myLisp/namespace.el"))
      :hook
-     (csharp-mode . my-csharp-mode-setup)
+     (csharp-mode-hook . my-csharp-mode-setup)
      :mode
      ("\\.cs\\$" . csharp-mode))
  #+END_SRC
@@ -426,7 +510,7 @@ will eventually be quite a busy section.
     (setq web-mode-css-indent-offset 2)
     (setq web-mode-code-indent-offset 2)
 
-    :hook (web-mode . jacob-web-mode-config)
+    :hook (web-mode-hook . jacob-web-mode-config)
 
     :mode (("\\.html?\\'" . web-mode)
            ("\\.cshtml\\'" . web-mode)
@@ -452,6 +536,7 @@ will eventually be quite a busy section.
     :ensure t
     :defer 2
     :config
+    (setq-default flycheck-disabled-checkers '(emacs-lisp-checkdoc))
     (global-flycheck-mode))
 #+END_SRC
 
@@ -482,7 +567,7 @@ will eventually be quite a busy section.
      :ensure t
      :defer t
      :diminish
-     :hook ((emacs-lisp-mode csharp-mode java-mode) . company-mode)
+     :hook ((emacs-lisp-mode-hook csharp-mode-hook java-mode-hook) . company-mode)
      :config
      (setq company-idle-delay 0.5)
      (setq company-minimum-prefix-length 3))
@@ -514,7 +599,7 @@ will eventually be quite a busy section.
      :ensure t
      :defer t
      :after company
-     :hook (csharp-mode . omnisharp-mode)
+     :hook (csharp-mode-hook . omnisharp-mode)
      :bind
      (:map jacob-omnisharp-keymap
            ("u" . omnisharp-fix-usings)
@@ -541,7 +626,7 @@ will eventually be quite a busy section.
     :ensure t
 
     :hook
-    (((csharp-mode web-mode python-mode java-mode) . yas-minor-mode))
+    (((csharp-mode-hook web-mode-hook python-mode-hook java-mode-hook) . yas-minor-mode))
     
     :config
     (yas-reload-all))
@@ -563,7 +648,6 @@ will eventually be quite a busy section.
     :ensure t
     :mode ("\\.clj\\$" . clojure-mode))
 #+END_SRC
-
 * Non-mode Packages
 ** avy
  #+BEGIN_SRC emacs-lisp
@@ -616,18 +700,6 @@ will eventually be quite a busy section.
      :bind
      ("M-x" . smex))
  #+END_SRC
-
-** diminish
-#+BEGIN_SRC emacs-lisp
-  (use-package diminish
-	:ensure t
-	:defer t
-	:config
-	(diminish 'subword-mode)
-	(diminish 'org-src-mode)
-	(diminish 'eldoc-mode))
-#+END_SRC
-
 ** switch-window
  #+BEGIN_SRC emacs-lisp
    (use-package switch-window
@@ -756,48 +828,5 @@ will eventually be quite a busy section.
 	:config
 	(setq langtool-language-tool-jar
 		  "/home/lem/Documents/LanguageTool-4.8/languagetool-commandline.jar"))
-#+END_SRC
-
-* Appearance
-** Theme (sanityinc-tomorrow)
-#+BEGIN_SRC emacs-lisp
-  (use-package color-theme-sanityinc-tomorrow
-    :ensure t
-    :defer 0.1
-    :config
-    (load-theme 'sanityinc-tomorrow-blue t))
-#+END_SRC
-
-** Modeline
-#+BEGIN_SRC emacs-lisp
-  (setq-default mode-line-format (list
-                                  ;; saved, readonly
-                                  "%*"
-                                  ;; major mode
-                                  "%m: "
-                                  ;; buffer name
-                                  "%b "
-                                  ;; position of point
-                                  "(%l,%c) "))
-#+END_SRC
-** Get rid of toolbar
-#+BEGIN_SRC emacs-lisp
-  (tool-bar-mode -1)
-#+END_SRC
-
-** Get rid of menubar
-#+BEGIN_SRC emacs-lisp
-  (menu-bar-mode -1)
-#+END_SRC
-
-** Get rid of scrollbar
-#+BEGIN_SRC emacs-lisp
-  (scroll-bar-mode -1)
-#+END_SRC
-** Font Setup
-#+BEGIN_SRC emacs-lisp
-  (when (member "DejaVu Sans Mono" (font-family-list))
-	  (add-to-list 'initial-frame-alist '(font . "DejaVu Sans Mono-10"))
-	  (add-to-list 'default-frame-alist '(font . "DejaVu Sans Mono-10")))
 #+END_SRC
 
