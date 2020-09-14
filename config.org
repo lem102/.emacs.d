@@ -291,6 +291,18 @@
     (interactive)
     (split-window-right)
     (other-window 1))
+
+  (load-file (expand-file-name "~/.emacs.d/myLisp/jacob-long-time.el"))
+
+  (defun jacob-display-time ()
+    "Display the current date and time in the echo area."
+    (interactive)
+    (message (concat (format-time-string "%A the %e")
+                     (jacob-day-suffix (string-to-number (format-time-string "%e")))
+                     (format-time-string " of %B %Y, ")
+                     "at "
+                     (jacob-long-time (string-to-number (format-time-string "%H"))
+                                      (string-to-number (format-time-string "%M"))))))
 #+END_SRC
 
 * Xah Fly Keys
@@ -345,7 +357,7 @@
           ("e" . config-visit)
           ("c" . jacob-org-src-block)
           ("p" . jacob-recompile-packages)
-          ("t" . jacob-long-time-toggle))
+          ("t" . jacob-display-time))
     (:map xah-fly-e-keymap
           ("k". jacob-xah-insert-paren)
           ("l". jacob-xah-insert-square-bracket)
@@ -641,7 +653,7 @@ will eventually be quite a busy section.
 
     :hook
     (((csharp-mode-hook web-mode-hook python-mode-hook java-mode-hook) . yas-minor-mode))
-    
+
     :config
     (yas-reload-all))
 #+END_SRC
@@ -677,28 +689,6 @@ will eventually be quite a busy section.
      (key-chord-define xah-fly-key-map "fj" 'avy-goto-word-or-subword-1)
      (key-chord-define xah-fly-key-map "f;" 'avy-goto-end-of-line))
  #+END_SRC
-** minibuffer-line
-#+BEGIN_SRC emacs-lisp
-  (use-package minibuffer-line
-    :ensure t
-    :init
-    (minibuffer-line-mode)
-    :config
-    (load "~/.emacs.d/myLisp/jacob-long-time")
-
-    (set-face-attribute 'minibuffer-line nil :foreground "#ffffff" :background "#002451")
-
-    (setq-default minibuffer-line-format (list
-                                  ;; date
-                                  '(:eval (concat (format-time-string "%A the %e")
-                                                  (jacob-day-suffix (string-to-number (format-time-string "%e")))
-                                                  (format-time-string " of %B %Y, ")))
-                                  ;; time
-                                  '(:eval (concat "at "
-                                                  (jacob-long-time (string-to-number (format-time-string "%H")) (string-to-number (format-time-string "%M")))))))
-    (face-remap-reset-base 'minibuffer-line)
-    (minibuffer-line--update))
-#+END_SRC
 ** restart-emacs
 #+BEGIN_SRC emacs-lisp
   (use-package restart-emacs
@@ -765,7 +755,9 @@ will eventually be quite a busy section.
      :diminish
      :after ivy
 
-     :config (counsel-mode))
+     :config
+     (setq counsel-mode-override-describe-bindings nil)
+     (counsel-mode 1))
  #+END_SRC
  
 ** multiple-cursors
