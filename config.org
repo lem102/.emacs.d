@@ -69,6 +69,13 @@
 	  (add-to-list 'default-frame-alist '(font . "DejaVu Sans Mono-10")))
 #+END_SRC
 * Built-in settings
+** dabbrev
+#+BEGIN_SRC emacs-lisp
+  (use-package dabbrev
+    :config
+    :bind (("M-/" . dabbrev-expand)
+           ("C-M-/" . dabbrev-completion)))
+#+END_SRC
 ** put custom stuff in custom.el
 #+BEGIN_SRC emacs-lisp
   (use-package cus-edit
@@ -228,6 +235,14 @@
 #+END_SRC
 * Personal Functions
 #+BEGIN_SRC emacs-lisp
+  (defun jacob-original-find-file ()
+    "Uses the original file-file mechanism. 
+  Useful for dealing with files on other servers.
+  (at least on Microsoft Windows)"
+    (interactive)
+    (let ((completing-read-function 'completing-read-default))
+      (call-interactively 'find-file)))
+
   (defun eval-and-replace ()
     "Replace the preceding sexp with its value."
     (interactive)
@@ -484,7 +499,7 @@ will eventually be quite a busy section.
      :mode ("\\.org\\'" . org-mode)
      :config
      (add-to-list 'org-structure-template-alist
-                '("el" "#+BEGIN_SRC emacs-lisp\n?\n#+END_SRC")))
+                  '("el" "#+BEGIN_SRC emacs-lisp\n?\n#+END_SRC")))
  #+END_SRC
 
 ** yaml-Mode
@@ -502,21 +517,21 @@ will eventually be quite a busy section.
  #+END_SRC
 
 ** csharp-mode
- #+BEGIN_SRC emacs-lisp
-   (use-package csharp-mode
-     :ensure t
-     :defer t
-     :config
-     (defun my-csharp-mode-setup ()
-       (setq c-syntactic-indentation t)
-       (c-set-style "ellemtel")
-       (setq c-basic-offset 4)
-       (load-file "~/.emacs.d/myLisp/namespace.el"))
-     :hook
-     (csharp-mode-hook . my-csharp-mode-setup)
-     :mode
-     ("\\.cs\\$" . csharp-mode))
- #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (use-package csharp-mode
+    :ensure t
+    :defer t
+    :config
+    (defun my-csharp-mode-setup ()
+      (setq c-syntactic-indentation t)
+      (c-set-style "ellemtel")
+      (setq c-basic-offset 4)
+      (load-file "~/.emacs.d/myLisp/namespace.el"))
+    :hook
+    (csharp-mode-hook . my-csharp-mode-setup)
+    :mode
+    ("\\.cs\\$" . csharp-mode))
+#+END_SRC
 
 ** web-mode
 #+BEGIN_SRC emacs-lisp
@@ -621,29 +636,39 @@ will eventually be quite a busy section.
 
 ** omnisharp
 #+BEGIN_SRC emacs-lisp
+  ;; FIXME: if company mode is not started before csharp mode is entered, omnisharp mode will not activate
   (use-package omnisharp
-     :ensure t
-     :defer t
-     :after company
-     :hook (csharp-mode-hook . omnisharp-mode)
-     :bind
-     (:map jacob-omnisharp-keymap
-           ("u" . omnisharp-fix-usings)
-           ("U" . omnisharp-find-usages)
-           ("i" . omnisharp-find-implementations)
-           ("d" . omnisharp-go-to-definition)
-           ("r" . omnisharp-rename)
-           ("a" . omnisharp-run-code-action-refactoring)
-           ("o" . omnisharp-start-omnisharp-server)
-           ("O" . omnisharp-stop-server))
-     :config
-     (define-prefix-command 'jacob-omnisharp-keymap)
-     (define-key xah-fly-dot-keymap (kbd "o") jacob-omnisharp-keymap)
-     (add-hook 'omnisharp-mode-hook (lambda ()
-                                      (add-to-list (make-local-variable 'company-backends)
-                                                   '(company-omnisharp))))
-     (setq omnisharp-company-ignore-case nil)
-     (setq omnisharp-server-executable-path "D:\\Programming\\OmniSharp\\omnisharp-roslyn\\bin\\Debug\\OmniSharp.Stdio.Driver\\net472\\OmniSharp.exe"))
+    :ensure t
+    :defer t
+    :after company
+    :hook (csharp-mode-hook . omnisharp-mode)
+    :bind
+    (:map jacob-omnisharp-keymap
+          ("u" . omnisharp-fix-usings)
+          ("U" . omnisharp-find-usages)
+          ("i" . omnisharp-find-implementations)
+          ("d" . omnisharp-go-to-definition)
+          ("r" . omnisharp-rename)
+          ("a" . omnisharp-run-code-action-refactoring)
+          ("o" . omnisharp-start-omnisharp-server)
+          ("O" . omnisharp-stop-server))
+    :config
+    (define-prefix-command 'jacob-omnisharp-keymap)
+    (define-key xah-fly-dot-keymap (kbd "o") jacob-omnisharp-keymap)
+    (add-hook 'omnisharp-mode-hook (lambda ()
+                                     (add-to-list (make-local-variable 'company-backends)
+                                                  '(company-omnisharp))))
+    (setq omnisharp-company-ignore-case nil)
+    (setq omnisharp-server-executable-path "D:\\Programming\\OmniSharp\\omnisharp-roslyn\\bin\\Debug\\OmniSharp.Stdio.Driver\\net472\\OmniSharp.exe")
+
+    (defun jacob-csharp-indent-or-complete ()
+      (interactive)
+      (let ((old-point (point)))
+        (c-indent-line-or-region)
+        (if (eq old-point (point))
+            (call-interactively 'omnisharp--popup-to-ido))))
+
+    (define-key csharp-mode-map (kbd "<tab>") 'jacob-csharp-indent-or-complete))
 #+END_SRC
 
 ** yasnippet
@@ -692,8 +717,8 @@ will eventually be quite a busy section.
 ** restart-emacs
 #+BEGIN_SRC emacs-lisp
   (use-package restart-emacs
-	:ensure t
-	:defer t)
+    :ensure t
+    :defer t)
 #+END_SRC
 
 ** smex
@@ -727,25 +752,25 @@ will eventually be quite a busy section.
      :ensure t
      :diminish
      :defer 0.1
-
-     :bind
-     (:map xah-fly-leader-key-map
-           ("v" . counsel-yank-pop))
-
      :config
      (setq ivy-initial-inputs-alist nil)
      (setq enable-recursive-minibuffers t)
-     (ivy-mode 1))
- #+END_SRC
+     (setq completing-read-function 'ivy-completing-read)
+     :bind
+     (:map xah-fly-c-keymap
+           ("e" . counsel-find-file))
+     (:map xah-fly-dot-keymap
+           ("s" . swiper))
+     (:map xah-fly-leader-key-map
+           ("v" . counsel-yank-pop)
+           ("f" . ivy-switch-buffer)))
+#+END_SRC
 
 *** swiper
  #+BEGIN_SRC emacs-lisp
    (use-package swiper
      :ensure t
-     :after ivy
-     :bind
-     (:map xah-fly-dot-keymap
-           ("s" . swiper)))
+     :after ivy)
  #+END_SRC
 
 *** counsel
@@ -753,11 +778,7 @@ will eventually be quite a busy section.
    (use-package counsel
      :ensure t
      :diminish
-     :after ivy
-
-     :config
-     (setq counsel-mode-override-describe-bindings nil)
-     (counsel-mode 1))
+     :after ivy)
  #+END_SRC
  
 ** multiple-cursors
@@ -831,4 +852,33 @@ will eventually be quite a busy section.
 	:config
 	(setq langtool-language-tool-jar
 		  "/home/lem/Documents/LanguageTool-4.8/languagetool-commandline.jar"))
+#+END_SRC
+* Experimental
+** complete in minibuffer
+#+BEGIN_SRC emacs-lisp
+  (use-package emacs
+    :after ivy
+    :config
+    (defun contrib/completing-read-in-region (start end collection &optional predicate)
+      "Prompt for completion of region in the minibuffer if non-unique.
+  Use as a value for `completion-in-region-function'."
+      (if (and (minibufferp) (not (string= (minibuffer-prompt) "Eval: ")))
+          (completion--in-region start end collection predicate)
+        (let* ((initial (buffer-substring-no-properties start end))
+               (limit (car (completion-boundaries initial collection predicate "")))
+               (all (completion-all-completions initial collection predicate
+                                                (length initial)))
+               (completion (cond
+                            ((atom all) nil)
+                            ((and (consp all) (atom (cdr all)))
+                             (concat (substring initial 0 limit) (car all)))
+                            (t (completing-read
+                                "Completion: " collection predicate t initial)))))
+          (if (null completion)
+              (progn (message "No completion") nil)
+            (delete-region start end)
+            (insert completion)
+            t))))
+    ;; possibility that this is being set by bloody ivy!!!
+  (setq completion-in-region-function #'contrib/completing-read-in-region))
 #+END_SRC
