@@ -41,32 +41,78 @@
     :ensure
     :after use-package)
 #+END_SRC
-** Theme (sanityinc-tomorrow)
+** Theme
+*** sanityinc-tomorrow-blue
 #+BEGIN_SRC emacs-lisp
   (use-package color-theme-sanityinc-tomorrow
     :ensure t
+    :disabled
     :defer 0.1
     :config
     (load-theme 'sanityinc-tomorrow-blue t))
 #+END_SRC
-
+*** tao-yang
+#+BEGIN_SRC emacs-lisp
+(use-package tao-theme
+  :ensure t
+  :disabled
+  :config
+  (load-theme 'tao-yang t))
+#+END_SRC
 ** Modeline
 #+BEGIN_SRC emacs-lisp
-  (setq-default mode-line-format (list
-                                  ;; saved, readonly
-                                  "%*"
-                                  ;; major mode
-                                  "%m: "
-                                  ;; buffer name
-                                  "%b "
-                                  ;; position of point
-                                  "(%l,%c) "))
+  (use-package emacs
+    :config
+    (setq-default mode-line-format (list
+                                    ;; saved, readonly
+                                    "%*"
+                                    ;; major mode
+                                    "%m: "
+                                    ;; buffer name
+                                    "%b "
+                                    ;; position of point
+                                    "(%l,%c) ")))
 #+END_SRC
-** Font Setup
+** Fonts
 #+BEGIN_SRC emacs-lisp
-  (when (member "DejaVu Sans Mono" (font-family-list))
-	  (add-to-list 'initial-frame-alist '(font . "DejaVu Sans Mono-10"))
-	  (add-to-list 'default-frame-alist '(font . "DejaVu Sans Mono-10")))
+  (use-package emacs
+    :config
+    (let ((font "Ac437 IBM CGA"))
+      (when (member font (font-family-list))
+        (set-frame-font font t t)
+        (add-to-list 'initial-frame-alist '(font . font))
+        (add-to-list 'default-frame-alist '(font . font)))))
+#+END_SRC
+** beacon
+ #+BEGIN_SRC emacs-lisp
+   (use-package beacon
+     :ensure t
+     :demand
+     :diminish
+     :config
+     (setq beacon-color "#f2777a")
+     (beacon-mode 1))
+ #+END_SRC
+** dimmer
+#+BEGIN_SRC emacs-lisp
+  (use-package dimmer
+	:ensure t
+    :defer 5
+	:config
+	(dimmer-mode))
+#+END_SRC
+** default frame size on startup
+#+BEGIN_SRC emacs-lisp
+  (use-package emacs
+    :config
+    (if (display-graphic-p)
+        (setq initial-frame-alist
+              '(
+                (tool-bar-lines . 0)
+                (width . 116)
+                (fullscreen . fullheight)
+                (left . 0)
+                (top . 0)))))
 #+END_SRC
 * Built-in settings
 ** dabbrev
@@ -103,17 +149,6 @@
 ** prevent emacs from disabling commands.
 #+BEGIN_SRC emacs-lisp
   (setq disabled-command-function nil)
-#+END_SRC
-** default frame size on startup
-#+BEGIN_SRC emacs-lisp
-  (if (display-graphic-p)
-      (setq initial-frame-alist
-            '(
-              (tool-bar-lines . 0)
-              (width . 116)
-              (fullscreen . fullheight)
-              (left . 0)
-              (top . 0))))
 #+END_SRC
 ** move by logical lines
 #+BEGIN_SRC emacs-lisp
@@ -488,6 +523,33 @@ will eventually be quite a busy section.
           ("q" . xah-close-current-buffer)))
 #+END_SRC
 * Major Mode Packages
+** emacs-lisp-mode
+#+BEGIN_SRC emacs-lisp
+  (use-package elisp-mode
+    :config
+    (defun contrib/completing-read-in-region (start end collection &optional predicate)
+      "Prompt for completion of region in the minibuffer if non-unique.
+    Use as a value for `completion-in-region-function'."
+      (if (and (minibufferp) (not (string= (minibuffer-prompt) "Eval: ")))
+          (completion--in-region start end collection predicate)
+        (let* ((initial (buffer-substring-no-properties start end))
+               (limit (car (completion-boundaries initial collection predicate "")))
+               (all (completion-all-completions initial collection predicate
+                                                (length initial)))
+               (completion (cond
+                            ((atom all) nil)
+                            ((and (consp all) (atom (cdr all)))
+                             (concat (substring initial 0 limit) (car all)))
+                            (t (completing-read
+                                "Completion: " collection predicate t initial)))))
+          (if (null completion)
+              (progn (message "No completion") nil)
+            (delete-region start end)
+            (insert completion)
+            t))))
+
+    (setq completion-in-region-function #'contrib/completing-read-in-region))
+#+END_SRC
 ** bnf-mode
 #+BEGIN_SRC emacs-lisp
   (use-package bnf-mode
@@ -526,7 +588,10 @@ will eventually be quite a busy section.
       (setq c-syntactic-indentation t)
       (c-set-style "ellemtel")
       (setq c-basic-offset 4)
-      (load-file "~/.emacs.d/myLisp/namespace.el"))
+      (load-file "~/.emacs.d/myLisp/namespace.el")
+      (company-mode t)
+      (yas-minor-mode t)
+      (omnisharp-mode t))
     :hook
     (csharp-mode-hook . my-csharp-mode-setup)
     :mode
@@ -580,18 +645,6 @@ will eventually be quite a busy section.
     (setq-default flycheck-disabled-checkers '(emacs-lisp-checkdoc))
     (global-flycheck-mode))
 #+END_SRC
-
-** beacon
- #+BEGIN_SRC emacs-lisp
-   (use-package beacon
-     :ensure t
-     :demand
-     :diminish
-     :config
-     (setq beacon-color "#f2777a")
-     (beacon-mode 1))
- #+END_SRC
-
 ** which-key
  #+BEGIN_SRC emacs-lisp
    (use-package which-key
@@ -608,7 +661,7 @@ will eventually be quite a busy section.
      :ensure t
      :defer t
      :diminish
-     :hook ((emacs-lisp-mode-hook csharp-mode-hook java-mode-hook) . company-mode)
+     :hook ((java-mode-hook) . company-mode)
      :config
      (setq company-idle-delay 0.5)
      (setq company-minimum-prefix-length 3))
@@ -625,23 +678,12 @@ will eventually be quite a busy section.
     (define-key xah-fly-dot-keymap (kbd "p") projectile-command-map)
     (setq projectile-completion-system 'ivy))
 #+END_SRC
-** dimmer
-#+BEGIN_SRC emacs-lisp
-  (use-package dimmer
-	:ensure t
-    :defer 5
-	:config
-	(dimmer-mode))
-#+END_SRC
-
 ** omnisharp
 #+BEGIN_SRC emacs-lisp
   ;; FIXME: if company mode is not started before csharp mode is entered, omnisharp mode will not activate
   (use-package omnisharp
     :ensure t
     :defer t
-    :after company
-    :hook (csharp-mode-hook . omnisharp-mode)
     :bind
     (:map jacob-omnisharp-keymap
           ("u" . omnisharp-fix-usings)
@@ -653,6 +695,7 @@ will eventually be quite a busy section.
           ("o" . omnisharp-start-omnisharp-server)
           ("O" . omnisharp-stop-server))
     :config
+    ;; at this point, company mode is enabled.
     (define-prefix-command 'jacob-omnisharp-keymap)
     (define-key xah-fly-dot-keymap (kbd "o") jacob-omnisharp-keymap)
     (add-hook 'omnisharp-mode-hook (lambda ()
@@ -666,7 +709,7 @@ will eventually be quite a busy section.
       (let ((old-point (point)))
         (c-indent-line-or-region)
         (if (eq old-point (point))
-            (call-interactively 'omnisharp--popup-to-ido))))
+            (call-interactively 'counsel-company))))
 
     (define-key csharp-mode-map (kbd "<tab>") 'jacob-csharp-indent-or-complete))
 #+END_SRC
@@ -677,7 +720,7 @@ will eventually be quite a busy section.
     :ensure t
 
     :hook
-    (((csharp-mode-hook web-mode-hook python-mode-hook java-mode-hook) . yas-minor-mode))
+    (((web-mode-hook python-mode-hook java-mode-hook) . yas-minor-mode))
 
     :config
     (yas-reload-all))
@@ -700,6 +743,11 @@ will eventually be quite a busy section.
     :mode ("\\.clj\\$" . clojure-mode))
 #+END_SRC
 * Non-mode Packages
+** try
+#+BEGIN_SRC emacs-lisp
+  (use-package try
+    :ensure t)
+#+END_SRC
 ** avy
  #+BEGIN_SRC emacs-lisp
    (use-package avy
@@ -761,6 +809,9 @@ will eventually be quite a busy section.
            ("e" . counsel-find-file))
      (:map xah-fly-dot-keymap
            ("s" . swiper))
+     (:map xah-fly-h-keymap
+           ("j" . counsel-describe-function)
+           ("l" . counsel-describe-variable))
      (:map xah-fly-leader-key-map
            ("v" . counsel-yank-pop)
            ("f" . ivy-switch-buffer)))
@@ -852,33 +903,4 @@ will eventually be quite a busy section.
 	:config
 	(setq langtool-language-tool-jar
 		  "/home/lem/Documents/LanguageTool-4.8/languagetool-commandline.jar"))
-#+END_SRC
-* Experimental
-** complete in minibuffer
-#+BEGIN_SRC emacs-lisp
-  (use-package emacs
-    :after ivy
-    :config
-    (defun contrib/completing-read-in-region (start end collection &optional predicate)
-      "Prompt for completion of region in the minibuffer if non-unique.
-  Use as a value for `completion-in-region-function'."
-      (if (and (minibufferp) (not (string= (minibuffer-prompt) "Eval: ")))
-          (completion--in-region start end collection predicate)
-        (let* ((initial (buffer-substring-no-properties start end))
-               (limit (car (completion-boundaries initial collection predicate "")))
-               (all (completion-all-completions initial collection predicate
-                                                (length initial)))
-               (completion (cond
-                            ((atom all) nil)
-                            ((and (consp all) (atom (cdr all)))
-                             (concat (substring initial 0 limit) (car all)))
-                            (t (completing-read
-                                "Completion: " collection predicate t initial)))))
-          (if (null completion)
-              (progn (message "No completion") nil)
-            (delete-region start end)
-            (insert completion)
-            t))))
-    ;; possibility that this is being set by bloody ivy!!!
-  (setq completion-in-region-function #'contrib/completing-read-in-region))
 #+END_SRC
