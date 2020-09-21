@@ -42,6 +42,13 @@
     :after use-package)
 #+END_SRC
 ** Theme
+*** manoj-dark
+#+BEGIN_SRC emacs-lisp
+  (use-package emacs
+    :disabled
+    :config
+    (load-theme 'manoj-dark t))
+#+END_SRC
 *** sanityinc-tomorrow-blue
 #+BEGIN_SRC emacs-lisp
   (use-package color-theme-sanityinc-tomorrow
@@ -50,14 +57,6 @@
     :defer 0.1
     :config
     (load-theme 'sanityinc-tomorrow-blue t))
-#+END_SRC
-*** tao-yang
-#+BEGIN_SRC emacs-lisp
-(use-package tao-theme
-  :ensure t
-  :disabled
-  :config
-  (load-theme 'tao-yang t))
 #+END_SRC
 ** Modeline
 #+BEGIN_SRC emacs-lisp
@@ -75,13 +74,17 @@
 #+END_SRC
 ** Fonts
 #+BEGIN_SRC emacs-lisp
-  (use-package emacs
+  (use-package frame
     :config
-    (let ((font "Ac437 IBM CGA"))
-      (when (member font (font-family-list))
-        (set-frame-font font t t)
-        (add-to-list 'initial-frame-alist '(font . font))
-        (add-to-list 'default-frame-alist '(font . font)))))
+    (cond
+     ((string-equal (system-name) "DESKTOP-F00R5R1")
+      (when (member "Ac437 IBM CGA" (font-family-list))
+        (add-to-list 'initial-frame-alist '(font . "Ac437 IBM CGA"))
+        (add-to-list 'default-frame-alist '(font . "Ac437 IBM CGA"))))
+     ((string-equal system-type "windows-nt")
+      (when (member "Courier New" (font-family-list))
+        (add-to-list 'initial-frame-alist '(font . "Courier New-13:weight=bold"))
+        (add-to-list 'default-frame-alist '(font . "Courier New-13:weight=bold"))))))
 #+END_SRC
 ** beacon
  #+BEGIN_SRC emacs-lisp
@@ -90,7 +93,6 @@
      :demand
      :diminish
      :config
-     (setq beacon-color "#f2777a")
      (beacon-mode 1))
  #+END_SRC
 ** dimmer
@@ -706,10 +708,12 @@ will eventually be quite a busy section.
 
     (defun jacob-csharp-indent-or-complete ()
       (interactive)
-      (let ((old-point (point)))
-        (c-indent-line-or-region)
-        (if (eq old-point (point))
-            (call-interactively 'counsel-company))))
+      (if (region-active-p)
+          (c-indent-line-or-region :region (region-bounds))
+        (let ((old-point (point)))
+          (c-indent-line-or-region)
+          (if (eq old-point (point))
+              (call-interactively 'counsel-company)))))
 
     (define-key csharp-mode-map (kbd "<tab>") 'jacob-csharp-indent-or-complete))
 #+END_SRC
