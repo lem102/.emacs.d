@@ -764,7 +764,7 @@ will eventually be quite a busy section.
            '((avy-goto-char-timer . avy-order-closest)
              (avy-goto-end-of-line . avy-order-closest)))
      (key-chord-define xah-fly-key-map "fj" 'avy-goto-word-or-subword-1)
-     (key-chord-define xah-fly-key-map "f;" 'avy-goto-end-of-line))
+     (key-chord-define xah-fly-key-map "fk" 'avy-goto-end-of-line))
  #+END_SRC
 ** restart-emacs
 #+BEGIN_SRC emacs-lisp
