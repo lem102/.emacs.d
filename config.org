@@ -35,12 +35,6 @@
      ("C-c C-z" . nil)
      ("C-h h" . nil)))
 #+END_SRC
-** diminish
-#+BEGIN_SRC emacs-lisp
-  (use-package diminish
-    :ensure
-    :after use-package)
-#+END_SRC
 ** Theme
 *** manoj-dark
 #+BEGIN_SRC emacs-lisp
@@ -91,7 +85,6 @@
    (use-package beacon
      :ensure t
      :demand
-     :diminish
      :config
      (beacon-mode 1))
  #+END_SRC
@@ -183,7 +176,6 @@
 ** subword-mode
 #+BEGIN_SRC emacs-lisp
   (use-package subword
-    :diminish
     :hook (prog-mode-hook . subword-mode))
 #+END_SRC
 
@@ -633,13 +625,6 @@ will eventually be quite a busy section.
     :ensure t
     :mode ("\\.json\\$" . json-mode))
 #+END_SRC
-
-** clojure-mode
-#+BEGIN_SRC emacs-lisp
-  (use-package clojure-mode
-    :ensure t
-    :mode ("\\.clj\\$" . clojure-mode))
-#+END_SRC
 * Minor Mode Packages
 ** flycheck
 #+BEGIN_SRC emacs-lisp
@@ -655,7 +640,6 @@ will eventually be quite a busy section.
    (use-package which-key
 	 :ensure t
      :defer 2
-	 :diminish
 	 :config
 	 (which-key-mode))
  #+END_SRC
@@ -665,7 +649,6 @@ will eventually be quite a busy section.
    (use-package company
      :ensure t
      :defer t
-     :diminish
      :hook ((java-mode-hook) . company-mode)
      :config
      (setq company-idle-delay 0.5)
@@ -677,7 +660,6 @@ will eventually be quite a busy section.
   (use-package projectile
     :ensure t
     :defer 2
-    :diminish
     :config
     (projectile-mode t)
     (define-key xah-fly-dot-keymap (kbd "p") projectile-command-map)
@@ -741,14 +723,6 @@ will eventually be quite a busy section.
     :config
     (key-chord-mode 1))
 #+END_SRC
-
-** cider
-#+BEGIN_SRC emacs-lisp
-  (use-package cider
-    :diminish
-    :ensure t
-    :mode ("\\.clj\\$" . clojure-mode))
-#+END_SRC
 * Non-mode Packages
 ** try
 #+BEGIN_SRC emacs-lisp
@@ -775,15 +749,6 @@ will eventually be quite a busy section.
     :ensure t
     :defer t)
 #+END_SRC
-
-** smex
- #+BEGIN_SRC emacs-lisp
-   (use-package smex
-     :ensure t
-     :config (smex-initialize)
-     :bind
-     ("M-x" . smex))
- #+END_SRC
 ** switch-window
  #+BEGIN_SRC emacs-lisp
    (use-package switch-window
@@ -805,7 +770,6 @@ will eventually be quite a busy section.
  #+BEGIN_SRC emacs-lisp
    (use-package ivy
      :ensure t
-     :diminish
      :defer 0.1
      :config
      (setq ivy-initial-inputs-alist nil)
@@ -835,26 +799,8 @@ will eventually be quite a busy section.
  #+BEGIN_SRC emacs-lisp
    (use-package counsel
      :ensure t
-     :diminish
      :after ivy)
  #+END_SRC
- 
-** multiple-cursors
- #+BEGIN_SRC emacs-lisp
-   (use-package multiple-cursors
-	 :ensure t
-	 :bind
-	 (:map xah-fly-dot-keymap
-		   ("m" . jacob-multiple-cursors-keymap)
-	 :map jacob-multiple-cursors-keymap
-		   ("l" . mc/edit-lines)
-		   (">" . mc/mark-next-like-this)
-		   ("<" . mc/mark-previous-like-this)
-		   ("a" . mc/mark-all-like-this))
-	 :init
-	 (define-prefix-command 'jacob-multiple-cursors-keymap))
- #+END_SRC
-
 ** expand-region
  #+BEGIN_SRC emacs-lisp
    (use-package expand-region
@@ -896,18 +842,5 @@ will eventually be quite a busy section.
           ("d" . jacob-shell-pop-eshell)
           ("f" . jacob-shell-pop-shell)))
 #+END_SRC
-** eshell-up
-#+BEGIN_SRC emacs-lisp
-  (use-package eshell-up
-	:ensure t)
-#+END_SRC
 
-** langtool
-#+BEGIN_SRC emacs-lisp
-  (use-package langtool
-	;; :ensure t
-	:defer t
-	:config
-	(setq langtool-language-tool-jar
-		  "/home/lem/Documents/LanguageTool-4.8/languagetool-commandline.jar"))
-#+END_SRC
+

@@ -1,12 +1,13 @@
-;;; dimmer.el --- visually highlight the selected buffer
+;;; dimmer.el --- Visually highlight the selected buffer
 
-;; Copyright (C) 2017-2019 Neil Okamoto
+;; Copyright (C) 2017-2020 Neil Okamoto
 
 ;; Filename: dimmer.el
 ;; Author: Neil Okamoto
-;; Version: 0.5.0-SNAPSHOT
-;; Package-Version: 20191213.2005
-;; Package-Requires: ((emacs "25"))
+;; Version: 0.4.2
+;; Package-Version: 20200509.1718
+;; Package-Commit: 4abe51533a972910f9012029a47b533878ec682e
+;; Package-Requires: ((emacs "25.1"))
 ;; URL: https://github.com/gonewest818/dimmer.el
 ;; Keywords: faces, editing
 ;;
@@ -34,7 +35,7 @@
 ;; form without requiring you to define what is a "dim" version of
 ;; every face.
 ;;
-;; `dimmer.el` can be configured to adjust foreground colors (default),
+;; `dimmer.el' can be configured to adjust foreground colors (default),
 ;; background colors, or both.
 ;;
 ;; Usage:
@@ -50,47 +51,63 @@
 ;; consideration, so that most packages that use the minibuffer for
 ;; interaction will behave as users expect.
 ;;
-;; `dimmer-configure-helm` is a convenience function for helm users that
-;; further modifies the customizations so helm buffers are not dimmed.
+;; `dimmer-configure-company-box' is a convenience function for users
+;; of company-box.  It prevents dimming the buffer you are editing when
+;; a company-box popup is displayed.
 ;;
-;; `dimmer-configure-hydra` is a convenience function for hydra users that
-;; modifies the customizations so "*LV*" buffers are not dimmed.
+;; `dimmer-configure-helm' is a convenience function for helm users to
+;; ensure helm buffers are not dimmed.
 ;;
-;; `dimmer-configure-which-key` is a convenience function for which-key
-;; users that modifies the customizations so which-key popups are not dimmed.
+;; `dimmer-configure-gnus' is a convenience function for gnus users to
+;; ensure article buffers are not dimmed.
+;;
+;; `dimmer-configure-hydra' is a convenience function for hydra users to
+;; ensure  "*LV*" buffers are not dimmed.
+;;
+;; `dimmer-configure-magit' is a convenience function for magit users to
+;; ensure transients are not dimmed.
+;;
+;; `dimmer-configure-org' is a convenience function for org users to
+;; ensure org-mode buffers are not dimmed.
+;;
+;; `dimmer-configure-posframe' is a convenience function for posframe
+;; users to ensure posframe buffers are not dimmed.
+;;
+;; `dimmer-configure-which-key' is a convenience function for which-key
+;; users to ensure which-key popups are not dimmed.
 ;;
 ;; Please submit pull requests with configurations for other packages!
 ;;
 ;; Customization:
 ;;
-;; `dimmer-adjustment-mode` controls what aspect of the color scheme is adjusted
+;; `dimmer-adjustment-mode' controls what aspect of the color scheme is adjusted
 ;; when dimming.  Choices are :foreground (default), :background, or :both.
 ;;
-;; `dimmer-fraction` controls the degree to which buffers are dimmed.
+;; `dimmer-fraction' controls the degree to which buffers are dimmed.
 ;; Range is 0.0 - 1.0, and default is 0.20.  Increase value if you
 ;; like the other buffers to be more dim.
 ;;
-;; `dimmer-buffer-exclusion-regexps` can be used to specify buffers that
+;; `dimmer-buffer-exclusion-regexps' can be used to specify buffers that
 ;; should never be dimmed.  If the buffer name matches any regexp in
-;; this list then `dimmer.el` will not dim that buffer.
+;; this list then `dimmer.el' will not dim that buffer.
 ;;
-;; `dimmer-buffer-exclusion-predicates` can be used to specify buffers that
+;; `dimmer-buffer-exclusion-predicates' can be used to specify buffers that
 ;; should never be dimmed.  If any predicate function in this list
-;; returns true for the buffer then `dimmer.el` will not dim that buffer.
+;; returns true for the buffer then `dimmer.el' will not dim that buffer.
 ;;
-;; `dimmer-prevent-dimming-predicates` can be used to prevent dimmer from
+;; `dimmer-prevent-dimming-predicates' can be used to prevent dimmer from
 ;; altering the dimmed buffer list.  This can be used to detect cases
 ;; where a package pops up a window temporarily, and we don't want the
 ;; dimming to change.  If any function in this list returns a non-nil
 ;; value, dimming state will not be changed.
 ;;
-;; `dimmer-watch-frame-focus-events` controls whether dimmer will dim all
+;; `dimmer-watch-frame-focus-events' controls whether dimmer will dim all
 ;; buffers when Emacs no longer has focus in the windowing system.  This
 ;; is enabled by default.  Some users may prefer to set this to nil, and
 ;; have the dimmed / not dimmed buffers stay as-is even when Emacs
 ;; doesn't have focus.
 ;;
-;; `dimmer-use-colorspace` allows you to specify what color space the
+;; `dimmer-use-colorspace' allows you to specify what color space the
 ;; dimming calculation is performed in.  In the majority of cases you
 ;; won't need to touch this setting.  See the docstring below for more
 ;; information.
@@ -195,6 +212,19 @@ wrong, then try HSL or RGB instead."
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; configuration
 
+(defun dimmer-company-box-p ()
+  "Return non-nil if current buffer is a company box buffer."
+  (string-prefix-p " *company-box-" (buffer-name)))
+
+;;;###autoload
+(defun dimmer-configure-company-box ()
+  "Convenience setting for company-box users.
+This predicate prevents dimming the buffer you are editing when
+company-box pops up a list of completion."
+  (add-to-list
+   'dimmer-prevent-dimming-predicates #'dimmer-company-box-p))
+
+;;;###autoload
 (defun dimmer-configure-helm ()
   "Convenience settings for helm users."
   (with-no-warnings
@@ -203,12 +233,52 @@ wrong, then try HSL or RGB instead."
     (add-to-list
      'dimmer-prevent-dimming-predicates #'helm--alive-p)))
 
+;;;###autoload
+(defun dimmer-configure-gnus ()
+  "Convenience settings for gnus users."
+  (add-to-list
+   'dimmer-exclusion-regexp-list "^\\*Article .*\\*$"))
+
+;;;###autoload
 (defun dimmer-configure-hydra ()
   "Convenience settings for hydra users."
-  (with-no-warnings
-    (add-to-list
-     'dimmer-exclusion-regexp-list "^\\*LV\\*$")))
+  (add-to-list
+   'dimmer-exclusion-regexp-list "^ \\*LV\\*$"))
 
+;;;###autoload
+(defun dimmer-configure-magit ()
+  "Convenience settings for magit users."
+  (add-to-list
+   'dimmer-exclusion-regexp-list "^ \\*transient\\*$"))
+
+;;;###autoload
+(defun dimmer-configure-org ()
+  "Convenience settings for org users."
+  (add-to-list 'dimmer-exclusion-regexp-list "^\\*Org Select\\*$")
+  (add-to-list 'dimmer-exclusion-regexp-list "^ \\*Agenda Commands\\*$"))
+
+;;;###autoload
+(defun dimmer-configure-posframe ()
+  "Convenience settings for packages depending on posframe.
+
+Note, packages that use posframe aren't required to be consistent
+about how they name their buffers, but many of them tend to
+include the words \"posframe\" and \"buffer\" in the buffer's
+name.  Examples include:
+
+  - \" *ivy-posframe-buffer*\"
+  - \" *company-posframe-buffer*\"
+  - \" *flycheck-posframe-buffer*\"
+  - \" *ddskk-posframe-buffer*\"
+
+If this setting doesn't work for you, you still have the option
+of adding another regular expression to catch more things, or
+in some cases you can customize the other package and ensure it
+uses a buffer name that fits this pattern."
+  (add-to-list
+   'dimmer-exclusion-regexp-list "^ \\*.*posframe.*buffer.*\\*$"))
+
+;;;###autoload
 (defun dimmer-configure-which-key ()
   "Convenience settings for which-key-users."
   (with-no-warnings
@@ -223,11 +293,15 @@ wrong, then try HSL or RGB instead."
 (defvar dimmer-last-buffer nil
   "Identity of the last buffer to be made current.")
 
-(defvar dimmer-debug-messages nil
-  "Enable debugging output to *Messages* buffer.")
+(defvar dimmer-debug-messages 0
+  "Control debugging output to *Messages* buffer.
+Set 0 to disable all output, 1 for basic output, or a larger
+integer for more verbosity.")
 
 (defvar-local dimmer-buffer-face-remaps nil
   "Per-buffer face remappings needed for later clean up.")
+;; don't allow major mode change to kill the local variable
+(put 'dimmer-buffer-face-remaps 'permanent-local t)
 
 (defconst dimmer-dimmed-faces (make-hash-table :test 'equal)
   "Cache of face names with their computed dimmed values.")
@@ -362,82 +436,125 @@ Filtering is needed to exclude faces that shouldn't be dimmed."
   "Dim all the faces defined in the buffer BUF.
 FRAC controls the dimming as defined in ‘dimmer-face-color’."
   (with-current-buffer buf
+    (dimmer--dbg 1 "dimmer-dim-buffer: BEFORE '%s' (%s)" buf
+                 (alist-get 'default face-remapping-alist))
+    (dimmer--dbg 2 "dimmer-buffer-face-remaps: %s"
+                 (alist-get 'default dimmer-buffer-face-remaps))
     (unless dimmer-buffer-face-remaps
       (dolist (f (dimmer-filtered-face-list))
         (let ((c (dimmer-face-color f frac)))
           (when c  ; e.g. "(when-let* ((c (...)))" in Emacs 26
-            (push (face-remap-add-relative f c) dimmer-buffer-face-remaps)))))))
+            (push (face-remap-add-relative f c) dimmer-buffer-face-remaps)))))
+    (dimmer--dbg 2 "dimmer-buffer-face-remaps: %s"
+                 (alist-get 'default dimmer-buffer-face-remaps))
+    (dimmer--dbg 2 "dimmer-dim-buffer: AFTER '%s' (%s)" buf
+                 (alist-get 'default face-remapping-alist))))
 
 (defun dimmer-restore-buffer (buf)
   "Restore the un-dimmed faces in the buffer BUF."
   (with-current-buffer buf
+    (dimmer--dbg 1 "dimmer-restore-buffer: BEFORE '%s' (%s)" buf
+                 (alist-get 'default face-remapping-alist))
+    (dimmer--dbg 2 "dimmer-buffer-face-remaps: %s"
+                 (alist-get 'default dimmer-buffer-face-remaps))
     (when dimmer-buffer-face-remaps
       (mapc 'face-remap-remove-relative dimmer-buffer-face-remaps)
-      (setq dimmer-buffer-face-remaps nil))))
+      (setq dimmer-buffer-face-remaps nil))
+    (dimmer--dbg 2 "dimmer-buffer-face-remaps: %s"
+                 (alist-get 'default dimmer-buffer-face-remaps))
+    (dimmer--dbg 2 "dimmer-restore-buffer: AFTER '%s' (%s)" buf
+                 (alist-get 'default face-remapping-alist))))
 
-(defun dimmer-filtered-buffer-list ()
-  "Get filtered subset of all visible buffers in all frames."
+(defun dimmer-visible-buffer-list ()
+  "Get all visible buffers in all frames."
   (let (buffers)
     (walk-windows
      (lambda (win)
-       (let* ((buf (window-buffer win))
-              (name (buffer-name buf)))
-         (unless (or (cl-some (lambda (rxp) (string-match-p rxp name))
-                              dimmer-buffer-exclusion-regexps)
-                     (cl-some (lambda (f) (funcall f buf))
-                              dimmer-buffer-exclusion-predicates))
+       (let ((buf (window-buffer win)))
+         (unless (member buf buffers)   ; ensure items are unique
            (push buf buffers))))
      nil
      t)
+    (dimmer--dbg 3 "dimmer-visible-buffer-list: %s" buffers)
     buffers))
 
-(defun dimmer-process-all ()
-  "Process all buffers and dim or un-dim each."
-  (let ((selected (current-buffer))
-        (ignore (cl-some (lambda (f) (and (fboundp f) (funcall f)))
-                         dimmer-prevent-dimming-predicates)))
+(defun dimmer-filtered-buffer-list (&optional buffer-list)
+  "Get filtered subset of all visible buffers in all frames.
+If BUFFER-LIST is provided by the caller, then filter that list."
+  (let ((buffers
+         (seq-filter
+          (lambda (buf)
+            ;; This filter function REMOVES any buffer if:
+            ;;    (a) one of the dimmer-buffer-exclusion-regexps matches
+            ;; OR (b) one of the dimmer-buffer-exclusion-predicates is true
+            (let ((name (buffer-name buf)))
+              (not (or (cl-some (lambda (rxp) (string-match-p rxp name))
+                                dimmer-buffer-exclusion-regexps)
+                       (cl-some (lambda (f) (funcall f buf))
+                                dimmer-buffer-exclusion-predicates)))))
+          (or buffer-list (dimmer-visible-buffer-list)))))
+    (dimmer--dbg 3 "dimmer-filtered-buffer-list: %s" buffers)
+    buffers))
+
+(defun dimmer-process-all (&optional force)
+  "Process all buffers and dim or un-dim each.
+
+When FORCE is true some special logic applies.  Namely, we must
+process all buffers regardless of the various dimming predicates.
+While performing this scan, any buffer that would have been
+excluded due to the predicates before should be un-dimmed now."
+  (dimmer--dbg-buffers 1 "dimmer-process-all")
+  (let* ((selected (current-buffer))
+         (ignore   (cl-some (lambda (f) (and (fboundp f) (funcall f)))
+                            dimmer-prevent-dimming-predicates))
+         (visbufs  (dimmer-visible-buffer-list))
+         (filtbufs (dimmer-filtered-buffer-list visbufs)))
+    (dimmer--dbg 1 "dimmer-process-all: force %s" force)
     (setq dimmer-last-buffer selected)
-    (unless ignore
-      (dolist (buf (dimmer-filtered-buffer-list))
-        (if (eq buf selected)
+    (when (or force (not ignore))
+      (dolist (buf (if force visbufs filtbufs))
+        (dimmer--dbg 2 "dimmer-process-all: buf %s" buf)
+        (if (or (eq buf selected)
+                (and force (not (memq buf filtbufs))))
             (dimmer-restore-buffer buf)
           (dimmer-dim-buffer buf dimmer-fraction))))))
 
 (defun dimmer-dim-all ()
   "Dim all buffers."
-  (dimmer--dbg "dimmer-dim-all")
+  (dimmer--dbg-buffers 1 "dimmer-dim-all")
   (mapc (lambda (buf)
           (dimmer-dim-buffer buf dimmer-fraction))
-        (buffer-list)))
+        (dimmer-visible-buffer-list)))
 
 (defun dimmer-restore-all ()
   "Un-dim all buffers."
+  (dimmer--dbg-buffers 1 "dimmer-restore-all")
   (mapc 'dimmer-restore-buffer (buffer-list)))
 
 (defun dimmer-command-handler ()
   "Process all buffers if current buffer has changed."
-  (dimmer--dbg "dimmer-command-handler")
+  (dimmer--dbg-buffers 1 "dimmer-command-handler")
   (unless (eq (window-buffer) dimmer-last-buffer)
     (dimmer-process-all)))
 
 (defun dimmer-config-change-handler ()
   "Process all buffers if window configuration has changed."
-  (dimmer--dbg "dimmer-config-change-handler")
-  (dimmer-process-all))
+  (dimmer--dbg-buffers 1 "dimmer-config-change-handler")
+  (dimmer-process-all t))
 
 (defun dimmer-after-focus-change-handler ()
   "Handle cases where a frame may have gained or last focus.
 Walk the `frame-list` and check the state of each one.  If none
 of the frames has focus then dim them all.  If any frame has
 focus then dim the others.  Used in Emacs >= 27.0 only."
-  (dimmer--dbg "dimmer-after-focus-change-handler")
+  (dimmer--dbg-buffers 1 "dimmer-after-focus-change-handler")
   (let ((focus-out t))
     (with-no-warnings
       (dolist (f (frame-list) focus-out)
         (setq focus-out (and focus-out (not (frame-focus-state f))))))
     (if focus-out
         (dimmer-dim-all)
-      (dimmer-process-all))))
+      (dimmer-process-all t))))
 
 (defun dimmer-manage-frame-focus-hooks (install)
   "Manage the frame focus in/out hooks for dimmer.
@@ -508,18 +625,21 @@ when `dimmer-watch-frame-focus-events` is nil."
   (dimmer--debug-buffer-face-remaps name t)
   (redraw-display))
 
-(defun dimmer--dbg (label)
-  "Print a debug state with the given LABEL."
-  (if dimmer-debug-messages
-      (let ((inhibit-message t))
-        (message "%s: cb '%s' wb '%s' last '%s' %s"
-                 label
-                 (current-buffer)
-                 (window-buffer)
-                 dimmer-last-buffer
-                 (if (not (eq (current-buffer) (window-buffer)))
-                     "**"
-                   "")))))
+(defun dimmer--dbg (v fmt &rest args)
+  "Print debug message at verbosity V, filling format string FMT with ARGS."
+  (when (>= dimmer-debug-messages v)
+    (apply #'message fmt args)))
+
+(defun dimmer--dbg-buffers (v label)
+  "Print debug buffer state at verbosity V and the given LABEL."
+  (when (>= dimmer-debug-messages v)
+    (let ((inhibit-message t)
+          (cb (current-buffer))
+          (wb (window-buffer)))
+      (message "%s: cb '%s' <== lb '%s' %s" label cb dimmer-last-buffer
+               (if (not (eq cb wb))
+                   (format "wb '%s' **" wb)
+                 "")))))
 
 (provide 'dimmer)
 
