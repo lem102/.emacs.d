@@ -121,6 +121,8 @@
 #+BEGIN_SRC emacs-lisp
   (use-package dabbrev
     :config
+    (setq dabbrev-case-fold-search nil)
+    (setq dabbrev-case-replace nil)
     :bind (("M-/" . dabbrev-expand)
            ("C-M-/" . dabbrev-completion)))
 #+END_SRC
@@ -310,11 +312,11 @@
     (with-current-buffer buffer-or-string
        major-mode))
 
-  (defun config-visit ()
+  (defun jacob-config-visit ()
     (interactive)
     (find-file "~/.emacs.d/config.org"))
 
-  (defun config-reload ()
+  (defun jacob-config-reload ()
     (interactive)
     (org-babel-load-file (expand-file-name "~/.emacs.d/config.org")))
 
@@ -351,10 +353,11 @@
     (interactive)
     (message (concat (format-time-string "%A the %e")
                      (jacob-day-suffix (string-to-number (format-time-string "%e")))
-                     (format-time-string " of %B %Y, ")
+                     (format-time-string " of %B, the year of our Lord %Y, ")
                      "at "
                      (jacob-long-time (string-to-number (format-time-string "%H"))
-                                      (string-to-number (format-time-string "%M"))))))
+                                      (string-to-number (format-time-string "%M")))
+                     ".")))
 #+END_SRC
 
 * Xah Fly Keys
@@ -404,9 +407,9 @@
 
     :bind
     (:map jacob-config-keymap
-          ("r" . config-reload)
+          ("r" . jacob-config-reload)
           ("R" . restart-emacs)
-          ("e" . config-visit)
+          ("e" . jacob-config-visit)
           ("c" . jacob-org-src-block)
           ("p" . jacob-recompile-packages)
           ("t" . jacob-display-time))

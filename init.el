@@ -10,4 +10,4 @@
 
 ;; go to the nice org file :)
 (require 'org)
-(org-babel-load-file (expand-file-name "~/.emacs.d/config.org"))
+(load-file (expand-file-name "~/.emacs.d/config.el"))
