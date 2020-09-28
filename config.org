@@ -579,16 +579,12 @@ will eventually be quite a busy section.
 #+BEGIN_SRC emacs-lisp
   (use-package csharp-mode
     :ensure t
-    :defer t
     :config
     (defun my-csharp-mode-setup ()
       (setq c-syntactic-indentation t)
       (c-set-style "ellemtel")
       (setq c-basic-offset 4)
-      (load-file "~/.emacs.d/myLisp/namespace.el")
-      (company-mode t)
-      (yas-minor-mode t)
-      (omnisharp-mode t))
+      (load-file "~/.emacs.d/myLisp/namespace.el"))
     :hook
     (csharp-mode-hook . my-csharp-mode-setup)
     :mode
@@ -649,7 +645,7 @@ will eventually be quite a busy section.
    (use-package company
      :ensure t
      :defer t
-     :hook ((java-mode-hook) . company-mode)
+     :hook ((csharp-mode-hook java-mode-hook) . company-mode)
      :config
      (setq company-idle-delay 0.5)
      (setq company-minimum-prefix-length 3))
@@ -685,9 +681,7 @@ will eventually be quite a busy section.
     ;; at this point, company mode is enabled.
     (define-prefix-command 'jacob-omnisharp-keymap)
     (define-key xah-fly-dot-keymap (kbd "o") jacob-omnisharp-keymap)
-    (add-hook 'omnisharp-mode-hook (lambda ()
-                                     (add-to-list (make-local-variable 'company-backends)
-                                                  '(company-omnisharp))))
+
     (setq omnisharp-company-ignore-case nil)
     (setq omnisharp-server-executable-path "D:\\Programming\\OmniSharp\\omnisharp-roslyn\\bin\\Debug\\OmniSharp.Stdio.Driver\\net472\\OmniSharp.exe")
 
@@ -700,16 +694,26 @@ will eventually be quite a busy section.
           (if (eq old-point (point))
               (call-interactively 'counsel-company)))))
 
-    (define-key csharp-mode-map (kbd "<tab>") 'jacob-csharp-indent-or-complete))
+    (define-key csharp-mode-map (kbd "<tab>") 'jacob-csharp-indent-or-complete)
+    :hook (csharp-mode-hook . omnisharp-mode))
 #+END_SRC
 
+*** add omnisharp to company backend
+#+BEGIN_SRC emacs-lisp
+  (use-package emacs
+    :after company omnisharp
+    :config
+    (add-hook 'omnisharp-mode-hook (lambda ()
+                                     (add-to-list (make-local-variable 'company-backends)
+                                                  '(company-omnisharp)))))
+#+END_SRC
 ** yasnippet
 #+BEGIN_SRC emacs-lisp
   (use-package yasnippet
     :ensure t
 
     :hook
-    (((web-mode-hook python-mode-hook java-mode-hook) . yas-minor-mode))
+    (((web-mode-hook python-mode-hook java-mode-hook csharp-mode-hook) . yas-minor-mode))
 
     :config
     (yas-reload-all))
