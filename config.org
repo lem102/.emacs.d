@@ -110,6 +110,15 @@
                 (top . 0)))))
 #+END_SRC
 * Built-in settings
+** keyboard macros
+#+BEGIN_SRC emacs-lisp
+  (use-package kmacro
+    :defer 0.1
+    :after xah-fly-keys
+    :bind
+    (:map xah-fly-r-keymap
+	  ("c" . kmacro-set-counter)))
+#+END_SRC
 ** dabbrev
 #+BEGIN_SRC emacs-lisp
   (use-package dabbrev
@@ -131,25 +140,19 @@
           (make-empty-file custom-file))
         (load-file custom-file))))
 #+END_SRC
-** always rebuild init
-#+BEGIN_SRC emacs-lisp
-  (use-package emacs
-    :config
-    (defun prot/rebuild-emacs-init ()
-      (let ((config-el "~/.emacs.d/config.el")
-            (config-org "~/.emacs.d/config.org"))
-        (when config-el
-          (delete-file config-el))
-        (org-babel-tangle-file config-org config-el)))
-    :hook ((kill-emacs-hook . prot/rebuild-emacs-init)))
-#+END_SRC
 ** prevent emacs from disabling commands.
 #+BEGIN_SRC emacs-lisp
-  (setq disabled-command-function nil)
+  (use-package novice
+    :defer 0.1
+    :config
+    (setq disabled-command-function nil))
 #+END_SRC
 ** move by logical lines
 #+BEGIN_SRC emacs-lisp
-  (setq line-move-visual t)
+  (use-package simple
+    :defer 0.1
+    :config
+    (setq line-move-visual t))
 #+END_SRC
 ** Use ls implemented in elisp to have consistent behaviour across platforms
 #+BEGIN_SRC emacs-lisp
@@ -167,7 +170,7 @@
 #+END_SRC
 ** Stop the bell ringing all the time
 #+BEGIN_SRC emacs-lisp
-  (setq ring-bell-function 'ignore)
+  (setq ring-bell-function nil)
 #+END_SRC
 ** Prevent the view of the screen jumping to the middle when scrolling out of the view.
 #+BEGIN_SRC emacs-lisp
@@ -176,17 +179,24 @@
 ** subword-mode
 #+BEGIN_SRC emacs-lisp
   (use-package subword
-    :hook (prog-mode-hook . subword-mode))
+    :defer 0.1
+    :config (global-subword-mode))
 #+END_SRC
 
 ** Make typing delete/overwrite region
 #+BEGIN_SRC emacs-lisp
-  (delete-selection-mode 1)
+  (use-package delsel
+    :defer 0.1
+    :config
+    (delete-selection-mode 1))
 #+END_SRC
 
 ** Turn on bracket match highlight
 #+BEGIN_SRC emacs-lisp
-  (show-paren-mode 1)
+  (use-package paren
+    :defer 0.1
+    :config
+    (show-paren-mode 1))
 #+END_SRC
 ** Prevent emacs from creating debris when editing files
 #+BEGIN_SRC emacs-lisp
@@ -217,12 +227,12 @@
 ** Save minibuffer history (useful for compile)
 #+BEGIN_SRC emacs-lisp
   (use-package savehist
+    :defer 0.1
     :config
     (setq savehist-file "~/.emacs.d/savehist")
     (setq history-length 1000)
     (setq history-delete-duplicates t)
-    (setq savehist-save-minibuffer-history t)
-    :hook (after-init-hook . savehist-mode))
+    (setq savehist-save-minibuffer-history t))
 #+END_SRC
 ** Save cursor position in files
 #+BEGIN_SRC emacs-lisp
@@ -242,16 +252,15 @@
                               (time-subtract after-init-time before-init-time)))
                      gcs-done)))
 #+END_SRC
-** Setting right windows key to act as super key
+** Microsoft Windows functions
 #+BEGIN_SRC emacs-lisp
-  (setq w32-pass-rwindow-to-system nil
-		w32-rwindow-modifier 'super)
-#+END_SRC
-
-** Setting app key to act as hyper key
-#+BEGIN_SRC emacs-lisp
-  (setq w32-pass-apps-to-system nil)
-  (setq w32-apps-modifier 'hyper)
+  (if (string-equal system-type "windows-nt")
+      (use-package emacs
+        :config
+        (setq w32-pass-rwindow-to-system nil)
+        (setq w32-pass-apps-to-system nil)
+        (setq w32-rwindow-modifier 'super)
+        (setq w32-apps-modifier 'hyper)))
 #+END_SRC
 ** Tabs
 #+BEGIN_SRC emacs-lisp
