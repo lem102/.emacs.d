@@ -170,7 +170,7 @@
 #+END_SRC
 ** Stop the bell ringing all the time
 #+BEGIN_SRC emacs-lisp
-  (setq ring-bell-function nil)
+  (setq ring-bell-function 'ignore)
 #+END_SRC
 ** Prevent the view of the screen jumping to the middle when scrolling out of the view.
 #+BEGIN_SRC emacs-lisp
@@ -857,3 +857,10 @@ will eventually be quite a busy section.
 #+END_SRC
 
 
+** amx
+#+BEGIN_SRC emacs-lisp
+  (use-package amx
+    :ensure t
+    :config
+    (amx-mode 1))
+#+END_SRC
