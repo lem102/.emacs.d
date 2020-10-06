@@ -566,6 +566,7 @@ will eventually be quite a busy section.
    (use-package org
      :mode ("\\.org\\'" . org-mode)
      :config
+     (setq-default yas-indent-line 'fixed)
      (add-to-list 'org-structure-template-alist
                   '("el" "#+BEGIN_SRC emacs-lisp\n?\n#+END_SRC")))
  #+END_SRC
@@ -855,8 +856,6 @@ will eventually be quite a busy section.
           ("d" . jacob-shell-pop-eshell)
           ("f" . jacob-shell-pop-shell)))
 #+END_SRC
-
-
 ** amx
 #+BEGIN_SRC emacs-lisp
   (use-package amx

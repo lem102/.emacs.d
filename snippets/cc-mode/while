@@ -4,5 +4,5 @@
 # --
 while (${1:condition})
 {
-      $0
+    $0
 }

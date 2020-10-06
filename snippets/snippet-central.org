@@ -1,0 +1,130 @@
+Hello and welcome to snippets central, home to all snippets in this config. (eventually)
+
+This document makes use of org-babel src blocks to create various snippets and associated files for use with the yasnippet minor mode by "tangling" them from the many src blocks below.
+
+* Snippets
+** cc-mode
+*** if statement
+#+BEGIN_SRC snippet :tangle ./cc-mode/if
+  # -*- mode: snippet -*-
+  # name: jacob if
+  # key: if
+  # --
+  if (${1:condition})
+  {
+      $0
+  }
+#+END_SRC
+
+*** else statement
+#+BEGIN_SRC snippet :tangle ./cc-mode/else
+  # -*- mode: snippet -*-
+  # name: jacob else
+  # key: else
+  # --
+  else
+  {
+      $0
+  }
+#+END_SRC
+
+*** while loop
+#+BEGIN_SRC snippet :filename ./cc-mode/while
+  # -*- mode: snippet -*-
+  # name: jacob while
+  # key: while
+  # --
+  while (${1:condition})
+  {
+      $0
+  }
+#+END_SRC
+
+*** do while loop
+#+BEGIN_SRC snippet :filename ./cc-mode/do while loop
+  # -*- mode: snippet -*-
+  # name: do { ... } while (...)
+  # key: do
+  # --
+  do
+  {
+      $0
+  } while (${1:condition});
+#+END_SRC
+
+*** for loop
+#+BEGIN_SRC snippet :filename ./cc-mode/for
+  # -*- mode: snippet -*-
+  # name: jacob for
+  # key: for
+  # --
+  for (${1:int i = 0}; ${2:i < 10}; ${3:i++})
+  {
+      $0
+  }
+#+END_SRC
+
+*** switch
+#+BEGIN_SRC snippet :filename ./cc-mode/switch
+  # -*- mode: snippet -*-
+  # name: jacob switch
+  # key: switch
+  # --
+  switch (${1:expr})
+  {
+      case ${2:constexpr}:
+      {
+          $0
+          break;
+      }
+      default:
+      {
+          break;
+      }
+  }
+#+END_SRC
+
+*** case
+#+BEGIN_SRC snippet :filename ./cc-mode/case
+  # -*- mode: snippet -*-
+  # name: case : {...}
+  # key: case
+  # expand-env: ((yas-also-auto-indent-first-line t))
+  # --
+  case ${2:constexpr}:
+  {
+      $0
+      break;
+  }
+#+END_SRC
+
+*** struct
+#+BEGIN_SRC snippet :filename ./cc-mode/struct
+  # -*- mode: snippet -*-
+  # name: struct ... { ... }
+  # key: struct
+  # --
+  struct ${1:name}
+  {
+      $0
+  };
+#+END_SRC
+
+*** ternary
+#+BEGIN_SRC snippet :filename ./cc-mode/ternary
+  # -*- mode: snippet -*-
+  # name: ternary
+  # key: ?
+  # --
+  (${1:cond}) ? ${2:then} : ${3:else};
+#+END_SRC
+
+*** printf
+#+BEGIN_SRC snippet :filename ./cc-mode/printf
+  # -*- mode: snippet -*-
+  # name: printf
+  # key: printf
+  # --
+  printf("${1:%s}\\n"${1:$(if (string-match "%" yas-text) ", " "\);")
+  }$2${1:$(if (string-match "%" yas-text) "\);" "")}
+#+END_SRC
