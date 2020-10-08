@@ -1,4 +1,10 @@
+(defmacro measure-time (&rest body)
+  `(let ((time (current-time)))
+     ,@body
+     (message "%.06f" (float-time (time-since time)))))
+
 (require 'package)
+
 (setq package-enable-at-startup nil)
 (add-to-list 'package-archives
 			 '("melpa" . "https://melpa.org/packages/"))
@@ -9,5 +15,5 @@
   (package-install 'use-package))
 
 ;; go to the nice org file :)
-(require 'org)
-(load-file (expand-file-name "~/.emacs.d/config.el"))
+(measure-time (require 'org))
+(measure-time (org-babel-load-file (expand-file-name "~/.emacs.d/config.org")))

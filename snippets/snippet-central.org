@@ -29,7 +29,7 @@ This document makes use of org-babel src blocks to create various snippets and a
 #+END_SRC
 
 *** while loop
-#+BEGIN_SRC snippet :filename ./cc-mode/while
+#+BEGIN_SRC snippet :tangle ./cc-mode/while
   # -*- mode: snippet -*-
   # name: jacob while
   # key: while
@@ -41,7 +41,7 @@ This document makes use of org-babel src blocks to create various snippets and a
 #+END_SRC
 
 *** do while loop
-#+BEGIN_SRC snippet :filename ./cc-mode/do while loop
+#+BEGIN_SRC snippet :tangle ./cc-mode/do while loop
   # -*- mode: snippet -*-
   # name: do { ... } while (...)
   # key: do
@@ -53,9 +53,9 @@ This document makes use of org-babel src blocks to create various snippets and a
 #+END_SRC
 
 *** for loop
-#+BEGIN_SRC snippet :filename ./cc-mode/for
+#+BEGIN_SRC snippet :tangle ./cc-mode/for
   # -*- mode: snippet -*-
-  # name: jacob for
+  # name: jacob forwow
   # key: for
   # --
   for (${1:int i = 0}; ${2:i < 10}; ${3:i++})
@@ -65,7 +65,7 @@ This document makes use of org-babel src blocks to create various snippets and a
 #+END_SRC
 
 *** switch
-#+BEGIN_SRC snippet :filename ./cc-mode/switch
+#+BEGIN_SRC snippet :tangle ./cc-mode/switch
   # -*- mode: snippet -*-
   # name: jacob switch
   # key: switch
@@ -85,7 +85,7 @@ This document makes use of org-babel src blocks to create various snippets and a
 #+END_SRC
 
 *** case
-#+BEGIN_SRC snippet :filename ./cc-mode/case
+#+BEGIN_SRC snippet :tangle ./cc-mode/case
   # -*- mode: snippet -*-
   # name: case : {...}
   # key: case
@@ -99,7 +99,7 @@ This document makes use of org-babel src blocks to create various snippets and a
 #+END_SRC
 
 *** struct
-#+BEGIN_SRC snippet :filename ./cc-mode/struct
+#+BEGIN_SRC snippet :tangle ./cc-mode/struct
   # -*- mode: snippet -*-
   # name: struct ... { ... }
   # key: struct
@@ -111,7 +111,7 @@ This document makes use of org-babel src blocks to create various snippets and a
 #+END_SRC
 
 *** ternary
-#+BEGIN_SRC snippet :filename ./cc-mode/ternary
+#+BEGIN_SRC snippet :tangle ./cc-mode/ternary
   # -*- mode: snippet -*-
   # name: ternary
   # key: ?
@@ -120,11 +120,128 @@ This document makes use of org-babel src blocks to create various snippets and a
 #+END_SRC
 
 *** printf
-#+BEGIN_SRC snippet :filename ./cc-mode/printf
+#+BEGIN_SRC snippet :tangle ./cc-mode/printf
   # -*- mode: snippet -*-
   # name: printf
   # key: printf
   # --
   printf("${1:%s}\\n"${1:$(if (string-match "%" yas-text) ", " "\);")
   }$2${1:$(if (string-match "%" yas-text) "\);" "")}
+#+END_SRC
+** csharp-mode
+*** .yas-parents
+#+BEGIN_SRC snippet :tangle ./csharp-mode/.yas-parents
+  cc-mode
+#+END_SRC
+
+*** attrib
+#+BEGIN_SRC snippet :tangle ./csharp-mode/attrib
+  # -*- mode: snippet -*-
+  # contributor : Alejandro Espinoza Esparza <aespinoza@structum.com.mx>
+  # name: private _attribute ....; public Property ... ... { ... }
+  # key: attrib
+  # --
+  private $1 ${2:$(if (> (length yas-text) 0) (format "_%s%s" (downcase (substring yas-text 0 1)) (substring yas-text 1 (length yas-text))) "")};
+
+  public ${1:Type} ${2:Name}
+  {
+      get {
+          return ${2:$(if (> (length yas-text) 0) (format "_%s%s" (downcase (substring yas-text 0 1)) (substring yas-text 1 (length yas-text))) "")};
+      }
+      set {
+          ${2:$(if (> (length yas-text) 0) (format "_%s%s" (downcase (substring yas-text 0 1)) (substring yas-text 1 (length yas-text))) "")} = value;
+      }
+  }
+#+END_SRC
+
+*** class
+#+BEGIN_SRC snippet :tangle ./csharp-mode/class
+  # -*- mode: snippet -*-
+  # name: class ... { ... }
+  # key: class
+  # --
+  namespace ${1:`(namespace-get)`}
+  {
+      public class ${2:`(file-name-sans-extension (file-name-nondirectory (buffer-file-name)))`}
+      {
+          $0
+      }
+  }
+#+END_SRC
+
+*** constructor
+#+BEGIN_SRC snippet :tangle ./csharp-mode/constructor
+  # -*- mode: snippet -*-
+  # name: jacob constructor ....;
+  # key: cons
+  # --
+  public `(file-name-sans-extension (file-name-nondirectory (buffer-file-name)))`($1)
+  {
+      $0
+  }
+#+END_SRC
+
+*** field
+#+BEGIN_SRC snippet :tangle ./csharp-mode/field
+  # -*- mode: snippet -*-
+  # name: jacob private field ....;
+  # key: field
+  # --
+  private ${1:string} _${2:fieldName};$0
+#+END_SRC
+
+*** fore
+#+BEGIN_SRC snippet :tangle ./csharp-mode/fore
+  # -*- mode: snippet -*-
+  # contributor : Jostein Kjønigsen <jostein@kjonigsen.net>
+  # name: foreach { ... }
+  # key: fore
+  # --
+  foreach (${1:var} ${2:item} in ${3:list})
+  {
+      $0
+  }
+#+END_SRC
+*** list
+#+BEGIN_SRC snippet :tangle ./csharp-mode/list
+  # -*- mode: snippet -*-
+  # name: list
+  # key: list
+  # --
+  new List<$1>();$0
+#+END_SRC
+*** main
+#+BEGIN_SRC snippet :tangle ./csharp-mode/main
+  # -*- mode: snippet -*-
+  # name: main
+  # key: main
+  # --
+  static void Main(string[] args)
+  {
+      $0
+  }
+#+END_SRC
+*** method
+#+BEGIN_SRC snippet :tangle ./csharp-mode/method
+  # -*- mode: snippet -*-
+  # contributor : Alejandro Espinoza Esparza <aespinoza@structum.com.mx>
+  # name: public void Method { ... }
+  # key: method
+  # --
+  ${1:public} ${2:void} ${3:MethodName}($4)
+  {
+      $0
+  }
+#+END_SRC
+*** namespace
+#+BEGIN_SRC snippet :tangle ./csharp-mode/namespace
+  # -*- mode: snippet -*-
+  # contributor : Alejandro Espinoza Esparza <aespinoza@structum.com.mx>
+  # name: namespace .. { ... }
+  # key: namespace
+  # --
+  namespace ${1:File.Namespace}
+  {
+      $0
+  }
 #+END_SRC

@@ -3,6 +3,6 @@
 # key: snippetblock
 # --
 *** ${1:snippetname}
-#+BEGIN_SRC snippet :filename ./${2:major-mode}/$1
+#+BEGIN_SRC snippet :tangle ./${2:major-mode}/$1
 $0
 #+END_SRC

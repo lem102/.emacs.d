@@ -3,7 +3,7 @@
 # name: namespace .. { ... }
 # key: namespace
 # --
-namespace $1
+namespace ${1:File.Namespace}
 {
-$0
+    $0
 }

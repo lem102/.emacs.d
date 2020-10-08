@@ -1,5 +1,5 @@
 # -*- mode: snippet -*-
-# name: jacob if (...) { ... }
+# name: jacob if
 # key: if
 # --
 if (${1:condition})

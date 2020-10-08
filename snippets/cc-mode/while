@@ -1,5 +1,5 @@
 # -*- mode: snippet -*-
-# name: while
+# name: jacob while
 # key: while
 # --
 while (${1:condition})
