@@ -754,6 +754,11 @@ will eventually be quite a busy section.
     :config
     (key-chord-mode 1))
 #+END_SRC
+** outshine
+#+BEGIN_SRC emacs-lisp
+  (use-package outshine
+    :ensure t)
+#+END_SRC
 * Non-mode Packages
 ** try
 #+BEGIN_SRC emacs-lisp
