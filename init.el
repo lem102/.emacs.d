@@ -353,11 +353,6 @@
   (add-hook 'xah-fly-command-mode-activate-hook 'jacob-xah-command-binds)
   (jacob-xah-command-binds) ;; call it on startup so binds are set without calling xah-fly-command-mode-activate first.
 
-  ;; (add-hook 'dired-mode-hook 'xah-fly-keys-off)
-  (add-hook 'eww-mode-hook 'xah-fly-keys-off)
-  (add-hook 'ibuffer-mode-hook 'xah-fly-keys-off)
-  (add-hook 'custom-mode-hook 'xah-fly-keys-off)
-
   (key-chord-define-global "fd" 'xah-fly-command-mode-activate)
   
   ;; switches to insert mode upon entering the minibuffer.
