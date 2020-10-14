@@ -353,12 +353,17 @@
   (add-hook 'xah-fly-command-mode-activate-hook 'jacob-xah-command-binds)
   (jacob-xah-command-binds) ;; call it on startup so binds are set without calling xah-fly-command-mode-activate first.
 
-  (add-hook 'dired-mode-hook 'xah-fly-keys-off)
+  ;; (add-hook 'dired-mode-hook 'xah-fly-keys-off)
   (add-hook 'eww-mode-hook 'xah-fly-keys-off)
   (add-hook 'ibuffer-mode-hook 'xah-fly-keys-off)
   (add-hook 'custom-mode-hook 'xah-fly-keys-off)
 
   (key-chord-define-global "fd" 'xah-fly-command-mode-activate)
+  
+  ;; switches to insert mode upon entering the minibuffer.
+  (add-hook 'minibuffer-setup-hook 'xah-fly-insert-mode-activate)
+  ;; switches back to command mode after exiting the minibuffer.
+  (add-hook 'minibuffer-exit-hook 'xah-fly-command-mode-activate)
 
   :bind
   (:map jacob-config-keymap
@@ -393,12 +398,16 @@
 ;; Language Server Protocol is an excellent way to get autocompletion, documentation
 ;; and linting for many programming languages within emacs. Therefore this
 ;; will eventually be quite a busy section.
+;; ** eglot
+(use-package eglot
+  :ensure t
+  :hook java-mode-hook)
 ;; ** Base lsp-mode
 ;; *** lsp-mode
 (use-package lsp-mode
   :ensure t
   :hook
-  ((java-mode-hook python-mode-hook php-mode-hook) . lsp)
+  ((python-mode-hook php-mode-hook) . lsp)
   (lsp-mode-hook . lsp-enable-which-key-integration)
   :commands lsp
   :init
@@ -439,36 +448,6 @@
   :ensure t
   :disabled
   :init (setq lsp-python-ms-auto-install-server t))
-;; * Dired
-(use-package dired
-  :config
-  (defun jacob-teardown-xah-for-wdired ()
-    (interactive)
-    (wdired-finish-edit)
-    (define-key xah-fly-leader-key-map (kbd ";") 'save-buffer)
-    (xah-fly-keys-off))
-
-  (defun jacob-setup-xah-for-wdired ()
-    (interactive)
-    (xah-fly-keys)
-    (define-key xah-fly-leader-key-map (kbd ";") 'jacob-teardown-xah-for-wdired))
-
-  (add-hook 'wdired-mode-hook 'jacob-setup-xah-for-wdired)
-
-  (define-key dired-mode-map (kbd "RET") 'dired-find-alternate-file)
-  (define-key dired-mode-map (kbd "^")(lambda () (interactive)(find-alternate-file "..")))
-  (setq dired-dwim-target t)
-
-  :bind
-  (:map dired-mode-map
-        ("," . switch-window)
-        ("SPC" . xah-fly-leader-key-map)
-        ("p" . dired-maybe-insert-subdir)
-        ("i" . dired-previous-line)
-        ("k" . dired-next-line)
-        ("n" . isearch-forward)
-        ("f" . dired-toggle-read-only)
-        ("q" . xah-close-current-buffer)))
 ;; * Major Mode Packages
 ;; ** php-mode
 (use-package php-mode
