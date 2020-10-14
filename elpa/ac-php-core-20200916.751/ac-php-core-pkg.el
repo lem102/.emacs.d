@@ -5,7 +5,7 @@
     (f "0.17.0")
     (popup "0.5.0")
     (xcscope "1.0"))
-  :commit "7c023b9ced156cee03171e16c3dac6d26923042f" :keywords
+  :commit "4712911b74fd5290b74ca5e8d9cee0609d2bada3" :keywords
   '("completion" "convenience" "intellisense")
   :authors
   '(("jim" . "xcwenn@qq.com")
