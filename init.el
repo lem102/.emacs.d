@@ -43,7 +43,7 @@
 ;; * Appearance
 ;; ** Disable GUI components
 (use-package emacs
-  
+
   :config
   (tool-bar-mode -1)
   (menu-bar-mode -1)
@@ -231,7 +231,7 @@
   (setq-default tab-always-indent 'complete))
 ;; * Personal Functions
 (defun jacob-original-find-file ()
-  "Uses the original file-file mechanism. 
+  "Uses the original file-file mechanism.
   Useful for dealing with files on other servers.
   (at least on Microsoft Windows)"
   (interactive)
@@ -354,7 +354,7 @@
   (jacob-xah-command-binds) ;; call it on startup so binds are set without calling xah-fly-command-mode-activate first.
 
   (key-chord-define-global "fd" 'xah-fly-command-mode-activate)
-  
+
   ;; switches to insert mode upon entering the minibuffer.
   (add-hook 'minibuffer-setup-hook 'xah-fly-insert-mode-activate)
   ;; switches back to command mode after exiting the minibuffer.
@@ -388,7 +388,9 @@
   (:map xah-fly-leader-key-map
         ("4" . jacob-split-window-right-select-new))
   (:map xah-fly-w-keymap
-        ("n" . eval-and-replace)))
+        ("n" . eval-and-replace))
+  (:map xah-fly-t-keymap
+        ("j" . kill-this-buffer)))
 ;; * Language Server Protocol & Debug Adapter Protocol
 ;; Language Server Protocol is an excellent way to get autocompletion, documentation
 ;; and linting for many programming languages within emacs. Therefore this
@@ -480,6 +482,15 @@
 (use-package org
   :mode ("\\.org\\'" . org-mode)
   :config
+  ;; some code to get rid of the newline org babel likes to add in when it tangles into a file
+  (defun jacob-org-babel-tangle-delete-newline ()
+    (goto-char (point-max))
+    (delete-trailing-whitespace)
+    (backward-delete-char 1)
+    (save-buffer))
+
+  (add-hook 'org-babel-post-tangle-hook 'jacob-org-babel-tangle-delete-newline)
+
   (setq-default yas-indent-line 'fixed)
   (add-to-list 'org-structure-template-alist
                '("el" "#+BEGIN_SRC emacs-lisp\n?\n#+END_SRC")))
@@ -706,7 +717,7 @@
 ;; ** expand-region
 (use-package expand-region
   :ensure t
-  
+
   :config
   (setq expand-region-contract-fast-key "9"))
 
@@ -746,4 +757,3 @@
   :defer 1
   :config
   (amx-mode 1))
-
