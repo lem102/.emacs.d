@@ -319,6 +319,7 @@
 (use-package xah-fly-keys
   :ensure t
 
+  :after key-chord
   :demand
 
   :init
@@ -335,12 +336,12 @@
   (defun jacob-xah-command-binds ()
     "Set custom keys for xah-fly-keys keybindings."
     (interactive)
-    (define-key xah-fly-key-map (kbd "a") 'counsel-M-x)
-    (define-key xah-fly-key-map (kbd "s") 'enter)
-    (define-key xah-fly-key-map (kbd "8") 'er/expand-region)
-    (define-key xah-fly-key-map (kbd "4") 'jacob-split-window-below-select-new)
+    (define-key xah-fly-command-map (kbd "a") 'counsel-M-x)
+    (define-key xah-fly-command-map (kbd "s") 'enter)
+    (define-key xah-fly-command-map (kbd "8") 'er/expand-region)
+    (define-key xah-fly-command-map (kbd "4") 'jacob-split-window-below-select-new)
     ;; 1 can be rebound, is bound to a inferior version of expand region
-    (define-key xah-fly-key-map (kbd "2") 'jacob-quit-popup-window))
+    (define-key xah-fly-command-map (kbd "2") 'jacob-quit-popup-window))
 
   :config
   (load-file (expand-file-name "~/.emacs.d/myLisp/jacob-xah-modified-commands.el"))
@@ -357,7 +358,7 @@
   (add-hook 'ibuffer-mode-hook 'xah-fly-keys-off)
   (add-hook 'custom-mode-hook 'xah-fly-keys-off)
 
-  (key-chord-define xah-fly-key-map "fd" 'xah-fly-command-mode-activate)
+  (key-chord-define-global "fd" 'xah-fly-command-mode-activate)
 
   :bind
   (:map jacob-config-keymap
@@ -652,8 +653,6 @@
 
 ;; ** key-chord
 (use-package key-chord
-  :defer 1
-
   :config
   (key-chord-mode 1))
 ;; ** outshine
@@ -672,6 +671,7 @@
 ;; ** avy
 (use-package avy
   :ensure t
+  :after key-chord
   :defer 0.1
   :config
   (setq avy-style 'at-full)
@@ -679,8 +679,8 @@
   (setq avy-orders-alist '((avy-goto-end-of-line . avy-order-closest)
                            (avy-goto-word-or-subword-1 . avy-order-closest)))
   (setq avy-all-windows 'all-frames)
-  (key-chord-define xah-fly-key-map "fj" 'avy-goto-word-or-subword-1)
-  (key-chord-define xah-fly-key-map "fk" 'avy-goto-end-of-line))
+  (key-chord-define-global "fj" 'avy-goto-word-or-subword-1)
+  (key-chord-define-global "fk" 'avy-goto-end-of-line))
 ;; ** restart-emacs
 (use-package restart-emacs
   :ensure t
