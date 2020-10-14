@@ -55,7 +55,7 @@ This document makes use of org-babel src blocks to create various snippets and a
 *** for loop
 #+BEGIN_SRC snippet :tangle ./cc-mode/for
   # -*- mode: snippet -*-
-  # name: jacob forwow
+  # name: jacob for
   # key: for
   # --
   for (${1:int i = 0}; ${2:i < 10}; ${3:i++})
@@ -244,4 +244,18 @@ This document makes use of org-babel src blocks to create various snippets and a
   {
       $0
   }
+#+END_SRC
+** java-mode
+*** .yas-parents
+#+BEGIN_SRC snippet :tangle ./java-mode/.yas-parents
+  cc-mode
+#+END_SRC
+
+*** sout
+#+BEGIN_SRC snippet :tangle ./java-mode/sout :padline no
+  # -*- mode: snippet -*-
+  # name: sout
+  # key: sout
+  # --
+  System.out.println(${1:"Hello, World."});$0
 #+END_SRC
