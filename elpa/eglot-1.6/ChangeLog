@@ -1,0 +1,4495 @@
+2019-01-05  João Távora  <joaotavora@gmail.com>
+
+	Handle (un)registerCapability requests via generic functions
+
+	* eglot.el (Version): Bump to 1.4
+	(eglot-register-capability, eglot-unregister-capability): New generic
+	functions.
+	(eglot--register-unregister): Call eglot-register-capability, 
+	eglot-unregister-capability.
+	(eglot-register-capability s (eql workspace/didChangeWatchedFiles)):
+	Rename from eglot--register-workspace/didChangeWatchedFiles.
+	(eglot-unregister-capability s (eql workspace/didChangeWatchedFiles)):
+	Rename from eglot--unregister-workspace/didChangeWatchedFiles.
+
+2019-01-05  João Távora  <joaotavora@gmail.com>
+
+	Appease checkdoc
+
+	* eglot.el (eglot--post-self-insert-hook)
+	(eglot--pre-command-hook, eglot--before-change)
+	(eglot--eclipse-jdt-contact): Fix docstrings.
+
+2019-01-02  João Távora  <joaotavora@gmail.com>
+
+	* eglot.el (eglot-workspace-configuration): Safe when listp.
+
+2019-01-02  João Távora  <joaotavora@gmail.com>
+
+	Fix #196: run connection hooks with proper dir-locals
+
+	eglot-connect-hook and eglot-server-initialized-hook must run in a 
+	buffer with properly setup directory-local variables for the project.
+
+	This is crucial for things like eglot-signal-didChangeConfiguration, 
+	which needs a properly setup value of eglot-workspace-configuration to 
+	succeed.
+
+	I could have chosen any of the buffers where Eglot is activating itself,
+	but the approach using hack-dir-local-variables-non-file-buffer seems
+	more correct, despite the name.
+
+	* eglot.el (eglot--connect): Run connection hooks with proper 
+	dir-locals.
+
+2019-01-01  João Távora  <joaotavora@gmail.com>
+
+	Close #197: allow read-only modes for markup rendering
+
+	gfm-mode is read-only, so it must be set after the string has been 
+	inserted in the temporary buffer.
+
+	* eglot.el (eglot--format-markup): Insert string before setting mode.
+
+2018-12-27  João Távora  <joaotavora@gmail.com>
+
+	Close #195: remove a hard dependency on flymake-mode
+
+	* eglot.el (eglot-handle-notification): Don't specifically check for 
+	flymake-mode before reporting diagnostics.
+
+2018-12-23  João Távora  <joaotavora@gmail.com>
+
+	Slightly simplify eglot-completion-at-point
+
+	* eglot.el (eglot-completion-at-point): Don't propertize completion
+	string with all LSP properties.
+
+2018-12-23  João Távora  <joaotavora@gmail.com>
+
+	Fix #190: actually make completion sorting work
+
+	* eglot.el (eglot-completion-at-point): Complicate severely.
+
+2018-12-22  João Távora  <joaotavora@gmail.com>
+
+	Fix previous commit where workaround had been removed
+
+	Do remove the workaround, but not more than that.
+
+	* eglot.el (eglot-completion-at-point): set local var strings.
+
+2018-12-22  João Távora  <joaotavora@gmail.com>
+
+	Per #188: use gfm-view-mode
+
+	* eglot.el (eglot--format-markup): Use gfm-view-mode instead of
+	gfm-mode.
+
+2018-12-22  João Távora  <joaotavora@gmail.com>
+
+	Remove workaround for company bug that has been fixed
+
+	See https://github.com/company-mode/company-mode/pull/845.
+
+	* eglot.el (eglot-completion-at-point): Remove workaround for 
+	company-mode bug.
+
+2018-12-19  João Távora  <joaotavora@gmail.com>
+
+	* eglot.el (Package-Requires): Require jsonrpc 1.0.7.
+
+2018-12-16  João Távora  <joaotavora@gmail.com>
+
+	Take over Flymake and Eldoc completely while managing buffers
+
+	Take a pragmatic approach and override all other Flymake and Eglot 
+	backends while Eglot is enabled.  Restore previous values after 
+	eglot-shutdown.
+
+	Certainly cases might arise where using more than one datasource besides
+	LSP while Eglot is managing the buffer is useful.  But currently
+	contrary, it confuses users enabling Eglot in buffers that already have
+	flymake/eldoc backends configured.
+
+	The reasons are slightly different for Eldoc and Flymake:
+
+	- For Eldoc the :before-until strategy only makes sense for
+	 synchronous backends, which Eglot isn't.  This conflicts with
+	 python.el default python-eldoc-function, which is also asynchronous.
+
+	- For Flymake, the default backends in Emacs (python-mode, c-mode, and
+	 a few others) are mainly repetitions of what LSP does.	 The global
+	 value is still run though (in case you want to put, say, a
+	 spell-checking backend there).
+
+	* eglot.el (eglot--saved-bindings, eglot--setq-saving): New helpers.
+	(eglot--managed-mode): Use them.
+
+2018-12-16  João Távora  <joaotavora@gmail.com>
+
+	Fix #187: be more careful when making xref summaries
+
+	* eglot.el (eglot--xref-make): Only highlight to end-of-line at most.
+
+2018-12-16  João Távora  <joaotavora@gmail.com>
+
+	Don't make bogus responses to client/(Un)RegisterCapability
+
+	* eglot.el (eglot--register-unregister): Response is void.
+
+2018-12-16  João Távora  <joaotavora@gmail.com>
+
+	Add edebug specs to destructuring macros
+
+	* eglot.el (eglot--dbind, eglot--lambda, eglot--dcase): Add edebug 
+	specs.
+
+2018-12-16  João Távora  <joaotavora@gmail.com>
+
+	Rewrite eglot--sig-info a bit for readability
+
+	* eglot.el (eglot--sig-info): Rewrite a bit.
+
+2018-12-16  Fredrik Bergroth  <fbergroth@gmail.com>
+
+	Adjust active param highlighting in first line of signature (3/3)
+
+	Highlight only first active parameter match (even if there are many)
+
+	Copyright-paperwork-exempt: yes
+
+	* eglot.el (eglot--sig-info): Simplify.
+
+2018-12-16  Fredrik Bergroth  <fbergroth@gmail.com>
+
+	Adjust active param highlighting in first line of signature (2/3)
+
+	Use regex with word boundaries when scanning for active param, to avoid
+	matching substrings.
+
+	Copyright-paperwork-exempt: yes
+
+	* eglot.el (eglot--sig-info): Use `re-search-forward`.
+
+2018-12-16  Fredrik Bergroth  <fbergroth@gmail.com>
+
+	Adjust active param highlighting in first line of signature (1/3)
+
+	JT@2018/12/16: Previously, the whole first line of the rendered 
+	documentation was searched for, potentially highlighting params in the
+	wrong place.
+
+	Copyright-paperwork-exempt: yes
+
+	* eglot.el (eglot--sig-info): Search for active parameter within
+	`params-start` and `params-end`.
+
+2018-12-16  Fredrik Bergroth  <fbergroth@gmail.com>
+
+	Apply eglot--format-markup to signature documentation
+
+	Copyright-paperwork-exempt: yes
+
+	* eglot.el (eglot--sig-info): Call eglot--format-markup on signature
+	 documentation.
+
+2018-12-11  João Távora  <joaotavora@gmail.com>
+
+	Per #180: frame lsp-mode.el comparison as historical even more evidently
+
+	* README.md (Historical differences to lsp-mode.el): New section title. 
+	Also fix link.
+
+2018-12-10  João Távora  <joaotavora@gmail.com>
+
+	* eglot.el (Version): Bump to 1.3
+
+2018-12-09  João Távora  <joaotavora@gmail.com>
+
+	Close #180: Add preamble to comparison to lsp-mode.el
+
+	* README.md (Differences to lsp-mode.el): Add preamble.
+
+2018-12-07  João Távora  <joaotavora@gmail.com>
+
+	Be lenient by default to unknown methods or notifications
+
+	* eglot.el (eglot-strict-mode): Describe meaning of 
+	disallow-non-standard-keys.
+	(eglot-handle-notification, eglot-handle-request): Check 
+	eglot-strict-mode.
+
+2018-12-07  João Távora  <joaotavora@gmail.com>
+
+	Handle array params to server notification or requests
+
+	* eglot.el (eglot-handle-notification): Remove extraneous id
+	(eglot--connect): If params is an array, make it a list.
+
+2018-12-07  João Távora  <joaotavora@gmail.com>
+
+	Scratch/use elpa flymake (#178)
+
+	Use GNU ELPA's Flymake
+	
+	* eglot.el (Package-Requires): require Flymake 1.0.2.
+	(version< emacs-version "27.0"): Remove horrible hack
+	
+	* Makefile (ELPADEPS): Renamed from JSONRPC.
+	(%.elc): Use it.
+	(eglot-check): Use it.
+	
+
+2018-12-06  João Távora  <joaotavora@gmail.com>
+
+	Warn about suspicious interface usage at compile-time
+
+	For fun, set eglot-strict-mode to '(disallow-non-standard-keys 
+	enforce-required-keys enforce-optional-keys) when compiling, or just use
+	flymake-mode in eglot.el.
+
+	* eglot.el (eglot--lsp-interface-alist): Use in compile-time. Order
+	alphabetically.	 Fix a few bugs.
+	(eglot-strict-mode): Disallow non-standard-keys when compiling. Update
+	docstring.
+	(eglot--keywordize-vars, eglot--check-interface): New 
+	compile-time-helpers.
+	(eglot--dbind, eglot--dcase): Use new helpers.
+
+2018-12-06  João Távora  <joaotavora@gmail.com>
+
+	Fix #144: Use eglot--dbind and eglot--lambda throughout
+
+	The default behaviour of these macros is to be lenient towards servers 
+	sending unknown keys, which should fix the issue.
+
+	* eglot.el (eglot--lsp-interface-alist): Add a bunch of new interfaces.
+	(eglot--connect, eglot-handle-notification)
+	(xref-backend-identifier-completion-table)
+	(xref-backend-definitions, xref-backend-apropos)
+	(xref-backend-references, eglot-completion-at-point)
+	(eglot--sig-info, eglot-help-at-point, eglot-eldoc-function)
+	(eglot-imenu, eglot--apply-text-edits)
+	(eglot--apply-workspace-edit)
+	(eglot--register-workspace/didChangeWatchedFiles): Use eglot--dbind and
+	eglot--lambda to destructure LSP objects.
+
+2018-12-04  João Távora  <joaotavora@gmail.com>
+
+	Per #173: adjust previous fix
+
+	* eglot.el (eglot--before-change): Don't reset eglot--last-inserted-char
+	here.
+	(eglot--pre-command-hook): Do it here.
+	(eglot--managed-mode): Add/remove eglot--pre-command-hook to/from 
+	pre-command-hook.
+
+2018-12-04  João Távora  <joaotavora@gmail.com>
+
+	Per #173: fix bug introduced by previous fix
+
+	* eglot.el (eglot--CompletionParams): Don't use last-input-event.
+
+2018-12-03  João Távora  <joaotavora@gmail.com>
+
+	Fix #164: handle CodeAction/Command polymorphism with eglot--dcase
+
+	* eglot-tests.el (eglot-dcase): Augment test.
+
+	* eglot.el (eglot--lsp-interface-alist): Add Command interface.
+	(eglot--dcase): Fix indentation.  When given interface, always assume
+	strict mode.
+	(eglot-code-actions): Use eglot--dcase.
+
+2018-12-03  João Távora  <joaotavora@gmail.com>
+
+	Per #173: robustify previous fix against non-standard insertion bindings
+
+	* eglot.el (eglot--managed-mode): Manage post-self-insert-hook.
+	(eglot--last-inserted-char): New variable.
+	(eglot--post-self-insert-hook): Set it.
+	(eglot--before-change): Reset it.
+	(eglot--CompletionParams): Use it.
+
+2018-12-03  Michał Krzywkowski  <k.michal@zoho.com>
+
+	Fix #159: Properly clear old diagnostics when making new ones
+
+	* eglot.el (eglot-handle-notification
+	 textDocument/publishDiagnostics): Call flymake report function with
+	 :region.
+
+2018-12-02  Mario Rodas	 <marsam@users.noreply.github.com>
+
+	Use javascript-typescript-langserver for typescript-mode (#174)
+
+	Copyright-paperwork-exempt: Yes
+	
+	* eglot.el (eglot-server-programs): add typescript-mode to
+	 javascript-typescript-langserver's contact
+
+2018-12-02  João Távora  <joaotavora@gmail.com>
+
+	Close #173: support completionContext to help servers like ccls
+
+	* eglot.el (eglot-client-capabilities): Annouce 
+	textDocument/completion/contextSupport.
+	(eglot--CompletionParams): New helper.
+	(eglot-completion-at-point): Use it.
+
+2018-12-01  João Távora  <joaotavora@gmail.com>
+
+	Fix #116, #150: don't break in indirect buffers
+
+	Indirect buffers, such as the ones created by ediff-regions-wordwise, 
+	have eglot enabled but not buffer-file-name.  Resort to the finding the
+	file-name of the original buffer for these.
+
+	* eglot.el (eglot--TextDocumentIdentifier): Work in indirect buffers.
+
+2018-12-01  Michał Krzywkowski  <k.michal@zoho.com>
+
+	Use eglot--dbind for destructuring
+
+	* eglot.el (eglot--lsp-interface-alist): Add CodeAction,
+	 FileSystemWatcher, Registration, TextDocumentEdit, WorkspaceEdit.
+	(eglot-handle-notification): Use eglot--dbind.
+	(eglot--apply-workspace-edit): Use eglot--dbind and eglot--lambda.
+	(eglot-code-actions): Use eglot--lambda.
+	(eglot--register-workspace/didChangeWatchedFiles): Use eglot--lambda.
+
+2018-11-30  João Távora  <joaotavora@gmail.com>
+
+	Per #171,#156: Introduce eglot--dcase
+
+	* eglot.el (eglot--dcase): New macro.
+
+	* eglot-tests.el (eglot-dcase-with-interface)
+	(eglot-dcase-no-interface): New tests.
+
+2018-11-30  João Távora  <joaotavora@gmail.com>
+
+	Simplify interface of eglot--dbind macro
+
+	* eglot.el (eglot--dbind): Use new interface.
+	(eglot--lambda): Use new eglot--dbind interface.
+	(eglot--lsp-interface-alist): Fix docstring.
+	(eglot--call-with-interface): Simplify.
+	(eglot--plist-keys): New helper.
+
+	* eglot-tests.el (eglot-strict-interfaces): Add a new test clause.
+
+2018-11-30  João Távora  <joaotavora@gmail.com>
+
+	Robustify tests against (M)ELPA eglot installations
+
+	* Makefile (eglot-check, %.elc): Setup load-path after
+	package-initialize.
+
+2018-11-28  Michał Krzywkowski  <k.michal@zoho.com>
+
+	Touch up last commit
+
+	* eglot.el (eglot-current-column): Rename from eglot--current-column.
+	(eglot-current-column-function): Use it as value and mention in
+	docstring.
+	(eglot--xref-make): Use eglot-current-column.
+
+2018-11-27  Michał Krzywkowski  <k.michal@zoho.com>
+
+	* eglot.el (eglot--current-column): New helper.
+
+	(eglot-current-column-function): Set to eglot--current-column.
+	(eglot--pos-to-lsp-position): Don't bind tab-width anymore.
+	(eglot--xref-make): Use eglot--current-column.
+
+2018-11-27  João Távora  <joaotavora@gmail.com>
+
+	Per #52, #127: Improve performance of xref summary line collection
+
+	* eglot.el (eglot--temp-location-buffers): New variable.
+	(eglot--handling-xrefs): New macro.
+	(eglot--xref-make): Use eglot--temp-location-buffers.
+	(xref-backend-definitions, xref-backend-references)
+	(xref-backend-apropos): Use eglot--handling-xrefs.
+
+2018-11-27  João Távora  <joaotavora@gmail.com>
+
+	Fix #52: Use entire line as xref summary when available
+
+	After an original implementation by Michael Livshin.  Also close #127.
+
+	* eglot.el (eglot--xref-make): Rework.
+	(xref-backend-definitions, xref-backend-references)
+	(xref-backend-apropos): Simplify call to `eglot--xref-make'.
+
+2018-11-23  João Távora  <joaotavora@gmail.com>
+
+	Revert "Fix #164: CodeAction command can be a Command object (#165)"
+
+	This reverts commit 11eb25678b2f32a3496bd7efb95b90941c9ae5ea.
+
+	The spec doesn't define Command as implemented in the commit.
+
+2018-11-23  mkcms  <k.michal@zoho.com>
+
+	Fix #164: CodeAction command can be a Command object (#165)
+
+	* eglot.el (eglot-code-actions): Handle case when the :command field
+	 is not a string.
+
+2018-11-23  João Távora  <joaotavora@gmail.com>
+
+	Per #144, #156: control strictness towards incoming LSP messages
+
+	A new variable, eglot-strict-mode controls whether Eglot is strict or 
+	lax with regard to incoming LSP messages.
+
+	1. Bug reports should be tested with eglot-strict-mode set to
+	  '(disallow-non-standard-keys enforce-required-keys)
+
+	2. Users struggling to get non-standard servers working set this
+	  variable to '(), nil.	 For now, by popular demand, this is the
+	  default value.
+
+	Note that this commit in particular introduces a new infrastructure, but
+	does not yet alter any code in Eglot to use it.	 Neither is the variable
+	eglot--lsp-interface-alist populated.
+
+	* eglot-tests.el (eglot-strict-interfaces): New test.
+
+	* eglot.el (eglot--lsp-interface-alist): New variable.
+	(eglot-strict-mode): New variable.
+	(eglot--call-with-interface): New helper.
+	(eglot--dbind): New macro.
+	(eglot--lambda): New macro.
+
+2018-11-23  João Távora  <joaotavora@gmail.com>
+
+	* eglot.el (Version): Bump to 1.2
+
+2018-11-23  João Távora  <joaotavora@gmail.com>
+
+	* eglot.el (eglot-completion-at-point): Less chatter.
+
+2018-11-22  João Távora  <joaotavora@gmail.com>
+
+	Fix #167: correctly insert TextEdit-less snippets
+
+	Fixes a slight regression from #160.
+
+	* eglot.el (eglot-completion-at-point): When there is plain
+	`insertText' snippet, delete the full completion text.
+
+2018-11-22  João Távora  <joaotavora@gmail.com>
+
+	Fix #154: fix potential security issue fontifying LSP doc
+
+	Previously, a server could mistankely or maliciously call *-mode 
+	functions by in the response to a completion or hover request, 
+	specifically in the :documentation field of the response.
+
+	Although there are plenty of similar avenues of attack in Emacs, it's 
+	probably a good idea not to let LSP servers decide which functions to 
+	call in an Emacs session running Eglot.
+
+	* eglot.el (eglot--format-markup): Call major-mode to fontify buffer,
+	not some dynamically constructed function name.
+	(eglot-completion-at-point): Ensure eglot--format-markup runs in source
+	buffer.
+
+2018-11-22  Alex Branham  <alex.branham@gmail.com>
+
+	Add support for R's languageserver (#161)
+
+	Copyright-paperwork-exempt: yes
+
+	* eglot.el (eglot-server-programs): Add R language server.
+	* README.md (Installation and usage): Mention it.
+
+2018-11-21  Michał Krzywkowski  <k.michal@zoho.com>
+
+	Fix #160: Properly delete inserted text after completion
+
+	* eglot.el (eglot-completion-at-point): In :exit-function, delete only
+	 the region of buffer that was inserted by completion.
+
+2018-11-19  Michał Krzywkowski  <k.michal@zoho.com>
+
+	Treat tab characters as 1 column wide in position conversion functions
+
+	Fixes #158.
+
+	* eglot.el (eglot--pos-to-lsp-position): Call
+	 eglot-current-column-function with tab-width bound to 1.
+	(eglot--lsp-position-to-point): Call eglot-move-to-column-function with
+	tab-width bound to 1.
+
+2018-11-17  Michał Krzywkowski  <k.michal@zoho.com>
+
+	Per #144: Format documentation of signature parameters
+
+	* eglot.el (eglot--sig-info): Call `eglot--format-markup` on parameter
+	 :documentation.
+
+2018-11-13  João Távora  <joaotavora@gmail.com>
+
+	Fix #125: add ability to report LSP-compliant columns
+
+	* eglot.el (eglot-current-column-function): New variable.
+	(eglot-lsp-abiding-column): New helper.
+	(eglot--pos-to-lsp-position): Use eglot-current-column-function.
+	(eglot-move-to-column-function): Tweak docstring.
+
+2018-11-13  Michał Krzywkowski  <k.michal@zoho.com>
+
+	Add support for TextEdits in completion
+
+	* eglot.el (eglot-completion-at-point): Apply the CompletionItem's
+	 :textEdit and :additionalTextEdits when they're present.
+
+2018-11-13  João Távora  <joaotavora@gmail.com>
+
+	Tweak solution to #125 with a hint from Fangrui Song
+
+	* eglot.el (eglot-move-to-lsp-abiding-column): Simplify slightly.
+
+2018-11-12  João Távora  <joaotavora@gmail.com>
+
+	Fix #148: complex completions work when chosen from *completions*
+
+	* eglot.el (eglot-completion-at-point): Make exit-function work even if
+	its arguments was stripped of its properties.
+
+2018-11-12  João Távora  <joaotavora@gmail.com>
+
+	Fix #124: add ability to move to LSP-precise columns
+
+	Also close #125.
+
+	Idea and much of design contributed by Michał Krzywkowski
+	<k.michal@zoho.com>
+
+	This introduces the variable eglot-move-to-column-function.
+
+	According to the standard, LSP column/character offsets are based on a
+	count of UTF-16 code units, not actual visual columns.	So when LSP says
+	position 3 of a line containing just \"aXbc\", where X is a multi-byte
+	character, it actually means `b', not
+	`c'.  This is what the function
+	`eglot-move-to-lsp-abiding-column' does.
+
+	However, many servers don't follow the spec this closely, and thus this
+	variable should be set to `move-to-column' in buffers managed by those
+	servers.
+
+	* eglot.el (eglot-move-to-column-function): New variable.
+	(eglot-move-to-lsp-abiding-column): New function.
+	(eglot--lsp-position-to-point): Use eglot-move-to-column-function.
+
+2018-11-09  João Távora  <joaotavora@gmail.com>
+
+	Fix a bug introduced by previous bugfix
+
+	This commit fixes a bug but introduced another when completing a symbol
+	in xref-find-definitions.
+
+	commit 118f9668e45ea424d8090013392ace154538f1e4 Author: Michał
+	Krzywkowski <k.michal@zoho.com> Date:	Sun Nov 4 16:59:05 2018 +0100
+
+	* eglot.el (xref-backend-identifier-completion-table): Use vector.
+
+2018-11-07  João Távora  <joaotavora@gmail.com>
+
+	* eglot-tests.el (eclipse-connect): Increase connect timeout to 20.
+
+2018-11-07  João Távora  <joaotavora@gmail.com>
+
+	Move constants to top instead of forward-declaring
+
+	* eglot.el (eglot--symbol-kind-names, eglot--kind-names): Move to top of
+	file.
+
+2018-11-07  Mario Rodas	 <marsam@users.noreply.github.com>
+
+	Support ocaml-language-server out of the box (#149)
+
+	Copyright-paperwork-exempt: yes
+	
+	* eglot.el (eglot-server-programs): Add ocaml-language-server.
+	
+	* README.md (Installation and usage): Mention ocaml-language-server
+
+2018-11-07  Michał Krzywkowski  <k.michal@zoho.com>
+
+	* eglot.el (eglot-client-capabilities): Mention supported SymbolKinds.
+
+2018-11-07  Michał Krzywkowski  <k.michal@zoho.com>
+
+	Make imenu hierarchical
+
+	* eglot.el (eglot-imenu): Use :containerName to build a nested imenu
+	 index alist.
+
+2018-11-04  Michał Krzywkowski  <k.michal@zoho.com>
+
+	Fix a bug when response to definitions request is a single location
+
+	It's valid to return just a single Location for a definitions request.
+
+	* eglot.el (xref-backend-definitions): Coerce response to a vector.
+
+2018-11-04  João Távora  <joaotavora@gmail.com>
+
+	Simplify eglot-code-action. Fix compilation warning
+
+	* eglot.el (eglot-code-actions): Simplify.
+	(eglot-client-capabilities): Mention supported codeActionKind's 
+	directly.
+	(eglot--code-action-kinds): Remove.
+
+2018-11-04  Michał Krzywkowski  <k.michal@zoho.com>
+
+	Add support for code action literals
+
+	Code action literals allow the server to simply return a WorkspaceEdit 
+	for a code action, so the client does not have to execute a command.
+
+	* eglot.el (eglot-client-capabilities): Add :codeActionLiteralSupport.
+	(eglot--code-action-kinds): New variable.
+	(eglot-code-actions): Apply provided WorkspaceEdit.
+
+2018-11-04  Michał Krzywkowski  <k.michal@zoho.com>
+
+	Use the container name of a symbol in imenu
+
+	* eglot.el (eglot-imenu): Prepend :containerName to each symbol, when
+	 provided.
+
+2018-11-03  João Távora  <joaotavora@gmail.com>
+
+	Slightly robustify test engine
+
+	No longer do tests break because of servers take a long time to 
+	shutdown, or even fail to do so properly.  This is common in "slow" 
+	servers such as eclipse-jdt in slow systems (such as mine).
+
+	* eglot-tests.el (eglot--call-with-fixture): Rework.  Shutdown server
+	after tests but demoting errors.
+	(eglot--tests-connect): Always sync-connect here.
+
+2018-11-01  João Távora  <joaotavora@gmail.com>
+
+	Re-enable eclipse-jdt tests
+
+	* eglot-tests.el (eglot--have-eclipse-jdt-ls-p): Reenable.
+	(eclipse-connect, eclipse-workspace-folders): Don't eglot-shutdown 
+	explicitly.  Fix indentation.
+	(eglot--call-with-fixture): Increase shutdown timeout to 10 seconds.
+
+2018-11-01  João Távora  <joaotavora@gmail.com>
+
+	Larger margin for printing test failure backtraces
+
+	* Makefile (eglot-check): set ert-batch-backtrace-right-margin.
+
+2018-11-01  João Távora  <joaotavora@gmail.com>
+
+	Rework test macros for hopefully more stable testing
+
+	Among other changes, discovered that the zzz-eglot-ensure test that 
+	could only misteriously be run last was victom of a malfunctioning 
+	python-flymake backend in for python-mode buffers.
+
+	* eglot-tests.el (eglot--with-fixture): Redesign macro.
+	(eglot--call-with-fixture): Redesign.
+	(eclipse-connect, eclipse-workspace-folders)
+	(auto-detect-running-server, auto-reconnect, rls-watches-files)
+	(rls-basic-diagnostics, rls-hover-after-edit, rls-rename)
+	(basic-completions, hover-after-completions, formatting)
+	(slow-sync-connection-wait, slow-sync-connection-intime)
+	(slow-async-connection, slow-sync-timeout)
+	(javascript-basic): Use eglot--with-fixture
+	(eglot-ensure): Rename from zzz-eglot-ensure.  Remove python-flymake
+	from flymake-diagnostic-functions.
+
+2018-10-31  Michał Krzywkowski  <k.michal@zoho.com>
+
+	Don't ignore unknown SymbolKinds in imenu
+
+	Some servers provide custom SymbolKinds.  For example, ccls says that 
+	symbols defined with #define are of kind 255.
+
+	* eglot.el (eglot-imenu): Don't delete elements with unknown symbol
+	 kind from the return list, instead put them in `(Unknown)` group.
+
+2018-10-31  Michał Krzywkowski  <k.michal@zoho.com>
+
+	Remove duplicates from imenu
+
+	* eglot.el (eglot-imenu): Don't append the result list to itself,
+	 which causes duplicates.
+
+2018-10-30  Alex Branham  <jabranham@users.noreply.github.com>
+
+	Require subr-x at compile time (#139)
+
+	if-let and when-let are macros that the byte compiler can expand  at
+	compile time. No need to require subr-x at run time.
+	
+	* eglot.el (subr-x): Require only when compiling.
+
+2018-10-30  João Távora  <joaotavora@gmail.com>
+
+	Fix #138: accept deprecated field in SymbolInformation
+
+	* eglot.el (xref-backend-identifier-completion-table)
+	(eglot-imenu): Accept and ignore "deprecated"
+
+2018-10-24  Dale Sedivec  <dale@codefu.org>
+
+	Fix misspelling of "outstanding" (#74)
+
+	Copyright-paperwork-exempt: yes
+
+	* eglot.el (eglot--mode-line-format): Fix a typo.
+
+2018-10-19  Michał Krzywkowski  <k.michal@zoho.com>
+
+	* eglot-tests.el: Disable eclipse connection tests.
+
+2018-10-18  Michał Krzywkowski  <k.michal@zoho.com>
+
+	* .travis.yml (install): Download eclipse.jdt.ls server.
+
+2018-10-18  Michał Krzywkowski  <k.michal@zoho.com>
+
+	Add tests for eclipse.jdt.ls connection
+
+	* eglot-tests.el (eglot--have-eclipse-jdt-ls-p): New helper.
+	(eclipse-connect):
+	(eclipse-workspace-folders): New tests.
+
+2018-10-18  Michał K  <k.michal@zoho.com>
+
+	Handle case when project was not found in eclipse.jdt.ls contact
+
+2018-10-18  Michał K  <k.michal@zoho.com>
+
+	Override eglot-execute-command for eclipse.jdt.ls server
+
+	* eglot.el (eglot-execute-command eglot-eclipse-jdt): New defmethod.
+
+2018-10-18  Michał K  <k.michal@zoho.com>
+
+	Per #63: Add support for eclipse.jdt.ls server
+
+	* eglot.el (eglot-server-programs): Add java-mode entry.
+	(eglot-eclipse-jdt): New class.
+	(eglot-initialization-options): Override for eglot-eclipse-jdt.
+	(eglot--eclipse-jdt-contact): New function.
+
+2018-10-18  Michał K  <k.michal@zoho.com>
+
+	Per #63: Allow function contacts to be interactive
+
+	* eglot.el (eglot-server-programs): Mention that the function must
+	 accept one argument.
+	(eglot--guess-contact): Pass to functional contacts the interactive 
+	value.
+
+2018-10-15  Michał Krzywkowski  <k.michal@zoho.com>
+
+	Improve signature help
+
+	* eglot.el (eglot--sig-info): Don't lose existing information.
+	 Attempt to highlight the active parameter by searching for it's
+	 :label in signature's :label.	Append to the result first sentence
+	 of signature's :documentation, if present.
+
+2018-10-15  Michał K  <k.michal@zoho.com>
+
+	Sort references and definitions by line number
+
+	* eglot.el (eglot--sort-xrefs): New function.
+	(xref-backend-definitions):
+	(xref-backend-references):
+	(xref-backend-apropos): Use it.
+
+2018-10-15  mkcms  <k.michal@zoho.com>
+
+	Merge pull request #104 from mkcms/fix-diagnostics-wrong-type-argument
+
+	Handle case when diagnostic :character is out of range
+
+2018-10-15  Michał K  <k.michal@zoho.com>
+
+	Handle case when diagnostic :character is out of range
+
+	* eglot.el (eglot-handle-notification): Don't error out when
+	 flymake-diag-region returns nil.
+
+2018-10-15  Michał Krzywkowski  <k.michal@zoho.com>
+
+	eglot-ignored-server-capabilites: Prefer all choices over "Other"
+
+	Previously the "Other" choice matched every value, so it was always 
+	shown in the customize buffer.
+
+	* eglot.el (eglot-ignored-server-capabilites): Make the "Other" choice
+	 the last possible option.
+
+2018-10-03  mkcms  <k.michal@zoho.com>
+
+	Make eglot-ignored-server-capabilites more user-friendly (#126)
+
+	* eglot.el (eglot-ignored-server-capabilites): Add list of possible
+	 choices to :type, along with a user-friendly description.
+
+2018-09-24  mkcms  <k.michal@zoho.com>
+
+	Correctly map DocumentSymbol's :kind to its name (#121)
+
+	Previously we were mapping :kind in DocumentSymbol with  names from the
+	CompletionItemKind enum, whereas we should  have used the SymbolKind
+	enum.
+	
+	* eglot.el (eglot--symbol-kind-names): New variable.
+	(eglot-imenu): Use it instead of eglot--kind-names.
+
+2018-09-24  whatacold  <whatacold@gmail.com>
+
+	Autoload eglot-ensure (#120)
+
+	Copyright-paperwork-exempt: yes
+	
+	* eglot.el (eglot-ensure): Add autoload cookie
+
+2018-09-17  João Távora  <joaotavora@gmail.com>
+
+	Close #115: Don't block kill-buffer-hook if server somehow hangs
+
+	* eglot.el (eglot--signal-textDocument/didClose): Use 
+	with-demoted-errors.
+
+2018-09-08  Aleksey Kladov  <aleksey.kladov@gmail.com>
+
+	Close #100: Don't send other notifications before initialized
+
+	Copyright-paperwork-exempt: yes
+	
+	* eglot.el (eglot--connect): send initialized before  activating minor
+	mode.
+
+2018-09-07  João Távora  <joaotavora@gmail.com>
+
+	Close #94: Prefer ccls over cquery for C/C++
+
+	* README.md (Installation and usage): Prefer ccls to cquery. Mention
+	clangd.
+
+	* eglot.el (eglot-server-programs): Suggest ccls for c/c++ by default.
+
+2018-09-07  João Távora  <joaotavora@gmail.com>
+
+	Fix serious breakage introduced by #93
+
+	string-prefix-p doesn't work on symbols
+
+	* eglot.el (eglot-handle-notification): Coerce method name to string.
+
+2018-09-07  Fangrui Song  <i@maskray.me>
+
+	Don't warn on implementation-specific notifications (#93)
+
+	Only warn when method name doesn't start with '$'. Per the spec:
+	
+	 "if a server or client receives notifications or requests 
+	 starting with ‘$/’ it is free to ignore them if they are unknown."
+	
+	* eglot.el (eglot-handle-notification t t): Check method name for $.
+
+2018-08-27  Evgeni Kolev  <evgenysw@gmail.com>
+
+	When exiting emacs, don't ask the user to confirm killing processes
+	(#83)
+
+	 Copyright-paperwork-exempt: yes
+	
+	* eglot.el (eglot--connect, eglot--inferior-bootstrap): pass noquery t
+	to  make-process.
+
+2018-08-25  João Távora  <joaotavora@gmail.com>
+
+	Close #86: Handle case when :textDocumentSync isn't a number
+
+	Also closes #87.
+
+	* eglot.el (eglot--signal-textDocument/didChange): Grab :change from
+	:textDocumentSync server capability.
+
+2018-08-20  João Távora  <joaotavora@gmail.com>
+
+	Close #82: Correctly delete text before expanding snippet completions
+
+	Suggested by Amol Mandhane.
+
+	* eglot.el (eglot-completion-at-point): Use length of obj in
+	:exit-function
+
+2018-08-20  Phillip Dixon  <phillip.dixon@gmail.com>
+
+	Ignore extra keys in textDocument/publishDiagnostics (#81)
+
+	Accoding to the "discussion" in https://reviews.llvm.org/D50571, it  
+	was deemed sufficient that VSCode is fine with the non-standard  
+	extension -- jt
+	 Copyright-paperwork-exempt: yes
+	
+	* eglot.el (eglot-handle-notification): Add &allow-other-keys
+
+2018-08-20  João Távora  <joaotavora@gmail.com>
+
+	Close #80: Consider :triggerCharacters in company completion
+
+	* eglot.el (eglot-completion-at-point): Take advantage of
+	:company-prefix-length.
+
+2018-08-19  João Távora  <joaotavora@gmail.com>
+
+	Actually add snippet example gif referenced in README.md
+
+	* gif-examples/eglot-snippets-on-completion.gif: New file
+
+2018-08-19  João Távora  <joaotavora@gmail.com>
+
+	* README.md (Obligatory animated gif section): Add snippet gif.
+
+2018-08-19  João Távora  <joaotavora@gmail.com>
+
+	Improve snippet support
+
+	* eglot.el (eglot-client-capabilities): Don't always declare snippet
+	support.
+	(eglot--snippet-expansion-fn): New helper.
+	(eglot-completion-at-point): Better annotations when snippets are
+	supported.
+
+2018-08-18  Evgeni Kolev  <evgenysw@gmail.com>
+
+	Add go-langserver (#74)
+
+	Copyright-paperwork-exempt: yes
+	
+	* README.md (Installation and usage): Add go-langserver.
+	* eglot.el (eglot-server-programs): Add go-langserver.
+
+2018-08-18  João Távora  <joaotavora@gmail.com>
+
+	Per #74: Don't error if server replies with empty hover message
+
+	* eglot.el (eglot-eldoc-function): Check non-nil contents.
+
+2018-08-18  mkcms  <k.michal@zoho.com>
+
+	Fix textDocument/hover responses where MarkedString is a plist (#72)
+
+	* eglot.el (eglot--hover-info): Forward all non-vector content to  
+	eglot--format-markup.
+
+2018-08-18  João Távora  <joaotavora@gmail.com>
+
+	Close #50: Support snippet completions
+
+	* eglot.el (eglot-client-capabilities): Declare support for 
+	snippet-based completions.
+	(eglot-completion-at-point): Expand snippet completions with YASnippet
+	if that is found.
+	(eglot-note, eglot-warning, eglot-error): Diagnostic overlay priorities
+	have to be slightly lower than yasnippet's, which must be reasonably
+	high.
+
+2018-08-17  João Távora  <joaotavora@gmail.com>
+
+	Per #74: Fix eglot-capabilities when querying for multiple features
+
+	* eglot-tests.el (eglot-capabilities): New test.
+
+	* eglot.el (eglot--server-capable): Fix problems with queries for 
+	multiple capabilities.
+
+2018-08-13  João Távora  <joaotavora@gmail.com>
+
+	Close #73: Prompt for server in interactive eglot-shutdown
+
+	* eglot.el (eglot--read-server): New helper.
+	(eglot-shutdown): Use it.
+
+2018-08-13  James N  <james@jojojames.com>
+
+	Add kotlin-language-server (#70)
+
+	https://github.com/fwcd/KotlinLanguageServer
+	 copyright-paperwork-exempt: yes
+	
+	* README.md (Installation and Usage): declare Kotlin support.
+
+2018-08-13  João Távora  <joaotavora@gmail.com>
+
+	Close #64: handle edits to same position in the correct order
+
+	In eglot--apply-text-edits, the markers returned by 
+	eglot--lsp-position-to-point are of the "stay" type, i.e. have an 
+	insertion-type of nil.	This causes multiple insertion edits to the same
+	location to happen in the reverse order in which they appear in the LSP
+	message, which is a violation of the spec and a bug.
+
+	There are more ways to solve this (see related discuttion in 
+	https://github.com/joaotavora/eglot/pull/64), but the easiest way is to
+	revert the order in which the edits are processed.  This is because the
+	spec tells us that the order is only relevant in precisely this
+	"same position" case.  So if we reverse the order we fix this bug and 
+	don't break anything else.
+
+	* eglot.el (eglot--apply-text-edits): Apply edits in reverse..
+
+2018-08-13  João Távora  <joaotavora@gmail.com>
+
+	Close #41: Control the size of the events buffer
+
+	* eglot.el (eglot-events-buffer-size): New defcustom.
+	(eglot--connect): Use it.
+
+2018-08-13  João Távora  <joaotavora@gmail.com>
+
+	Update README.md
+
+	* README.md (Differences to lsp-mode.el): Rewrite.
+
+2018-08-13  João Távora  <joaotavora@gmail.com>
+
+	Allow tests to be run with custom jsonrpc.el
+
+	make check JSONRPC='-l ~/Source/Emacs/emacs-master/lisp/jsonrpc.el' is 
+	an example.
+
+	* Makefile (JSONRPC): Make this a recursive variable.
+
+2018-08-13  João Távora  <joaotavora@gmail.com>
+
+	Close #68: Implement asynchronous server connection
+
+	A new defcustom eglot-sync-connect controls this feature.  If it is t, 
+	eglot should behave like previously, waiting synchronously for a 
+	connection to be established, with the exception that there is now a 
+	non-nil timeout set to eglot-connect-timeout, which defaults to 30 
+	seconds.
+
+	eglot-connect is now considerably more complicated as it replicates most
+	of the work that jsonrpc-request does vis-a-vis handling errors, 
+	timeouts and user quits..
+
+	* eglot-tests.el
+	(eglot--call-with-dirs-and-files): Simplify cleanup logic.
+	(slow-sync-connection-wait)
+	(slow-sync-connection-intime, slow-async-connection)
+	(slow-sync-error): New tests.
+
+	* eglot.el (eglot-sync-connect): New defcustom.
+	(eglot-ensure, eglot): Simplify.
+	(eglot--connect): Honour eglot-sync-connect.  Complicate considerably.
+	(eglot-connect-timeout): New defcustom.
+	(Package-requires): Require jsonrpc 1.0.6
+
+2018-08-13  João Távora  <joaotavora@gmail.com>
+
+	Add a test for eglot-ensure.  Make
+
+	sure it runs last, since a bug in the python-flymake backend may trigger
+	a sentinel error that interferes with other tests.
+
+	* eglot-tests.el (zzz-eglot-ensure): New test.
+	(python, ert-x): Require it.
+
+2018-08-12  João Távora  <joaotavora@gmail.com>
+
+	* README.md (Build Status): Show status for master
+
+2018-08-12  mkcms  <k.michal@zoho.com>
+
+	Kill server's output and events buffers from eglot-shutdown (#66)
+
+	* eglot.el
+	(Package-Requires): Require jsonrpc 1.0.5
+	(eglot-shutdown): Kill events and stderr buffers of the server, unless
+	new PRESERVE-BUFFERS argument is non-nil. eglot-reconnect): Preserve
+	buffers on shutdown.
+	
+	* eglot-tests.el (eglot--call-with-dirs-and-files): Call eglot-shutdown
+	with non-nil PRESERVE-BUFFERS arg.
+
+2018-08-11  João Távora  <joaotavora@gmail.com>
+
+	Improve eglot-execute-command API to ease overriding by servers
+
+	* eglot.el (eglot-execute-command): COMMAND can be a symbol.
+	(eglot-code-actions): Pass symbols to eglot-command.
+
+2018-08-11  Michał K  <k.michal@zoho.com>
+
+	Add a generic eglot-execute-command API
+
+	* eglot.el (eglot-execute-command): New defgeneric and method.	Use it
+	 to request :workspace/executeCommand.
+	(eglot-code-actions): Use it.
+
+2018-08-11  Michał K  <k.michal@zoho.com>
+
+	* eglot.el (eglot-cquery): Capitalize docstring.
+
+2018-08-11  João Távora  <joaotavora@gmail.com>
+
+	Minor fixes to test infrastructure
+
+	* eglot-tests.el (eglot--with-timeout): Eval timeout.
+	(eglot--wait-for): Pass a list to eglot--with-timeout.
+	(eglot--tests-connect): Take optional timeout arg.
+	(formatting): Fix indentation and whitespace.vc ne
+
+	* Makefile (eglot-check): Load eglot directly to prevent loading 
+	outdated version from ELPA/MELPA.
+
+2018-08-10  João Távora  <joaotavora@gmail.com>
+
+	* eglot.el (advice-add jsonrpc-request): Add &allow-other-keys
+
+2018-08-10  João Távora  <joaotavora@gmail.com>
+
+	Require jsonrpc.el 1.0.2 (GNU ELPA didn't build 1.0.1)
+
+	* eglot.el (Package-Requires): Require jsonrpc 1.0.2
+
+2018-08-10  João Távora  <joaotavora@gmail.com>
+
+	Close #61: Snappier completions that don't hinder typing
+
+	This should improve company-capf's performance.
+
+	* eglot.el (Package-Requires): Require jsonrpc 1.0,1
+	(eglot-completion-at-point): Use completion-table-dynamic.  Pass 
+	CANCEL-ON-INPUT to jsonrpc-request.
+
+2018-08-09  mkcms  <k.michal@zoho.com>
+
+	Close #60: Notify server of recent changes before save notification
+
+	* eglot.el (eglot--signal-textDocument/didSave): Call
+	 eglot--signal-textDocument/didChange.
+
+2018-08-07  João Távora  <joaotavora@gmail.com>
+
+	* eglot.el (eglot-initialization-options): Fix spurious typo.
+
+2018-08-07  João Távora  <joaotavora@gmail.com>
+
+	Per #63: Accept functions as entries in eglot-server-programs
+
+	CONTACT in the (MAJOR-MODE . CONTACT) association in 
+	eglot-server-programs can now be a function of no arguments producing 
+	any value previously valid for contact.	 The function is called at time
+	of `M-x eglot` or `eglot-ensure`.  This is useful for servers requiring
+	command-line invocations that depend on the specific momentary
+	environment.
+
+	* eglot.el (eglot-server-programs): CONTACT can be a fucntion of no 
+	arguments.
+	(eglot--guess-contact, eglot--connect): Accept function CONTACTs.
+
+2018-08-06  João Távora  <joaotavora@gmail.com>
+
+	Per #59: eglot-workspace-configuration's keys needn't be keywords
+
+	* eglot.el (eglot-signal-didChangeConfiguration): Convert alist keys
+	into a json-compatible plist.
+
+2018-08-03  João Távora  <joaotavora@gmail.com>
+
+	Default eglot-handle-notifictiona|request must &allow-other-keys
+
+	* eglot.el (eglot-handle-notification, eglot-handle-request): Add
+	&allow-other-keys
+
+2018-08-03  mkcms  <k.michal@zoho.com>
+
+	Fix placement of diagnostics with same start and end positions
+
+	Some servers such as cquery and clangd publish diagnostic with  
+	identical start and end positions.
+	
+	* eglot.el (eglot-handle-notification
+	 :textDocument/publishDiagnostics): Add 1 to :line since LSP lines
+	 are 0-based.  Don't subtract 1 from :character, since both emacs and
+	 LSP have 0-based columns.
+
+2018-08-02  João Távora  <joaotavora@gmail.com>
+
+	Close #58: Erase company-doc buffer in between doc requests
+
+	* eglot.el (eglot-completion-at-point): Erase temporary
+	"*eglot-doc*" buffer for company's doc.
+
+2018-07-30  mkcms  <k.michal@zoho.com>
+
+	* eglot.el (eglot-client-capabilities): Fix a typo.
+
+	
+
+2018-07-28  Michał K  <k.michal@zoho.com>
+
+	Implement TextDocument/rangeFormatting
+
+	* eglot.el (eglot-format): New command.
+	(eglot-format-buffer): Use it as implementation.
+	(eglot-client-capabilities): Add :rangeFormatting.
+	* eglot-tests.el (formatting): Also test range formatting.
+	* README.md (Commands and keybindings): Mention eglot-format.
+	(Language features): Tick textDocument/rangeFormatting.
+
+2018-07-28  mkcms  <k.michal@zoho.com>
+
+	Close #54: Correctly make LSP positions in narrowed buffers
+
+	* eglot.el (eglot--pos-to-lsp-position): Fix return value when
+	 narrowing is in effect.
+
+2018-07-28  Väinö Järvelä  <vaino.jarvela@gmail.com>
+
+	Fix typo in willSaveWaitUntil RPC request (#51)
+
+	Copyright-paperwork-exempt: yes
+	
+	* eglot.el (eglot--signal-textDocument/willSave): Fix typo.
+
+2018-07-28  mkcms  <k.michal@zoho.com>
+
+	Work around Emacs bugs 32237, 32278 (#53)
+
+	See: https://debbugs.gnu.org/cgi/bugreport.cgi?bug=32237 
+	https://debbugs.gnu.org/cgi/bugreport.cgi?bug=32278
+	
+	* eglot.el (eglot--apply-text-edits): Inhibit modification hooks and
+	 call them manually for the changed region.
+
+2018-07-27  João Távora  <joaotavora@gmail.com>
+
+	Close #48: be less verbose when using eglot-ensure
+
+	* eglot.el (eglot-ensure): Don't message when a buffer is already 
+	managed.
+
+2018-07-26  João Távora  <joaotavora@gmail.com>
+
+	* README.md (Installation and usage): Add haskell-ide-engine
+
+2018-07-26  Alan Zimmerman  <alan.zimm@gmail.com>
+
+	Add entry for haskell-ide-engine in eglot-server-programs (#49)
+
+	* eglot.el (eglot-server-programs): Add entry for haskell-mode
+
+2018-07-25  João Távora  <joaotavora@gmail.com>
+
+	Per #48: Fix messages of eglot-ensure
+
+	* eglot.el (eglot-ensure): fix messages.
+
+2018-07-22  João Távora  <joaotavora@gmail.com>
+
+	Close #44: Don't turn on flymake-mode any more than is needed
+
+	If flymake-mode is in eglot--managed-mode-hook, it will be called even 
+	if eglot--managed-mode is being turned off, which could be problematic 
+	because it triggers a check if flymake-start-on-flymake-mode is t.
+
+	* eglot.el (eglot--managed-mode): Turn on flymake-mode and eldoc-mode
+	here.
+
+2018-07-20  João Távora  <joaotavora@gmail.com>
+
+	Close #44: Robustify in the face of manual mode changes
+
+	When manually changing the major-mode of a managed buffer, this sends a
+	didClose and tears down Eglot-related stuff like if were killing the 
+	buffer.	 After changing the mode, we have to recheck that we are now not
+	managed by another server (or by the same server, in case we changed the
+	mode to be the same mode).
+
+	* eglot.el (eglot-shutdown): Use eglot--with-live-buffer
+	(eglot--on-shutdown): Use eglot--with-live-buffer
+	(eglot--managed-mode): Use change-major-mode-hook.
+	(eglot--managed-mode-onoff): Change protocol. Turn off when called with
+	no arguments.
+	(eglot--maybe-activate-editing-mode): Don't do anything if mode is 
+	already active.	 Suitable for calling from after-change-major-mode-hook.
+	(after-change-major-mode-hook): Add eglot--maybe-activate-editing-mode.
+
+2018-07-12  João Távora  <joaotavora@gmail.com>
+
+	Close #29: Implement workspace/didChangeConfiguration (#40)
+
+	* README.md (Supported Protocol Features, Commands and keybindings):
+	mention workspace/didChangeConfiguration.
+	
+	* eglot.el (eglot-server-initialized-hook): New hook.
+	(eglot--connect): Run it.
+	(eglot-workspace-configuration): New variable.
+	(eglot-signal-didChangeConfiguration): New command.
+
+2018-07-11  João Távora  <joaotavora@gmail.com>
+
+	Close #39: Handle experimental/unknown server methods gracefully
+
+	* eglot.el (eglot-handle-notification t t, eglot-handle-request t t):
+	Add default handlers for unknown methods.
+	(eglot-handle-notification $cquery/progress)
+	(eglot-handle-notification $cquery/setInactiveRegions)
+	(eglot-handle-notification $cquery/publishSemanticHighlighting): Remove
+	these no-ops.
+
+2018-07-11  João Távora  <joaotavora@gmail.com>
+
+	Tests only kill server-related buffers when successfull
+
+	* eglot-tests.el (eglot--call-with-dirs-and-files): Only kill 
+	server-related buffers when succcessful.
+
+2018-07-10  João Távora  <joaotavora@gmail.com>
+
+	* Makefile (JSONRPC): Call package-refresh-contents
+
+2018-07-10  João Távora  <joaotavora@gmail.com>
+
+	Test with Emacs 26.1, not the 26 pre-release
+
+	* .travis.yml (EMACS_VERSION): Bump to 26.1
+
+2018-07-10  João Távora  <joaotavora@gmail.com>
+
+	jsonrpc must be available when compiling, too
+
+	* Makefile (JSONRPC): New variable.
+
+2018-07-10  João Távora  <joaotavora@gmail.com>
+
+	Install jsonrpc package when running tests
+
+	* Makefile (eglot-check): Install jsonrpc package.
+
+2018-07-09  João Távora  <joaotavora@gmail.com>
+
+	jsonrpc.el is now a GNU ELPA depedency
+
+	* Makefile (ELFILES): Don't include jsonrpc.
+	(jsonrpc-check): Remove target.
+	(check): Don't run jsonrpc-check
+
+	* README.md (either): Mention "packaged in a single file" again
+
+	* eglot.el (Package-Requires): Require jsonrpc 1.0.0
+	(Version): Bump to 1.1
+
+	* jsonrpc.el: Remove
+
+	* jsonrpc-tests.el: Remove
+
+2018-07-09  João Távora  <joaotavora@gmail.com>
+
+	* eglot.el (eglot-completion-at-point): Fix broken indentation
+
+2018-07-09  Ricardo Martins  <ricardo@scarybox.net>
+
+	Format documentation in completion annotations
+
+	Fixes an issue with the latest RLS, where the server returns a plist 
+	instead of a plain string as documentation for completion candidates, 
+	which broke the `annotation-function`. This change was introduced by 
+	https://github.com/rust-lang-nursery/rls/commit/206a9fb41e837333d0e67187a6a9fe24868b77a4
+
+	Copyright-paperwork-exempt: yes
+
+	* eglot.el (eglot-completion-at-point): Use eglot--format-markup
+
+2018-07-06  João Távora  <joaotavora@gmail.com>
+
+	Close #37: Unbreak completion when no possible annotation
+
+	* eglot.el (eglot-completion-at-point): Handle case where no doc, detail
+	or kind.
+
+2018-07-02  João Távora  <joaotavora@gmail.com>
+
+	Close #34: Handle outrageously large and buggy line numbers
+
+	* eglot.el (eglot--lsp-position-to-point): Truncate line number to 
+	most-positive-fixnum.
+
+2018-07-01  João Távora  <joaotavora@gmail.com>
+
+	Close #36: Inhibit auto-reconnect until connection is established
+
+	Otherwise, a server that crashes on startup is enough to throw Eglot 
+	into a reconnection infloop.
+
+	* eglot.el (eglot-lsp-server): Initialize "inhibit-autoreconnect" slot
+	to t.
+
+2018-06-30  João Távora  <joaotavora@gmail.com>
+
+	Close #33: Bind default-directory when launching servers
+
+	Apparently, not doing so trips some servers, like Scala's.
+
+	* eglot.el (eglot--connect): Bind default-directory.
+
+2018-06-29  Vladyslav M	 <dywedir@pm.me>
+
+	Fix typo (#35)
+
+	* README.md: Fix typo.
+	 Copyright-paperwork-exempt: yes
+
+2018-06-25  João Távora  <joaotavora@gmail.com>
+
+	Close #32: Cache buffer's managing server
+
+	* eglot.el (eglot--cached-current-server): New variable.
+	(eglot--managed-mode-onoff): Set it.
+	(eglot--current-server): Read it.
+	(eglot--maybe-activate-editing-mode): Add assertion.
+
+2018-06-25  João Távora  <joaotavora@gmail.com>
+
+	Close #31: Unbreak Imenu for cquery servers (and probably more)
+
+	* eglot.el (eglot-imenu): Don't try to make a group for symbols without
+	kind.
+
+2018-06-25  João Távora  <joaotavora@gmail.com>
+
+	Per #31: Unbreak basic imenu functionality
+
+	* eglot.el (eglot--managed-mode): Add missing quote to 
+	imenu-create-index-function.
+
+2018-06-25  Ricardo Martins  <1706+meqif@users.noreply.github.com>
+
+	Close #30: Fix typo in the solargraph server program
+
+	Copyright-paperwork-exempt: yes 
+	
+	* eglot.el (eglot-server-programs): Fix typo.
+
+2018-06-23  João Távora  <joaotavora@gmail.com>
+
+	Fix some rather silly bugs in some interactive specs
+
+	* eglot.el (eglot-events-buffer, eglot-stderr-buffer)
+	(eglot-forget-pending-continuations): Fix interactive specs.
+
+2018-06-23  João Távora  <joaotavora@gmail.com>
+
+	Adjust timeout strategy when running tests
+
+	* eglot-tests.el (eglot--tests-connect): Use eglot--with-timeout here.
+	(auto-detect-running-server, auto-reconnect, rls-watches-files)
+	(rls-basic-diagnostics, rls-hover-after-edit, rls-rename)
+	(basic-completions, hover-after-completions, formatting)
+	(javascript-basic): Don't use eglot--with-timeout directly.
+
+2018-06-23  João Távora  <joaotavora@gmail.com>
+
+	* jsonrpc.el (jsonrpc-process-type): Actually return process-type.
+
+2018-06-23  João Távora  <joaotavora@gmail.com>
+
+	Implement TCP autostart/autoconnect (and support Ruby's Solargraph)
+
+	* README.md (Installation and usage): Mention support for Solargraph
+	(Connecting via TCP): New section
+	(Connecting automatically): New section
+
+	* eglot.el (eglot-server-programs): Add ruby-mode. Overhaul docstring.
+	(eglot-lsp-server): Add inferior-process slot.
+	(eglot--on-shutdown): Kill any autostarted inferior-process
+	(eglot--guess-contact): Allow prompting with :autoport parameter.
+	(eglot--connect): Consider :autoport case.
+	(eglot--inferior-bootstrap): New helper.
+
+2018-06-22  João Távora  <joaotavora@gmail.com>
+
+	Merge branch 'jsonrpc-refactor', bump version to 1.0
+
+	* eglot.el (Version): Bump to 1.0
+
+2018-06-22  João Távora  <joaotavora@gmail.com>
+
+	* eglot.el (Version): Bump to 0.11
+
+2018-06-22  João Távora  <joaotavora@gmail.com>
+
+	Tiny README.md change
+
+2018-06-22  João Távora  <joaotavora@gmail.com>
+
+	Merge master into jsonrpc-refactor (using imerge)
+
+2018-06-21  João Távora  <joaotavora@gmail.com>
+
+	Close #27: empty ranges are valid in LSP
+
+	The previous hack in eglot--range-region, designed to appease cquery's 
+	occasional practice of publishing diagnostics with empty regions, was 
+	moved to the proper notification handler.
+
+	Reported by mkcms <k.michal@zoho.com>.
+
+	* eglot.el (eglot--range-region): Allow empty ranges, which are allowed
+	in LSP.
+	(eglot-handle-notification :textDocument/publishDiagnostics): Maybe 
+	fallback to flymake-diag-region here.
+
+2018-06-21  João Távora  <joaotavora@gmail.com>
+
+	Close #22: Apply text edits as a single undoable edit
+
+	As suggested by mkcms <k.michal@zoho.com>, but do it in 
+	eglot--apply-text-edits, where it benefits all its users.
+
+	Also, just using undo-boundary is not enough, one needs 
+	undo-amalgamate-change-group to mess with the boundaries already in 
+	buffer-undo-list.
+
+	* eglot.el (eglot--apply-text-edits): Use
+	 undo-amalgamate-change-group.
+
+2018-06-21  João Távora  <joaotavora@gmail.com>
+
+	Close #23: Report progress when applying edits
+
+	Use make-progress-reporter in eglot--apply-text-edits
+
+	As suggested by mkcms <k.michal@zoho.com>, but do it in 
+	eglot--apply-text-edits, where it benefits all its users.
+
+	* eglot.el (eglot--apply-text-edits): Use a progress reporter. Fix
+	marker point recovery.
+
+2018-06-21  João Távora  <joaotavora@gmail.com>
+
+	Per #22: Apply text edits atomically
+
+	As suggested by mkcms <k.michal@zoho.com>, but do it in 
+	eglot--apply-text-edits, where it benefits all its users.
+
+	* eglot.el (eglot--apply-text-edits): Use atomic-change-group.
+
+2018-06-21  João Távora  <joaotavora@gmail.com>
+
+	Defer textDocument/formatting requests
+
+	* eglot.el (eglot-format-buffer): Pass DEFERRED to eglot--request.
+
+2018-06-21  João Távora  <joaotavora@gmail.com>
+
+	Per #22: Simplify eglot-format-buffer
+
+	Use replace-buffer-contents, as suggested by mkcms
+	<k.michal@zoho.com>, but do it in eglot--apply-text-edits, where it 
+	benefits all its users.
+
+	* README.md (Commands and keybindings): Mention eglot-format-buffer.
+
+	* eglot.el (eglot-format-buffer): Don't try to heuristically preserve
+	point here.
+	(eglot--apply-text-edits): Use replace-buffer-contents.
+
+	* eglot-tests.el (formatting): adjust test to strictly check for point 
+	position.
+
+2018-06-20  João Távora  <joaotavora@gmail.com>
+
+	Close #26: Guess server for js2-mode and rjsx-mode
+
+	* eglot.el (eglot-server-programs): Add entries for js2-mode and 
+	rjsx-mode.  Coalesce entries for c++ and c-mode.  Improve docstring.
+	(eglot--guess-contact): Allow lists are keys in eglot-server-programs.
+
+2018-06-20  João Távora  <joaotavora@gmail.com>
+
+	Close #25: Improve eglot-ensure and mention it in README.md
+
+	* README.md (Installation and Usage): Mention eglot-ensure.
+
+	* eglot.el (eglot-ensure): No-op for non-file buffers.
+	(eglot--connect): Don't fallback to 'eglot-lsp-server here.
+	(eglot--guess-contact): Error if something can't be guessed.
+
+2018-06-16  Rami Chowdhury  <460769+necaris@users.noreply.github.com>
+
+	Use gfm-mode for formatted strings (#20)
+
+	* eglot.el (eglot--format-markup): Use gfm-mode instead of 
+	markdown-mode.
+	 Copyright-paperwork-exempt: yes
+
+2018-06-15  João Távora  <joaotavora@gmail.com>
+
+	Minor cleanup to new textDocument/formatting feature
+
+	* README.md (Language feature): Tick textDocument/formatting
+
+	* eglot.el (eglot-client-capabilities): Add formatting capability. Also
+	move codeAction capability to the correct section.
+
+	(eglot-format-buffer): Remove unused lexical variable before-point.
+
+2018-06-15  mkcms  <k.michal@zoho.com>
+
+	Implement formatting (#19)
+
+	Implement textDocument/formatting
+	
+	* eglot.el (eglot-format-buffer): New command to format  current
+	buffer.
+	
+	* eglot-tests.el (formatting): New test.
+
+2018-06-13  João Távora  <joaotavora@gmail.com>
+
+	* eglot.el (Version): Bump to 0.10
+
+2018-06-13  João Távora  <joaotavora@gmail.com>
+
+	Fix a bug when eglot--request times out
+
+	* eglot.el (eglot--request): Better timeout message.
+	(eglot--async-request): Must return the timer.
+
+2018-06-13  João Távora  <joaotavora@gmail.com>
+
+	Add a test for the javascript LSP server
+
+	* eglot-tests.el (eglot--wait-for): Fix when :method is a keyword.
+	(javascript-basic): New test.
+	(rls-watches-files, rls-hover-after-edit): Update test.
+	(rls-rename): Don't need to sniff comms here.
+
+2018-06-13  João Távora  <joaotavora@gmail.com>
+
+	* eglot.el (eglot-shutdown): Accept TIMEOUT param.
+
+2018-06-13  João Távora  <joaotavora@gmail.com>
+
+	Fix bug in querying server capabilities
+
+	This lead to javascript-typescript-stdio being sent an incremental 
+	didChange notif, which it doesn't support.
+
+	* eglot.el (eglot--server-capable): Fix bug.
+
+2018-06-12  João Távora  <joaotavora@gmail.com>
+
+	Fix another bug in jsonrpc-connection-send
+
+	* jsonrpc.el (jsonrpc-connection-send): Only send method if method 
+	supplied.
+
+2018-06-11  João Távora  <joaotavora@gmail.com>
+
+	Let's not send Content-type for now.
+
+	The LSP servers Eglot works with hate it
+
+	* jsonrpc.el (jsonrpc-connection-send): Don't send Content-type.
+
+2018-06-11  João Távora  <joaotavora@gmail.com>
+
+	Fix some typos
+
+2018-06-11  João Távora  <joaotavora@gmail.com>
+
+	Fix use of jsonrpc-message in tests
+
+	* jsonrpc-tests.el
+	(jsonrpc--with-emacsrpc-fixture): Use jsonrpc--message.
+
+2018-06-11  João Távora  <joaotavora@gmail.com>
+
+	Simplify jsonrpc-connection-send
+
+	* jsonrpc.el (jsonrpc-connection-send): Use args.
+
+2018-06-11  João Távora  <joaotavora@gmail.com>
+
+	jsonrpc-connection-receive is now a public convenience function
+
+	* jsonrpc.el (Commentary:) Mention jsonrpc-connection-receive.
+	(jsonrpc-connection-receive): Rename from jsonrpc--connection-receive.
+	(jsonrpc--process-filter): Use jsonrpc-connection-receive.
+
+2018-06-11  João Távora  <joaotavora@gmail.com>
+
+	Fix ridiculous bug
+
+	* jsonrpc.el (jsonrpc-connection-send): Content-Length must be a string.
+
+2018-06-10  João Távora  <joaotavora@gmail.com>
+
+	Review commentary section before another review cycle
+
+	* jsonrpc.el (jsonrpc-connection-send): Send Content-Type header.
+
+2018-06-10  João Távora  <joaotavora@gmail.com>
+
+	* eglot.el (Version): Bump to 0.9
+
+2018-06-10  João Távora  <joaotavora@gmail.com>
+
+	Merge branch 'master' into jsonrpc-refactor
+
+2018-06-10  João Távora  <joaotavora@gmail.com>
+
+	Close #17: New	eglot-ensure to put in a major-mode's hook
+
+	* eglot.el (Commentary): Mention eglo-ensure.
+	(eglot--connect): Rearrange args.
+	(eglot--guess-contact): Rename from eglot--interactive.
+	(eglot): Use eglot--guess-contact.
+	(eglot, eglot-reconnect): Rearrange call to eglot--connect.
+	(eglot-ensure): New command to put in mode hook.
+
+	* eglot-tests.el (eglot--tests-connect): New helper.
+	(auto-detect-running-server, auto-reconnect, rls-watches-files)
+	(rls-basic-diagnostics, rls-hover-after-edit, rls-rename)
+	(basic-completions, hover-after-completions): Use it.
+
+2018-06-10  João Távora  <joaotavora@gmail.com>
+
+	* jsonrpc.el: Rewrite commentary.
+
+2018-06-10  João Távora  <joaotavora@gmail.com>
+
+	Shuffle definitions around again
+
+2018-06-10  João Távora  <joaotavora@gmail.com>
+
+	jsonrpc--log-event should also be private
+
+	* eglot-tests.el (eglot--sniffing): Use jsonrpc--log-event.
+
+	* jsonrpc.el (jsonrpc-connection-send)
+	(jsonrpc--connection-receive, jsonrpc--debug): Use jsonrpc--log-event.
+	(jsonrpc--log-event): Rename from jsonrpc-log-event.
+
+2018-06-10  João Távora  <joaotavora@gmail.com>
+
+	Reshuffle definitions inside jsonrpc.el
+
+	Split between public and private
+
+2018-06-10  João Távora  <joaotavora@gmail.com>
+
+	Make message and warning helpers private
+
+	* jsonrpc.el (jsonrpc--message): Rename from jsonrpc-message.
+	(jsonrpc--warn): Rename from jsonrpc-warn.
+	(jsonrpc--process-sentinel): Use jsonrpc--message.
+	(jsonrpc-shutdown, jsonrpc--connection-receive)
+	(jsonrpc--process-filter): Use jsonrpc--warn.
+
+2018-06-10  João Távora  <joaotavora@gmail.com>
+
+	Get rid of jsonrpc-obj
+
+	* jsonrpc.el (jsonrpc-obj): Remove this.
+	(jsonrpc--async-request-1): Don't jsonrpc-obj.
+
+2018-06-10  João Távora  <joaotavora@gmail.com>
+
+	Remove connection grabbing antics from jsonrpc.el
+
+	* eglot.el (eglot--managed-mode): Don't touch 
+	jsonrpc-find-connection-functions.
+	(eglot--current-server-or-lose, eglot--current-server): New functions
+	(resuscitate).
+	(eglot-shutdown, eglot, eglot-reconnect)
+	(eglot--server-capable, eglot--maybe-activate-editing-mode)
+	(eglot-clear-status, eglot--mode-line-format)
+	(eglot--signal-textDocument/didChange)
+	(eglot--signal-textDocument/didOpen)
+	(eglot--signal-textDocument/didSave)
+	(xref-backend-identifier-completion-table)
+	(xref-backend-definitions, xref-backend-references)
+	(xref-backend-apropos, eglot-completion-at-point)
+	(eglot-help-at-point, eglot-eldoc-function, eglot-imenu)
+	(eglot-rename, eglot-code-actions): Use eglot--current-server and 
+	eglot--current-server-or-lose.
+	(eglot-events-buffer, eglot-stderr-buffer)
+	(eglot-forget-pending-continuations): New commands.
+	(eglot--mode-line-format): Use eglot-stderr-buffer.
+
+	* jsonrpc.el (jsonrpc-find-connection-functions)
+	(jsonrpc-current-connection, jsonrpc-current-connection-or-lose): 
+	Remove.
+	(jsonrpc-stderr-buffer, jsonrpc-events-buffer): Simplify.
+	(jsonrpc-forget-pending-continuations): No longer interactive.
+
+	* eglot-tests.el (auto-detect-running-server, auto-reconnect): Use 
+	eglot--current-server.
+
+2018-06-10  João Távora  <joaotavora@gmail.com>
+
+	Simplify JSONRPC status setting
+
+	* eglot.el (eglot--connect): Don't set jsonrpc-status.
+	(eglot-clear-status): New interactive command.
+	(eglot--mode-line-format): Simplify.
+
+	* jsonrpc.el (jsonrpc--async-request-1): Simplify.
+	(jsonrpc-connection): Replace status with last-error.
+	(jsonrpc-clear-status): Delete.
+	(jsonrpc--connection-receive): Set last-error.
+
+2018-06-09  João Távora  <joaotavora@gmail.com>
+
+	Request dispatcher's return value determines response
+
+	No more jsonrpc-reply.
+
+	* eglot.el (eglot-handle-request window/showMessageRequest): Simplify.
+	(eglot--register-unregister): Simplify.
+	(eglot-handle-request workspace/applyEdit): Simplify.
+	(eglot--apply-text-edits): Signal a jsonrpc-error.
+	(eglot--apply-workspace-edit): Simplify.
+
+	* jsonrpc-tests.el (jsonrpc--with-emacsrpc-fixture): Don't 
+	jsonrpc--reply.
+
+	* jsonrpc.el (jsonrpc-error, jsonrpc-connection, jsonrpc-request): 
+	Improve docstring.
+	(jsonrpc-error): Polymorphic args.
+	(jsonrpc--unanswered-request-id): Remove.
+	(jsonrpc--connection-receive): Rework and simplify.
+	(jsonrpc-reply): Simplify.
+
+2018-06-09  João Távora  <joaotavora@gmail.com>
+
+	Merge branch 'master' into jsonrpc-refactor
+
+2018-06-09  João Távora  <joaotavora@gmail.com>
+
+	Fix indentation f@#$%^ by previous commit
+
+	Courtesy of aggressive-indent-mode... Agressive it is...
+
+2018-06-09  João Távora  <joaotavora@gmail.com>
+
+	Attempt to handle RLS sophisticated globs for didChangeWWatchedFiles
+
+	* eglot.el (eglot--wildcard-to-regexp): New helper.
+	(eglot--register-workspace/didChangeWatchedFiles): Use it.
+
+2018-06-08  João Távora  <joaotavora@gmail.com>
+
+	Close #16: check flymake-mode before calling report-fn
+
+	* eglot.el (eglot-handle-notification): Check flymake-mode.
+
+2018-06-08  João Távora  <joaotavora@gmail.com>
+
+	Merge master into jsonrpc-refactor
+
+2018-06-08  João Távora  <joaotavora@gmail.com>
+
+	Simplify JSONRPC connection shutdown
+
+	* eglot.el (eglot--process): Delete.
+	(eglot-shutdown): Use jsonrpc-shutdown.
+	(eglot--on-shutdown): Simplify.
+	(eglot-reconnect): Simplify.
+	(eglot--connect): Simplify.
+
+	* jsonrpc-tests.el (jsonrpc--with-emacsrpc-fixture): Simplify.
+
+	* jsonrpc.el (jsonrpc-process-type, jsonrpc-running-p)
+	(jsonrpc-shutdown): New methods.
+
+	* eglot-tests.el (auto-reconnect): Use jsonrpc--process.
+	(eglot--call-with-dirs-and-files): Use jsonrpc-running-p.
+
+2018-06-08  João Távora  <joaotavora@gmail.com>
+
+	Avoid more catastrophes
+
+	* eglot-tests.el (eglot--call-with-dirs-and-files): Use a 
+	fixture-directory.
+
+2018-06-08  João Távora  <joaotavora@gmail.com>
+
+	Improve Makefile test targets
+
+	* Makefile (eglot-check): new target.
+	(jsonrpc-check): Use SELECTOR.
+	(check): Calle eglot-check  and jsonrpc-check
+
+2018-06-08  João Távora  <joaotavora@gmail.com>
+
+	Support json.c.	 API purely based on classes
+
+	No more jsonrpc-connect.
+
+	This is a big commit because of a data loss problem. It should be at 
+	least two separate commits (json.c-support and new API)
+
+	* eglot.el (eglot-server-programs): Rework docstring.
+	(eglot-handle-request): Don't take ID param
+	(eglot-lsp-server): No more initargs.
+	(eglot--interactive): Return 5 args.
+	(eglot): Take 5 args.
+	(eglot-reconnect): Pass 6 args to eglot--connect.
+	(eglot--dispatch): Remove.
+	(eglot--connect): Take 6 args. Rework.
+	(eglot-handle-notification): Change all specializations to use a
+	non-keyword symbol spec.
+	(eglot-handle-request): Remove ID param from all specializations.  Don't
+	pass ID to jsonrpc-reply.
+	(eglot--register-unregister): Don't take JSONRPC-ID arg. Don't pass ID
+	to jsonrpc-reply.
+
+	* jsonrpc-tests.el (returns-3, signals-an--32603-JSONRPC-error)
+	(times-out, stretching-it-but-works)
+	(json-el-cant-serialize-this, jsonrpc-connection-ready-p)
+	(deferred-action-intime, deferred-action-toolate)
+	(deferred-action-timeout): Pass JSON objects compatible with json.c
+	(jsonrpc--test-client, jsonrpc--test-endpoint): New classes
+	(jsonrpc--with-emacsrpc-fixture): Don't use jsonrpc-connect.
+	(jsonrpc-connection-ready-p): Update signature.
+
+	* jsonrpc.el: Rewrite commentary.
+	(jsonrpc-connection): Rework class.
+	(jsonrpc-process-connection): Rework class.
+	(initialize-instance): New methods..
+	(jsonrpc--json-read, jsonrpc--json-encode): Reindent.
+	(jsonrpc-connect): Delete.
+	(jsonrpc--json-read, jsonrpc--json-encode): New functions for working
+	with json.c
+	(jsonrpc--process-filter): Call them.
+	(jsonrpc--unanswered-request-id): New variable.
+	(jsonrpc--connection-receive): Use jsonrpc--unanswered-request-id
+	(jsonrpc-connection-send): Take keyword params to build message instead
+	of message.
+	(jsonrpc-notify, jsonrpc--async-request-1): Use new 
+	jsonrpc-connection-send.
+	(jsonrpc-reply): Simplify.
+
+	* eglot-tests.el (rls-watches-files, rls-basic-diagnostics)
+	(rls-hover-after-edit): Correctly compare using string= and non-keyword
+	symbols.
+
+2018-06-06  João Távora  <joaotavora@gmail.com>
+
+	Slightly polish the Flymake integration
+
+	For backends, like RLS, that don't textDocument/publishDiagnostics right
+	away, assume that the file is clean.  Since Flymake allows multiple
+	reportings, it should be OK.
+
+	* eglot.el (eglot--unreported-diagnostics): Move variable up here.
+	(eglot--maybe-activate-editing-mode): Assume no diagnostics on open.
+
+2018-06-06  João Távora  <joaotavora@gmail.com>
+
+	* eglot.el (eglot--make-process): Use 'utf-8-emacs-unix
+
+	Attempt to improve the situation reported in #14.
+
+2018-06-06  João Távora  <joaotavora@gmail.com>
+
+	* jsonrpc.el (jsonrpc-message): Fix formatting bug.
+
+2018-06-06  João Távora  <joaotavora@gmail.com>
+
+	Tweak Makefile to run both tests in a row
+
+	* Makefile (ELFILES): Add jsonrpc-tests.el
+	(check): Also make jsonrpc-check
+	(jsonrpc-check): Depend on jsonrpc-tests.el
+
+2018-06-06  João Távora  <joaotavora@gmail.com>
+
+	* jsonrpc.el (jsonrpc-log-event): Log time of event.
+
+2018-06-06  João Távora  <joaotavora@gmail.com>
+
+	jsonrpc--next-request-id is a connection slot
+
+	* jsonrpc.el (jsonrpc-connection): Make jsonrpc--next-request-id a slot.
+	(jsonrpc--next-request-id): Remove this variable.
+	(jsonrpc--async-request-1): Use slot.
+
+2018-06-06  João Távora  <joaotavora@gmail.com>
+
+	Add reasonably sophisticated deferred action tests
+
+	* jsonrpc-tests.el (jsonrpc-test-conn): New test class.
+	(jsonrpc--with-emacsrpc-fixture): Redesign.
+	(jsonrpc-connection-ready-p): New method for jsonrpc-test-conn.
+	(deferred-action): New test for deferred actions.
+	(jsonrpc-errors-with--32601, returns-3)
+	(signals-an--32603-JSONRPC-error, times-out)
+	(stretching-it-but-works, json-el-cant-serialize-this): Use local var
+	conn.
+
+2018-06-05  João Távora  <joaotavora@gmail.com>
+
+	Merge master into jsonrpc-refactor (using imerge)
+
+2018-06-05  João Távora  <joaotavora@gmail.com>
+
+	Shoosh compiler
+
+	* eglot.el (eglot-server-ready-p): Use cl-defmethod
+
+2018-06-05  João Távora  <joaotavora@gmail.com>
+
+	Cleanup the Flymake 26.1 hack slightly
+
+	* eglot.el (eglot-handle-notification): Use proper flymake diagnostic
+	types.
+	(eglot-code-actions): Use eglot--diag-data.
+	(eglot--make-diag, eglot--diag-data): New aliases to
+	`flymake-diagnostic-data' and `flymake-make-diagnostic'.
+	(eglot-error eglot-warning eglot-note)
+	(dolist eglot-error eglot-warning eglot-note): put 
+	flymake-overlay-control in these.
+	(eglot-error eglot-warning eglot-note): put corresponding 
+	flymake-category.
+	(horrible hack at the end): Move the Flymake 26.1 hack here.
+
+2018-06-04  João Távora  <joaotavora@gmail.com>
+
+	Close #12: support purposedly ignoring a server capability
+
+	* eglot.el (eglot-ignored-server-capabilites): New defcustom.
+	(eglot--server-capable): Use it.
+
+2018-06-04  brotzeit  <brotzeitmacher@gmail.com>
+
+	Fix typos
+
+	Close #13.
+	
+	* eglot.el (eglot--all-major-modes)
+	(eglot--notify, eglot--xref-reset-known-symbols): Fix typos.
+
+2018-06-02  João Távora  <joaotavora@gmail.com>
+
+	jsonrpc-request also calls for deferred action cleanup
+
+	Noticed by Filipp Gunbin <fgunbin@fastmail.fm>
+
+	* jsonrpc.el (jsonrpc--async-request-1): In the non-local exit also
+	return the id.
+	(jsonrpc-request): Cleanup deferred actions here too.
+
+2018-06-02  João Távora  <joaotavora@gmail.com>
+
+	On request timeout, clear it from the deferred actions
+
+	Noticed by Filipp Gunbin <fgunbin@fastmail.fm>
+
+	* jsonrpc.el (jsonrpc--async-request-1): Clear deferred action in
+	 timeout handler.
+
+2018-06-02  João Távora  <joaotavora@gmail.com>
+
+	Fix another merge-related bug in eglot-eldoc-function
+
+	* eglot.el (eglot-eldoc-function): Correctly destructure 
+	eglot--range-region.
+
+2018-06-02  João Távora  <joaotavora@gmail.com>
+
+	* eglot.el (eglot-eldoc-function): Remove spurious log message
+
+2018-06-02  João Távora  <joaotavora@gmail.com>
+
+	Fix deferred actions (forgot the crucial non-local exit)
+
+	Noticed by Filipp Gunbin <fgunbin@fastmail.fm>
+
+	* jsonrpc.el (jsonrpc--async-request-1): Forgot the non-local exit.
+
+2018-06-01  João Távora  <joaotavora@gmail.com>
+
+	* eglot.el (Version): Bump to 0.8
+
+2018-06-01  João Távora  <joaotavora@gmail.com>
+
+	Add animated gifs to README.md
+
+2018-06-01  João Távora  <joaotavora@gmail.com>
+
+	Fix completionItem/resolve
+
+	Should fix interoperation with company-quickhelp.
+
+	* eglot.el (eglot-completion-at-point): Correctly pass properties to
+	completionItem/resolve.
+
+2018-06-01  João Távora  <joaotavora@gmail.com>
+
+	Explicitly trigger eldoc after workspace edits
+
+	It's usually a nice thing to do.
+
+	* eglot.el (eglot--apply-workspace-edit): Call eglot-eldoc-function.
+
+2018-06-01  João Távora  <joaotavora@gmail.com>
+
+	New command M-x eglot-code-actions
+
+	Also available when left-clicking diagnostics.
+
+	* README.md: Mention eglot-code-actions. Slightly rewrite differences to
+	lsp-mode.
+
+	* eglot.el (eglot-code-actions): New command.
+	(eglot-handle-notification :textDocument/publishDiagnostics): Use 
+	eglot--make-diag and eglot--overlay-diag-props.
+	(eglot--mode-line-props): Use eglot--mouse-call.
+	(eglot--mouse-call): Renamed from eglot--mode-line-call.
+	(eglot-client-capabilities): List :executeCommand and :codeAction as
+	capabilities.
+	(eglot--diag, advice-add flymake--highlight-line): Horrible hack.
+	(eglot--overlay-diag-props): Horrible hack.
+
+2018-06-01  João Távora  <joaotavora@gmail.com>
+
+	Revert an unfinished feature that made it to the last commit
+
+	   commit e0c642eecccdb7bfb64c78cb8effdf889cde4d14
+	  Author: João Távora <joaotavora@gmail.com>
+	  Date:	  Fri Jun 1 14:43:30 2018 +0100
+
+	   Add MELPA badge
+
+2018-06-01  João Távora  <joaotavora@gmail.com>
+
+	Add MELPA badge
+
+	* README.mdown: Now in MELPA too
+
+2018-06-01  João Távora  <joaotavora@gmail.com>
+
+	Prevent possible cquery choke on :initializationOptions
+
+	Hopefully help debug #10.
+
+	* eglot.el (eglot-initialization-options): Use `list'
+
+2018-05-30  João Távora  <joaotavora@gmail.com>
+
+	Merge master into jsonrpc-refactor (using imerge)
+
+2018-05-30  João Távora  <joaotavora@gmail.com>
+
+	* eglot.el (Version): Bump to 0.7
+
+2018-05-28  João Távora  <joaotavora@gmail.com>
+
+	More yak shaving
+
+	* eglot.el (eglot--with-live-buffer, eglot--widening): New macros.
+	(eglot--lambda): Move up here.
+	(eglot--process-filter): Simplify with eglot--with-live-buffer.
+	(eglot--async-request): Simplify with eglot--with-live-buffer.
+	(eglot--TextDocumentItem): Simplify with eglot--widening.
+	(eglot--signal-textDocument/didChange, eglot--apply-text-edits): 
+	Simplify with eglot--widening.
+
+2018-05-28  João Távora  <joaotavora@gmail.com>
+
+	New M-x eglot-stderr-buffer useful for debugging
+
+	* eglot.el (eglot--make-process): Save stderr buffer in process.
+	(eglot-stderr-buffer): New interactive command.
+	(eglot--mode-line-format): Bind C-mouse-1 to new eglot-stderr-buffer.
+
+2018-05-27  João Távora  <joaotavora@gmail.com>
+
+	On reconnection, ignore errors of shutting down hung server
+
+	* eglot.el
+	(eglot, eglot-reconnect): Ignore any errors on shutdown.
+
+2018-05-27  João Távora  <joaotavora@gmail.com>
+
+	Be more criterious before running the idle timer
+
+	* eglot.el (eglot--change-idle-timer): make a defvar-local
+	(eglot--after-change): Only run timer if the buffer is live.
+
+2018-05-27  João Távora  <joaotavora@gmail.com>
+
+	Make eglot--recent-changes a simpler list
+
+	* eglot.el (eglot-server-ready-p): Don't add default method here.
+	(eglot-server-ready-p): Do it here.
+	(eglot--outstanding-edits-p): Remove.
+	(eglot--before-change, eglot--after-change)
+	(eglot--signal-textDocument/didChange): Use eglot--recent-changes as a
+	list. Simplify.
+	(eglot--signal-textDocument/didOpen): Use eglot--recent-changes as a
+	list.
+
+2018-05-27  João Távora  <joaotavora@gmail.com>
+
+	Set eglot--versioned-identifier to 0 on didOpen
+
+	Else cquery will rightfully complain about this.
+
+	* eglot.el (eglot--signal-textDocument/didOpen): Also set 
+	eglot--versioned-identifier to 0.
+
+2018-05-27  João Távora  <joaotavora@gmail.com>
+
+	Correctly apply workspace edits in documentChanges form
+
+	This was breaking M-x eglot-rename for cquery
+
+	* eglot.el (eglot--apply-workspace-edit): Fix and simplify.
+
+2018-05-27  João Távora  <joaotavora@gmail.com>
+
+	* eglot.el (Version): Bump to 0.6
+
+2018-05-27  João Távora  <joaotavora@gmail.com>
+
+	Hopefully fix the Flymake bootstrap problem
+
+	Immediately after M-x eglot, eglot's use of flymake was having trouble 
+	detecting the first diagnostics sent from the server, resulting in an 
+	annoying "Wait" in the mode-line.
+
+	* eglot.el (eglot--current-flymake-report-fn): Move up here.
+	(eglot--managed-mode): Set eglot--current-flymake-report-fn to nil on
+	teardown.
+	(eglot--maybe-activate-editing-mode): Simplify.
+	(eglot-handle-notification textDocument/publishDiagnostics): Set
+	unreported-diagnostics to a cons.
+	(eglot-handle-notification eglot-rls window/progress): Simplify.
+
+	* eglot-tests.el (rls-basic-diagnostics): Simplify test.
+
+2018-05-27  João Távora  <joaotavora@gmail.com>
+
+	Set spinner in textDocument/didChange as it matters to RLS
+
+	Otherwise, the asynch eldoc action will immediately send the 
+	textDocument/documentHighlight requests, without understanding that they
+	need to be deferred a bit more.
+
+	* eglot.el (eglot--signal-textDocument/didChange): Set the spinner here.
+
+2018-05-27  João Távora  <joaotavora@gmail.com>
+
+	Fix assorted cquery-related bugs
+
+	Some versions of cquery send a :role key as part of the response to 
+	textDocument/documentHighlight. Ignore it for now.
+
+	Also cquery sometimes send 0-length ranges upon which we now fallback to
+	flymake-diag-region.
+
+	Finally, in eglot-eldoc-funciton, the previous hack of calling the 
+	eglot--hover-info outside of the when-buffer-window macrolet contained a
+	bug. It must be called in the correct buffer. Revert the hack and do it
+	by querying from eglot.el if ert is running tests.
+
+	* eglot.el (eglot--range-region): Return a cons and fallback to 
+	flymake-diag-region if server returned a useless range.
+	(eglot-handle-notification, eglot--hover-info): Update call to 
+	eglot--range-region.
+	(eglot-help-at-point): Ensure `eglot--hover-info` runs in right buffer.
+	(eglot-eldoc-function): Don't abuse eldoc-last-message like this. Also
+	update call to eglot--range-region. Consider ert-running-test
+	(eglot--apply-text-edits): Use pcase-lambda.
+	(ert): require it.
+
+2018-05-26  João Távora  <joaotavora@gmail.com>
+
+	* eglot.el (Version): Bump to 0.5
+
+2018-05-26  João Távora  <joaotavora@gmail.com>
+
+	Another unstable test on Travis
+
+	* eglot-tests.el (rls-hover-after-edit): Skip on travis.
+
+2018-05-26  João Távora  <joaotavora@gmail.com>
+
+	Merge branch 'cquery-support' into master
+
+	The conflicts in eglot.el where fixed by calling the new eglot--debug 
+	helper coming from 'cquery-support'. This helper was converted to allow
+	a non-string format passed directly to eglot--log-event.
+
+	Also fixed some compilation warnings.
+
+	* eglot.el (eglot--debug): Allow non-string FORMAT to be a JSON object. 
+	(eglot-handle-notification :$cquery/progress)
+	(eglot-handle-notification :$cquery/setInactiveRegions)
+	(eglot-handle-notification :$cquery/publishSemanticHighlighting): Solve
+	compilation warnings.
+
+2018-05-26  João Távora  <joaotavora@gmail.com>
+
+	Really ensure eglot--shutdown deletes a process completely
+
+	* eglot.el (eglot-lsp-server): rename slot "moribund" to
+	"shutdown-requested"
+	(eglot--connect): Don't check if shutdown was requested here.
+	(eglot--process-sentinel): Set shutdown-requested to
+	:sentinel-done here.
+	(eglot-shutdown): use eglot--shutdown-requested.  Improve check for
+	process liveness.
+
+2018-05-26  João Távora  <joaotavora@gmail.com>
+
+	Add a new test.
+
+	* eglot-tests.el (rls-hover-after-edit): Simplify.
+	(rls-rename): New test.
+	(rls-watches-files, rls-basic-diagnostics)
+	(rls-hover-after-edit): Rename temp dir for better debugging.
+
+2018-05-26  João Távora  <joaotavora@gmail.com>
+
+	Get rid of eglot--obj, an uninteresting abstraction
+
+	* eglot.el (eglot--obj): Get rid of this. It wasn't widely used anyway.
+	(eglot-client-capabilities)
+	(eglot--connect, eglot--async-request, eglot--notify)
+	(eglot--reply, eglot--pos-to-lsp-position, eglot-handle-request)
+	(eglot--register-unregister, eglot-handle-request)
+	(eglot--TextDocumentIdentifier)
+	(eglot--VersionedTextDocumentIdentifier)
+	(eglot--TextDocumentItem, eglot--TextDocumentPositionParams)
+	(eglot--signal-textDocument/didChange)
+	(eglot--signal-textDocument/didSave)
+	(xref-backend-identifier-completion-table)
+	(xref-backend-references, xref-backend-apropos, eglot-imenu)
+	(eglot-rename): Use list instead of eglot--obj.
+
+2018-05-26  João Távora  <joaotavora@gmail.com>
+
+	Cleanup deferred request mechanism with a readable log
+
+	* eglot.el (eglot-lsp-server): Rework doc of deferred-actions slot.
+	(defvar eglot--next-request-id): Move down, now buffer local.
+	(defun eglot--next-request-id): Remove.
+	(eglot--call-deferred): Be more informative.
+	(eglot--async-request): Simplify.
+
+2018-05-26  João Távora  <joaotavora@gmail.com>
+
+	Simpify eglot--server-receive
+
+	* eglot.el (eglot--obj): Cleanup whitespace.
+	(eglot--server-receive): Simplify.
+
+2018-05-26  João Távora  <joaotavora@gmail.com>
+
+	Don't rely on Flymake's idle timer for textDocument/didChange
+
+	* eglot.el (eglot--after-change): Set idle timer here.
+	(eglot--change-idle-timer): New var.
+	(eglot--signal-textDocument/didChange): No seed to set spinner here.
+	(eglot-flymake-backend) Don't send didChange here.
+
+2018-05-26  João Távora  <joaotavora@gmail.com>
+
+	Merge branch 'master' into jsonrpc-refactor (using regular merge)
+
+	This increases the test coverage in the jsonrpc-branch
+
+2018-05-26  João Távora  <joaotavora@gmail.com>
+
+	New RLS tests
+
+	* eglot-tests.el (eglot--wait-for): Rework macro.
+	(dummy): Delete test.
+	(rls-watches-files): Rework test.
+	(rls-basic-diagnostics, rls-hover-after-edit): New tests.
+
+2018-05-26  João Távora  <joaotavora@gmail.com>
+
+	Document current API breaches a bit
+
+	* eglot-tests.el (eglot--call-with-dirs-and-files)
+	(auto-reconnect): use eglot--process
+
+	* eglot.el (eglot-shutdown, eglot, eglot-reconnect)
+	(eglot--connect): Use eglot--process
+	(eglot--process): Alias to concentrate the hack here.
+	(eglot--signal-textDocument/didChange): Tweak comment.
+
+2018-05-26  João Távora  <joaotavora@gmail.com>
+
+	Merge branch use-eieio-server-defclass into jsonrpc-refactor
+
+2018-05-25  João Távora  <joaotavora@gmail.com>
+
+	jsonrpc.el uses classes and generic functions
+
+	* jsonrpc.el: Rework commentary.
+	(jsonrpc-find-connection-functions, jsonrpc-current-connection)
+	(jsonrpc-current-connection-or-lose): Rename from old process-based
+	counterpart.
+	(jsonrpc-connection, jsonrpc-process-connection): New classes
+	(jsonrpc-define-process-var): Delete.
+	(jsonrpc--make-process-connection): Rework from old 
+	jsonrpc--make-process.
+	(jsonrpc-connect): Rework.
+	(jsonrpc--process-sentinel): Rework.
+	(jsonrpc--process-filter): Rework.
+	(jsonrpc-events-buffer, jsonrpc-log-event): Take a connection.
+	(jsonrpc--connection-receive): Rename from old process-based conterpart.
+	(jsonrpc-connection-send): Rename from old process-based conterpart. 
+	Now a generic function.
+	(jsonrpc-forget-pending-continuations)
+	(jsonrpc-clear-status, jsonrpc--call-deferred): Take a connection.
+	(jsonrpc-connection-ready-p): New generic function.
+	(jsonrpc-async-request, jsonrpc--async-request-1): Take a connection.
+	Rework.
+	(jsonrpc-request, jsonrpc-notify, jsonrpc-reply): Take a connection.
+
+2018-05-25  João Távora  <joaotavora@gmail.com>
+
+	Add jsonrpc-tests.el
+
+	* Makefile (jsonrpc-check): Add test target.
+
+	* jsonrpc-tests.el: New file.
+
+2018-05-24  Josh Elsasser  <jelsasser@appneta.com>
+
+	Log debug messages through eglot--debug
+
+	* eglot.el (eglot--async-request, eglot--process-sentinel):
+	(eglot--call-deferred): Use eglot--debug to log messages to the server
+	events buffer.
+	(eglot--server-receive): Demote "Notification unimplemented" message on
+	missing handlers to a pure debug message.
+
+2018-05-24  Josh Elsasser  <jelsasser@appneta.com>
+
+	Demote unvisited diagnostics logging to debug level
+
+	The PublishDiagnostic spec (LSP Specification, 3.0) does not strictly
+	forbid the server from publishing diagnostics before a file has been
+	visited.
+
+	* eglot.el (eglot--server-textDocument/publishDiagnostics): Log the
+	"received diagnostics for unvisited file" warning as debug to avoid
+	spamming users of compliant language servers.
+
+2018-05-24  Josh Elsasser  <jelsasser@appneta.com>
+
+	Introduce eglot--debug for unimportant messages
+
+	* eglot.el (eglot--debug): New function to log noisy or trivial messages
+	to the eglot events buffer.
+
+2018-05-24  Josh Elsasser  <jelsasser@appneta.com>
+
+	Add cquery support for C/C++ projects
+
+	Implements minimal support for the core cquery language server. None of
+	its extensions are implemented yet.
+
+	* eglot.el (eglot-server-programs): Add cquery to list of guessed
+	programs for c-mode and c++-mode.
+	(eglot-initialization-options eglot-cquery): Specialize init options to
+	pass cquery a cache directory and disable a flood of $cquery/progress
+	messages.
+	(eglot-handle-notification $cquery/publishSemanticHighlighting):
+	(eglot-handle-notification $cquery/setInactiveRegions):
+	(eglot-handle-notification $cquery/progress): New no-op functions to
+	avoid filling logs with "unknown message" warnings.
+	(eglot-cquery): New eglot-lsp-server subclass.
+
+	* README.md: Mention cquery in the README.
+
+2018-05-24  João Távora  <joaotavora@gmail.com>
+
+	Merge branch 'use-eieio-server-defclass'
+
+	(using regular git merge)
+
+2018-05-24  João Távora  <joaotavora@gmail.com>
+
+	Disable file-watching tests on Travis
+
+	For some reason it doesn't work very well with inotify.
+
+	* .travis.yml (TRAVIS_TESTING): Set to true
+
+	* eglot-tests.el (rls-watches-files): skip test if TRAVIS_TESTING is
+	 true.
+
+2018-05-24  João Távora  <joaotavora@gmail.com>
+
+	Rework eglot-tests.el for better debuggability
+
+	* eglot-tests.el (eglot--with-timeout): Renamed from 
+	eglot--with-test-timeout.
+	(eglot--call-with-timeout): Rework.
+	(eglot--wait-for): Accept TIMEOUT arg.
+	(auto-detect-running-server, auto-reconnect, rls-watches-files)
+	(basic-completions, hover-after-completions): Use
+	eglot--with-test-timeout.
+	(rls-watches-files): Pass TIMEOUT to eglot--wait-for
+
+2018-05-24  João Távora  <joaotavora@gmail.com>
+
+	Increase test timeout in hopes of convincing Travis CI
+
+	* eglot-tests.el (rls-watches-files): Increase timeout
+
+2018-05-24  João Távora  <joaotavora@gmail.com>
+
+	Add a complex RLS test
+
+	* eglot-tests.el (eglot--call-with-dirs-and-files): When ensuring 
+	cleaning up, really ensure that no leftovers are left. Even if server
+	shutdown fails.
+	(eglot--sniffing, eglot--wait-for): New testing macros.
+	(rls-watches-files): New test.
+
+2018-05-22  João Távora  <joaotavora@gmail.com>
+
+	Fix indentation broken by the defclass monster commit
+
+	* eglot.el (for, eglot-handle-notification publishDiagnostics)
+	(eglot-handle-request registerCapability, eglot-handle-request 
+	unregisterCapability, eglot-handle-request applyEdit): fix indentation.
+
+2018-05-22  João Távora  <joaotavora@gmail.com>
+
+	Introduce new API methods for experimental clients to use
+
+	Should help Josh Elsasser implement pull request #6.
+
+	* eglot.el (eglot--obj): Move upwards in file.
+	(eglot-server-ready-p): Tweak comment.
+	(eglot-initialization-options): New API defgeneric..
+	(eglot-client-capabilities): New API defgeneric.
+	(eglot--client-capabilities): Remove.
+	(eglot--connect): Call new API methods here.
+
+2018-05-22  João Távora  <joaotavora@gmail.com>
+
+	Do Rust's RLS hack properly with new class-based API
+
+	* eglot.el (eglot-server-ready-p): New API method.
+	(eglot-handle-request, eglot-handle-notification): New defgeneric's.
+	(eglot--ready-predicates, eglot--server-ready-p): Remove.
+	(eglot--async-request): Call eglot-server-ready-p.
+	(eglot--request): Tweak comment.
+	(eglot--rls-probably-ready-for-p): Remove.
+	(eglot-server-ready-p eglot-rls): Adapts earlier 
+	eglot--rls-probably-ready-for-p.
+	(eglot-handle-notification eglot-rls): Specialize to eglot-rls.
+	(eglot-rls): New eglot-lsp-server subclass.
+
+	* eglot-tests.el (auto-detect-running-server)
+	(auto-reconnect, basic-completions)
+	(hover-after-completions): Use eglot--interactive
+
+2018-05-22  João Távora  <joaotavora@gmail.com>
+
+	Use an EIEIO class to represent a server.
+
+	Allow clients of eglot.el to use specific server classes to represent 
+	experimental servers.
+
+	Wherever you used to read "proc" you now probably read "server", unless
+	it's really the process properties that are sought after.
+
+	Should help Josh Elsasser implement pull request #6.
+
+	* eglot-tests.el (eglot--call-with-dirs-and-files)
+	(auto-detect-running-server, auto-reconnect, basic-completions)
+	(hover-after-completions): Adapt to server defclass instead of proc.
+
+	* eglot.el
+	(eglot-server-programs): Add docstring.
+	(eglot--processes-by-project): Removed.
+	(eglot--servers-by-project): New variable.
+	(eglot--current-process): Removed.
+	(eglot--current-server): New function.
+	(eglot-server): New class.
+	(cl-print-object eglot-server): New method.
+	(eglot--current-process-or-lose): Removed.
+	(eglot--current-server-or-lose): New function.
+	(eglot--define-process-var): Remove.
+	(eglot--make-process): Rework.
+	(eglot--project-short-name): Remove.
+	(eglot--connect): Rework.
+	(eglot--interactive): Rework to allow custom classes.
+	(eglot, eglot-reconnect, eglot--process-sentinel)
+	(eglot--process-filter, eglot-events-buffer, eglot--log-event): Rework.
+	(eglot--process-receive): Removed.
+	(eglot--server-receive): New function.
+	(eglot--send): Renamed from eglot--process-send.
+	(eglot--process-send): Removed.
+	(eglot-forget-pending-continuations)
+	(eglot-clear-status, eglot--call-deferred)
+	(eglot--server-ready-p, eglot--async-request, eglot--request)
+	(eglot--notify, eglot--reply, eglot--managed-mode-onoff)
+	(eglot--maybe-activate-editing-mode, eglot--mode-line-format): Rework.
+	(eglot-shutdown): Rework.
+	(eglot-handle-notification *, eglot-handle-request *)
+	(eglot--register-unregister)
+	(eglot--signal-textDocument/didOpen)
+	(eglot--signal-textDocument/didClose)
+	(eglot--signal-textDocument/willSave)
+	(eglot--signal-textDocument/didSave)
+	(xref-backend-identifier-completion-table)
+	(xref-backend-definitions, xref-backend-references)
+	(xref-backend-apropos, eglot-completion-at-point)
+	(eglot-help-at-point, eglot-eldoc-function, eglot-imenu)
+	(eglot-rename)
+	(eglot--register-workspace/didChangeWatchedFiles)
+	(eglot--unregister-workspace/didChangeWatchedFiles)
+	(eglot--rls-probably-ready-for-p, eglot-handle-notification): Rework
+	(proc->server)
+
+	fixup
+
+	* eglot-tests.el (eglot--call-with-dirs-and-files)
+	(auto-detect-running-server, auto-reconnect, basic-completions)
+	(hover-after-completions):
+
+	* eglot.el (eglot--processes-by-project): Removed.
+	(eglot--servers-by-project): New variable.
+	(eglot--current-process): Removed.
+	(eglot--current-server): New function.
+
+2018-05-21  João Távora  <joaotavora@gmail.com>
+
+	Introduce eglot-handle-request and eglot-handle-notification as API
+
+	* eglot.el (eglot--process-receive): Call eglot-handle-request and 
+	eglot-handle-notification.
+	(eglot-handle-notification, eglot-handle-request): New generic 
+	functions.
+	(eglot--server-window/showMessage)
+	(eglot--server-window/progress)
+	(eglot--server-telemetry/event, eglot--server-window/logMessage): 
+	Convert to eglot-handle-notification.
+	(eglot-handle-request, eglot--server-client/registerCapability)
+	(eglot--server-client/unregisterCapability)
+	(eglot-handle-request): Convert to eglot-handle-request.
+
+2018-05-20  João Távora  <joaotavora@gmail.com>
+
+	Don't return implementation details in jsonrpc-async-request
+
+	* jsonrpc.el (jsonrpc-async-request): Pass everything to 
+	jsonrpc-async-request-1.
+	(jsonrpc--async-request-1): New function.
+	(jsonrpc-request): Use it.
+
+2018-05-20  João Távora  <joaotavora@gmail.com>
+
+	New jsonrpc-error error type
+
+	* jsonrpc.el (usage example): update to use jsonrpc-error.
+	(jsonrpc-error): New error type.
+	(jsonrpc-error, jsonrpc-request): Signal it.
+
+2018-05-20  João Távora  <joaotavora@gmail.com>
+
+	Get rid of jsonrpc.el customization group and timeout
+
+	* eglot.el (eglot-shutdown, eglot--signal-textDocument/willSave): Pass
+	:timeout to jsonrpc-request.
+	(defadvice jsonrpc-request): Add :timeout kwarg
+
+	* jsonrpc.el (defgroup jsonrpc, jsonrpc-request-timeout): Remove.
+	(jrpc-default-request-timeout): New constant.
+	(jsonrpc-async-request): Use it.
+	(jsonrpc-request): Accept timeout kwarg and pass it on.
+
+2018-05-20  João Távora  <joaotavora@gmail.com>
+
+	Heroically merge master into jsonrpc-refactor (using imerge)
+
+2018-05-20  João Távora  <joaotavora@gmail.com>
+
+	Rename jrpc.el to jsonrpc.el
+
+	* eglot.el [everywhere]: jrpc -> jsonrpc everywhere. Reindent.
+
+	* eglot-tests [everywhere]: jrpc -> jsonrpc everywhere.
+
+	* jsonrpc.el: New file.
+
+	* Makefile: jrpc.el -> jsonrpc.el
+
+2018-05-20  João Távora  <joaotavora@gmail.com>
+
+	Fix a bug introduced in the previous commit
+
+	* eglot.el (eglot--format-markup): Ignore errors when calling possibly
+	unknown functions.
+	(eglot-completion-at-point): Use eglot--format-markup
+	(eglot--hover-info): Yak shaving
+
+2018-05-20  João Távora  <joaotavora@gmail.com>
+
+	Rewrite a couple of defs and shave a yak
+
+	* eglot.el (eglot--define-process-var): Simplify.
+	(eglot--format-markup): Rewrite.
+	(eglot--warn, eglot--pos-to-lsp-position)
+	(eglot--lsp-position-to-point, eglot--server-capable)
+	(eglot--maybe-activate-editing-mode)
+	(eglot--server-textDocument/publishDiagnostics)
+	(eglot--server-workspace/applyEdit, eglot--hover-info): Yak shaving.
+
+2018-05-20  João Távora  <joaotavora@gmail.com>
+
+	Tweak tests, hopefully stabilize pyls tests on Travis
+
+	* eglot-tests.el (basic-completions, hover-after-completions)
+	(auto-detect-running-server, autoreconnect): Swap order of 
+	eglot--with-dirs-and-files and eglot--with-dirs-and-files.
+	(eglot--with-dirs-and-files): Adjust indent spec.
+
+2018-05-19  João Távora  <joaotavora@gmail.com>
+
+	Travis now runs python-language-server tests
+
+	* travis.yml: Use virtualenv/pip/python-language-server
+
+2018-05-19  João Távora  <joaotavora@gmail.com>
+
+	* eglot.el (Version): Bump to 0.4
+
+2018-05-19  João Távora  <joaotavora@gmail.com>
+
+	Add some completion tests for pyls
+
+	* eglot-tests.el (edebug): Require it.
+	(eglot--call-with-dirs-and-files): Simplify.
+	(eglot--call-with-test-timeout): Don't timeout if edebug.
+	(auto-detect-running-server, auto-reconnect): Skip unless rls is found.
+	(basic-completions): New test.
+	(hover-after-completions): New failing test.
+
+	* eglot.el (eglot-eldoc-function): Force write eldoc-last-message, for
+	tests sake.
+
+2018-05-19  João Távora  <joaotavora@gmail.com>
+
+	Handle managed buffers in own process var
+
+	This should save some trouble when testing noninteractively.  Because 
+	eglot--shutdown didn't turn off the minor mode, test code running 
+	immediately after it could still make didClose requests, for example. 
+	The sentinel was the previous responsible for turning off the minor mode
+	and didn't get a chance to run in that case. Now eglot--shutdown is also
+	responsible for turning off the minor mode.
+
+	All this should be hidden behind eglot--managed-mode-onoff.
+
+	* eglot.el (eglot--managed-buffers): New process-local variable.
+	(eglot--process-sentinel): Turn off managed mode.
+	(eglot--managed-mode-onoff): New function.
+	(eglot--managed-mode): Don't offer to kill server here.
+	(eglot--buffer-managed-p): Remove.
+	(eglot--maybe-activate-editing-mode): Activate mode here.
+	(eglot-shutdown): Turn off minor mode here.
+	(eglot--server-window/progress): Simplify slightly.
+
+2018-05-19  João Távora  <joaotavora@gmail.com>
+
+	Robustness fixes for the request mechanism
+
+	* eglot.el (eglot--async-request): Pass actual id to eglot--log-event
+	(eglot--request): Also cancel any continuations.
+
+2018-05-19  João Távora  <joaotavora@gmail.com>
+
+	Check capabilities before sending :completionItem/resolve
+
+	* eglot.el (eglot--server-capable): Rewrite.
+	(eglot-completion-at-point): Check caps before sending
+	:completionItem/resolve
+
+2018-05-19  João Távora  <joaotavora@gmail.com>
+
+	Better decide what text exactly to present as completions
+
+	For inserting, :insertText takes precedence over :label. For annotating,
+	first sentence of :documentation, then :detail, then :kind name.
+
+	Also remember to send didChange in the :exit-function
+
+	* eglot.el (eglot-completion-function): Rework main function and
+	:annotation-function, and :exit-function
+
+2018-05-19  João Távora  <joaotavora@gmail.com>
+
+	* eglot.el (eglot-clear-status): Remember to update modeline
+
+2018-05-19  João Távora  <joaotavora@gmail.com>
+
+	Close #4: Collect regions to change as markers, then edit
+
+	* eglot.el (eglot--lsp-position-to-point): Accept MARKER optional arg.
+	(eglot--range-region): Accept MARKERS optional arg. Return a list.
+	(eglot--server-textDocument/publishDiagnostics)
+	(eglot--hover-info, eglot-eldoc-function): eglot--range-region returns a
+	list, not a cons.
+	(eglot--apply-text-edits): First collect regions as markers, then edit.
+
+2018-05-19  João Távora  <joaotavora@gmail.com>
+
+	If we're going to send rootPath, better send an absolute one
+
+	javascript-typescript-langserver complained.
+
+	* eglot.el (eglot--connect): Use expand-file-name.
+
+2018-05-19  João Távora  <joaotavora@gmail.com>
+
+	Robustify timer handling for eglot--async-request
+
+	This basically cherry-picks an ealier commit for the jsonrpc-refactor 
+	branch:
+	 a2aa1ed..: João Távora 2018-05-18 Robustify timer handling for
+	jrpc-async-request
+
+	* jrpc.el (jrpc--async-request): Improve timeout handling. Return a list
+	(ID TIMER)
+	(jrpc--request): Protect against user-quits, cancelling timer
+
+2018-05-19  João Távora  <joaotavora@gmail.com>
+
+	Simplify some infrastructure fucntions
+
+	* eglot.el (eglot--contact): Simplify docstring.
+	(eglot--make-process): Simplify.
+	(eglot--connect): Simplify.
+	(eglot--interactive): Simplify and correct odd bug.
+	(eglot--process-sentinel): Correct messages. Delete before attempting
+	reconnection.
+	(eglot-shutdown): Simplify.
+
+2018-05-18  João Távora  <joaotavora@gmail.com>
+
+	Fix typos and phrasing in commentary and docstrings
+
+2018-05-18  João Távora  <joaotavora@gmail.com>
+
+	Robustify timer handling for jrpc-async-request
+
+	* jrpc.el (jrpc-async-request): Improve timeout handling. Return a list
+	(ID TIMER)
+	(jrpc-request): Protect against user-quits, cancelling timer
+
+2018-05-18  João Távora  <joaotavora@gmail.com>
+
+	Automatically reply with error if dispatcher doesn't
+
+	* jrpc.el (jrpc-connect): Improve doc.
+	(jrpc--process-receive): Overhaul error handling.
+	(jrpc-reply): Protect against missing ID
+	(jrpc-error): Signal an error with jrpc-specific info.
+	(jrpc-message): Protect against funky args.
+	(jrpc-request): Learn to handle jrpc-specific errors.
+
+2018-05-18  João Távora  <joaotavora@gmail.com>
+
+	jrpc.el should know nothing of mode-line updates
+
+	* eglot.el (eglot--dispatch): METHOD can be a symbol. Call
+	force-mode-line-update here.
+
+2018-05-18  João Távora  <joaotavora@gmail.com>
+
+	Send message, then establish continuations
+
+	This way, if serializing fails, or something else, we won't be bothered
+	by the failing timeout.
+
+	* jrpc.el (jrpc-async-request): Send, then establish continuations.
+
+2018-05-18  João Távora  <joaotavora@gmail.com>
+
+	Allow null timeouts and set default to 3 seconds
+
+	* jrpc.el (jrpc-request-timeout): Allow nil.
+	(jrpc--process-sentinel): Handle no timeout.
+	(jrpc--async-request): Maybe make no timer.
+
+2018-05-18  João Távora  <joaotavora@gmail.com>
+
+	Overhaul JSON and JSRONRPC error handling
+
+	Also fix some bugs.
+
+	* jrpc.el (pcase, array): Require it.
+	(jrpc--connect): Default error function properly logs error event.
+	(jrpc--process-filter): Protect against JSON errors.
+	(jrpc--process-receive): Protect against JSONRPC errors.
+	(jrpc-reply): Check if both result and error.
+	(jrpc--process-send): Ensure json-object-type is plist.
+	(jrpc--process-sentinel): Correctly call error handler. Use #'ignore, 
+	not identity. Use pcase-let instead of cl-dbind
+
+2018-05-18  João Távora  <joaotavora@gmail.com>
+
+	Add full "Commentary" section to jrpc.el
+
+2018-05-18  João Távora  <joaotavora@gmail.com>
+
+	Improve jrpc.el's doc (and change jrpc-request's protocol a tiny bit)
+
+	* jrpc.el (jrpc-async-request)
+	(jrpc-request,jrpc-notify,jrpc-reply): Improve docstring.
+	(jrpc-connect): Improve docstring and add autoload cookie
+	(jrpc-request): DEFERRED param is now &key
+	(defgroup jrpc): Fix description.
+
+	* eglot.el (advice-add jrpc-request): Use &key deferred.
+	(eglot-completion-at-point): Pass :deferred to jrpc-request
+
+2018-05-18  João Távora  <joaotavora@gmail.com>
+
+	Merge branch 'master' into jsonrpc-refactor (using good ol' git merge)
+
+2018-05-17  João Távora  <joaotavora@gmail.com>
+
+	* eglot.el (Version): Bump to 0.3
+
+2018-05-17  João Távora  <joaotavora@gmail.com>
+
+	Make it work on Windows
+
+	Apparently passing :coding 'no-conversion to make-process on windows is
+	essential to receive any text at all in the process filter.
+
+	Also needed to tweak uri-to-path and path-to-uri.
+
+	Thanks to lsp-mode.el for these hints
+
+	* eglot.el (eglot--make-process): Pass :coding 'no-conversion to 
+	make-process.
+	(eglot--path-to-uri): Add a forward slash if windows-nt.
+	(eglot--uri-to-path): Remove a forward slash if windows-nt.
+	(eglot--server-textDocument/publishDiagnostics): Simplify and use 
+	eglot--uri-to-path.
+
+2018-05-17  João Távora  <joaotavora@gmail.com>
+
+	Fix eglot--error and eglot--message helpers
+
+	* eglot.el (eglot--error, eglot--message): Safely interpret %s.
+
+2018-05-17  João Távora  <joaotavora@gmail.com>
+
+	* eglot.el (eglot--lambda): Add missing indent spec.
+
+2018-05-17  João Távora  <joaotavora@gmail.com>
+
+	Simplify some function calling infrastructure
+
+	eglot--mapply is a confusing abstraction. Hide some of that confusion 
+	behind eglot--lambda. More stably dispatch server notifications and 
+	requests without introspecting their contents.
+
+	* eglot.el (eglot--process-receive): Simplify.
+	(eglot--async-request): Improve doc.
+	(eglot--request): Simplify.
+	(eglot--mapply): Remove.
+	(xref-backend-identifier-completion-table)
+	(xref-backend-definitions, xref-backend-references)
+	(xref-backend-apropos, eglot-completion-at-point)
+	(eglot-eldoc-function, eglot-imenu, eglot--apply-text-edits): Don't use
+	eglot--mapply, use normal mapcar/mapc.
+
+2018-05-17  João Távora  <joaotavora@gmail.com>
+
+	Replace eglot--with-lsp-range with a function and pcase-let
+
+	* eglot.el (eglot--with-lsp-range): Remove.
+	(eglot--range-region): New function.
+	(eglot--server-textDocument/publishDiagnostics)
+	(eglot--hover-info, eglot-eldoc-function)
+	(eglot--apply-text-edits): Use it.
+
+2018-05-16  João Távora  <joaotavora@gmail.com>
+
+	Simpler callback protocol for JSONRPC parameters and results
+
+	Instead of introspecting the :params or :result object to discover if an
+	object is present, and changing the Elisp function call type
+	(funcall vs apply) accordingly, alway funcall. It's up to the 
+	application to destructure if it wishes. jrpc-lambda can help with that
+	and keep the application code simple.
+
+	* eglot.el (eglot--on-shutdown): Fix indentation.
+	(eglot--dispatch): Simplify.
+	(xref-backend-identifier-completion-table)
+	(xref-backend-definitions, xref-backend-references)
+	(xref-backend-apropos, eglot-completion-at-point)
+	(eglot-eldoc-function, eglot-imenu, eglot--apply-text-edits): Don't use
+	jrpc-mapply.
+
+	* jrpc.el (jrpc--process-receive): Allow only keys defined in JSONRPC2.0
+	(jrpc--process-receive): Don't overload function call type based on
+	remote response.
+	(jrpc-lambda): Return a unary lambda.
+	(jrpc-request): Simplify.
+	(jrpc-mapply): Remove.
+
+2018-05-16  João Távora  <joaotavora@gmail.com>
+
+	More flexible jrpc.el and improve eglot.el's doc
+
+	Generalize and rework CONTACT arg to jrpc-connect
+
+	* eglot.el (eglot--command-history): Tweak docstring.
+	(eglot--interactive): Rework.
+	(eglot): Rework docstring. COMMAND is now CONTACT.
+	(eglot--connect): Use new jrpc-connect protocol.
+	(eglot-server-programs): Reword doc.
+
+	* jrpc.el (jrpc--make-process): Use new form of CONTACT.
+	(jrpc-connect): Explain new semantics of CONTACT.
+
+2018-05-16  João Távora  <joaotavora@gmail.com>
+
+	Add jrpc.el to Makefile
+
+	* Makefile (ELFILES): jrpc.el needs to be here, too.
+
+2018-05-16  João Távora  <joaotavora@gmail.com>
+
+	Merge master into jsonrpc-refactor (using imerge)
+
+2018-05-15  João Távora  <joaotavora@gmail.com>
+
+	Add PHP's php-language-server to built-in guessed servers
+
+	Closes #1. The problem in that issue is that php-language-server has a 
+	bug when it's not passed it the deprecated ":rootPath" field. The bug 
+	doesn't happen if the ":processId" field is also absent. Eglot was 
+	triggering the bug, because it didn't pass ":rootPath", but there's 
+	nothing wrong in doing so.
+
+	* README.md: Add php-language-server to the built-in list.
+
+	* eglot.el (eglot-server-programs): Add php-language-server.
+	(eglot--connect): Also pass (deprecated) rootPath.
+
+2018-05-15  João Távora  <joaotavora@gmail.com>
+
+	Bump version and slightly improve doc
+
+	* eglot.el: Bump version. Add nicer Commentary header.
+	(eglot): Improve docstring.
+
+	* README.md: Update
+
+2018-05-15  João Távora  <joaotavora@gmail.com>
+
+	Merge remote-tracking branch 'elpa/externals/eglot'
+
+2018-05-14  Stefan Monnier  <monnier@iro.umontreal.ca>
+
+	* eglot-tests.el: Fix copyright
+
+2018-05-14  João Távora  <joaotavora@gmail.com>
+
+	More quietly report request timeouts as events
+
+	* eglot.el (eglot--sync-request): Use eglot--log-event
+
+2018-05-14  João Távora  <joaotavora@gmail.com>
+
+	Shutdown server if connection initialization fails
+
+	Also tweak autoreconnection logic
+
+	* eglot.el (eglot--connect): Immediately `eglot-shutdown` if connection
+	initialization failed. Don't treat interactive calls specially.
+	(eglot--process-sentinel): Tweak messages.
+
+2018-05-14  João Távora  <joaotavora@gmail.com>
+
+	Fix a ridiculous bug when generating transient projects
+
+	* eglot.el (eglot--find-current-process, eglot--interactive): Fix 
+	horrible bug.
+
+2018-05-14  João Távora  <joaotavora@gmail.com>
+
+	Fix a ridiculous bug when generating transient projects
+
+	* eglot.el (eglot--find-current-process, eglot--interactive): Fix 
+	horrible bug.
+
+2018-05-14  João Távora  <joaotavora@gmail.com>
+
+	jrpc-connect is now passed a generic dispatching function
+
+	* eglot.el (eglot--dispatch): New helper.
+	(eglot--connect): Use it.
+
+	* jrpc.el (jrpc--dispatcher, jrpc--request-continuations)
+	(jrpc--server-request-ids): New process-local var.
+	(jrpc--pending-continuations, jrpc--method-prefix): Remove.
+	(jrpc-connect): Take DISPATCHER instead of PREFIX.
+	(jrpc--process-receive): Use proc's dispatcher.
+	(jrpc--process-send): Make private.
+	(jrpc-forget-pending-continuations, jrpc-async-request)
+	(jrpc-reply, jrpc-notify): Use new function names.
+
+2018-05-14  João Távora  <joaotavora@gmail.com>
+
+	Merge master into jsonrpc-refactor (using imerge)
+
+2018-05-14  João Távora  <joaotavora@gmail.com>
+
+	Proper server shutdown when jrpc.el is used
+
+	The shutdown hook can't be a buffer-local thing, it has to be a server
+	property. Also, on shutdown in eglot.el, remember to first unmanage
+	buffers and only then affect eglot--processes-by-project.
+
+	* eglot.el (eglot--on-shutdown): reverse order of first two sexps.
+	(eglot--connect): Pass a shutdown function to jrpc-connect
+	(eglot--managed-mode): Don't use jrpc-server-moribund-hook
+	(eglot--buffer-managed-p): Simplify. Use eglot--find-current-process.
+
+2018-05-14  João Távora  <joaotavora@gmail.com>
+
+	Support didChangeWatchedFiles with dynamic registration
+
+	RLS uses this, presumaly for knowing about Cargo.toml changes and stuff.
+
+	* README.md: Update protocol compliance.
+
+	* eglot.el (filenotify): Require it.
+	(eglot--file-watches): New process-local var.
+	(eglot--process-sentinel): Kill all watches
+	(eglot--register-unregister): New helper.
+	(eglot--server-client/registerCapability): Simplify.
+	(eglot--server-client/unregisterCapability): New method.
+	(eglot--register-workspace/didChangeWatchedFiles)
+	(eglot--unregister-workspace/didChangeWatchedFiles): New capability.
+	(eglot--client-capabilities): Update.
+
+2018-05-14  João Távora  <joaotavora@gmail.com>
+
+	Remove an unused variable
+
+	* eglot.el (eglot--expect-carriage-return): Get rid of this.
+
+2018-05-14  João Távora  <joaotavora@gmail.com>
+
+	Now send willSaveWaitUntil
+
+	* eglot.el (eglot--client-capabilities): Report willSaveWaitUntil.
+	(eglot--server-workspace/applyEdit): Fix docstring.
+	(eglot--signal-textDocument/willSave): Send willSaveWaitUntil
+	(eglot--signal-textDocument/didOpen)
+	(eglot--signal-textDocument/didClose): Don't eglot--obj.
+	(eglot--apply-text-edits): Simplify. Use current buffer.
+	(eglot--apply-workspace-edit): Use new eglot--apply-text-edits.
+
+2018-05-14  João Távora  <joaotavora@gmail.com>
+
+	Don't define a menu if nothing to show there for now
+
+	* eglot.el (eglot-menu): Remove it.
+	(eglot--mode-line-format): Don't define a menu.
+
+2018-05-14  João Távora  <joaotavora@gmail.com>
+
+	Use RLS in Travis CI and add actual tests
+
+	Also run a hook when connected
+
+	* eglot-tests.el (eglot--with-dirs-and-files)
+	(eglot--make-file-or-dirs, eglot--call-with-dirs-and-files)
+	(eglot--find-file-noselect): New helpers.
+	(auto-detect-running-server, auto-reconnect): New actual tests.
+
+	* eglot.el (eglot-connect): Run hook when connected
+	(eglot-connect-hook): New variable
+
+	* .travis.yml: Use rust stable and install rls
+
+	* README.md: Update mention of automated tests
+
+2018-05-14  João Távora  <joaotavora@gmail.com>
+
+	Fix automatic project creation
+
+	* eglot.el (eglot): Take PROJECT arg. Return process.
+	(eglot--interactive): Returns a project.
+
+2018-05-13  João Távora  <joaotavora@gmail.com>
+
+	Work with any old directory, no formal project needed
+
+	Actually, uses a "transient project" which project-current returns if 
+	desperate.
+
+	* README.md: Update
+
+	* eglot.el (eglot--current-process)
+	(eglot--current-process-or-lose): Simplify.
+	(eglot): Maybe prompt user for project.
+
+2018-05-13  João Távora  <joaotavora@gmail.com>
+
+	Ask server for textDocument/signatureHelp if it supports it
+
+	* eglot.el (eglot--client-capabilities): Capable of signature Help.
+	(eglot--sig-info): Helper for eglot-eldoc-function.
+	(eglot-eldoc-function): Send textDocument/signatureHelp
+
+	* README.md: Update to mention textDocument/signatureHelp
+
+2018-05-13  João Távora  <joaotavora@gmail.com>
+
+	Fix copyright header. Obviously not since 2003
+
+2018-05-13  João Távora  <joaotavora@gmail.com>
+
+	Refactor JSON-RPC lib jrpc.el from eglot.el
+
+	* eglot.el [too many to mention]: Move lower level functions to jrpc.el.
+	Hook onto jrpc's external interfaces.
+
+	* jrpc.el: New file
+
+2018-05-13  João Távora  <joaotavora@gmail.com>
+
+	Reinstate the catch/loop/throw idiom in eglot-request
+
+	This reverts parts of commit 29f58a6514aec28e4e6df9611e4f58c7289e3cc6.
+
+	Unfortunately, this may cause problems when calling the error callbacks
+	directly as in the process sentinel. In that particular scenario the
+	accept-process-output won't have return, because no output has is being
+	handled. Consequently, if we're unlucky, we have another 30 seconds to
+	way before the flag is tested and the loop exits.
+
+	* eglot.el (eglot-request): Use catch/loop/throw again
+
+2018-05-12  João Távora  <joaotavora@gmail.com>
+
+	Fix copyright header. Obviously not since 2003
+
+2018-05-12  João Távora  <joaotavora@gmail.com>
+
+	Tweak README.md
+
+	* README.md (Commands and keybindings): New section.
+
+2018-05-12  João Távora  <joaotavora@gmail.com>
+
+	New command eglot-help-at-point and a README update
+
+	* README.md (Commands and keybindings): New section.
+
+	* eglot.el (eglot-eldoc-function): Use eglot--hover-info. Don't care
+	about kind in highlightSymbol
+	(eglot--hover-info): New helper.
+	(eglot-help-at-point): New command.
+
+2018-05-11  João Távora  <joaotavora@gmail.com>
+
+	Get rid of catch/loop/throw idiom (suggested by Thien-Thi Nguyen)
+
+	* eglot.el (eglot--process-filter)
+	(eglot--request): Replace catch/loop/throw idiom with let/test/loop/set
+
+2018-05-11  João Távora  <joaotavora@gmail.com>
+
+	Rework autoreconnection logic
+
+	Can't be a global var, has to be a per process thing.
+
+	* eglot.el (eglot-autoreconnect): New defcustom
+	(eglot--inhibit-autoreconnect): Renamed from
+	eglot--inhibit-autoreconnect
+	(eglot--connect): Run autoreconnect timer here.
+	(eglot--inhibit-auto-reconnect): Removed.
+	(eglot--process-sentinel): Don't run timer here. Rework.
+	(eglot, eglot-reconnect): Pass INTERACTIVE to eglot--connect.
+
+2018-05-11  João Távora  <joaotavora@gmail.com>
+
+	Duh, json.el is in Emacs, and json-mode.el is useless here
+
+	* eglot.el (Package-Requires): Don't require json-mode
+
+2018-05-10  João Távora  <joaotavora@gmail.com>
+
+	Prepare to sumbit to GNU ELPA
+
+	* eglot.el: Update headers.
+
+2018-05-10  João Távora  <joaotavora@gmail.com>
+
+	(eglot--xref-make): Fix Use of cl-destructuring-bind.
+
+2018-05-10  João Távora  <joaotavora@gmail.com>
+
+	Misc little adjustments for readability
+
+	* eglot.el (eglot--log-event, eglot--process-receive)
+	(eglot--xref-make, xref-backend-apropos): Use cl-destructuring-bind.
+	(eglot--server-window/showMessageRequest): Compact.
+
+2018-05-10  João Távora  <joaotavora@gmail.com>
+
+	Support :completionItem/resolve
+
+	This is quite handy with company and company-quickhelp
+
+	* eglot.el (eglot-completion-at-point): Send
+	:completionItem/resolve
+
+	* README.md: Mention completionItem/resolve
+
+2018-05-10  João Távora  <joaotavora@gmail.com>
+
+	Rename functions. eglot--request is now the synchronous one
+
+	* eglot.el (eglot--connect, eglot-shutdown)
+	(xref-backend-identifier-completion-table)
+	(xref-backend-definitions, xref-backend-references)
+	(xref-backend-apropos, eglot-completion-at-point, eglot-rename): Call
+	eglot--request.
+	(eglot--async-request): Renamed from eglot--request.
+	(eglot--request): Renamed from eglot--sync-request.
+	(eglot--TextDocumentIdentifier)
+	(eglot--VersionedTextDocumentIdentifier)
+	(eglot--TextDocumentPositionParams, eglot--TextDocumentItem): Renamed
+	from the more verbose eglot--current-buffer-* variante.
+	(eglot-rename, eglot-imenu, eglot-eldoc-function)
+	(eglot-completion-at-point, xref-backend-definitions)
+	(xref-backend-identifier-at-point)
+	(eglot--signal-textDocument/didSave)
+	(xref-backend-identifier-completion-table)
+	(eglot--signal-textDocument/didClose)
+	(eglot--signal-textDocument/didOpen)
+	(eglot--signal-textDocument/didChange): Use new function names.
+
+2018-05-10  João Távora  <joaotavora@gmail.com>
+
+	Friendlier M-x eglot
+
+	* eglot.el (eglot-server-programs): Renamed from eglot-executables
+	(eglot--interactive): Redesign
+	(eglot): Docstring.
+	(eglot--connect): Now a synchronous gig.
+	(eglot--interactive): Friendlier.
+	(eglot): Improve docstring, rework a bit.
+	(eglot-reconnect): Rework a bit.
+	(eglot--process-sentinel): Insert "byebye" ruler here.
+
+	* README.md: Update
+
+2018-05-10  João Távora  <joaotavora@gmail.com>
+
+	Improve eglot-eldoc-function
+
+	Use the :range key if the server provided it. Also simplify code with a
+	new eglot--with-lsp-range macro.
+
+	* eglot.el (eglot--format-markup): Tweak comment.
+	(eglot--with-lsp-range): New helper macro.
+	(eglot--server-textDocument/publishDiagnostics)
+	(eglot--apply-text-edits): Use it.
+	(eglot-eldoc-function): Use range if server provides it.
+
+2018-05-10  João Távora  <joaotavora@gmail.com>
+
+	Reduce log chatter
+
+	* eglot.el (eglot--process-sentinel, eglot--request): Use 
+	eglot--log-event.
+	(eglot--log-event): Print "message" if type unknown.
+	(eglot--debug, eglot--log): Remove.
+	(eglot--server-window/logMessage, eglot--server-telemetry/event): Make
+	noops.
+	(eglot--call-deferred): Also reduce chatter here.
+
+2018-05-10  João Távora  <joaotavora@gmail.com>
+
+	Only call deferred actions after a full message has been received
+
+	Otherwise it can be quite wasteful.
+
+	* eglot.el (eglot--process-filter): Don't eglot--call-deferred here.
+	(eglot--process-receive): Do it here.
+
+2018-05-10  João Távora  <joaotavora@gmail.com>
+
+	Resist server failure during synchronous requests
+
+	Calling the error handler unprotected could lead to the rest of the 
+	sentinel not running at all. This defeated the auto-reconnection in 
+	Rust, for example.
+
+	* eglot.el (eglot--process-sentinel): Rework.
+
+2018-05-10  João Távora  <joaotavora@gmail.com>
+
+	Simplify mode-line updating logic
+
+	* eglot.el (eglot--define-process-var): Simplify.
+	(eglot--short-name, eglot--spinner, eglot--status): Don't auto-update
+	mode-line.
+	(eglot--process-receive): Update it here.
+
+2018-05-10  João Távora  <joaotavora@gmail.com>
+
+	More RLS-specifics: update Flymake diags when indexing done
+
+	RLS could/should report diagnostics for every opened file, even if there
+	aren't any problems. Because it doesn't, loop for every buffer managed
+	by the process and call eglot--current-flymake-report-fn
+
+	* eglot.el
+	(eglot--server-window/progress): Call eglot--current-flymake-report-fn
+
+2018-05-10  João Távora  <joaotavora@gmail.com>
+
+	Adjust flymake integration
+
+	When opening a new file (signalling textDocument/didOpen) it makes sense
+	to call the flymake callback (if it exists) with no diagnostics, just to
+	get rid of that "Wait", since we don't know if later in this callback
+	cycle the server will ever report new diagnostics.
+
+	* eglot.el (eglot--managed-mode): Don't call flymake-mode or eldoc-mode
+	(eglot--managed-mode-hook): Add them here.
+	(eglot--maybe-activate-editing-mode): Call flymake callback.
+	(eglot--server-textDocument/publishDiagnostics): Set unreported 
+	diagnostics to nil if invoking callback.
+
+2018-05-10  João Távora  <joaotavora@gmail.com>
+
+	Shorten summary line to appease package-lint.el
+
+2018-05-10  João Távora  <joaotavora@gmail.com>
+
+	More correctly setup rust-mode-related autoloads
+
+	By autoloading the add-hook form and the eglot--setup-rls-idiosyncrasies 
+	definition, a user can start rust-mode without loading eglot.el along 
+	with it.
+
+	* eglot.el (rust-mode-hook)
+	(eglot--setup-rls-idiosyncrasies): Wrap in autoloaded progn.
+
+2018-05-09  João Távora  <joaotavora@gmail.com>
+
+	Add minimal headers, commentary and autoloads
+
+2018-05-09  João Távora  <joaotavora@gmail.com>
+
+	Fancier RLS spinner
+
+	* eglot.el (eglot--mode-line-format): Use (nth 3) of eglot--spinner.
+	(eglot--server-window/progress): Save detail message in spinner.
+
+2018-05-09  João Távora  <joaotavora@gmail.com>
+
+	New "deferred requests" that wait until server is ready
+
+	Calling textDocument/hover or textDocument/documentHighlight before the
+	server has had a chance to process a textDocument/didChange is normally
+	useless. The matter is worse for servers like RLS which only become
+	ready much later and send a special notif for it (see 
+	https://github.com/rust-lang-nursery/rls/issues/725).
+
+	So, keeping the same coding style add a DEFERRED arg to eglot--request 
+	that makes it maybe not run the function immediately. Add a bunch of 
+	logic for probing readiness of servers.
+
+	* README.md: Update
+
+	* eglot.el (eglot--deferred-actions): New process-local var.
+	(eglot--process-filter): Call deferred actions.
+	(eglot--request): Rewrite.
+	(eglot--sync-request): Rewrite.
+	(eglot--call-deferred, eglot--ready-predicates)
+	(eglot--server-ready-p): New helpers.
+	(eglot--signal-textDocument/didChange): Set spinner and call deferred
+	actions.
+	(eglot-completion-at-point): Pass DEFERRED to eglot-sync-request.
+	(eglot-eldoc-function): Pass DEFERRED to eglot-request
+	(eglot--rls-probably-ready-for-p): New helper.
+	(rust-mode-hook): Add eglot--setup-rls-idiosyncrasies
+	(eglot--setup-rls-idiosyncrasies): New helper.
+
+2018-05-09  João Távora  <joaotavora@gmail.com>
+
+	Call eglot-eldoc-function after completion finishes
+
+	* eglot.el (eglot-completion-at-point): Call eglot-eldoc-function after
+	completion finishes.
+
+2018-05-09  João Távora  <joaotavora@gmail.com>
+
+	Simplify `eglot-shutdown`
+
+	* eglot.el (eglot, eglot-reconnect)
+	(eglot--managed-mode): Call new eglot-shutdown.
+	(eglot-shutdown): Simplify.
+	(eglot--process-sentinel): Also call error functions.
+	(eglot--process-filter): Reindent.
+
+2018-05-09  João Távora  <joaotavora@gmail.com>
+
+	Get rid of eglot-mode
+
+	* eglot.el (eglot--managed-mode): Don't call eglot-mode. When shutting
+	down, offer to kill server.
+	(mode-line-misc-info): Update to use eglot--managed-mode
+
+2018-05-09  João Távora  <joaotavora@gmail.com>
+
+	Simplify eglot--signal-textDocument/didChange
+
+	* eglot.el (eglot--recent-before-changes)
+	(eglot--recent-after-changes): Delete.
+	(eglot--recent-changes): New var.
+	(eglot--outstanding-edits-p, eglot--before-change)
+	(eglot--after-change): Rewrite.
+	(eglot--signal-textDocument/didChange): Rewrite.
+	(eglot--signal-textDocument/didOpen): Initialize buffer-local
+	eglot--recent-changes here.
+
+2018-05-09  João Távora  <joaotavora@gmail.com>
+
+	Fix odd bugs and tweak stuff
+
+	* eglot.el (eglot--log-event): Insert before markers.
+	(eglot--process-receive): Shave lines.
+	(xref-backend-references): Use cl-return-from.
+	(eglot--log-event): Simplify
+	(eglot-completion-at-point): Saner annotation
+
+2018-05-08  João Távora  <joaotavora@gmail.com>
+
+	Update README
+
+2018-05-08  João Távora  <joaotavora@gmail.com>
+
+	Support workspace/applyEdit
+
+	* eglot.el (eglot--reply): Don't send result or error if not provided.
+	(eglot--server-workspace/applyEdit): New server method.
+	(eglot--apply-text-edits): Rework.
+	(eglot--apply-workspace-edit): New helper.
+	(eglot-rename): Simplify.
+
+2018-05-08  João Távora  <joaotavora@gmail.com>
+
+	Support textDocument/rename
+
+	* README.md: Mention rename support.
+
+	* eglot.el (eglot--uri-to-path): Handle uri hidden in keywords.
+	(eglot--apply-text-edits): New helper.
+	(eglot-rename): New interactive command.
+	(eglot--client-capabilities): Add rename capability.
+
+2018-05-08  João Távora  <joaotavora@gmail.com>
+
+	Reasonable textDocument/documentHighlight support
+
+	* README.md: Update.
+
+	* eglot.el (eglot--current-buffer-TextDocumentPositionParams): New 
+	helper.
+	(xref-backend-identifier-completion-table): Refactor a bit.
+	(xref-backend-identifier-at-point): Use when-let and 
+	eglot--current-buffer-TextDocumentPositionParams
+	(xref-backend-definitions, xref-backend-references): Refactor a bit.
+	(eglot-completion-at-point): Use 
+	eglot--current-buffer-TextDocumentPositionParams
+	(eglot-eldoc-function): Rewrite to handle 
+	textDocument/documentHighlight.
+	(eglot--highlights): New variable.
+	(eglot--client-capabilities): Update with support for documentHighlight.
+
+2018-05-08  João Távora  <joaotavora@gmail.com>
+
+	Fix odd bugs
+
+	* eglot.el (eglot--process-receive, eglot--request): Set status to 
+	actual error message.
+	(eglot--managed-mode): Manage imenu-create-index-function correctly.
+	(eglot--mode-line-format): Print error status.
+
+2018-05-08  João Távora  <joaotavora@gmail.com>
+
+	When killing server, always wait 3 seconds
+
+	* eglot.el (eglot--request): Accept TIMEOUT param.
+
+2018-05-08  João Távora  <joaotavora@gmail.com>
+
+	Try to fix some textDocument/completion bugs
+
+	* eglot.el (eglot-completion-at-point): Rework slightly.
+
+2018-05-07  João Távora  <joaotavora@gmail.com>
+
+	Half-decent imenu support via textDocument/documentSymbol
+
+	* README.md: Update capability
+
+	* eglot.el (eglot--lsp-position-to-point): New function.
+	(eglot--managed-mode): Handle imenu-create-index-function.
+	(eglot--server-textDocument/publishDiagnostics): Use 
+	eglot--lsp-position-to-point.
+	(eglot-imenu): New function.
+	(eglot--client-capabilities): Capable of documentSymbol.
+
+2018-05-07  João Távora  <joaotavora@gmail.com>
+
+	Only request stuff that server says it's capable of
+
+	* eglot.el (eglot--server-capable): New helper.
+	(eglot-xref-backend)
+	(xref-backend-identifier-completion-table)
+	(xref-backend-references, xref-backend-apropos)
+	(eglot-completion-at-point, eglot-eldoc-function): Use it.
+
+2018-05-07  João Távora  <joaotavora@gmail.com>
+
+	Simplify mode-line code with a helper.
+
+	* eglot.el (eglot--mdoe-line-props): New helper.
+	(eglot--mode-line-format): Use it.
+
+2018-05-07  João Távora  <joaotavora@gmail.com>
+
+	Get rid of eglot--buffer-open-count
+
+	Hasn't really proved useful yet.
+
+	* eglot.el (eglot--buffer-open-count): Remove.
+	(eglot--signal-textDocument/didOpen)
+	(eglot--signal-textDocument/didClose): Simplify.
+
+2018-05-07  João Távora  <joaotavora@gmail.com>
+
+	Get rid of eglot--special-buffer-process
+
+	Hasn't really proved useful yet.
+
+	* eglot.el (eglot--special-buffer-process): Delete.
+	(eglot--current-process): Simplify.
+	(eglot--events-buffer): Simplify.
+
+2018-05-07  João Távora  <joaotavora@gmail.com>
+
+	* eglot.el: Reformat to shave off some lines.
+
+2018-05-07  João Távora  <joaotavora@gmail.com>
+
+	Fix bug in hover support
+
+	* eldoc.el (eglot-eldoc-function): Use eglot--format-markup.
+	(subr-x): Require it.
+	(eglot--format-markup): Pacify byte-compiler.
+
+2018-05-07  João Távora  <joaotavora@gmail.com>
+
+	Clean up client capabilities
+
+	* eglot.el (eglot--client-capabilities): Clean up client capabilities.
+
+2018-05-07  João Távora  <joaotavora@gmail.com>
+
+	Half-baked textDocument/hover support
+
+	* eglot.el (eglot--format-markup): New helper.
+	(eglot--managed-mode): Handle eldoc-documentation-function.
+	(eglot-eldoc-function): New function.
+
+	* README.md: update
+
+2018-05-07  João Távora  <joaotavora@gmail.com>
+
+	Tweak the async request engine.
+
+	* eglot.el (eglot--request): Return the continuation id.
+	(eglot--lambda): Move up in the file.
+	(eglot--sync-request): Use a catch-tag.
+
+2018-05-07  João Távora  <joaotavora@gmail.com>
+
+	Explain why didOpen on after-revert-hook is a bad idea
+
+	The reason is that the global find-file-hook is called again, and that 
+	already does the didOpen. Too many didOpen's would be bad.
+
+	* eglot.el (eglot--managed-mode): Remove commented lines.
+
+2018-05-07  João Távora  <joaotavora@gmail.com>
+
+	Half-decent completion support
+
+	* README.md: Update.
+
+	* eglot.el (eglot--kind-names): New variable.
+	(eglot--managed-mode): Handle completion-at-point-functions.
+	(eglot-completion-at-point): New function.
+
+2018-05-07  João Távora  <joaotavora@gmail.com>
+
+	Solve another textDocument/didChange bug
+
+	* eglot.el (eglot--signal-textDocument/didChange): Rework a bit.
+	(eglot--after-change): Store the actual after-text in the 
+	eglot--recent-after-changes.
+
+2018-05-07  João Távora  <joaotavora@gmail.com>
+
+	Add (dummy) tests and Travis CI integration
+
+	* .travis.yml: New file.
+
+	* Makefile: New file.
+
+	* README.md: Add Travis badge.
+
+	* eglot-tests.el: New file with a dummy test.
+
+2018-05-07  João Távora  <joaotavora@gmail.com>
+
+	Support javascript's javascript-typescript-langserver
+
+	* README.md: Improve a bit
+
+	* eglot.el (eglot--make-process): Take MANAGED-MAJOR-MODE arg
+	(eglot-executables): Add basic javascript support.
+	(eglot--connect): Pass mode to eglot--make-process
+	(eglot--interactive): Check that guessed command is a listp.
+	(eglot): Minor improvement to message.
+	(eglot--current-buffer-TextDocumentItem): Guess language from mode 
+	symbol.
+
+2018-05-07  João Távora  <joaotavora@gmail.com>
+
+	Increase request timeout length to 10 seconds
+
+	* eglot.el (eglot-request-timeout): New var.
+	(eglot--request): Use it.
+
+2018-05-07  João Távora  <joaotavora@gmail.com>
+
+	Workaround two suspected Emacs bugs
+
+	* eglot.el (eglot--process-filter): Use a proper unique tag. Use 
+	unwind-protect.
+	(eglot--sync-request): Rework.
+	(eglot--server-client/registerCapability): Use a proper done tag.
+
+2018-05-07  João Távora  <joaotavora@gmail.com>
+
+	ETOOMANYLAMBDAS
+
+	* eglot.el (eglot--sync-request): Remove a lambda.
+
+2018-05-07  João Távora  <joaotavora@gmail.com>
+
+	Fix the odd bug here and there
+
+	* eglot.el (eglot--connect): Activate editing mode where applicable
+	here.
+	(eglot, eglot-reconnect): Not here or here.
+	(eglot--process-sentinel): Catch auto-reconnect errors.
+	(eglot--notify): Dont send 'id=null', it messes up js's lsp
+	(eglot--reply): Do send id here.
+	(eglot--log-event): Simplify protocol. Complexify implementation.
+	(eglot--process-receive, eglot--process-send): Simplify eglot--log-event
+	call.
+	(eglot--request, eglot--notify, eglot--reply): Simplify 
+	eglot--process-send call
+	(eglot--server-client/registerCapability): Fix bug when replying with
+	wrong id.
+	(eglot--xref-reset-known-symbols): Take DUMMY arg.
+
+2018-05-07  João Távora  <joaotavora@gmail.com>
+
+	Half-decent xref support
+
+	* eglot.el
+	(eglot--xref-known-symbols): New hacky var.
+	(eglot--xref-reset-known-symbols): New helper.
+	(xref-find-definitions, xref-find-references): Advise after to call the
+	new helper.
+	(xref-backend-identifier-completion-table): Rework.
+	(eglot--xref-make): New helper.
+	(xref-backend-definitions): Use it.
+	(xref-backend-references, xref-backend-apropos): Implement.
+	(eglot--obj): Add a debug spec.
+	(eglot--lambda): Add debug spec.
+
+2018-05-05  João Távora  <joaotavora@gmail.com>
+
+	Very basic xref support
+
+	* eglot.el (eglot--pos-to-lisp-position): Move up.
+	(eglot--mapply, eglot--lambda): New helpers.
+	(eglot--uri-to-path): New helper.
+	(eglot--managed-mode): Manage xref-backend-functions.
+	(eglot-xref-backend): New function.
+	(xref-backend-identifier-completion-table)
+	(xref-backend-identifier-at-point)
+	(xref-backend-definitions): New methods.
+	(xref-backend-references)
+	(xref-backend-apropos): New methods, still unimplemented.
+
+2018-05-05  João Távora  <joaotavora@gmail.com>
+
+	New helper eglot--sync-request
+
+	This should help with xref definitions
+
+	* eglot.el (eglot--request): Rework a bit. Continuation is always 
+	cleared on timeout, regardless of user-supplied fn.
+	(eglot--sync-request): New function.
+	(eglot--process-receive): watch out for vector results.
+
+2018-05-05  João Távora  <joaotavora@gmail.com>
+
+	Cleanup mistake with TextDocumentItem and TextDocumentIdentifier
+
+	Also introduce eglot--path-to-uri
+
+	* eglot.el (eglot--path-to-uri): Rename from eglot--uri and rework.
+	(eglot--connect): Use it.
+	(eglot--current-buffer-TextDocumentIdentifier): New function.
+	(eglot--current-buffer-VersionedTextDocumentIdentifier)
+	(eglot--signal-textDocument/didChange)
+	(eglot--signal-textDocument/didClose)
+	(eglot--signal-textDocument/willSave)
+	(eglot--signal-textDocument/didSave): Use it.
+
+2018-05-04  João Távora  <joaotavora@gmail.com>
+
+	Handle dynamic registration in general (but nothing specific yet)
+
+	* eglot.el (eglot--server-client/registerCapability): Implement.
+	(eglot--register-workspace/didChangeWatchedFiles): Dummy registrator.
+
+2018-05-04  João Távora  <joaotavora@gmail.com>
+
+	Honour textDocumentSync
+
+	* eglot.el (eglot--signal-textDocument/didChange): Honour
+	textDocumentSync
+
+2018-05-04  João Távora  <joaotavora@gmail.com>
+
+	Be quite explicit about our lack of capabilities right now
+
+	* eglot.el (eglot--client-capabilities): Spread out.
+
+2018-05-04  João Távora  <joaotavora@gmail.com>
+
+	Use rootUri instead of rootPath
+
+	* eglot.el (eglot--connect)
+	(eglot--current-buffer-VersionedTextDocumentIdentifier): Use eglot--uri.
+	(eglot--uri): New function.
+
+2018-05-04  João Távora  <joaotavora@gmail.com>
+
+	Make reported capabilities into its own function
+
+	* eglot.el (eglot--client-capabilities): New function.
+	(eglot--connect): Use it.
+
+2018-05-04  João Távora  <joaotavora@gmail.com>
+
+	Include source info in diagnostics
+
+	* eglot.el (eglot--server-textDocument/publishDiagnostics): Include
+	source info.
+
+2018-05-04  João Távora  <joaotavora@gmail.com>
+
+	Reply to client/registerCapability (don't handle it yet)
+
+	* eglot.el (eglot--server-client/registerCapability): New function.
+
+2018-05-04  João Távora  <joaotavora@gmail.com>
+
+	Handle requests from server correctly
+
+	* eglot.el (eglot--process-receive): Redesign.
+	(eglot--process-send): Take REPLY arg. Discover if message is error.
+	(eglot--reply): new function
+	(eglot--log-event): Tweak docstring.
+	(eglot--process-receive): Reply with -32601 if unimplemented.
+	(eglot--server-window/showMessageRequest)
+	(eglot--server-client/registerCapability): Use eglot--reply
+
+2018-05-04  João Távora  <joaotavora@gmail.com>
+
+	Don't auto-reconnect if last attempt lasted less than 3 seconds
+
+	* eglot.el (eglot--inhibit-auto-reconnect): New var.
+	(eglot--process-sentinel): Use it.
+
+2018-05-04  João Távora  <joaotavora@gmail.com>
+
+	Workaround RLS's regusal to treat nil as empty json object
+
+	* eglot.el (eglot--connect): Use dummy params.
+
+2018-05-04  João Távora  <joaotavora@gmail.com>
+
+	eglot-editing-mode becomes eglot--managed-mode
+
+	* eglot.el (eglot--sentinel): Use eglot--managed-mode.
+	(eglot--managed-mode-map): Renamed from eglot-editing-mode-map.
+	(eglot--managed-mode): Renamed from eglot-editing-mode.
+	(eglot-mode): Simplify.
+	(eglot--buffer-managed-p): New function.
+	(eglot--maybe-activate-editing-mode): Simplify.
+
+2018-05-04  João Távora  <joaotavora@gmail.com>
+
+	Make M-x eglot's interactive spec a separate function
+
+	* eglot.el (eglot--interactive): New function.
+	(eglot): Rework a little.
+
+2018-05-04  João Távora  <joaotavora@gmail.com>
+
+	When user declines to reconnect, first quit existing server
+
+	* eglot.el (eglot): Rework reconnection logic.
+
+2018-05-04  João Távora  <joaotavora@gmail.com>
+
+	Connect to LSP server via TCP
+
+	* eglot.el (eglot--make-process): Rename from eglot-make-local-process.
+	(eglot): Fix docstring and rework.
+	(eglot--bootstrap-fn): Remove
+	(eglot--contact): New process-local var.
+	(eglot--connect): Take CONTACT arg.
+	(eglot--reconnect): Rework.
+
+2018-05-04  João Távora  <joaotavora@gmail.com>
+
+	More correctly keep track of didOpen/didClose per buffer
+
+	* eglot.el (eglot--buffer-open-count): Now a process-local var.
+	(eglot--signal-textDocument/didOpen,
+	eglot--signal-textDocument/didClose): Use it.
+
+2018-05-04  João Távora  <joaotavora@gmail.com>
+
+	Fix mode-line mouse-clicks from outside selected window
+
+	* eglot.el (eglot--mode-line-call): New helper.
+	(eglot--mode-line-format): Use it.
+
+2018-05-04  João Távora  <joaotavora@gmail.com>
+
+	* eglot.el (eglot--process-receive): Skip null method notifs.
+
+2018-05-04  João Távora  <joaotavora@gmail.com>
+
+	Update README.md
+
+2018-05-03  João Távora  <joaotavora@gmail.com>
+
+	Trim some edges and add a bunch of boring RPC methods
+
+	* eglot.el (eglot--connect): Don't call eglot--protocol-initialize.
+	(eglot--process-filter): Break long line.
+	(eglot--process-receive): Also pass id to handler if a server request.
+	(eglot--log): New helper.
+	(eglot-editing-mode): Manage before-revert-hook, after-revert-hook,
+	before-save-hook, after-save-hook.
+	(eglot--protocol-initialize): Removed.
+	(eglot--server-window/showMessage): Simplify.
+	(eglot--server-window/showMessageRequest)
+	(eglot--server-window/logMessage, eglot--server-telemetry/event): New
+	handlers.
+	(eglot--signal-textDocument/willSave)
+	(eglot--signal-textDocument/didSave): New notifications.
+	(eglot--signal-textDocument/didOpen)
+	(eglot--signal-textDocument/didClose): Check eglot--buffer-open-count.
+	(eglot--buffer-open-count): New var.
+
+2018-05-03  João Távora  <joaotavora@gmail.com>
+
+	Fix a couple of Rust-related edge cases
+
+	* eglot.el (eglot--server-window/progress): Allow other keys.
+	(eglot--server-textDocument/publishDiagnostics): Allow :group in
+	diagnostic spec.
+
+2018-05-03  João Távora  <joaotavora@gmail.com>
+
+	Fix textDocument/didChange
+
+	* eglot.el (eglot-editing-mode): Manage before-change-functions.
+	(eglot--recent-changes): Deleted.
+	(eglot--recent-before-changes): New var.
+	(eglot--recent-after-changes): Renamed from eglot--recent-changes.
+	(eglot--pos-to-lsp-position, eglot--before-change): New helpers.
+	(eglot--after-change): Rework.
+	(eglot--signal-textDocument/didChange): Rework.
+
+2018-05-03  João Távora  <joaotavora@gmail.com>
+
+	Rename RPC methods for clarity
+
+	* eglot.el (eglot--process-receive): Search for RPC server methods under
+	`eglot--server-'
+	(eglot-editing-mode, eglot--maybe-activate-editing-mode): Use new signal
+	names.
+	(eglot--server-window/showMessage): Rename from 
+	eglot--window/showMessage.
+	(eglot--server-textDocument/publishDiagnostics): Renamed from 
+	eglot--textDocument/publishDiagnostics.
+	(eglot--current-buffer-versioned-identifier): Remove.
+	(eglot--current-buffer-VersionedTextDocumentIdentifier): Use 
+	eglot--versioned-identifier.
+	(eglot--signal-textDocument/didChange): Renamed from 
+	eglot--maybe-signal-didChange.
+	(eglot--signal-textDocument/didOpen): Renamed from eglot--signalDidOpen.
+	(eglot--signal-textDocument/didClose): Rename from 
+	eglot--signalDidClose.
+	(eglot-flymake-backend): Call eglot--signal-textDocument/didChange.
+	(eglot--server-window/progress): Rename from eglot--window/progress.
+
+2018-05-03  João Távora  <joaotavora@gmail.com>
+
+	Reorganize file
+
+	* eglot.el (eglot-mode-line): Move up.
+	(eglot-make-local-process, eglot--all-major-modes, eglot--obj)
+	(eglot--project-short-name, eglot--all-major-modes)
+	(eglot-reconnect, eglot--maybe-activate-editing-mode)
+	(eglot--protocol-initialize)
+	(eglot--window/showMessage, eglot--current-flymake-report-fn)
+	(eglot--unreported-diagnostics)
+	(eglot--textDocument/publishDiagnostics, eglot--signalDidOpen)
+	(eglot--signalDidClose): Move around.
+	(eglot-quit-server): Renamed to eglot-shutdown.
+	(eglot-shutdown): New function
+
+2018-05-03  João Távora  <joaotavora@gmail.com>
+
+	Delete two useless forward declarations
+
+	* eglot.el (eglot-mode, eglot-editing-mode-map): Remove forward decls.
+
+2018-05-03  João Távora  <joaotavora@gmail.com>
+
+	Fix Flymake diagnostic positions
+
+	It's better not to use flymake-diag-region here.
+
+	* eglot.el (eglot--textDocument/publishDiagnostics): Calculate position
+	by hand.
+
+2018-05-03  João Távora  <joaotavora@gmail.com>
+
+	Must re-announce didOpen after reconnect
+
+	* eglot.el (eglot-reconnect): Also call 
+	eglot--maybe-activate-editing-mode for all buffers.
+
+2018-05-03  João Távora  <joaotavora@gmail.com>
+
+	Fix another Flymake sync bug
+
+	* eglot.el (eglot-flymake-backend): Only report unreported sometimes.
+	(eglot--maybe-activate-editing-mode): Start flymake explicitly when
+	didOpen.
+	(eglot--textDocument/publishDiagnostics): No need to set 
+	unreported-diagnostics to nil.
+	(flymake): Require it.
+
+2018-05-03  João Távora  <joaotavora@gmail.com>
+
+	Make M-x eglot the main entry point
+
+	* eglot.el (eglot-new-process): Removed
+	(eglot): Rename from eglot-new-process.
+	(eglot-editing-mode): Mention M-x eglot
+
+	* README.md: Use M-x eglot
+
+2018-05-03  João Távora  <joaotavora@gmail.com>
+
+	Fix assorted bugs
+
+	* eglot.el (eglot--special-buffer-process): Must be buffer-local.
+	(eglot--define-process-var): Fix disaster waiting to happen.
+	(eglot--process-receive): Explicitly pass PROC to 
+	eglot--pending-continuations.
+	(eglot--textDocument/publishDiagnostics): Clear unreported diagnostics
+
+2018-05-03  João Távora  <joaotavora@gmail.com>
+
+	Watch for files opened under umbrella of existing process
+
+	* eglot.el (eglot--connect): Call success-fn with a proc.
+	(eglot-reconnect): Adapt to new eglot--connect.
+	(eglot-new-process): Call eglot--maybe-activate-editing-mode
+	(eglot--maybe-activate-editing-mode): New function.
+	(find-file-hook): Add it here.
+
+2018-05-03  João Távora  <joaotavora@gmail.com>
+
+	Multiple servers per project are possible
+
+	A server manages a specific major-mode within a project.
+
+	* eglot.el (eglot--processes-by-project): Add docstring.
+	(eglot--current-process): Search new eglot--processes-by-project format.
+	(eglot--major-mode): New variable.
+	(eglot--moribund, eglot--project): Update docstring.
+	(eglot--project-short-name, eglot--all-major-modes): New helpers.
+	(eglot--connect): Rework.
+	(eglot-new-process): Rework severely.
+	(eglot--command-history): New variable.
+	(eglot--process-sentinel): Use new eglot--processes-by-project. Update
+	mode line.
+	(eglot-editing-mode): Don't start processes, just suggest it.
+
+2018-05-03  João Távora  <joaotavora@gmail.com>
+
+	Appease checkdoc.el
+
+	* eglot.el (eglot--process-send, eglot--next-request-id)
+	(eglot--current-buffer-VersionedTextDocumentIdentifier)
+	(eglot--current-buffer-TextDocumentItem)
+	(eglot--after-change, eglot--signalDidOpen)
+	(eglot--signalDidClose, eglot--maybe-signal-didChange): Add docstring.
+
+2018-05-03  João Távora  <joaotavora@gmail.com>
+
+	Simplify flymake integration
+
+	And get rid of the ridiculous environment thingy
+
+	* eglot.el (eglot--process-sentinel): Continuations are triplets.
+	(eglot--environment-vars, eglot--environment): Remove.
+	(eglot--process-receive): Simplify.
+	(eglot--unreported-diagnostics): New variable.
+	(eglot--textDocument/publishDiagnostics): Simplify.
+	(eglot-flymake-backend): Report unreported diagnostics.
+
+2018-05-03  João Távora  <joaotavora@gmail.com>
+
+	Signal textDocument/didClose
+
+	* eglot.el (eglot-editing-mode): Signal didClose.
+	(eglot--signalDidClose): New.
+
+2018-05-03  João Távora  <joaotavora@gmail.com>
+
+	Rework connection restarting again
+
+	Quitting a process removes it from the project.
+
+	* eglot.el (eglot-editing-mode,eglot-mode): Forward declare.
+	(eglot--project): New process-local var.
+	(eglot--connect): Takes a project.
+	(eglot-new-process): Rework.
+	(eglot--sentinel): Remove proc from eglot--processes-by-project.
+
+2018-05-03  João Távora  <joaotavora@gmail.com>
+
+	Redesign and simplify parser
+
+	Fix horrible bugs. This is the correct way.
+
+	* eglot.el (eglot--process-filter): Redesign.
+
+2018-05-02  João Távora  <joaotavora@gmail.com>
+
+	Auto-reconnect on unexpected connection loss
+
+	* eglot.el (eglot-reconnect): Only quit if indeed not quit already.
+	(eglot-new-process): Burn the command in the bootstrap fn.
+	(eglot--process-sentinel): Automatically reconnect if closed 
+	unexpectedly.
+	(eglot--warn): Also message to *Messages*
+
+2018-05-02  João Távora  <joaotavora@gmail.com>
+
+	Ready to start fixing flymake integration
+
+	* eglot.el (eglot-editing-mode): Turn on flymake-mode.
+	(eglot-flymake-backend): Always start by reporting no diagnostics.
+	(eglot--textDocument/publishDiagnostics): No annoying message.
+
+2018-05-02  João Távora  <joaotavora@gmail.com>
+
+	Slightly more user friendly start
+
+	* eglot.el (eglot-new-process): signal DidOpen for every file in
+	project.
+	(eglot-editing-mode): Offer to start process.
+
+2018-05-02  João Távora  <joaotavora@gmail.com>
+
+	Don't clutter UI with warnings
+
+	* eglot.el (warnings): require it.
+	(eglot--warn): set warning-minimum-level
+
+2018-05-02  João Távora  <joaotavora@gmail.com>
+
+	Rework commands for connecting and reconnecting
+
+	* eglot.el (eglot--current-process-or-lose): Add doc.
+	(eglot--command): Remove.
+	(eglot--bootstrap-fn): New process-local variable.
+	(eglot--connect): Redesign.
+	(eglot-make-local-process): New function.
+	(eglot-reconnect): New interactive command.
+	(eglot-new-process): Redesign.
+	(eglot--process-sentinel): Add doc.
+	(eglot--protocol-initialize): Rework.
+	(eglot--mode-line-format): Use eglot-reconnect.
+
+2018-05-02  João Távora  <joaotavora@gmail.com>
+
+	Less obstrusive flymake stuff for now
+
+	* eglot.el (eglot--after-change, eglot-flymake-backend): Fix.
+
+2018-05-02  João Távora  <joaotavora@gmail.com>
+
+	Events buffer uses eglot-mode, source buffers use eglot-editing-mode
+
+	* eglot.el (eglot--special-buffer-process): New var.
+	(eglot--current-process): Consider eglot--special-buffer-process.
+	(eglot-events-buffer): Use eglot-mode
+	(eglot-editing-mode): New minor mode.
+	(eglot-mode): Turns on eglot-editing-mode maybe.
+
+2018-05-02  João Távora  <joaotavora@gmail.com>
+
+	Change status to error everytime an error is found
+
+	* eglot.el (eglot--process-receive): Also set error status.
+	(eglot--request): Fix a compilation warning.
+
+2018-05-02  João Távora  <joaotavora@gmail.com>
+
+	Correctly report what we currently are capable of
+
+	Which is almost nothing.
+
+	* eglot.el (eglot--protocol-initialize): Clean up.
+
+2018-05-02  João Távora  <joaotavora@gmail.com>
+
+	Add eglot-clear-status interactive command
+
+	* eglot.el (eglot-clear-status): New
+	(eglot-forget-pending-continuations): Fix bug.
+	(eglot--mode-line-format): Add link to eglot-clear-status.
+
+2018-05-02  João Távora  <joaotavora@gmail.com>
+
+	Auto update mode-line after setting some process properties
+
+	* eglot.el (eglot--define-process-var): Rework.
+	(eglot--short-name, eglot--spinner, eglot--status): Update mode-line 
+	after setting it.
+
+2018-05-02  João Távora  <joaotavora@gmail.com>
+
+	Start experimenting with python
+
+	* eglot.el (eglot-executables): Add pyls.
+
+2018-05-02  João Távora  <joaotavora@gmail.com>
+
+	Don't switch to possibly dead buffer in sentinel
+
+	* eglot.el (eglot--process-sentinel): Don't with-current-buffer.
+
+2018-05-02  João Távora  <joaotavora@gmail.com>
+
+	Report server status in the mode-line
+
+	* eglot.el (eglot--status): New var.
+	(eglot--log-event): Try to be more useful for other stuff.
+	(eglot--protocol-initialize): Set status to nil on successful connect.
+	(eglot--window/showMessage): Set status to error if needed.
+	(eglot--mode-line-format): Display status if serious.
+
+2018-05-01  João Távora  <joaotavora@gmail.com>
+
+	Implement spinners and RLS's window/progress
+
+	* eglot.el (eglot--window/progress): New.
+	(eglot--mode-line-format): Rework.
+	(eglot--snpinner): New var.
+	(compile): require it.
+
+2018-05-01  João Távora  <joaotavora@gmail.com>
+
+	Fix parser to accept multiple messages in one chunk
+
+	* eglot.el (eglot--process-filter): Redesign slightly.
+	(eglot--message-mark): Remove. don't need this.
+
+2018-05-01  João Távora  <joaotavora@gmail.com>
+
+	Lay groundwork for uniform treatment of network connections
+
+	* eglot.el (eglot--connect): New helper.
+	(eglot-new-process): Use it.
+	(pcase): Require it.
+
+2018-05-01  João Távora  <joaotavora@gmail.com>
+
+	Doc fixes
+
+	* eglot.el (eglot-mode-map): Move up before minor mode.
+
+2018-05-01  João Távora  <joaotavora@gmail.com>
+
+	* eglot.el (eglot-mode-map): Move up before minor mode.
+
+2018-04-30  João Távora  <joaotavora@gmail.com>
+
+	Start working on this again
+
+	* eglot.el (url-util): Require it.
+	(eglot--process-sentinel): pending continuations now are quads (added
+	env).
+	(eglot--process-filter): Unwind message markers correctly if handling
+	fails.
+	(eglot--obj): Simple macro.
+	(eglot--log-event): Add some info to logged event.
+	(eglot--environment-vars, eglot--environment): Helper vars.
+	(eglot--process-receive): Improve.
+	(eglot--process-send): Niver log.
+	(eglot--request): Use eglot--obj. Add environment.
+	(eglot--notify): New helper.
+	(eglot--protocol-initialize): RLS must like file://
+	(eglot--current-flymake-report-fn): New var.
+	(eglot--textDocument/publishDiagnostics): Use flymake from Emacs 26.
+	(eglot-mode): Proper minor mode.
+	(eglot--recent-changes, eglot--versioned-identifier): New stuff.
+	(eglot--current-buffer-versioned-identifier)
+	(eglot--current-buffer-VersionedTextDocumentIdentifier)
+	(eglot--current-buffer-TextDocumentItem, eglot--after-change)
+	(eglot--signalDidOpen, eglot--maybe-signal-didChange): New stuff.
+	(eglot-flymake-backend): More or less a flymake backend function.
+
+2018-04-30  João Távora  <joaotavora@gmail.com>
+
+	Fix mode line
+
+	* eglot.el (mode-line-misc-info): conditionalize to eglot-mode
+
+2018-04-30  João Távora  <joaotavora@gmail.com>
+
+	Fix some byte-compilation warnings
+
+2017-08-16  João Távora  <joaotavora@gmail.com>
+
+	Overhaul async mechanism safety
+
+2017-08-16  João Távora  <joaotavora@gmail.com>
+
+	Simplify `eglot--protocol-initialize`
+
+	* eglot.el (eglot--protocol-initialize): Simplify
+
+2017-08-16  João Távora  <joaotavora@gmail.com>
+
+	Experimental diagnostic overlays
+
+2017-08-16  João Távora  <joaotavora@gmail.com>
+
+	Minor cleanup
+
+2017-08-16  JoÃ£o TÃ¡vora  <joaotavora@gmail.com>
+
+	Cancel timeouts when process dies unexpectedly
+
+2017-08-16  João Távora  <joaotavora@gmail.com>
+
+	Organize a bit
+
+2017-08-16  João Távora  <joaotavora@gmail.com>
+
+	Improve `eglot--current-process'
+
+2017-08-16  João Távora  <joaotavora@gmail.com>
+
+	Handle notifications
+
+2017-08-16  João Távora  <joaotavora@gmail.com>
+
+	Introduce and use `eglot--current-process-or-lose'
+
+2017-08-16  João Távora  <joaotavora@gmail.com>
+
+	Add a mode-line construct and some minor fanciness
+
+2017-08-16  João Távora  <joaotavora@gmail.com>
+
+	Rename eglot--continuations eglot--pending-continuations
+
+2017-08-16  João Távora  <joaotavora@gmail.com>
+
+	Remove a couple of comments
+
+2017-08-16  João Távora  <joaotavora@gmail.com>
+
+	Initial commit
+
