@@ -397,8 +397,7 @@
 ;; will eventually be quite a busy section.
 ;; ** eglot
 (use-package eglot
-  :ensure t
-  :hook java-mode-hook)
+  :ensure t)
 ;; ** Base lsp-mode
 ;; *** lsp-mode
 (use-package lsp-mode
@@ -426,6 +425,7 @@
 ;; ** Base dsp-mode
 (use-package dap-mode
   :ensure t
+  :disabled
   :hook java-mode-hook
   :config
   (use-package dap-java)
@@ -439,6 +439,7 @@
 ;; *** lsp-java
 (use-package lsp-java
   :ensure t
+  :disabled
   :hook java-mode)
 ;; *** lsp-python-ms
 (use-package lsp-python-ms
@@ -504,6 +505,14 @@
 ;; ** c-mode
 ;; *** tab width
 (setq-default c-basic-offset 4)
+
+;; ** java-mode
+(defun jacob-java-mode-setup ()
+  (setq c-syntactic-indentation t)
+  (c-set-style "ellemtel")
+  (setq c-basic-offset 4))
+
+(add-hook 'java-mode-hook 'jacob-java-mode-setup)
 
 ;; ** csharp-mode
 (use-package csharp-mode
