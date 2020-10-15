@@ -638,7 +638,7 @@
 ;; ** olivetti
 (use-package olivetti
   :ensure t
-  :hook text-mode-hook)
+  :hook (org-mode-hook . olivetti-mode))
 ;; * Non-mode Packages
 ;; ** try
 (use-package try
