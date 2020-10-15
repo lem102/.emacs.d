@@ -96,7 +96,7 @@
 ;; ** beacon
 (use-package beacon
   :ensure t
-  :demand
+  :defer 2
   :config
   (beacon-mode 1))
 ;; ** dimmer
@@ -117,6 +117,11 @@
               (left . 0)
               (top . 0)))))
 ;; * Built-in settings
+;; ** recentf
+(use-package recentf
+  :defer 0.1
+  :config
+  (recentf-mode 1))
 ;; ** keyboard macros
 (use-package kmacro
   :defer 0.1
