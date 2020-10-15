@@ -422,25 +422,7 @@
 (use-package lsp-ivy
   :ensure t
   :commands lsp-ivy-workspace-symbol)
-;; ** Base dsp-mode
-(use-package dap-mode
-  :ensure t
-  :disabled
-  :hook java-mode-hook
-  :config
-  (use-package dap-java)
-  (dap-mode 1)
-  (dap-ui-mode 1)
-  (dap-tooltip-mode 1)
-  (tooltip-mode 1)
-  (dap-ui-controls-mode 1))
-
 ;; ** Language Specific
-;; *** lsp-java
-(use-package lsp-java
-  :ensure t
-  :disabled
-  :hook java-mode)
 ;; *** lsp-python-ms
 (use-package lsp-python-ms
   :ensure t
