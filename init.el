@@ -279,7 +279,7 @@
 
 (defun jacob-config-reload ()
   (interactive)
-  (org-babel-load-file (expand-file-name "~/.emacs.d/config.org")))
+  (load-file (expand-file-name "~/.emacs.d/init.el")))
 
 (defun jacob-org-src-block ()
   "Replacement for C-c ' in both \"org-mode\" and when editing code blocks within \"org-mode\"."
