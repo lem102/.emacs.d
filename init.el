@@ -741,7 +741,7 @@
                             ((string-equal system-type "windows-nt")
                              "C:/Windows/System32/Cmd.exe")
                             ((string-equal system-type "gnu/linux")
-                             "/bin/sh")))
+                             "/bin/bash")))
           (shell-pop-shell-type '("shell" "*shell*" (lambda () (shell))))
           (shell-pop-term-shell "shell"))
       (shell-pop--set-shell-type 'shell-pop-shell-type shell-pop-shell-type)
