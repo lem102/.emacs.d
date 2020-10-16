@@ -119,7 +119,7 @@
 ;; * Built-in settings
 ;; ** recentf
 (use-package recentf
-  :defer 0.1
+  :commands recentf-open-files
   :config
   (recentf-mode 1))
 ;; ** keyboard macros
