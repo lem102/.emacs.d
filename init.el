@@ -1,10 +1,24 @@
-(defmacro measure-time (&rest body)
-  `(let ((time (current-time)))
-     ,@body
-     (message "%.06f" (float-time (time-since time)))))
+;; * garbage collection
+;; ** beggining of startup
+(setq gc-cons-threshold most-positive-fixnum)
+(setq gc-cons-percentage 0.6)
+;; ** end of startup
+(add-hook 'emacs-startup-hook
+          (lambda ()
+            (setq gc-cons-threshold 16777216) ; 16mb
+            (setq gc-cons-percentage 0.1)))
+;; ** while using the minibuffer
+(defun doom-defer-garbage-collection-h ()
+  (setq gc-cons-threshold most-positive-fixnum))
 
+(defun doom-restore-geabage-collection ()
+  (run-at-time
+   1 nil (lambda () (setq gc-cons-threshold 16777216))))
+
+(add-hook 'minibuffer-setup-hook #'doom-defer-garbage-collection-h)
+(add-hook 'minibuffer-exit-hook #'doom-restore-garbage-collection-h)
+;; * package.el
 (require 'package)
-
 (setq package-enable-at-startup nil)
 (add-to-list 'package-archives
 			 '("melpa" . "https://melpa.org/packages/"))
@@ -13,10 +27,6 @@
 (unless (package-installed-p 'use-package)
   (package-refresh-contents)
   (package-install 'use-package))
-
-;; go to the nice org file :)
-;; (require 'org)
-;; (org-babel-load-file (expand-file-name "~/.emacs.d/config.org"))
 
 ;; * Use-Package
 ;; Make sure use package is available.
