@@ -117,17 +117,6 @@
   :defer 5
   :config
   (dimmer-mode))
-;; ** default frame size on startup
-(use-package emacs
-  :config
-  (if (display-graphic-p)
-      (setq initial-frame-alist
-            '(
-              (tool-bar-lines . 0)
-              (width . 116)
-              (fullscreen . fullheight)
-              (left . 0)
-              (top . 0)))))
 ;; * Built-in settings
 ;; ** don't ask for conformation when killing buffers with an attached process 
 (use-package emacs
