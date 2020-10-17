@@ -1,3 +1,5 @@
+;; -*- lexical-binding: t -*-
+
 ;; * garbage collection
 ;; ** beggining of startup
 (setq gc-cons-threshold most-positive-fixnum)
