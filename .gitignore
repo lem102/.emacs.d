@@ -5,6 +5,7 @@ server
 workspace
 url
 .cache
+eglot-eclipse-jdt-cache
 
 # Files in root directory
 bookmarks
