@@ -1,4 +1,4 @@
-;; -*- lexical-binding: t -*-
+;;; -*- lexical-binding: t -*-
 
 ;; * garbage collection
 ;; ** beggining of startup
