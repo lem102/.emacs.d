@@ -1,10 +1,26 @@
-(defmacro measure-time (&rest body)
-  `(let ((time (current-time)))
-     ,@body
-     (message "%.06f" (float-time (time-since time)))))
+;;; -*- lexical-binding: t -*-
 
+;; * garbage collection
+;; ** beggining of startup
+(setq gc-cons-threshold most-positive-fixnum)
+(setq gc-cons-percentage 0.6)
+;; ** end of startup
+(add-hook 'emacs-startup-hook
+          (lambda ()
+            (setq gc-cons-threshold 16777216) ; 16mb
+            (setq gc-cons-percentage 0.1)))
+;; ** while using the minibuffer
+(defun doom-defer-garbage-collection-h ()
+  (setq gc-cons-threshold most-positive-fixnum))
+
+(defun doom-restore-geabage-collection ()
+  (run-at-time
+   1 nil (lambda () (setq gc-cons-threshold 16777216))))
+
+(add-hook 'minibuffer-setup-hook #'doom-defer-garbage-collection-h)
+(add-hook 'minibuffer-exit-hook #'doom-restore-garbage-collection-h)
+;; * package.el
 (require 'package)
-
 (setq package-enable-at-startup nil)
 (add-to-list 'package-archives
 			 '("melpa" . "https://melpa.org/packages/"))
@@ -13,10 +29,6 @@
 (unless (package-installed-p 'use-package)
   (package-refresh-contents)
   (package-install 'use-package))
-
-;; go to the nice org file :)
-;; (require 'org)
-;; (org-babel-load-file (expand-file-name "~/.emacs.d/config.org"))
 
 ;; * Use-Package
 ;; Make sure use package is available.
@@ -105,21 +117,16 @@
   :defer 5
   :config
   (dimmer-mode))
-;; ** default frame size on startup
+;; * Built-in settings
+;; ** don't ask for conformation when killing buffers with an attached process 
 (use-package emacs
   :config
-  (if (display-graphic-p)
-      (setq initial-frame-alist
-            '(
-              (tool-bar-lines . 0)
-              (width . 116)
-              (fullscreen . fullheight)
-              (left . 0)
-              (top . 0)))))
-;; * Built-in settings
+  (setq kill-buffer-query-functions (delq 'process-kill-buffer-query-function kill-buffer-query-functions))
+  ;; this is for asking on exit
+  (setq confirm-kill-processes nil))
 ;; ** recentf
 (use-package recentf
-  :defer 0.1
+  :commands recentf-open-files
   :config
   (recentf-mode 1))
 ;; ** keyboard macros
@@ -279,7 +286,7 @@
 
 (defun jacob-config-reload ()
   (interactive)
-  (org-babel-load-file (expand-file-name "~/.emacs.d/config.org")))
+  (load-file (expand-file-name "~/.emacs.d/init.el")))
 
 (defun jacob-org-src-block ()
   "Replacement for C-c ' in both \"org-mode\" and when editing code blocks within \"org-mode\"."
@@ -402,7 +409,18 @@
 ;; will eventually be quite a busy section.
 ;; ** eglot
 (use-package eglot
-  :ensure t)
+  :ensure t
+  :config
+  (defconst jacob-eclipse-jdt-home "/home/lem/Documents/java/eclipse.jdt.ls/plugins/org.eclipse.equinox.launcher_1.5.700.v20200207-2156.jar")
+
+  (defun jacob-eglot-eclipse-jdt-contact (interactive)
+    "Contact with the jdt server input INTERACTIVE."
+    (let ((cp (getenv "CLASSPATH")))
+      (setenv "CLASSPATH" (concat cp ":" jacob-eclipse-jdt-home))
+      (unwind-protect (eglot--eclipse-jdt-contact nil)
+        (setenv "CLASSPATH" cp))))
+  (setcdr (assq 'java-mode eglot-server-programs) #'jacob-eglot-eclipse-jdt-contact)
+  :hook (java-mode-hook . eglot-ensure))
 ;; ** Base lsp-mode
 ;; *** lsp-mode
 (use-package lsp-mode
@@ -723,7 +741,7 @@
 
   :config
   (setq shell-pop-autocd-to-working-dir nil)
-  (setq shell-pop-shell-type (quote ("eshell" "*eshell*" (lambda nil (eshell)))))
+  ;; (setq shell-pop-shell-type (quote ("eshell" "*eshell*" (lambda nil (eshell)))))
   (setq shell-pop-universal-key "<H-return>")
   (setq shell-pop-window-position "bottom")
   (setq shell-pop-window-size 50)
@@ -737,12 +755,16 @@
 
   (defun jacob-shell-pop-shell ()
     (interactive)
-    (let ((shell-file-name "C:/Windows/System32/Cmd.exe")
+    (let ((shell-file-name (cond
+                            ((string-equal system-type "windows-nt")
+                             "C:/Windows/System32/Cmd.exe")
+                            ((string-equal system-type "gnu/linux")
+                             "/bin/bash")))
           (shell-pop-shell-type '("shell" "*shell*" (lambda () (shell))))
           (shell-pop-term-shell "shell"))
       (shell-pop--set-shell-type 'shell-pop-shell-type shell-pop-shell-type)
       (call-interactively 'shell-pop)))
-
+  
   :bind
   (:map xah-fly-n-keymap
         ("d" . jacob-shell-pop-eshell)
@@ -753,3 +775,13 @@
   :defer 1
   :config
   (amx-mode 1))
+;; ** dashboard
+(use-package dashboard
+  :ensure t
+  :config
+  (setq dashboard-items '((recents . 5)
+                          (bookmarks . 5)
+                          (projects . 5)
+                          (registers . 5)))
+  
+  (dashboard-setup-startup-hook))

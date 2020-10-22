@@ -1,22 +1,135 @@
-(setq disabled-command-function nil)
+;; Make sure use package is available.
+(unless (package-installed-p 'use-package)
+  (package-refresh-contents)
+  (package-install 'use-package))
 
-(if (display-graphic-p)
-    (setq initial-frame-alist
-          '(
-            (tool-bar-lines . 0)
-            (width . 116)
-            (fullscreen . fullheight)
-            (left . 0)
-            (top . 0))))
+;; Configure use-package prior to loading it.
+(eval-and-compile
+  (setq use-package-always-ensure nil)
+  (setq use-package-always-defer nil)
+  (setq use-package-always-demand nil)
+  (setq use-package-enable-imenu-support t)
+  ;; use real name of hook instead of shorter version.
+  (setq use-package-hook-name-suffix nil))
 
-(setq line-move-visual t)
+(eval-when-compile
+  (require 'use-package))
+
+(use-package emacs
+  :config
+  (load-file (expand-file-name "~/.emacs.d/config-local-settings.el")))
+
+(use-package emacs
+  :init
+  (tool-bar-mode -1)
+  (menu-bar-mode -1)
+  (scroll-bar-mode -1)
+  :config
+  (setq use-file-dialog nil)
+  (setq use-dialog-box t)
+  (setq inhibit-startup-message t)
+  :bind
+  (("C-z" . nil)
+   ("C-c C-z" . nil)
+   ("C-h h" . nil)))
+
+(use-package emacs
+  :disabled
+  :config
+  (load-theme 'manoj-dark t))
+
+(use-package color-theme-sanityinc-tomorrow
+  :ensure t
+  :defer 0.1
+  :config
+  (load-theme 'sanityinc-tomorrow-blue t))
+
+(use-package emacs
+  :config
+  (setq-default mode-line-format (list
+                                  ;; saved, readonly
+                                  "%*"
+                                  ;; major mode
+                                  "%m: "
+                                  ;; buffer name
+                                  "%b "
+                                  ;; position of point
+                                  "(%l,%c) ")))
+
+(use-package frame
+  :config
+  (let* ((default-font-size (font-get (face-attribute 'default :font) :height))
+         (default-font-family (font-get (face-attribute 'default :font) :family))
+         (font-name (concat (if jacob-font-family
+                                (format "%s" jacob-font-family)
+                              (format "%s" default-font-family))
+                            "-"
+                            (if jacob-font-size
+                                (format "%s" jacob-font-size)
+                              (format "%s" default-font-size)))))
+    (add-to-list 'default-frame-alist `(font . ,font-name))))
+
+(use-package beacon
+  :ensure t
+  :demand
+  :config
+  (beacon-mode 1))
+
+(use-package dimmer
+  :ensure t
+  :defer 5
+  :config
+  (dimmer-mode))
+
+(use-package emacs
+  :config
+  (if (display-graphic-p)
+      (setq initial-frame-alist
+            '(
+              (tool-bar-lines . 0)
+              (width . 116)
+              (fullscreen . fullheight)
+              (left . 0)
+              (top . 0)))))
+
+(use-package kmacro
+  :defer 0.1
+  :after xah-fly-keys
+  :bind
+  (:map xah-fly-r-keymap
+	("c" . kmacro-set-counter)))
+
+(use-package dabbrev
+  :config
+  (setq dabbrev-case-fold-search nil)
+  (setq dabbrev-case-replace nil)
+  :bind (("M-/" . dabbrev-expand)
+         ("C-M-/" . dabbrev-completion)))
+
+(use-package cus-edit
+  :config
+  (defvar prot/custom-file "~/.emacs.d/custom.el")
+  (setq custom-file prot/custom-file)
+  (defun prot/cus-edit ()
+    (let ((custom-file prot/custom-file))
+      (unless (file-exists-p custom-file)
+        (make-empty-file custom-file))
+      (load-file custom-file))))
+
+(use-package novice
+  :defer 0.1
+  :config
+  (setq disabled-command-function nil))
+
+(use-package simple
+  :defer 0.1
+  :config
+  (setq line-move-visual t))
 
 (setq ls-lisp-use-insert-directory-program nil)
 (setq ls-lisp-dirs-first t)
 
 (setq read-process-output-max (* 1024 1024))
-
-(setq inhibit-startup-message t)
 
 (setq auto-window-vscroll nil)
 (setq redisplay-dont-pause t)
@@ -26,18 +139,24 @@
 (setq scroll-conservatively 100)
 
 (use-package subword
-  :diminish
-  :hook (prog-mode . subword-mode))
+  :defer 0.1
+  :config (global-subword-mode))
 
-(delete-selection-mode 1)
+(use-package delsel
+  :defer 0.1
+  :config
+  (delete-selection-mode 1))
 
-(show-paren-mode 1)
+(use-package paren
+  :defer 0.1
+  :config
+  (show-paren-mode 1))
 
-(setq make-backup-files nil)
-
-(setq auto-save-default nil)
-
-(setq create-lockfiles nil)
+(use-package emacs
+  :config
+  (setq make-backup-files nil)
+  (setq auto-save-default nil)
+  (setq create-lockfiles nil))
 
 (setq backup-by-copying t)
 
@@ -47,7 +166,19 @@
 
 (add-to-list 'load-path "~/.emacs.d/lisp/")
 
-(savehist-mode 1)
+(use-package savehist
+  :defer 0.1
+  :config
+  (setq savehist-file "~/.emacs.d/savehist")
+  (setq history-length 1000)
+  (setq history-delete-duplicates t)
+  (setq savehist-save-minibuffer-history t))
+
+(use-package saveplace
+  :config
+  (setq save-place-file "~/.emacs.d/saveplace")
+  (setq save-place-forget-unreadable-files t)
+  (save-place-mode 1))
 
 (add-hook 'emacs-startup-hook
           (lambda ()
@@ -57,18 +188,30 @@
                               (time-subtract after-init-time before-init-time)))
                      gcs-done)))
 
-(setq w32-pass-rwindow-to-system nil
-	      w32-rwindow-modifier 'super)
+(if (string-equal system-type "windows-nt")
+    (use-package emacs
+      :config
+      (setq w32-pass-rwindow-to-system nil)
+      (setq w32-pass-apps-to-system nil)
+      (setq w32-rwindow-modifier 'super)
+      (setq w32-apps-modifier 'hyper)))
 
-(setq w32-pass-apps-to-system nil)
-(setq w32-apps-modifier 'hyper)
+(use-package emacs
+  :config
+  ;; use spaces to indent
+  (setq-default indent-tabs-mode nil)
+  ;; set default tab char's display width to 4 spaces
+  (setq-default tab-width 4)
+  ;; make tab key call indent command or insert tab character, depending on cursor position
+  (setq-default tab-always-indent 'complete))
 
-;; use spaces to indent
-(setq-default indent-tabs-mode nil)
-;; set default tab char's display width to 4 spaces
-(setq-default tab-width 4)
-;; make tab key call indent command or insert tab character, depending on cursor position
-(setq-default tab-always-indent t)
+(defun jacob-original-find-file ()
+  "Uses the original file-file mechanism. 
+Useful for dealing with files on other servers.
+(at least on Microsoft Windows)"
+  (interactive)
+  (let ((completing-read-function 'completing-read-default))
+    (call-interactively 'find-file)))
 
 (defun eval-and-replace ()
   "Replace the preceding sexp with its value."
@@ -100,11 +243,11 @@
   (with-current-buffer buffer-or-string
      major-mode))
 
-(defun config-visit ()
+(defun jacob-config-visit ()
   (interactive)
   (find-file "~/.emacs.d/config.org"))
 
-(defun config-reload ()
+(defun jacob-config-reload ()
   (interactive)
   (org-babel-load-file (expand-file-name "~/.emacs.d/config.org")))
 
@@ -134,6 +277,19 @@
   (split-window-right)
   (other-window 1))
 
+(load-file (expand-file-name "~/.emacs.d/myLisp/jacob-long-time.el"))
+
+(defun jacob-display-time ()
+  "Display the current date and time in the echo area."
+  (interactive)
+  (message (concat (format-time-string "%A the %e")
+                   (jacob-day-suffix (string-to-number (format-time-string "%e")))
+                   (format-time-string " of %B, the year of our Lord %Y, ")
+                   "at "
+                   (jacob-long-time (string-to-number (format-time-string "%H"))
+                                    (string-to-number (format-time-string "%M")))
+                   ".")))
+
 (use-package xah-fly-keys
   :ensure t
 
@@ -158,7 +314,7 @@
     (define-key xah-fly-key-map (kbd "8") 'er/expand-region)
     (define-key xah-fly-key-map (kbd "4") 'jacob-split-window-below-select-new)
     ;; 1 can be rebound, is bound to a inferior version of expand region
-    (define-key xah-fly-key-map (kbd "2") 'jacob-quit-popup-window)) 
+    (define-key xah-fly-key-map (kbd "2") 'jacob-quit-popup-window))
 
   :config
   (load-file (expand-file-name "~/.emacs.d/myLisp/jacob-xah-modified-commands.el"))
@@ -179,12 +335,12 @@
 
   :bind
   (:map jacob-config-keymap
-        ("r" . config-reload)
+        ("r" . jacob-config-reload)
         ("R" . restart-emacs)
-        ("e" . config-visit)
+        ("e" . jacob-config-visit)
         ("c" . jacob-org-src-block)
         ("p" . jacob-recompile-packages)
-        ("t" . jacob-long-time-toggle))
+        ("t" . jacob-display-time))
   (:map xah-fly-e-keymap
         ("k". jacob-xah-insert-paren)
         ("l". jacob-xah-insert-square-bracket)
@@ -210,8 +366,8 @@
 (use-package lsp-mode
   :ensure t
   :hook
-  ((java-mode python-mode) . lsp)
-  (lsp-mode . lsp-enable-which-key-integration)
+  ((java-mode-hook python-mode-hook php-mode-hook) . lsp)
+  (lsp-mode-hook . lsp-enable-which-key-integration)
   :commands lsp
   :init
   (setq lsp-completion-enable-additional-text-edit nil)
@@ -230,7 +386,7 @@
 
 (use-package dap-mode
   :ensure t
-  :hook java-mode
+  :hook java-mode-hook
   :config
   (use-package dap-java)
   (dap-mode 1)
@@ -276,14 +432,43 @@
         ("f" . dired-toggle-read-only)
         ("q" . xah-close-current-buffer)))
 
+(use-package php-mode
+  :ensure t)
+
+(use-package elisp-mode
+  :config
+  (defun contrib/completing-read-in-region (start end collection &optional predicate)
+    "Prompt for completion of region in the minibuffer if non-unique.
+  Use as a value for `completion-in-region-function'."
+    (if (and (minibufferp) (not (string= (minibuffer-prompt) "Eval: ")))
+        (completion--in-region start end collection predicate)
+      (let* ((initial (buffer-substring-no-properties start end))
+             (limit (car (completion-boundaries initial collection predicate "")))
+             (all (completion-all-completions initial collection predicate
+                                              (length initial)))
+             (completion (cond
+                          ((atom all) nil)
+                          ((and (consp all) (atom (cdr all)))
+                           (concat (substring initial 0 limit) (car all)))
+                          (t (completing-read
+                              "Completion: " collection predicate t initial)))))
+        (if (null completion)
+            (progn (message "No completion") nil)
+          (delete-region start end)
+          (insert completion)
+          t))))
+
+  (setq completion-in-region-function #'contrib/completing-read-in-region))
+
 (use-package bnf-mode
   :ensure t)
 
 (use-package org
   :mode ("\\.org\\'" . org-mode)
   :config
+  (setq-default yas-indent-line 'fixed)
   (add-to-list 'org-structure-template-alist
-             '("el" "#+BEGIN_SRC emacs-lisp\n?\n#+END_SRC")))
+               '("el" "#+BEGIN_SRC emacs-lisp\n?\n#+END_SRC")))
 
 (use-package yaml-mode
   :ensure t
@@ -294,7 +479,6 @@
 
 (use-package csharp-mode
   :ensure t
-  :defer t
   :config
   (defun my-csharp-mode-setup ()
     (setq c-syntactic-indentation t)
@@ -302,7 +486,7 @@
     (setq c-basic-offset 4)
     (load-file "~/.emacs.d/myLisp/namespace.el"))
   :hook
-  (csharp-mode . my-csharp-mode-setup)
+  (csharp-mode-hook . my-csharp-mode-setup)
   :mode
   ("\\.cs\\$" . csharp-mode))
 
@@ -322,7 +506,7 @@
   (setq web-mode-css-indent-offset 2)
   (setq web-mode-code-indent-offset 2)
 
-  :hook (web-mode . jacob-web-mode-config)
+  :hook (web-mode-hook . jacob-web-mode-config)
 
   :mode (("\\.html?\\'" . web-mode)
          ("\\.cshtml\\'" . web-mode)
@@ -332,84 +516,87 @@
   :ensure t
   :mode ("\\.json\\$" . json-mode))
 
-(use-package clojure-mode
-  :ensure t
-  :mode ("\\.clj\\$" . clojure-mode))
-
 (use-package flycheck
   :ensure t
   :defer 2
   :config
+  (setq-default flycheck-disabled-checkers '(emacs-lisp-checkdoc))
   (global-flycheck-mode))
 
-(use-package beacon
-  :ensure t
-  :demand
-  :diminish
-  :config
-  (setq beacon-color "#f2777a")
-  (beacon-mode 1))
-
 (use-package which-key
-      :ensure t
+  :ensure t
   :defer 2
-      :diminish
-      :config
-      (which-key-mode))
+  :config
+  (which-key-mode))
 
 (use-package company
   :ensure t
   :defer t
-  :diminish
-  :hook ((emacs-lisp-mode csharp-mode java-mode) . company-mode)
+  :hook ((csharp-mode-hook java-mode-hook) . company-mode)
   :config
   (setq company-idle-delay 0.5)
   (setq company-minimum-prefix-length 3))
 
+(use-package company-php
+  :ensure t
+  :config
+  (add-to-list (make-local-variable 'company-backends)
+               '(company-ac-php-backend)))
+
 (use-package projectile
   :ensure t
   :defer 2
-  :diminish
   :config
   (projectile-mode t)
   (define-key xah-fly-dot-keymap (kbd "p") projectile-command-map)
   (setq projectile-completion-system 'ivy))
 
-(use-package dimmer
-      :ensure t
-  :defer 5
-      :config
-      (dimmer-mode))
-
+;; FIXME: if company mode is not started before csharp mode is entered, omnisharp mode will not activate
 (use-package omnisharp
-   :ensure t
-   :defer t
-   :after company
-   :hook (csharp-mode . omnisharp-mode)
-   :bind
-   (:map jacob-omnisharp-keymap
-         ("u" . omnisharp-fix-usings)
-         ("U" . omnisharp-find-usages)
-         ("i" . omnisharp-find-implementations)
-         ("d" . omnisharp-go-to-definition)
-         ("r" . omnisharp-rename)
-         ("a" . omnisharp-run-code-action-refactoring)
-         ("o" . omnisharp-start-omnisharp-server)
-         ("O" . omnisharp-stop-server))
-   :config
-   (define-prefix-command 'jacob-omnisharp-keymap)
-   (define-key xah-fly-dot-keymap (kbd "o") jacob-omnisharp-keymap)
-   (add-hook 'omnisharp-mode-hook (lambda ()
-                                    (add-to-list (make-local-variable 'company-backends)
-                                                 '(company-omnisharp))))
-   (setq omnisharp-company-ignore-case nil)
-   (setq omnisharp-server-executable-path "D:\\Programming\\OmniSharp\\omnisharp-roslyn\\bin\\Debug\\OmniSharp.Stdio.Driver\\net472\\OmniSharp.exe"))
+  :ensure t
+  :defer t
+  :bind
+  (:map jacob-omnisharp-keymap
+        ("u" . omnisharp-fix-usings)
+        ("U" . omnisharp-find-usages)
+        ("i" . omnisharp-find-implementations)
+        ("d" . omnisharp-go-to-definition)
+        ("r" . omnisharp-rename)
+        ("a" . omnisharp-run-code-action-refactoring)
+        ("o" . omnisharp-start-omnisharp-server)
+        ("O" . omnisharp-stop-server))
+  :config
+  ;; at this point, company mode is enabled.
+  (define-prefix-command 'jacob-omnisharp-keymap)
+  (define-key xah-fly-dot-keymap (kbd "o") jacob-omnisharp-keymap)
+
+  (setq omnisharp-company-ignore-case nil)
+  (setq omnisharp-server-executable-path (expand-file-name jacob-omnisharp-file-path))
+
+  (defun jacob-csharp-indent-or-complete ()
+    (interactive)
+    (if (region-active-p)
+        (c-indent-line-or-region :region (region-bounds))
+      (let ((old-point (point)))
+        (c-indent-line-or-region)
+        (if (eq old-point (point))
+            (call-interactively 'counsel-company)))))
+
+  (define-key csharp-mode-map (kbd "<tab>") 'jacob-csharp-indent-or-complete)
+  :hook (csharp-mode-hook . omnisharp-mode))
+
+(use-package emacs
+  :after company omnisharp
+  :config
+  (add-hook 'omnisharp-mode-hook (lambda ()
+                                   (add-to-list (make-local-variable 'company-backends)
+                                                '(company-omnisharp)))))
 
 (use-package yasnippet
   :ensure t
 
   :hook
-  (((csharp-mode web-mode python-mode java-mode) . yas-minor-mode))
+  (((web-mode-hook python-mode-hook java-mode-hook csharp-mode-hook php-mode-hook) . yas-minor-mode))
 
   :config
   (yas-reload-all))
@@ -420,10 +607,11 @@
   :config
   (key-chord-mode 1))
 
-(use-package cider
-  :diminish
-  :ensure t
-  :mode ("\\.clj\\$" . clojure-mode))
+(use-package outshine
+  :ensure t)
+
+(use-package try
+  :ensure t)
 
 (use-package avy
   :ensure t
@@ -435,102 +623,51 @@
         '((avy-goto-char-timer . avy-order-closest)
           (avy-goto-end-of-line . avy-order-closest)))
   (key-chord-define xah-fly-key-map "fj" 'avy-goto-word-or-subword-1)
-  (key-chord-define xah-fly-key-map "f;" 'avy-goto-end-of-line))
-
-(use-package minibuffer-line
-  :ensure t
-  :init
-  (minibuffer-line-mode)
-  :config
-  (load "~/.emacs.d/myLisp/jacob-long-time")
-
-  (set-face-attribute 'minibuffer-line nil :foreground "#ffffff" :background "#002451")
-
-  (setq-default minibuffer-line-format (list
-                                ;; date
-                                '(:eval (concat (format-time-string "%A the %e")
-                                                (jacob-day-suffix (string-to-number (format-time-string "%e")))
-                                                (format-time-string " of %B %Y, ")))
-                                ;; time
-                                '(:eval (concat "at "
-                                                (jacob-long-time (string-to-number (format-time-string "%H")) (string-to-number (format-time-string "%M")))))))
-  (face-remap-reset-base 'minibuffer-line)
-  (minibuffer-line--update))
+  (key-chord-define xah-fly-key-map "fk" 'avy-goto-end-of-line))
 
 (use-package restart-emacs
-      :ensure t
-      :defer t)
-
-(use-package smex
   :ensure t
-  :config (smex-initialize)
-  :bind
-  ("M-x" . smex))
-
-(use-package diminish
-      :ensure t
-      :defer t
-      :config
-      (diminish 'subword-mode)
-      (diminish 'org-src-mode)
-      (diminish 'eldoc-mode))
+  :defer t)
 
 (use-package switch-window
-      :ensure t
-      :defer t
-      :config
-      (setq switch-window-input-style 'minibuffer)
-      (setq switch-window-threshold 2)
-      (setq switch-window-multiple-frames t)
-      (setq switch-window-shortcut-style 'qwerty)
-      (setq switch-window-qwerty-shortcuts
+  :ensure t
+  :defer t
+  :config
+  (setq switch-window-input-style 'minibuffer)
+  (setq switch-window-threshold 2)
+  (setq switch-window-multiple-frames t)
+  (setq switch-window-shortcut-style 'qwerty)
+  (setq switch-window-qwerty-shortcuts
 		'("q" "w" "e" "r" "a" "s" "d" "f" "z" "x" "c" "v"))
-      :bind
-      ([remap xah-next-window-or-frame] . switch-window))
+  :bind
+  ([remap xah-next-window-or-frame] . switch-window))
 
 (use-package ivy
   :ensure t
-  :diminish
   :defer 0.1
-
-  :bind
-  (:map xah-fly-leader-key-map
-        ("v" . counsel-yank-pop))
-
   :config
   (setq ivy-initial-inputs-alist nil)
   (setq enable-recursive-minibuffers t)
-  (ivy-mode 1))
+  (setq completing-read-function 'ivy-completing-read)
+  :bind
+  (:map xah-fly-c-keymap
+        ("e" . counsel-find-file))
+  (:map xah-fly-dot-keymap
+        ("s" . swiper))
+  (:map xah-fly-h-keymap
+        ("j" . counsel-describe-function)
+        ("l" . counsel-describe-variable))
+  (:map xah-fly-leader-key-map
+        ("v" . counsel-yank-pop)
+        ("f" . ivy-switch-buffer)))
 
 (use-package swiper
   :ensure t
-  :after ivy
-  :bind
-  (:map xah-fly-dot-keymap
-        ("s" . swiper)))
+  :after ivy)
 
 (use-package counsel
   :ensure t
-  :diminish
-  :after ivy
-
-  :config (counsel-mode)
-  :bind
-  (:map xah-fly-c-keymap
-        ("e" . counsel-find-file)))
-
-(use-package multiple-cursors
-      :ensure t
-      :bind
-      (:map xah-fly-dot-keymap
-		("m" . jacob-multiple-cursors-keymap)
-      :map jacob-multiple-cursors-keymap
-		("l" . mc/edit-lines)
-		(">" . mc/mark-next-like-this)
-		("<" . mc/mark-previous-like-this)
-		("a" . mc/mark-all-like-this))
-      :init
-      (define-prefix-command 'jacob-multiple-cursors-keymap))
+  :after ivy)
 
 (use-package expand-region
   :ensure t
@@ -568,38 +705,7 @@
         ("d" . jacob-shell-pop-eshell)
         ("f" . jacob-shell-pop-shell)))
 
-(use-package eshell-up
-      :ensure t)
-
-(use-package langtool
-      ;; :ensure t
-      :defer t
-      :config
-      (setq langtool-language-tool-jar
-		"/home/lem/Documents/LanguageTool-4.8/languagetool-commandline.jar"))
-
-(use-package color-theme-sanityinc-tomorrow
+(use-package amx
   :ensure t
-  :defer 0.1
   :config
-  (load-theme 'sanityinc-tomorrow-blue t))
-
-(setq-default mode-line-format (list
-                                ;; saved, readonly
-                                "%*"
-                                ;; major mode
-                                "%m: "
-                                ;; buffer name
-                                "%b "
-                                ;; position of point
-                                "(%l,%c) "))
-
-(tool-bar-mode -1)
-
-(menu-bar-mode -1)
-
-(scroll-bar-mode -1)
-
-(when (member "DejaVu Sans Mono" (font-family-list))
-	(add-to-list 'initial-frame-alist '(font . "DejaVu Sans Mono-10"))
-	(add-to-list 'default-frame-alist '(font . "DejaVu Sans Mono-10")))
+  (amx-mode 1))

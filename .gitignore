@@ -4,6 +4,8 @@ auto-save-list
 server
 workspace
 url
+.cache
+eglot-eclipse-jdt-cache
 
 # Files in root directory
 bookmarks
@@ -17,3 +19,10 @@ projectile.cache
 recentf
 smex-items
 Thumbs.db
+savehist
+saveplace
+amx-items
+custom.el
+
+# Ignore all .elc (byte-compiled emacs lisp) files
+*.elc
