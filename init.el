@@ -567,7 +567,7 @@
 
 (use-package company-php
   :ensure t
-  :hook php-mode-hook
+  :after company
   :config
   (add-to-list (make-local-variable 'company-backends)
                '(company-ac-php-backend)))
