@@ -426,7 +426,7 @@
 (use-package lsp-mode
   :ensure t
   :hook
-  ((python-mode-hook php-mode-hook) . lsp)
+  ((php-mode-hook) . lsp)
   (lsp-mode-hook . lsp-enable-which-key-integration)
   :commands lsp
   :init
