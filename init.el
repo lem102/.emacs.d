@@ -680,7 +680,7 @@
   (setq avy-orders-alist '((avy-goto-end-of-line . avy-order-closest)
                            (avy-goto-word-or-subword-1 . avy-order-closest)))
   (setq avy-all-windows 'all-frames)
-  (key-chord-define-global "fj" 'avy-goto-word-or-subword-1)
+  (key-chord-define-global "fj" 'avy-goto-char)
   (key-chord-define-global "fk" 'avy-goto-end-of-line))
 ;; ** restart-emacs
 (use-package restart-emacs
