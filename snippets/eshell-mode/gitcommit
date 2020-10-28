@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: git commit
+# key: com
+# --
+git commit -m "$1"$0
