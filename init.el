@@ -63,7 +63,8 @@
 
   (setq use-file-dialog nil)
   (setq use-dialog-box t)
-  (setq inhibit-startup-message t)
+  (setq inhibit-startup-message nil)
+  
   :bind
   (("C-z" . nil)
    ("C-c C-z" . nil)
@@ -165,7 +166,7 @@
 (setq read-process-output-max (* 1024 1024))
 ;; ** Reduce lag
 (setq auto-window-vscroll nil)
-(setq redisplay-dont-pause t)
+(setq redisplay-dont-pause t) ; obsolete
 ;; ** Stop the bell ringing all the time
 (setq ring-bell-function 'ignore)
 ;; ** Prevent the view of the screen jumping to the middle when scrolling out of the view.
@@ -777,13 +778,3 @@
   :defer 1
   :config
   (amx-mode 1))
-;; ** dashboard
-(use-package dashboard
-  :ensure t
-  :config
-  (setq dashboard-items '((recents . 5)
-                          (bookmarks . 5)
-                          (projects . 5)
-                          (registers . 5)))
-  
-  (dashboard-setup-startup-hook))
