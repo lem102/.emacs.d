@@ -3,6 +3,16 @@ Hello and welcome to snippets central, home to all snippets in this config. (eve
 This document makes use of org-babel src blocks to create various snippets and associated files for use with the yasnippet minor mode by "tangling" them from the many src blocks below.
 
 * Snippets
+** eshell-mode
+*** gitcommit
+#+BEGIN_SRC snippet :tangle ./eshell-mode/gitcommit
+  # -*- mode: snippet -*-
+  # name: git commit
+  # key: com
+  # --
+  git commit -m "$1"$0
+#+END_SRC
+
 ** cc-mode
 *** if statement
 #+BEGIN_SRC snippet :tangle ./cc-mode/if

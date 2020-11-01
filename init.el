@@ -13,7 +13,7 @@
 (defun doom-defer-garbage-collection-h ()
   (setq gc-cons-threshold most-positive-fixnum))
 
-(defun doom-restore-geabage-collection ()
+(defun doom-restore-garbage-collection-h ()
   (run-at-time
    1 nil (lambda () (setq gc-cons-threshold 16777216))))
 
@@ -63,7 +63,8 @@
 
   (setq use-file-dialog nil)
   (setq use-dialog-box t)
-  (setq inhibit-startup-message t)
+  (setq inhibit-startup-message nil)
+  
   :bind
   (("C-z" . nil)
    ("C-c C-z" . nil)
@@ -165,7 +166,7 @@
 (setq read-process-output-max (* 1024 1024))
 ;; ** Reduce lag
 (setq auto-window-vscroll nil)
-(setq redisplay-dont-pause t)
+(setq redisplay-dont-pause t) ; obsolete
 ;; ** Stop the bell ringing all the time
 (setq ring-bell-function 'ignore)
 ;; ** Prevent the view of the screen jumping to the middle when scrolling out of the view.
@@ -426,7 +427,7 @@
 (use-package lsp-mode
   :ensure t
   :hook
-  ((python-mode-hook php-mode-hook) . lsp)
+  ((php-mode-hook) . lsp)
   (lsp-mode-hook . lsp-enable-which-key-integration)
   :commands lsp
   :init
@@ -545,14 +546,16 @@
 
   :config
   (setq web-mode-engines-alist
-        '(("razor"	. "\\.cshtml\\'")))
+        '(("razor"	. "\\.cshtml\\'")
+          ("blade" . "\\.blade.php\\'")))
   (setq web-mode-markup-indent-offset 2)
   (setq web-mode-css-indent-offset 2)
   (setq web-mode-code-indent-offset 2)
 
   :hook (web-mode-hook . jacob-web-mode-config)
 
-  :mode (("\\.html?\\'" . web-mode)
+  :mode (("\\.blade.php\\'" . web-mode)
+         ("\\.html?\\'" . web-mode)
          ("\\.cshtml\\'" . web-mode)
          ("\\.css\\'" . web-mode)))
 ;; ** json-mode
@@ -585,7 +588,7 @@
 
 (use-package company-php
   :ensure t
-  :hook php-mode-hook
+  :after company
   :config
   (add-to-list (make-local-variable 'company-backends)
                '(company-ac-php-backend)))
@@ -645,7 +648,7 @@
   :ensure t
 
   :hook
-  (((web-mode-hook python-mode-hook java-mode-hook csharp-mode-hook php-mode-hook) . yas-minor-mode))
+  (((eshell-mode-hook web-mode-hook python-mode-hook java-mode-hook csharp-mode-hook php-mode-hook) . yas-minor-mode))
 
   :config
   (yas-reload-all))
@@ -678,7 +681,7 @@
   (setq avy-orders-alist '((avy-goto-end-of-line . avy-order-closest)
                            (avy-goto-word-or-subword-1 . avy-order-closest)))
   (setq avy-all-windows 'all-frames)
-  (key-chord-define-global "fj" 'avy-goto-word-or-subword-1)
+  (key-chord-define-global "fj" 'avy-goto-char)
   (key-chord-define-global "fk" 'avy-goto-end-of-line))
 ;; ** restart-emacs
 (use-package restart-emacs
@@ -775,13 +778,3 @@
   :defer 1
   :config
   (amx-mode 1))
-;; ** dashboard
-(use-package dashboard
-  :ensure t
-  :config
-  (setq dashboard-items '((recents . 5)
-                          (bookmarks . 5)
-                          (projects . 5)
-                          (registers . 5)))
-  
-  (dashboard-setup-startup-hook))
