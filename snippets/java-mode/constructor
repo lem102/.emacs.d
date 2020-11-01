@@ -1,9 +1,8 @@
-# -*- mode: snippet; require-final-newline: nil -*-
-# name: constructor
-# key: c
+# -*- mode: snippet -*-
+# name: jacob constructor ....;
+# key: cons
 # --
-public ${1:`(file-name-base
-              (or (buffer-file-name)
-                  (buffer-name)))`}($2) {
-       $0
+public `(file-name-sans-extension (file-name-nondirectory (buffer-file-name)))`($1)
+{
+    $0
 }

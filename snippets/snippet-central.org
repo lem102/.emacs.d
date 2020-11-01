@@ -259,3 +259,14 @@ This document makes use of org-babel src blocks to create various snippets and a
   # --
   System.out.println(${1:"Hello, World."});$0
 #+END_SRC
+*** constructor
+#+BEGIN_SRC snippet :tangle ./java-mode/constructor
+  # -*- mode: snippet -*-
+  # name: jacob constructor ....;
+  # key: cons
+  # --
+  public `(file-name-sans-extension (file-name-nondirectory (buffer-file-name)))`($1)
+  {
+      $0
+  }
+#+END_SRC
