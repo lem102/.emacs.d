@@ -243,6 +243,16 @@
   ;; make tab key call indent command or insert tab character, depending on cursor position
   (setq-default tab-always-indent 'complete))
 ;; * Personal Functions
+(defun jacob-count-words-region ()
+  "If mark active count words in region, otherwise count words in whole buffer."
+  (interactive)
+  (if mark-active
+      (call-interactively 'count-words-region)
+    (let ((current-prefix-arg t))
+      (call-interactively 'count-words-region))))
+
+(define-key global-map (kbd "M-=") 'jacob-count-words-region)
+
 (defun jacob-original-find-file ()
   "Uses the original file-file mechanism.
   Useful for dealing with files on other servers.
