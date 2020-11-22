@@ -508,7 +508,7 @@
 
   (add-hook 'org-babel-post-tangle-hook 'jacob-org-babel-tangle-delete-newline)
 
-  (setq-default yas-indent-line 'fixed)
+  (setq-default yas-indent-line 'auto)  ; used to be set to 'fixed, not sure why. auto allows for us to not worry about indenting when we are doing else if.
   (add-to-list 'org-structure-template-alist
                '("el" "#+BEGIN_SRC emacs-lisp\n?\n#+END_SRC")))
 
