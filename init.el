@@ -510,7 +510,9 @@
 
   (setq-default yas-indent-line 'auto)  ; used to be set to 'fixed, not sure why. auto allows for us to not worry about indenting when we are doing else if.
   (add-to-list 'org-structure-template-alist
-               '("el" "#+BEGIN_SRC emacs-lisp\n?\n#+END_SRC")))
+               '("el" "#+BEGIN_SRC emacs-lisp\n?\n#+END_SRC"))
+
+  (setq org-latex-pdf-process (list "latexmk -pdf %f"))) ; probably requires texlive
 
 ;; ** yaml-Mode
 (use-package yaml-mode
