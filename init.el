@@ -574,6 +574,10 @@
 (use-package json-mode
   :ensure t
   :mode ("\\.json\\$" . json-mode))
+;; ** ahk-mode
+(use-package ahk-mode
+  :ensure t
+  :mode ("\\.ahk\\$" . ahk-mode))
 ;; * Minor Mode Packages
 ;; ** flycheck
 (use-package flycheck
