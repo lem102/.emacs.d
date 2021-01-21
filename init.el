@@ -243,6 +243,16 @@
   ;; make tab key call indent command or insert tab character, depending on cursor position
   (setq-default tab-always-indent 'complete))
 ;; * Personal Functions
+(defun jacob-insert-camel-case ()
+  "ask for input, apply camel case to input and insert at point."
+  (interactive)
+  (let* ((input (read-string "enter words to be camel cased:"))
+         (input-list (split-string input " ")))
+    (insert (concat (car input-list)
+                    (mapconcat 'capitalize
+                               (cdr input-list)
+                               "")))))
+
 (defun jacob-count-words-region ()
   "If mark active count words in region, otherwise count words in whole buffer."
   (interactive)
@@ -422,7 +432,7 @@
 (use-package eglot
   :ensure t
   :config
-  (defconst jacob-eclipse-jdt-home "/home/lem/Documents/java/eclipse.jdt.ls/plugins/org.eclipse.equinox.launcher_1.5.700.v20200207-2156.jar")
+  (defconst jacob-eclipse-jdt-home "/home/lem/Documents/java/java-language-server/plugins/org.eclipse.equinox.launcher_1.5.700.v20200207-2156.jar")
 
   (defun jacob-eglot-eclipse-jdt-contact (interactive)
     "Contact with the jdt server input INTERACTIVE."
