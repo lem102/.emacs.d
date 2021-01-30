@@ -1,29 +1,28 @@
 ;;; -*- lexical-binding: t -*-
 
+;; essential
 (jacob-load "jacob-init-garbage-collection.el")
 (jacob-load "jacob-init-startup-time.el")
 (jacob-load "jacob-init-package.el")
 (jacob-load "jacob-init-use-package.el")      ; one day i should be able to remove this package from my config.
 (jacob-load "jacob-init-environment-setup.el")
+
+;; keybinding
+(jacob-load "jacob-init-xah-fly-keys.el")
+(jacob-load "jacob-init-tabs.el")
+
+;; user interface
 (jacob-load "jacob-init-gui-components.el")
 (jacob-load "jacob-init-theme.el")
 (jacob-load "jacob-init-modeline.el")
 (jacob-load "jacob-init-fonts.el")
 
-;; third party (why are these up here?)
-(jacob-load "jacob-init-beacon.el")           ; another one to be removed. I want to replace this with the pulse.el library.
-(jacob-load "jacob-init-dimmer.el")
-
 ;; miscellaneous settings
 (jacob-load "jacob-init-misc.el")
-
 (jacob-load "jacob-init-windows.el")
-
-(jacob-load "jacob-init-tabs.el")
 (jacob-load "jacob-init-personal-functions.el")
 
-(jacob-load "jacob-init-xah-fly-keys.el")
-
+;; language server protocol related. when lsp-mode is gone, eglot can join its friends in the minor mode section.
 (jacob-load "jacob-init-eglot.el")
 (jacob-load "jacob-init-lsp-mode.el")         ; to be deprecated, use eglot only!!!
 
@@ -40,16 +39,20 @@
 (jacob-load "jacob-init-web-mode.el")         ; also important, as is used for editing razor templates
 (jacob-load "jacob-init-json-mode.el")        ; will also come in
 (jacob-load "jacob-init-ahk-mode.el")         ; almost certainly pointless
+
 ;; Minor Mode Packages
+(jacob-load "jacob-init-beacon.el")           ; another one to be removed. I want to replace this with the pulse.el library.
+(jacob-load "jacob-init-dimmer.el")
 (jacob-load "jacob-init-flycheck.el")
 (jacob-load "jacob-init-which-key.el")
-(jacob-load "jacob-init-company.el")          ; i would like to not have to use this anymore.
+(jacob-load "jacob-init-company.el")          ; i would like to not have to use this anymore. an alternative is needed.
 (jacob-load "jacob-init-projectile.el")
 (jacob-load "jacob-init-omnisharp.el")        ; a disgusting, hot mess. need to follow major mode instructions above. will replace with eglot when able.
 (jacob-load "jacob-init-yasnippet.el")        ; another example of a mode that should only be turned on in the major mode it is required in.
 (jacob-load "jacob-init-key-chord.el")
 (jacob-load "jacob-init-outshine.el")         ; no longer needed
 (jacob-load "jacob-init-olivetti.el")
+
 ;; Non-mode Packages
 (jacob-load "jacob-init-try.el")
 (jacob-load "jacob-init-avy.el")
