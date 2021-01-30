@@ -1,2 +1,4 @@
-(add-to-list 'load-path (expand-file-name "jacob-init" user-emacs-directory))
-(load "jacob-init-start.el")
+(defun jacob-load (filename)
+  (load (concat user-emacs-directory "jacob-init/" filename) nil 'nomessage))
+
+(jacob-load "jacob-init-start.el")

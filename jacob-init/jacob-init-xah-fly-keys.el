@@ -72,4 +72,6 @@
   (:map xah-fly-w-keymap
         ("n" . eval-and-replace))
   (:map xah-fly-t-keymap
-        ("j" . kill-this-buffer)))
+        ("j" . kill-this-buffer))
+  (:map xah-fly-r-keymap
+        ("c" . kmacro-set-counter)))
