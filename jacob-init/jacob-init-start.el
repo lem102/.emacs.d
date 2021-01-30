@@ -38,7 +38,6 @@
 (jacob-load "jacob-init-csharp-mode.el")      ; needs urgent review, this is my job language lolololol
 (jacob-load "jacob-init-web-mode.el")         ; also important, as is used for editing razor templates
 (jacob-load "jacob-init-json-mode.el")        ; will also come in
-(jacob-load "jacob-init-ahk-mode.el")         ; almost certainly pointless
 
 ;; Minor Mode Packages
 (jacob-load "jacob-init-beacon.el")           ; another one to be removed. I want to replace this with the pulse.el library.
