@@ -28,7 +28,7 @@
 
 ;; Major Mode Packages
 ;; all major mode packages need major review. need a writing style setup. activate necessary minor modes within appropriate major mode config, not in own minor mode config.
-(jacob-load "jacob-init-php-mode.el")
+(jacob-load "jacob-init-php-mode.el")         ; will not be needed any more.
 (jacob-load "jacob-init-elisp-mode.el")
 (jacob-load "jacob-init-bnf-mode.el")         ; probably uneeded
 (jacob-load "jacob-init-org-mode.el")
@@ -50,7 +50,6 @@
 (jacob-load "jacob-init-omnisharp.el")        ; a disgusting, hot mess. need to follow major mode instructions above. will replace with eglot when able.
 (jacob-load "jacob-init-yasnippet.el")        ; another example of a mode that should only be turned on in the major mode it is required in.
 (jacob-load "jacob-init-key-chord.el")
-(jacob-load "jacob-init-outshine.el")         ; no longer needed
 (jacob-load "jacob-init-olivetti.el")
 
 ;; Non-mode Packages
