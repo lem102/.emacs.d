@@ -21,4 +21,6 @@
           (insert completion)
           t))))
 
-  (setq completion-in-region-function #'contrib/completing-read-in-region))
+  (setq completion-in-region-function #'contrib/completing-read-in-region)
+
+  (flycheck-mode 1))
