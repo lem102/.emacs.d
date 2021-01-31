@@ -40,7 +40,6 @@
 (jacob-load "jacob-init-json-mode.el")        ; will also come in
 
 ;; Minor Mode Packages
-(jacob-load "jacob-init-beacon.el")           ; another one to be removed. I want to replace this with the pulse.el library.
 (jacob-load "jacob-init-dimmer.el")
 (jacob-load "jacob-init-flycheck.el")
 (jacob-load "jacob-init-which-key.el")
