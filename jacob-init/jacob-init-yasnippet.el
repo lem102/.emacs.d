@@ -1,6 +1,5 @@
 (use-package yasnippet
   :ensure t
-  :hook
-  (((eshell-mode-hook python-mode-hook) . yas-minor-mode))
+  :defer t
   :config
   (yas-reload-all))
