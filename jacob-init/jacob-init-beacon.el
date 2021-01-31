@@ -1,4 +1,5 @@
 (use-package beacon
+  :disabled
   :ensure t
   :defer 2
   :config

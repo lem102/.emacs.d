@@ -16,6 +16,7 @@
 (jacob-load "jacob-init-theme.el")
 (jacob-load "jacob-init-modeline.el")
 (jacob-load "jacob-init-fonts.el")
+(jacob-load "jacob-init-pulse.el")      ; WIP: for some reason emacs doesnt know line-end-position, despite it being in the manual... strange.
 
 ;; miscellaneous settings
 (jacob-load "jacob-init-misc.el")

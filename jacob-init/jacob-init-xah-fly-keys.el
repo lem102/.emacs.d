@@ -8,7 +8,7 @@
   (setq xah-fly-use-control-key nil)
 
   ;; This is a keyboard macro that enters insert mode, presses a backspace, then returns to command mode.
-  ;; It's purpose is so I can bind "D" in command mode to whatever backspace does in any given buffer.
+  ;; It's purpose is so I can bind "d" in command mode to whatever backspace does in any given buffer.
   (fset 'backspace
         [?f backspace home])
 
