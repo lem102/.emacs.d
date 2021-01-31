@@ -26,9 +26,8 @@
 ;; language server protocol related. when lsp-mode is gone, eglot can join its friends in the minor mode section.
 (jacob-load "jacob-init-eglot.el")
 
-;; Major Mode Packages
+;; major mode packages
 ;; all major mode packages need major review. need a writing style setup. activate necessary minor modes within appropriate major mode config, not in own minor mode config.
-(jacob-load "jacob-init-php-mode.el")         ; will not be needed any more.
 (jacob-load "jacob-init-elisp-mode.el")
 (jacob-load "jacob-init-org-mode.el")
 (jacob-load "jacob-init-yaml-mode.el")        ; will come in
@@ -38,7 +37,7 @@
 (jacob-load "jacob-init-web-mode.el")         ; also important, as is used for editing razor templates
 (jacob-load "jacob-init-json-mode.el")        ; will also come in
 
-;; Minor Mode Packages
+;; minor mode packages
 (jacob-load "jacob-init-dimmer.el")
 (jacob-load "jacob-init-flycheck.el")
 (jacob-load "jacob-init-which-key.el")
