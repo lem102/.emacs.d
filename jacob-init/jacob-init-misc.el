@@ -1,10 +1,9 @@
-;; ** don't ask for conformation when killing buffers with an attached process
+;; don't ask for conformation when killing buffers with an attached process
 (use-package emacs
   :config
   (setq kill-buffer-query-functions (delq 'process-kill-buffer-query-function kill-buffer-query-functions))
   ;; this is for asking on exit
   (setq confirm-kill-processes nil))
-;; ** recentf
 (use-package recentf
   :commands recentf-open-files
   :config

@@ -13,6 +13,7 @@
 
 ;; user interface
 (jacob-load "jacob-init-gui-components.el")
+(jacob-load "jacob-init-dired.el")
 (jacob-load "jacob-init-theme.el")
 (jacob-load "jacob-init-modeline.el")
 (jacob-load "jacob-init-fonts.el")
@@ -49,7 +50,7 @@
 (jacob-load "jacob-init-try.el")
 (jacob-load "jacob-init-avy.el")
 (jacob-load "jacob-init-restart-emacs.el")
-(jacob-load "jacob-init-ace-window.el")
+(jacob-load "jacob-init-ace-window.el")       ; switch window might be better actally, i miss the big letters
 (jacob-load "jacob-init-ivy.el")              ; should replace
 (jacob-load "jacob-init-expand-region.el")
 (jacob-load "jacob-init-shell-pop.el")        ; needs a rethink, or replacement
