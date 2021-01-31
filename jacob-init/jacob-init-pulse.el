@@ -2,8 +2,7 @@
 
 (defun jacob-pulse-line (&rest _)
   "Pulse the current line."
-  ;; (pulse-momentary-highlight-region (line-beginning-position line-end-position))
-  (pulse-momentary-highlight-one-line (point)))
+  (pulse-momentary-highlight-region (+ (line-beginning-position) (current-indentation)) (line-end-position)))
 
 (dolist (command '(recenter-top-bottom
                    scroll-up-command
