@@ -7,5 +7,5 @@
 (dolist (command '(recenter-top-bottom
                    scroll-up-command
                    scroll-down-command
-                   switch-window))
+                   other-window))
   (advice-add command :after #'jacob-pulse-line))

@@ -25,7 +25,6 @@
 
 ;; language server protocol related. when lsp-mode is gone, eglot can join its friends in the minor mode section.
 (jacob-load "jacob-init-eglot.el")
-(jacob-load "jacob-init-lsp-mode.el")         ; to be deprecated, use eglot only!!!
 
 ;; Major Mode Packages
 ;; all major mode packages need major review. need a writing style setup. activate necessary minor modes within appropriate major mode config, not in own minor mode config.
@@ -54,7 +53,7 @@
 (jacob-load "jacob-init-try.el")
 (jacob-load "jacob-init-avy.el")
 (jacob-load "jacob-init-restart-emacs.el")
-(jacob-load "jacob-init-switch-window.el")    ; could do with a replace, kinda cumbersome
+(jacob-load "jacob-init-ace-window.el")
 (jacob-load "jacob-init-ivy.el")              ; should replace
 (jacob-load "jacob-init-expand-region.el")
 (jacob-load "jacob-init-shell-pop.el")        ; needs a rethink, or replacement
