@@ -5,7 +5,7 @@
 (setq scroll-conservatively 100)
 (setq create-lockfiles nil)
 (setq history-length 1000)
-(setq history-delete-duplicates t))
+(setq history-delete-duplicates t)
 
 (require 'files)
 (with-eval-after-load 'files
