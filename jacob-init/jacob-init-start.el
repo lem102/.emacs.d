@@ -20,6 +20,8 @@
 (jacob-load "jacob-init-modeline.el")
 (jacob-load "jacob-init-fonts.el")
 (jacob-load "jacob-init-pulse.el")
+(jacob-load "jacob-init-orderless.el")
+(jacob-load "jacob-init-selectrum.el")
 
 ;; miscellaneous settings
 (jacob-load "jacob-init-misc.el")
@@ -54,4 +56,3 @@
 (jacob-load "jacob-init-ace-window.el")       ; switch window might be better actally, i miss the big letters
 (jacob-load "jacob-init-expand-region.el")
 (jacob-load "jacob-init-amx.el")        ; possibly no longer needed.
-(jacob-load "jacob-init-orderless.el")
