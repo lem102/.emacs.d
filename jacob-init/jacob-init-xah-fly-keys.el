@@ -1,16 +1,9 @@
 (use-package xah-fly-keys
   :ensure t
-
   :after key-chord
   :demand
-
   :init
   (setq xah-fly-use-control-key nil)
-
-  ;; This is a keyboard macro that enters insert mode, presses a backspace, then returns to command mode.
-  ;; It's purpose is so I can bind "d" in command mode to whatever backspace does in any given buffer.
-  (fset 'backspace
-        [?f backspace home])
 
   (fset 'enter
         [return])
@@ -37,10 +30,7 @@
   (jacob-xah-command-binds) ;; call it on startup so binds are set without calling xah-fly-command-mode-activate first.
 
   (key-chord-define-global "fd" 'xah-fly-command-mode-activate)
-
-  ;; switches to insert mode upon entering the minibuffer.
   (add-hook 'minibuffer-setup-hook 'xah-fly-insert-mode-activate)
-  ;; switches back to command mode after exiting the minibuffer.
   (add-hook 'minibuffer-exit-hook 'xah-fly-command-mode-activate)
 
   :bind
