@@ -54,3 +54,4 @@
 (jacob-load "jacob-init-ace-window.el")       ; switch window might be better actally, i miss the big letters
 (jacob-load "jacob-init-expand-region.el")
 (jacob-load "jacob-init-amx.el")        ; possibly no longer needed.
+(jacob-load "jacob-init-orderless.el")
