@@ -35,6 +35,7 @@
   (add-hook 'minibuffer-exit-hook 'xah-fly-command-mode-activate)
 
   (define-key xah-fly-dot-keymap (kbd "p") project-prefix-map)
+  (define-key xah-fly-dot-keymap (kbd "v") vc-prefix-map)
   
   :bind
   (:map jacob-config-keymap
