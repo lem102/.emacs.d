@@ -10,11 +10,9 @@
 
   (defun jacob-xah-command-binds ()
     "Set custom keys for xah-fly-keys keybindings."
-    (interactive)
     (define-key xah-fly-command-map (kbd "s") 'enter)
     (define-key xah-fly-command-map (kbd "8") 'er/expand-region)
     (define-key xah-fly-command-map (kbd "4") 'jacob-split-window-below-select-new)
-    ;; 1 can be rebound, is bound to a inferior version of expand region
     (define-key xah-fly-command-map (kbd "2") 'jacob-quit-popup-window)
     (define-key xah-fly-command-map (kbd ",") #'ace-window))
 
