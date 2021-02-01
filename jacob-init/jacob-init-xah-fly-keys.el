@@ -1,7 +1,7 @@
 (use-package xah-fly-keys
   :ensure t
-  :after key-chord
   :demand
+  :after key-chord
   :init
   (setq xah-fly-use-control-key nil)
 
@@ -29,6 +29,8 @@
   (jacob-xah-command-binds) ;; call it on startup so binds are set without calling xah-fly-command-mode-activate first.
 
   (key-chord-define-global "fd" 'xah-fly-command-mode-activate)
+  (key-chord-define-global "fj" 'avy-goto-char)
+  (key-chord-define-global "fk" 'avy-goto-end-of-line)
   (add-hook 'minibuffer-setup-hook 'xah-fly-insert-mode-activate)
   (add-hook 'minibuffer-exit-hook 'xah-fly-command-mode-activate)
 
@@ -56,6 +58,7 @@
         ("d" . backspace)
         ("v" . jacob-insert-tilde))
   (:map xah-fly-dot-keymap
+        ("p" . projectile-command-map)
         ("c" . jacob-config-keymap))
   (:map xah-fly-leader-key-map
         ("4" . jacob-split-window-right-select-new))

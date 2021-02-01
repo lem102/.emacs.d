@@ -70,8 +70,6 @@
 
 ;; ** Expert mode for ibuffer
 (setq ibuffer-expert t)
-;; ** Add lisp folder to load path
-(add-to-list 'load-path "~/.emacs.d/lisp/")
 ;; ** Save minibuffer history (useful for compile)
 (use-package savehist
   :defer 0.1
