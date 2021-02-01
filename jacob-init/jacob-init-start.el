@@ -44,7 +44,7 @@
 (jacob-load "jacob-init-flycheck.el")
 (jacob-load "jacob-init-which-key.el")
 (jacob-load "jacob-init-company.el")
-(jacob-load "jacob-init-projectile.el")       ; should be replaced with project.el.
+;; (jacob-load "jacob-init-projectile.el")       ; should be replaced with project.el.
 (jacob-load "jacob-init-omnisharp.el")        ; will replace with eglot when able.
 (jacob-load "jacob-init-yasnippet.el")
 (jacob-load "jacob-init-olivetti.el")
@@ -55,3 +55,4 @@
 (jacob-load "jacob-init-restart-emacs.el")
 (jacob-load "jacob-init-ace-window.el")       ; switch window might be better actally, i miss the big letters
 (jacob-load "jacob-init-expand-region.el")
+(jacob-load "jacob-init-consult.el")

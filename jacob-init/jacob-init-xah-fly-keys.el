@@ -34,6 +34,8 @@
   (add-hook 'minibuffer-setup-hook 'xah-fly-insert-mode-activate)
   (add-hook 'minibuffer-exit-hook 'xah-fly-command-mode-activate)
 
+  (define-key xah-fly-dot-keymap (kbd "p") project-prefix-map)
+  
   :bind
   (:map jacob-config-keymap
         ("r" . jacob-config-reload)
@@ -42,12 +44,14 @@
         ("c" . jacob-org-src-block)
         ("p" . jacob-recompile-packages)
         ("t" . jacob-display-time))
+  (:map xah-fly-c-keymap
+        ("j" . consult-recent-file))
   (:map xah-fly-e-keymap
-        ("k". jacob-xah-insert-paren)
-        ("l". jacob-xah-insert-square-bracket)
-        ("j". jacob-xah-insert-brace)
-        ("u". jacob-xah-insert-ascii-double-quote)
-        ("i". jacob-xah-insert-ascii-single-quote)
+        ("k" . jacob-xah-insert-paren)
+        ("l" . jacob-xah-insert-square-bracket)
+        ("j" . jacob-xah-insert-brace)
+        ("u" . jacob-xah-insert-ascii-double-quote)
+        ("i" . jacob-xah-insert-ascii-single-quote)
         ("m" . xah-insert-hyphen)
         ("," . xah-insert-low-line)
         ("." . jacob-insert-equals)
@@ -58,10 +62,11 @@
         ("d" . backspace)
         ("v" . jacob-insert-tilde))
   (:map xah-fly-dot-keymap
-        ("p" . projectile-command-map)
-        ("c" . jacob-config-keymap))
+        ("c" . jacob-config-keymap)
+        ("s" . consult-line))
   (:map xah-fly-leader-key-map
-        ("4" . jacob-split-window-right-select-new))
+        ("4" . jacob-split-window-right-select-new)
+        ("v" . consult-yank))
   (:map xah-fly-w-keymap
         ("n" . eval-and-replace))
   (:map xah-fly-t-keymap
