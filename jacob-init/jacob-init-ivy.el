@@ -1,4 +1,5 @@
 (use-package ivy
+  :disabled
   :ensure t
   :defer 0.1
   :config
@@ -19,8 +20,10 @@
 
 (use-package swiper
   :ensure t
+  :disabled
   :after ivy)
 
 (use-package counsel
   :ensure t
+  :disabled
   :after ivy)

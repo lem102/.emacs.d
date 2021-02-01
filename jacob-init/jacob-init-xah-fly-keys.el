@@ -11,7 +11,6 @@
   (defun jacob-xah-command-binds ()
     "Set custom keys for xah-fly-keys keybindings."
     (interactive)
-    (define-key xah-fly-command-map (kbd "a") 'counsel-M-x)
     (define-key xah-fly-command-map (kbd "s") 'enter)
     (define-key xah-fly-command-map (kbd "8") 'er/expand-region)
     (define-key xah-fly-command-map (kbd "4") 'jacob-split-window-below-select-new)
