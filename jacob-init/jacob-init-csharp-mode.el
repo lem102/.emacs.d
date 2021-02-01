@@ -1,6 +1,6 @@
 (use-package csharp-mode
   :ensure t
-  :config
+  :init
   (defun my-csharp-mode-setup ()
     (setq c-syntactic-indentation t)
     (c-set-style "ellemtel")
