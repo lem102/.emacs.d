@@ -9,8 +9,11 @@ workspace
 url
 .cache
 eglot-eclipse-jdt-cache
+var
 
 # Files in root directory
+projects
+session*
 bookmarks
 .dap-breakpoints
 history
