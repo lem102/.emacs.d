@@ -8,6 +8,9 @@
   (fset 'enter
         [return])
 
+  (fset 'backspace
+         [?f backspace home])
+
   (defun jacob-xah-command-binds ()
     "Set custom keys for xah-fly-keys keybindings."
     (define-key xah-fly-command-map (kbd "s") 'enter)
