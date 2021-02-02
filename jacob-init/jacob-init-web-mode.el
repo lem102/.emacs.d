@@ -3,7 +3,6 @@
   :preface
   (defun jacob-web-mode-config ()
     (setq-local electric-pair-pairs '((?\" . ?\") (?\< . ?\>)))
-    (yas-minor-mode 1)
     (yas-activate-extra-mode 'html-mode))
   :config
   (setq web-mode-engines-alist '(("razor" . "\\.cshtml\\'")))
