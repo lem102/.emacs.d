@@ -1,6 +1,5 @@
 (use-package avy
   :ensure t
-  :defer 0.1
   :config
   (setq avy-style 'at-full)
   (setq avy-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l ?\;))

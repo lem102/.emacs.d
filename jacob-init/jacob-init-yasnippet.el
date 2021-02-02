@@ -1,5 +1,5 @@
 (use-package yasnippet
   :ensure t
-  :defer t
   :config
-  (yas-reload-all))
+  (yas-reload-all)
+  :hook (java-mode-hook . yas-minor-mode))
