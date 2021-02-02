@@ -1,72 +1,84 @@
-(setq kill-buffer-query-functions (delq 'process-kill-buffer-query-function kill-buffer-query-functions))
-(setq read-process-output-max (* 1024 1024))
-(setq ring-bell-function 'ignore)
-(setq auto-window-vscroll nil)
-(setq scroll-conservatively 100)
-(setq create-lockfiles nil)
-(setq history-length 1000)
-(setq history-delete-duplicates t)
+(use-package emacs
+  :defer 2
+  :config
+  (setq kill-buffer-query-functions (delq 'process-kill-buffer-query-function kill-buffer-query-functions))
+  (setq read-process-output-max (* 1024 1024))
+  (setq ring-bell-function 'ignore)
+  (setq auto-window-vscroll nil)
+  (setq scroll-conservatively 100)
+  (setq create-lockfiles nil)
+  (setq history-length 1000)
+  (setq history-delete-duplicates t)
+  (defalias 'yes-or-no-p 'y-or-n-p))
 
-(require 'files)
-(with-eval-after-load 'files
+(use-package files
+  :defer 2
+  :config
   (setq confirm-kill-processes nil)
   (setq backup-by-copying t)
   (setq make-backup-files nil)
   (setq auto-save-default nil))
 
-(require 'recentf)
-(with-eval-after-load 'recentf
-  (add-hook 'after-init-hook #'recentf-mode))
+(use-package recentf
+  :hook (after-init-hook . recentf-mode))
 
-(require 'dabbrev)
-(with-eval-after-load 'dabbrev
+(use-package dabbrev
+  :defer 2
+  :config
   (setq dabbrev-case-fold-search nil)
   (setq dabbrev-case-replace nil))
 
-(require 'cus-edit)
-(with-eval-after-load 'cus-edit
+(use-package cus-edit
+  :defer 2
+  :config
   (setq custom-file (make-temp-file "emacs-custom-")))
 
-(require 'novice)
-(with-eval-after-load 'novice
+(use-package novice
+  :defer 2
+  :config
   (setq disabled-command-function nil))
 
-(require 'simple)
-(with-eval-after-load 'simple
+(use-package simple
+  :defer 2
+  :config
   (setq line-move-visual t))
 
 ;; TODO: figure out how to group these when on windows
 (setq ls-lisp-use-insert-directory-program nil)
 (setq ls-lisp-dirs-first t)
 
-(require 'subword)
-(with-eval-after-load 'subword
-  (add-hook 'after-init-hook #'global-subword-mode))
+(use-package subword
+  :defer 2
+  :config
+  (global-subword-mode 1))
 
-(require 'delsel)
-(with-eval-after-load 'delsel
-  (add-hook 'after-init-hook #'delete-selection-mode))
+(use-package delsel
+  :defer 2
+  :config
+  (delete-selection-mode 1))
 
-(require 'paren)
-(with-eval-after-load 'paren
+(use-package paren
+  :defer 2
+  :config
   (setq show-paren-style 'parenthesis)
   (setq show-paren-when-point-in-periphery nil)
   (setq show-paren-when-point-inside-paren nil)
-  (add-hook 'after-init-hook #'show-paren-mode))
+  (show-paren-mode 1))
 
-(defalias 'yes-or-no-p 'y-or-n-p)
-
-(require 'ibuffer)
-(with-eval-after-load 'ibuffer
+(use-package ibuffer
+  :config
   (setq ibuffer-expert t))
 
-(require 'savehist)
-(with-eval-after-load 'savehist
+(use-package savehist
+  :defer 2
+  :config
   (setq savehist-file "~/.emacs.d/savehist")
-  (setq savehist-save-minibuffer-history t))
+  (setq savehist-save-minibuffer-history t)
+  (savehist-mode 1))
 
-(require 'saveplace)
-(with-eval-after-load 'saveplace
+(use-package saveplace
+  :defer 2
+  :config
   (setq save-place-file "~/.emacs.d/saveplace")
   (setq save-place-forget-unreadable-files t)
-  (add-hook 'after-init-hook #'save-place-mode))
+  (save-place-mode 1))
