@@ -4,6 +4,7 @@
   :after key-chord
   :init
   (setq xah-fly-use-control-key nil)
+  (setq xah-fly-use-meta-key t)
   :config
   (define-prefix-command 'jacob-config-keymap)
   (xah-fly-keys-set-layout "qwerty")
