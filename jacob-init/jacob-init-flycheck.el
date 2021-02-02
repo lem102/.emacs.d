@@ -1,5 +1,5 @@
 (use-package flycheck
   :ensure t
-  :defer 2
   :config
-  (setq-default flycheck-disabled-checkers '(emacs-lisp-checkdoc)))
+  (setq-default flycheck-disabled-checkers '(emacs-lisp-checkdoc))
+  :hook (csharp-mode-hook . flycheck-mode))
