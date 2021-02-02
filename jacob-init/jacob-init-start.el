@@ -5,7 +5,7 @@
 (jacob-load "jacob-init-startup-time.el")
 (jacob-load "jacob-init-package.el")
 (jacob-load "jacob-init-local-packages.el")
-(jacob-load "jacob-init-use-package.el")      ; one day i should be able to remove this package from my config. (i wish)
+(jacob-load "jacob-init-use-package.el")
 (jacob-load "jacob-init-environment-setup.el")
 
 ;; keybinding
@@ -14,14 +14,14 @@
 (jacob-load "jacob-init-key-chord.el")
 
 ;; user interface
-(jacob-load "jacob-init-gui-components.el")
+(jacob-load "jacob-init-gui-components.el") ; maybe put in misc, or investigate whether some of this should go in an early-init.el file
 (jacob-load "jacob-init-dired.el")
 (jacob-load "jacob-init-theme.el")
 (jacob-load "jacob-init-modeline.el")
 (jacob-load "jacob-init-fonts.el")
 (jacob-load "jacob-init-pulse.el")
 (jacob-load "jacob-init-orderless.el")
-(jacob-load "jacob-init-selectrum.el")
+(jacob-load "jacob-init-selectrum-and-friends.el")
 
 ;; miscellaneous settings
 (jacob-load "jacob-init-misc.el")
@@ -55,4 +55,3 @@
 (jacob-load "jacob-init-restart-emacs.el")
 (jacob-load "jacob-init-ace-window.el")       ; switch window might be better actally, i miss the big letters
 (jacob-load "jacob-init-expand-region.el")
-(jacob-load "jacob-init-consult.el")
