@@ -1,3 +1,5 @@
 (use-package restart-emacs
   :ensure t
-  :defer t)
+  :bind
+  (:map jacob-config-keymap
+        ("R" . restart-emacs)))

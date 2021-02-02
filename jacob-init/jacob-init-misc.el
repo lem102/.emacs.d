@@ -82,3 +82,8 @@
   (setq save-place-file "~/.emacs.d/saveplace")
   (setq save-place-forget-unreadable-files t)
   (save-place-mode 1))
+
+(use-package kmacro
+  :bind
+  (:map xah-fly-r-keymap
+        ("c" . kmacro-set-counter)))

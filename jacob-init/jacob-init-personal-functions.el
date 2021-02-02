@@ -26,7 +26,7 @@
   (let ((completing-read-function 'completing-read-default))
     (call-interactively 'find-file)))
 
-(defun eval-and-replace ()
+(defun jacob-eval-and-replace ()
   "Replace the preceding sexp with its value."
   (interactive)
   (backward-kill-sexp)
