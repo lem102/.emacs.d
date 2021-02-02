@@ -10,11 +10,6 @@
   (xah-fly-keys-set-layout "qwerty")
   (xah-fly-keys 1)
 
-  ;; TODO: install the key chord extension for use package
-  (key-chord-define-global "fd" 'xah-fly-command-mode-activate)
-  (key-chord-define-global "fj" 'avy-goto-char)
-  (key-chord-define-global "fk" 'avy-goto-end-of-line)
-
   ;; TODO: figure out how to bind these using use-package
   (let ((map xah-fly-dot-keymap))
     (define-key map (kbd "p") project-prefix-map)
@@ -23,6 +18,8 @@
   :hook
   (minibuffer-setup-hook . xah-fly-insert-mode-activate)
   (minibuffer-exit-hook . xah-fly-command-mode-activate)
+  :chords
+  ("fd" . xah-fly-command-mode-activate)
   :bind
   (:map xah-fly-command-map
         ("s" . jacob-enter-kmacro)
