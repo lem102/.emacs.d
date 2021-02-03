@@ -25,8 +25,12 @@
 
 ;; miscellaneous settings
 (jacob-load "jacob-init-misc.el")
-(jacob-load "jacob-init-windows.el")
 (jacob-load "jacob-init-personal-functions.el")
+
+;; settings for microsoft windows
+(if (string-equal system-type "windows-nt")
+    (progn
+      (jacob-load "jacob-init-windows-settings.el")))
 
 ;; major mode packages
 (jacob-load "jacob-init-elisp-mode.el")
