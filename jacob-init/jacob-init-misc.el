@@ -43,7 +43,6 @@
   :config
   (setq line-move-visual t))
 
-;; TODO: figure out how to group these when on windows
 (setq ls-lisp-use-insert-directory-program nil)
 (setq ls-lisp-dirs-first t)
 
