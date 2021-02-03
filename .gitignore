@@ -10,6 +10,7 @@ url
 .cache
 eglot-eclipse-jdt-cache
 var
+image-dired
 
 # Files in root directory
 projects
