@@ -53,6 +53,7 @@
 (jacob-load "jacob-init-omnisharp.el")        ; will replace with eglot when able.
 (jacob-load "jacob-init-yasnippet.el")
 (jacob-load "jacob-init-olivetti.el")
+(jacob-load "jacob-init-texfrag.el")
 
 ;; Non-mode Packages
 (jacob-load "jacob-init-try.el")
