@@ -52,7 +52,6 @@
 ;; (jacob-load "jacob-init-projectile.el")       ; should be replaced with project.el.
 (jacob-load "jacob-init-omnisharp.el")        ; will replace with eglot when able.
 (jacob-load "jacob-init-yasnippet.el")
-(jacob-load "jacob-init-olivetti.el")
 (jacob-load "jacob-init-texfrag.el")
 
 ;; Non-mode Packages
