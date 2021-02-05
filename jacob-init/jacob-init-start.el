@@ -42,6 +42,7 @@
 (jacob-load "jacob-init-web-mode.el")
 (jacob-load "jacob-init-json-mode.el")
 (jacob-load "jacob-init-go-mode.el")
+(jacob-load "jacob-init-powershell-mode.el")
 
 ;; minor mode packages
 (jacob-load "jacob-init-eglot.el")      ; need to investigate what happens between the completion candidate being chosen and it being inserted in the buffer. 
