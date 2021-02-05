@@ -1,2 +1,3 @@
 (use-package texfrag
-  :ensure t)
+  :ensure t
+  :defer t)
