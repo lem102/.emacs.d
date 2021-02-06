@@ -1,6 +1,7 @@
 ;;; -*- lexical-binding: t -*-
 
 ;; essential
+(jacob-load "jacob-init-personal-functions.el")
 (jacob-load "jacob-init-garbage-collection.el")
 (jacob-load "jacob-init-startup-time.el")
 (jacob-load "jacob-init-package.el")
@@ -25,7 +26,6 @@
 
 ;; miscellaneous settings
 (jacob-load "jacob-init-misc.el")
-(jacob-load "jacob-init-personal-functions.el")
 
 ;; settings for microsoft windows
 (if (string-equal system-type "windows-nt")
