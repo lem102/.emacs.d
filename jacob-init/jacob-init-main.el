@@ -2,6 +2,7 @@
 
 ;; essential
 (jacob-load "jacob-init-personal-functions.el")
+(jacob-load "jacob-init-system-functions.el")
 (jacob-load "jacob-init-garbage-collection.el")
 (jacob-load "jacob-init-startup-time.el")
 (jacob-load "jacob-init-package.el")
