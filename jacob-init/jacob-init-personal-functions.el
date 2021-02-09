@@ -58,7 +58,7 @@
 
 (defun jacob-config-visit ()
   (interactive)
-  (find-file "~/.emacs.d/init.el"))
+  (dired "~/.emacs.d/jacob-init"))
 
 (defun jacob-config-reload ()
   (interactive)
