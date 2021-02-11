@@ -62,3 +62,7 @@
 (jacob-load "jacob-init-restart-emacs.el")
 (jacob-load "jacob-init-ace-window.el")       ; switch window might be better actally, i miss the big letters
 (jacob-load "jacob-init-expand-region.el")
+
+;; start the server
+(jacob-load "jacob-init-server.el")
+(server-start)
