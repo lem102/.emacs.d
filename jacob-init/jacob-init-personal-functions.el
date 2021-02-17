@@ -8,6 +8,15 @@
                                (cdr input-list)
                                "")))))
 
+(defun jacob-insert-pascal-case ()
+  "ask for input, apply camel case to input and insert at point."
+  (interactive)
+  (let* ((input (read-string "enter words to be camel cased:"))
+         (input-list (split-string input " ")))
+    (insert (mapconcat 'capitalize
+                       input-list
+                       ""))))
+
 (defun jacob-count-words-region ()
   "If mark active count words in region, otherwise count words in whole buffer."
   (interactive)
