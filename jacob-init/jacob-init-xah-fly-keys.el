@@ -15,6 +15,8 @@
     (define-key map (kbd "p") project-prefix-map)
     (define-key map (kbd "v") vc-prefix-map))
 
+  (add-hook 'after-init-hook (lambda () (unbind-key "C-<kp-subtract>") (define-key global-map (kbd "C-<kp-subtract> C-`") 'jacob-insert-asterisk)))
+
   :hook
   (minibuffer-setup-hook . xah-fly-insert-mode-activate)
   (minibuffer-exit-hook . xah-fly-command-mode-activate)
@@ -48,7 +50,10 @@
         ("x" . jacob-insert-at)
         ("c" . jacob-insert-hash)
         ("d" . jacob-backspace-kmacro)
-        ("v" . jacob-insert-tilde))
+        ("v" . jacob-insert-tilde)
+        ("e" . jacob-insert-dollar-sign)
+        ("r" . jacob-insert-caret)
+        ("o" . jacob-insert-ampersand))
   (:map xah-fly-leader-key-map
         ("4" . jacob-split-window-right-select-new))
   (:map xah-fly-w-keymap
