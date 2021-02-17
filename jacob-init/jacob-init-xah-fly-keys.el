@@ -22,6 +22,7 @@
   ("fd" . xah-fly-command-mode-activate)
   :bind
   (:map xah-fly-command-map
+        ("a" . execute-extended-command)
         ("s" . jacob-enter-kmacro)
         ("4" . jacob-split-window-below-select-new)
         ("2" . jacob-quit-popup-window))
