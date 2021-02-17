@@ -132,6 +132,15 @@ URL `http://ergoemacs.org/emacs/elisp_insert_brackets_by_pair.html'"
       (insert @left-bracket @right-bracket)
       (search-backward @right-bracket))))
 
+(defun jacob-back-to-indentation-or-beginning-of-line ()
+  "Do back-to-indentation unless at end of indentation
+in which case do move-beginning-of-line."
+  (interactive)
+  (if (and (not (equal (point) (line-beginning-position)))
+           (eq last-command this-command))
+      (move-beginning-of-line nil)
+    (back-to-indentation)))
+
 (defun jacob-xah-insert-paren ()
   (interactive)
   (jacob-xah-insert-bracket-pair "(" ")"))
@@ -175,6 +184,34 @@ URL `http://ergoemacs.org/emacs/elisp_insert_brackets_by_pair.html'"
 (defun jacob-insert-hash ()
   (interactive)
   (insert "#"))
+
+(defun jacob-insert-exclamation-mark ()
+  (interactive)
+  (insert "!"))
+
+(defun jacob-insert-pound-sign ()
+  (interactive)
+  (insert "£"))
+
+(defun jacob-insert-dollar-sign ()
+  (interactive)
+  (insert "$"))
+
+(defun jacob-insert-percentage-sign ()
+  (interactive)
+  (insert "%"))
+
+(defun jacob-insert-caret ()
+  (interactive)
+  (insert "^"))
+
+(defun jacob-insert-ampersand ()
+  (interactive)
+  (insert "&"))
+
+(defun jacob-insert-asterisk ()
+  (interactive)
+  (insert "*"))
 
 (fset 'jacob-enter-kmacro
       [return])

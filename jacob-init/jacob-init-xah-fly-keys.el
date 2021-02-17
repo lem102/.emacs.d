@@ -26,6 +26,8 @@
   (:map xah-fly-command-map
         ("a" . execute-extended-command)
         ("s" . jacob-enter-kmacro)
+        ("h" . jacob-back-to-indentation-or-beginning-of-line)
+        (";" . move-end-of-line)
         ("4" . jacob-split-window-below-select-new)
         ("2" . jacob-quit-popup-window))
   (:map xah-fly-dot-keymap
