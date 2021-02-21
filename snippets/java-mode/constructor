@@ -2,7 +2,6 @@
 # name: jacob constructor ....;
 # key: cons
 # --
-public `(file-name-sans-extension (file-name-nondirectory (buffer-file-name)))`($1)
-{
+public `(file-name-sans-extension (file-name-nondirectory (buffer-file-name)))`($1) {
     $0
 }
