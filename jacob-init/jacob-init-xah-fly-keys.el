@@ -12,7 +12,7 @@
 
   ;; TODO: figure out how to bind these using use-package
   (let ((map xah-fly-dot-keymap))
-    (define-key map (kbd "p") project-prefix-map)
+    ;; (define-key map (kbd "p") project-prefix-map)
     (define-key map (kbd "v") vc-prefix-map))
 
   (add-hook 'after-init-hook (lambda () (unbind-key "C-<kp-subtract>") (define-key global-map (kbd "C-<kp-subtract> C-`") 'jacob-insert-asterisk)))
