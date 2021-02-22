@@ -370,3 +370,11 @@ This document makes use of org-babel src blocks to create various snippets and a
       $0
   }
 #+END_SRC
+*** arraylist
+#+BEGIN_SRC snippet :tangle ./java-mode/arraylist
+  # -*- mode: snippet -*-
+  # name: jacob arraylist ....;
+  # key: list
+  # --
+  var ${1:listName} = new ArrayList<${2:ListType}>();
+#+END_SRC
