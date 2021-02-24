@@ -11,5 +11,15 @@
         (setenv "CLASSPATH" cp))))
   
   (setcdr (assq 'java-mode eglot-server-programs) #'jacob-eglot-eclipse-jdt-contact)
-  
+
+  (define-prefix-command 'jacob-eglot-keymap)
+  :bind
+  (:map xah-fly-dot-keymap
+        ("e" . jacob-eglot-keymap))
+  (:map jacob-eglot-keymap
+        ("a" . eglot-code-actions)
+        ("r" . eglot-rename)
+        ;; not sure if these should be bound here
+        ("d" . xref-find-definitions)
+        ("u" . xref-find-references))
   :hook (java-mode-hook . eglot-ensure))

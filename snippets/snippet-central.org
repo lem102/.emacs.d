@@ -256,9 +256,100 @@ This document makes use of org-babel src blocks to create various snippets and a
   }
 #+END_SRC
 ** java-mode
-*** .yas-parents
-#+BEGIN_SRC snippet :tangle ./java-mode/.yas-parents
-  cc-mode
+*** if statement
+#+BEGIN_SRC snippet :tangle ./java-mode/if
+  # -*- mode: snippet -*-
+  # name: jacob if
+  # key: if
+  # --
+  if (${1:condition}) {
+      $0
+  }
+#+END_SRC
+
+*** else statement
+#+BEGIN_SRC snippet :tangle ./java-mode/else
+  # -*- mode: snippet -*-
+  # name: jacob else
+  # key: else
+  # --
+  else {
+      $0
+  }
+#+END_SRC
+
+*** while loop
+#+BEGIN_SRC snippet :tangle ./java-mode/while
+  # -*- mode: snippet -*-
+  # name: jacob while
+  # key: while
+  # --
+  while (${1:condition}) {
+      $0
+  }
+#+END_SRC
+
+*** do while loop
+#+BEGIN_SRC snippet :tangle ./java-mode/do
+  # -*- mode: snippet -*-
+  # name: do { ... } while (...)
+  # key: do
+  # --
+  do {
+      $0
+  } while (${1:condition});
+#+END_SRC
+
+*** for loop
+#+BEGIN_SRC snippet :tangle ./java-mode/for
+  # -*- mode: snippet -*-
+  # name: jacob for
+  # key: for
+  # --
+  for (${1:int i = 0}; ${2:i < 10}; ${3:i++}) {
+      $0
+  }
+#+END_SRC
+
+*** for each loop
+#+BEGIN_SRC snippet :tangle ./java-mode/foreach
+  # -*- mode: snippet -*-
+  # name: jacob foreach
+  # key: fore
+  # --
+  for (${1:ElementType} ${2:element} : ${3:collection}) {
+      $0
+  }
+#+END_SRC
+
+*** switch
+#+BEGIN_SRC snippet :tangle ./java-mode/switch
+  # -*- mode: snippet -*-
+  # name: jacob switch
+  # key: switch
+  # --
+  switch (${1:expr}) {
+      case ${2:constexpr}: {
+          $0
+          break;
+      }
+      default: {
+          break;
+      }
+  }
+#+END_SRC
+
+*** case
+#+BEGIN_SRC snippet :tangle ./java-mode/case
+  # -*- mode: snippet -*-
+  # name: case : {...}
+  # key: case
+  # expand-env: ((yas-also-auto-indent-first-line t))
+  # --
+  case ${2:constexpr}: {
+      $0
+      break;
+  }
 #+END_SRC
 
 *** sout
@@ -275,8 +366,15 @@ This document makes use of org-babel src blocks to create various snippets and a
   # name: jacob constructor ....;
   # key: cons
   # --
-  public `(file-name-sans-extension (file-name-nondirectory (buffer-file-name)))`($1)
-  {
+  public `(file-name-sans-extension (file-name-nondirectory (buffer-file-name)))`($1) {
       $0
   }
+#+END_SRC
+*** arraylist
+#+BEGIN_SRC snippet :tangle ./java-mode/arraylist
+  # -*- mode: snippet -*-
+  # name: jacob arraylist ....;
+  # key: list
+  # --
+  var ${1:listName} = new ArrayList<${2:ListType}>();
 #+END_SRC

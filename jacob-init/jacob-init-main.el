@@ -51,7 +51,7 @@
 (jacob-load "jacob-init-flycheck.el")
 (jacob-load "jacob-init-which-key.el")
 (jacob-load "jacob-init-company.el")
-;; (jacob-load "jacob-init-projectile.el")       ; should be replaced with project.el.
+(jacob-load "jacob-init-projectile.el")       ; should be replaced with project.el when project.el is as good as projectile.
 (jacob-load "jacob-init-omnisharp.el")        ; will replace with eglot when able.
 (jacob-load "jacob-init-yasnippet.el")
 (jacob-load "jacob-init-texfrag.el")
