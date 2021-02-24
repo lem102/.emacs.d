@@ -64,5 +64,6 @@
 (jacob-load "jacob-init-expand-region.el")
 
 ;; start the server
+;; TODO: investigate server techniques
 (jacob-load "jacob-init-server.el")
 (server-start)
