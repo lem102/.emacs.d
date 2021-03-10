@@ -8,6 +8,15 @@
                                (cdr input-list)
                                "")))))
 
+(defun jacob-insert-pascal-case ()
+  "ask for input, apply camel case to input and insert at point."
+  (interactive)
+  (let* ((input (read-string "enter words to be camel cased:"))
+         (input-list (split-string input " ")))
+    (insert (mapconcat 'capitalize
+                       input-list
+                       ""))))
+
 (defun jacob-count-words-region ()
   "If mark active count words in region, otherwise count words in whole buffer."
   (interactive)
@@ -58,7 +67,7 @@
 
 (defun jacob-config-visit ()
   (interactive)
-  (find-file "~/.emacs.d/init.el"))
+  (dired "~/.emacs.d/jacob-init"))
 
 (defun jacob-config-reload ()
   (interactive)
@@ -123,6 +132,15 @@ URL `http://ergoemacs.org/emacs/elisp_insert_brackets_by_pair.html'"
       (insert @left-bracket @right-bracket)
       (search-backward @right-bracket))))
 
+(defun jacob-back-to-indentation-or-beginning-of-line ()
+  "Do back-to-indentation unless at end of indentation
+in which case do move-beginning-of-line."
+  (interactive)
+  (if (and (not (equal (point) (line-beginning-position)))
+           (eq last-command this-command))
+      (move-beginning-of-line nil)
+    (back-to-indentation)))
+
 (defun jacob-xah-insert-paren ()
   (interactive)
   (jacob-xah-insert-bracket-pair "(" ")"))
@@ -166,6 +184,34 @@ URL `http://ergoemacs.org/emacs/elisp_insert_brackets_by_pair.html'"
 (defun jacob-insert-hash ()
   (interactive)
   (insert "#"))
+
+(defun jacob-insert-exclamation-mark ()
+  (interactive)
+  (insert "!"))
+
+(defun jacob-insert-pound-sign ()
+  (interactive)
+  (insert "£"))
+
+(defun jacob-insert-dollar-sign ()
+  (interactive)
+  (insert "$"))
+
+(defun jacob-insert-percentage-sign ()
+  (interactive)
+  (insert "%"))
+
+(defun jacob-insert-caret ()
+  (interactive)
+  (insert "^"))
+
+(defun jacob-insert-ampersand ()
+  (interactive)
+  (insert "&"))
+
+(defun jacob-insert-asterisk ()
+  (interactive)
+  (insert "*"))
 
 (fset 'jacob-enter-kmacro
       [return])

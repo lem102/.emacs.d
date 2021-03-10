@@ -1,6 +1,8 @@
 ;;; -*- lexical-binding: t -*-
 
 ;; essential
+(jacob-load "jacob-init-personal-functions.el")
+(jacob-load "jacob-init-system-functions.el")
 (jacob-load "jacob-init-garbage-collection.el")
 (jacob-load "jacob-init-startup-time.el")
 (jacob-load "jacob-init-package.el")
@@ -25,7 +27,6 @@
 
 ;; miscellaneous settings
 (jacob-load "jacob-init-misc.el")
-(jacob-load "jacob-init-personal-functions.el")
 
 ;; settings for microsoft windows
 (if (string-equal system-type "windows-nt")
@@ -42,6 +43,7 @@
 (jacob-load "jacob-init-web-mode.el")
 (jacob-load "jacob-init-json-mode.el")
 (jacob-load "jacob-init-go-mode.el")
+(jacob-load "jacob-init-powershell-mode.el")
 
 ;; minor mode packages
 (jacob-load "jacob-init-eglot.el")      ; need to investigate what happens between the completion candidate being chosen and it being inserted in the buffer. 
@@ -49,7 +51,7 @@
 (jacob-load "jacob-init-flycheck.el")
 (jacob-load "jacob-init-which-key.el")
 (jacob-load "jacob-init-company.el")
-;; (jacob-load "jacob-init-projectile.el")       ; should be replaced with project.el.
+(jacob-load "jacob-init-projectile.el")       ; should be replaced with project.el when project.el is as good as projectile.
 (jacob-load "jacob-init-omnisharp.el")        ; will replace with eglot when able.
 (jacob-load "jacob-init-yasnippet.el")
 (jacob-load "jacob-init-texfrag.el")
@@ -58,5 +60,10 @@
 (jacob-load "jacob-init-try.el")
 (jacob-load "jacob-init-avy.el")
 (jacob-load "jacob-init-restart-emacs.el")
-(jacob-load "jacob-init-ace-window.el")       ; switch window might be better actally, i miss the big letters
+(jacob-load "jacob-init-ace-window.el")       ; upgrade to frog-jump-buffer-mode.
 (jacob-load "jacob-init-expand-region.el")
+
+;; start the server
+;; TODO: investigate server techniques
+(jacob-load "jacob-init-server.el")
+(server-start)
