@@ -378,3 +378,14 @@ This document makes use of org-babel src blocks to create various snippets and a
   # --
   var ${1:listName} = new ArrayList<${2:ListType}>();
 #+END_SRC
+** octave-mode
+*** function
+#+BEGIN_SRC snippet :tangle ./octave-mode/function
+  # -*- mode: snippet -*-
+  # name: jacob octave function
+  # key: func
+  # --
+  function[${1:returnValue}] = ${2:functionName}($3)
+    $0
+  end
+#+END_SRC
