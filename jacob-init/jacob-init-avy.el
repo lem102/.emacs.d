@@ -3,8 +3,10 @@
   :config
 
   (defun jacob-avy-action-xah-toggle-letter-case (pt)
-    (goto-char pt)
-    (xah-toggle-letter-case))
+    (save-excursion
+      (goto-char pt)
+      (xah-toggle-letter-case))
+    t)
   
   (setq avy-style 'at)
   (setq avy-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l ?\;))
