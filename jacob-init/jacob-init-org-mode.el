@@ -20,7 +20,7 @@ Afterwards, reload snippets."
            (snippet-central-path (concat snippet-directory-path "snippet-central.org"))
            (snippet-dirs (mapcar (lambda (snippet-major-mode-directory)
                                    (concat snippet-directory-path snippet-major-mode-directory))
-                                 '("cc-mode" "java-mode" "csharp-mode"))))
+                                 '("cc-mode" "java-mode" "csharp-mode" "octave-mode"))))
       (mapc (lambda (snippet-dir)
               (mapc 'delete-file (directory-files snippet-dir t directory-files-no-dot-files-regexp))) snippet-dirs)
       (org-babel-tangle-file snippet-central-path)
@@ -28,5 +28,12 @@ Afterwards, reload snippets."
 
   (setq-default yas-indent-line 'auto)  ; used to be set to 'fixed, not sure why. auto allows for us to not worry about indenting when we are doing else if.
 
-  (setq org-latex-pdf-process (list "latexmk -pdf %f")) ; probably requires texlive
-  )
+  (setq org-latex-pdf-process (list "latexmk -pdf %f -shell-escape")) ; probably requires texlive
+
+  ;; for syntax highlighting in latex export. requires the minted latex package, and pygmentize, a python package.
+  (setq org-latex-listings 'minted)
+  (add-to-list 'org-latex-packages-alist '("newfloat" "minted"))
+
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((octave . t))))

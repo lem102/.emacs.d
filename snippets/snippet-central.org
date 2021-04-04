@@ -388,4 +388,14 @@ This document makes use of org-babel src blocks to create various snippets and a
   public String toString() {
       return ${0:""};
   }
+** octave-mode
+*** function
+#+BEGIN_SRC snippet :tangle ./octave-mode/function
+  # -*- mode: snippet -*-
+  # name: jacob octave function
+  # key: func
+  # --
+  function[${1:returnValue}] = ${2:functionName}($3)
+    $0
+  end
 #+END_SRC

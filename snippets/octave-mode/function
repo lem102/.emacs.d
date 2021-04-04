@@ -1,7 +1,7 @@
 # -*- mode: snippet -*-
-# name: function
-# key: fun
+# name: jacob octave function
+# key: func
 # --
-function ${1:return_val} = ${2:fname}(${3:args})
-          $0
-endfunction
+function[${1:returnValue}] = ${2:functionName}($3)
+  $0
+end

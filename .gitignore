@@ -11,6 +11,9 @@ url
 eglot-eclipse-jdt-cache
 var
 image-dired
+eshell/lastdir
+elpa/archives/gnu/archive-contents
+elpa/archives/melpa/archive-contents
 
 # Files in root directory
 projects

@@ -60,9 +60,10 @@
 (jacob-load "jacob-init-try.el")
 (jacob-load "jacob-init-avy.el")
 (jacob-load "jacob-init-restart-emacs.el")
-(jacob-load "jacob-init-ace-window.el")       ; switch window might be better actally, i miss the big letters
+(jacob-load "jacob-init-ace-window.el")       ; upgrade to frog-jump-buffer-mode.
 (jacob-load "jacob-init-expand-region.el")
 
 ;; start the server
+;; TODO: investigate server techniques
 (jacob-load "jacob-init-server.el")
 (server-start)
