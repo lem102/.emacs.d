@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: jacob tostring ....;
+# key: tostring
+# --
+@Override
+public String toString() {
+    return ${0:""};
+}

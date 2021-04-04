@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: jacob arraylist ....;
+# key: list
+# --
+var ${1:listName} = new ArrayList<${2:ListType}>();
