@@ -378,6 +378,16 @@ This document makes use of org-babel src blocks to create various snippets and a
   # --
   var ${1:listName} = new ArrayList<${2:ListType}>();
 #+END_SRC
+*** tostring
+#+BEGIN_SRC snippet :tangle ./java-mode/tostring
+  # -*- mode: snippet -*-
+  # name: jacob tostring ....;
+  # key: tostring
+  # --
+  @Override
+  public String toString() {
+      return ${0:""};
+  }
 ** octave-mode
 *** function
 #+BEGIN_SRC snippet :tangle ./octave-mode/function
