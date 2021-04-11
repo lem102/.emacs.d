@@ -218,3 +218,49 @@ in which case do move-beginning-of-line."
 
 (fset 'jacob-backspace-kmacro
       [?f backspace home])
+
+(defun jacob-matlab-matrix-to-latex (matrix-start matrix-end)
+  (interactive (if (use-region-p)
+                   (list (region-beginning) (region-end))
+                 (let (region-start
+                       region-end)
+                   (search-backward "[")
+                   (setq region-start (point))
+                   (search-forward "]")
+                   (setq region-end (point))
+                   (list region-start region-end))))
+  (save-excursion
+    (save-restriction
+      (narrow-to-region matrix-start matrix-end)
+
+      (goto-char (point-min))
+      (while (search-forward-regexp "[[:space:]]+" nil t)
+        (replace-match " "))
+
+      (goto-char (point-min))
+      (while (search-forward "[ " nil t)
+        (replace-match "["))
+
+      (goto-char (point-min))
+      (while (search-forward "[" nil t)
+        (replace-match "\\\\jbmat{"))
+
+      (goto-char (point-min))
+      (while (search-forward " ]" nil t)
+        (replace-match "]"))
+
+      (goto-char (point-min))
+      (while (search-forward "]" nil t)
+        (replace-match "}"))
+
+      (goto-char (point-min))
+      (while (search-forward "; " nil t)
+        (replace-match ";"))
+
+      (goto-char (point-min))
+      (while (search-forward " " nil t)
+        (replace-match " & "))
+
+      (goto-char (point-min))
+      (while (search-forward ";" nil t)
+        (replace-match " \\\\\\\\ ")))))
