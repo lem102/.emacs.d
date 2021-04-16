@@ -22,6 +22,8 @@
 
 (use-package consult
   :ensure t
+  :config
+  (setq consult-preview-max-size 0)
   :bind
   (:map xah-fly-dot-keymap
         ("s" . consult-line))
