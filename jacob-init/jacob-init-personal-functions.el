@@ -233,34 +233,19 @@ in which case do move-beginning-of-line."
     (save-restriction
       (narrow-to-region matrix-start matrix-end)
 
-      (goto-char (point-min))
-      (while (search-forward-regexp "[[:space:]]+" nil t)
-        (replace-match " "))
-
-      (goto-char (point-min))
-      (while (search-forward "[ " nil t)
-        (replace-match "["))
-
-      (goto-char (point-min))
-      (while (search-forward "[" nil t)
-        (replace-match "\\\\jbmat{"))
-
-      (goto-char (point-min))
-      (while (search-forward " ]" nil t)
-        (replace-match "]"))
-
-      (goto-char (point-min))
-      (while (search-forward "]" nil t)
-        (replace-match "}"))
-
-      (goto-char (point-min))
-      (while (search-forward "; " nil t)
-        (replace-match ";"))
-
-      (goto-char (point-min))
-      (while (search-forward " " nil t)
-        (replace-match " & "))
-
-      (goto-char (point-min))
-      (while (search-forward ";" nil t)
-        (replace-match " \\\\\\\\ ")))))
+      (progn
+          (goto-char (point-min))
+          (while (search-forward-regexp "[[:space:]]+" nil t)
+            (replace-match " ")))
+      
+      (dolist (pair (list (quote ("[ " "["))
+                          (quote ("[" "\\\\jbmat{"))
+                          (quote (" ]" "]"))
+                          (quote ("]" "}"))
+                          (quote ("; " ";"))
+                          (quote (" " " & "))
+                          (quote (";" " \\\\\\\\ "))))
+        (progn
+          (goto-char (point-min))
+          (while (search-forward (car pair) nil t)
+            (replace-match (car (last pair)))))))))
