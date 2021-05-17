@@ -67,3 +67,14 @@
 ;; TODO: investigate server techniques
 (jacob-load "jacob-init-server.el")
 (server-start)
+
+
+
+
+(jacob-load "jacob-init-voice-commands.el")
+(jacob-load "jacob-init-abbrev.el")
+
+(use-package edit-server
+  :ensure t
+  :config
+  (edit-server-start))

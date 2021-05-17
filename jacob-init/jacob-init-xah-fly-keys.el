@@ -1,7 +1,7 @@
 (use-package xah-fly-keys
   :ensure t
   :demand
-  :after key-chord
+  ;; :after key-chord
   :init
   (setq xah-fly-use-control-key nil)
   (setq xah-fly-use-meta-key t)
@@ -20,14 +20,14 @@
   :hook
   (minibuffer-setup-hook . xah-fly-insert-mode-activate)
   (minibuffer-exit-hook . xah-fly-command-mode-activate)
-  :chords
-  ("fd" . xah-fly-command-mode-activate)
+  ;; :chords
+  ;; ("fd" . xah-fly-command-mode-activate)
   :bind
   (:map xah-fly-command-map
         ("a" . execute-extended-command)
         ("s" . jacob-enter-kmacro)
-        ("h" . jacob-back-to-indentation-or-beginning-of-line)
-        (";" . move-end-of-line)
+        ;; ("h" . jacob-back-to-indentation-or-beginning-of-line)
+        ;; (";" . move-end-of-line)
         ("4" . jacob-split-window-below-select-new)
         ("2" . jacob-quit-popup-window))
   (:map xah-fly-dot-keymap

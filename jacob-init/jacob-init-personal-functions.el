@@ -161,6 +161,10 @@ in which case do move-beginning-of-line."
   (interactive)
   (jacob-xah-insert-bracket-pair "'" "'"))
 
+(defun jacob-xah-insert-angled-bracket ()
+  (interactive)
+  (jacob-xah-insert-bracket-pair "<" ">"))
+
 (defun jacob-insert-plus ()
   (interactive)
   (insert "+"))
@@ -249,3 +253,5 @@ in which case do move-beginning-of-line."
           (goto-char (point-min))
           (while (search-forward (car pair) nil t)
             (replace-match (car (last pair)))))))))
+
+
