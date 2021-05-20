@@ -8,7 +8,11 @@
                    scroll-up-command
                    scroll-down-command
                    other-window
-                   ace-window
-                   avy-goto-char
-                   avy-goto-end-of-line))
+                   jacob-move-to-window-line-top
+                   jacob-move-to-window-line-centre
+                   jacob-move-to-window-line-bottom
+                   jacob-recenter-top
+                   jacob-recenter-centre
+                   jacob-recenter-bottom
+                   ))
   (advice-add command :after #'jacob-pulse-line))
