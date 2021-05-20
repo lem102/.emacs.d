@@ -23,7 +23,7 @@
 (jacob-load "jacob-init-fonts.el")
 (jacob-load "jacob-init-pulse.el")
 (jacob-load "jacob-init-orderless.el")
-(jacob-load "jacob-init-selectrum-and-friends.el")
+(jacob-load "jacob-init-minibuffer-completion.el")
 
 ;; miscellaneous settings
 (jacob-load "jacob-init-misc.el")

@@ -169,3 +169,11 @@
 (global-set-key (kbd "C-z 0") 'xah-pop-local-mark-ring)
 
 (global-set-key (kbd "C-z SPC i j") 'consult-recent-file)
+
+(global-set-key (kbd "C-z .") 'xah-forward-right-bracket)
+(global-set-key (kbd "C-z m") 'xah-backward-left-bracket)
+(global-set-key (kbd "C-z /") 'xah-goto-matching-bracket)
+
+(global-set-key (kbd "C-z SPC e p f") 'projectile-find-file)
+
+(global-set-key (kbd "C-z d") 'xah-delete-backward-bracket-pair)

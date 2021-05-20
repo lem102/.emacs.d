@@ -1,28 +1,18 @@
-(use-package prescient
-  :ensure t
-  :config
-  (prescient-persist-mode 1))
-
-(use-package selectrum-prescient
-  :ensure t
-  :config
-  (selectrum-prescient-mode 1))
-
 (use-package marginalia
   :ensure t
   :config
-  (setq marginalia-annotators '(marginalia-annotators-heavy nil marginalia-annotators-light))
   (marginalia-mode 1))
 
-(use-package selectrum
+(use-package vertico
   :ensure t
-  :after prescient selectrum-prescient marginalia
+  :after marginalia
   :config
-  (selectrum-mode 1))
+  (vertico-mode 1))
 
 (use-package consult
   :ensure t
   :config
+  (setq completion-in-region-function 'consult-completion-in-region)
   (setq consult-preview-max-size 0)
   :bind
   (:map xah-fly-dot-keymap
