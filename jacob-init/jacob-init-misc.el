@@ -9,6 +9,7 @@
   (setq create-lockfiles nil)
   (setq history-length 1000)
   (setq history-delete-duplicates t)
+  (setq-default truncate-lines nil)
   (defalias 'yes-or-no-p 'y-or-n-p))
 
 (use-package files

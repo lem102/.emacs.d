@@ -7,7 +7,7 @@
   (setq omnisharp-company-ignore-case nil)
   
   (if (boundp 'jacob-omnisharp-file-path)
-      (setq omnisharp-server-executable-path (expand-file-name jacob-omnisharp-file-path)))
+      (setq omnisharp-server-executable-path (expand-file-name "d:/programming/OmniSharp/omnisharp-win-x64/OmniSharp.exe")))
 
   (add-hook 'omnisharp-mode-hook (lambda ()
                                    (add-to-list (make-local-variable 'company-backends)

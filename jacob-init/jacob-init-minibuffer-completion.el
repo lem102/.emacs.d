@@ -7,7 +7,21 @@
   :ensure t
   :after marginalia
   :config
-  (vertico-mode 1))
+  (vertico-mode 1)
+
+  (defun jacob-vertico-next (repetitions)
+    (interactive "p")
+    (dotimes (i repetitions)
+      (vertico-next)))
+
+  (define-key vertico-map (kbd "<down>") 'jacob-vertico-next)
+
+  (defun jacob-vertico-previous (repetitions)
+    (interactive "p")
+    (dotimes (i repetitions)
+      (vertico-previous)))
+
+  (define-key vertico-map (kbd "<up>") 'jacob-vertico-previous))
 
 (use-package consult
   :ensure t

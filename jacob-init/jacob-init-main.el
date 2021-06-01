@@ -78,3 +78,7 @@
   :ensure t
   :config
   (edit-server-start))
+
+(use-package ahk-mode
+  :ensure t
+  :mode ("\\.ahk\\$" . ahk-mode))

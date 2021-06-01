@@ -1,3 +1,5 @@
+(require 'xah-fly-keys)
+
 (defun jacob-voice-backward-until-whitespace ()
   (interactive)
   (forward-whitespace -1)
@@ -164,7 +166,7 @@
 
 
 (global-set-key (kbd "C-z v") 'xah-paste-or-paste-previous)
-(global-set-key (kbd "C-z SPC v") 'consult-yank)
+(global-set-key (kbd "C-z SPC v") 'consult-yank-from-kill-ring)
 
 (global-set-key (kbd "C-z 0") 'xah-pop-local-mark-ring)
 
@@ -176,4 +178,24 @@
 
 (global-set-key (kbd "C-z SPC e p f") 'projectile-find-file)
 
-(global-set-key (kbd "C-z d") 'xah-delete-backward-bracket-pair)
+(global-set-key (kbd "C-z d") 'xah-delete-backward-char-or-bracket-text)
+
+(defun jacob-voice-mark-command ()
+  (interactive)
+  (if (region-active-p)
+      (er/expand-region 1)
+    (set-mark (point))))
+
+(global-set-key (kbd "C-z t") 'jacob-voice-mark-command)
+
+(global-set-key (kbd "C-x 2") 'jacob-split-window-below-select-new)
+(global-set-key (kbd "C-x 3") 'jacob-split-window-right-select-new)
+
+(global-set-key (kbd "C-z w") 'xah-shrink-whitespaces)
+
+(defun jacob-switch-to-previous-buffer ()
+  (interactive)
+  (switch-to-buffer (other-buffer (current-buffer) 1)))
+
+(global-set-key (kbd "C-z f") 'jacob-switch-to-previous-buffer)
+(global-set-key (kbd "C-z F") 'ibuffer)
