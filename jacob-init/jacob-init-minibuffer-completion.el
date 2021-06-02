@@ -1,38 +1,30 @@
-(use-package marginalia
-  :ensure t
-  :config
+(progn
+  (require 'orderless)
+  (setq completion-styles '(orderless)))
+
+(progn
+  (require 'prescient)
+  (prescient-persist-mode 1))
+
+(progn
+  (require 'selectrum-prescient)
+  (selectrum-prescient-mode 1))
+
+(progn
+  (require 'marginalia)
   (marginalia-mode 1))
 
-(use-package vertico
-  :ensure t
-  :after marginalia
-  :config
-  (vertico-mode 1)
+(progn
+  (require 'selectrum)
+  (setq selectrum-display-action nil)
+  (selectrum-mode 1))
 
-  (defun jacob-vertico-next (repetitions)
-    (interactive "p")
-    (dotimes (i repetitions)
-      (vertico-next)))
-
-  (define-key vertico-map (kbd "<down>") 'jacob-vertico-next)
-
-  (defun jacob-vertico-previous (repetitions)
-    (interactive "p")
-    (dotimes (i repetitions)
-      (vertico-previous)))
-
-  (define-key vertico-map (kbd "<up>") 'jacob-vertico-previous))
-
-(use-package consult
-  :ensure t
-  :config
+(progn
+  (require 'consult)
   (setq completion-in-region-function 'consult-completion-in-region)
-  (setq consult-preview-max-size 0)
-  :bind
-  (:map xah-fly-dot-keymap
-        ("s" . consult-line))
-  (:map xah-fly-c-keymap
-        ("j" . consult-recent-file))
-  (:map xah-fly-leader-key-map
-        ("v" . consult-yank)))
-
+  (setq consult-preview-key nil)        ; TODO: fine tune this later
+  (global-set-key (kbd "C-x b") 'consult-buffer)
+  (global-set-key (kbd "C-z n") 'consult-line)
+  (define-key xah-fly-dot-keymap (kbd "s") 'consult-line)
+  (define-key xah-fly-c-keymap (kbd "j") 'consult-recent-file)
+  (define-key xah-fly-leader-key-map (kbd "v") 'consult-yank))

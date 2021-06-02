@@ -22,7 +22,6 @@
 (jacob-load "jacob-init-modeline.el")
 (jacob-load "jacob-init-fonts.el")
 (jacob-load "jacob-init-pulse.el")
-(jacob-load "jacob-init-orderless.el")
 (jacob-load "jacob-init-minibuffer-completion.el")
 
 ;; miscellaneous settings
