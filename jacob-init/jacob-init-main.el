@@ -47,7 +47,7 @@
 ;; minor mode packages
 (jacob-load "jacob-init-eglot.el")      ; need to investigate what happens between the completion candidate being chosen and it being inserted in the buffer. 
 (jacob-load "jacob-init-dimmer.el")
-(jacob-load "jacob-init-flycheck.el")
+(jacob-load "jacob-init-flycheck.el")   ; it's a dependency of omnisharp. try to use flymake instead.
 (jacob-load "jacob-init-which-key.el")
 (jacob-load "jacob-init-company.el")
 (jacob-load "jacob-init-projectile.el")       ; should be replaced with project.el when project.el is as good as projectile.
