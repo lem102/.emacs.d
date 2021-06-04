@@ -81,3 +81,10 @@
 (use-package ahk-mode
   :ensure t
   :mode ("\\.ahk\\$" . ahk-mode))
+
+(jacob-load "jacob-init-auctex.el")
+
+(use-package goto-last-change
+  :bind
+  ("C-z j" . goto-last-change)
+  ("C-z l" . goto-last-change-reverse))

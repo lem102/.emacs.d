@@ -12,6 +12,11 @@
   (setq-default truncate-lines nil)
   (defalias 'yes-or-no-p 'y-or-n-p))
 
+(prefer-coding-system 'utf-8)
+(set-default-coding-systems 'utf-8)
+(set-terminal-coding-system 'utf-8)
+(set-keyboard-coding-system 'utf-8)
+
 (use-package files
   :defer 2
   :config

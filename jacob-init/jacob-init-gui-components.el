@@ -1,8 +1,8 @@
 (use-package emacs
   :config
-  (tool-bar-mode -1)
-  (menu-bar-mode -1)
-  (scroll-bar-mode -1)
+  (tool-bar-mode 0)
+  (menu-bar-mode 0)
+  (scroll-bar-mode 0)
   (setq use-file-dialog nil)
   (setq use-dialog-box t)
   (setq inhibit-startup-message nil)
