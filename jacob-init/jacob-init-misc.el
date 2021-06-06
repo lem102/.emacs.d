@@ -25,8 +25,7 @@
   (setq make-backup-files nil)
   (setq auto-save-default nil))
 
-(use-package recentf
-  :hook (after-init-hook . recentf-mode))
+(add-hook 'after-init-hook (lambda () (recentf-mode 1)))
 
 (use-package dabbrev
   :defer 2
@@ -89,6 +88,7 @@
   (save-place-mode 1))
 
 (use-package kmacro
+  :after xah-fly-keys
   :bind
   (:map xah-fly-r-keymap
         ("c" . kmacro-set-counter)))

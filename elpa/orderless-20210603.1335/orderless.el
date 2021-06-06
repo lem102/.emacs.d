@@ -4,9 +4,9 @@
 
 ;; Author: Omar Antolín Camarena <omar@matem.unam.mx>
 ;; Keywords: extensions
-;; Version: 0.5
+;; Version: 0.6
 ;; Homepage: https://github.com/oantolin/orderless
-;; Package-Requires: ((emacs "24.4"))
+;; Package-Requires: ((emacs "26.1"))
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -48,7 +48,7 @@
 ;; from strings to strings that map a component to a regexp to match
 ;; against.  The variable `orderless-matching-styles' lists the
 ;; matching styles to be used for components, by default it allows
-;; regexp and initialism matching.
+;; literal and regexp matching.
 
 ;;; Code:
 
@@ -114,7 +114,7 @@ value means highlighting is skipped."
   :type '(choice boolean function))
 
 (defcustom orderless-matching-styles
-  '(orderless-regexp orderless-initialism)
+  '(orderless-literal orderless-regexp)
   "List of component matching styles.
 If this variable is nil, regexp matching is assumed.
 
@@ -152,23 +152,8 @@ match as literals.  As another example, a style dispatcher could
 arrange for a component starting with `?' to match the rest of
 the component in the `orderless-flex' style.  For more
 information on how this variable is used, see
-`orderless-default-pattern-compiler'."
+`orderless-pattern-compiler'."
   :type 'hook)
-
-(defcustom orderless-pattern-compiler #'orderless-default-pattern-compiler
-  "The `orderless' pattern compiler.
-This should be a function that takes an input pattern and returns
-a list of regexps that must all match a candidate in order for
-the candidate to be considered a completion of the pattern.
-
-The default pattern compiler is probably flexible enough for most
-users.  See `orderless-default-pattern-compiler' for details.
-
-The documentation for `orderless-matching-styles' is written
-assuming the default pattern compiler is used, if you change the
-pattern compiler it can, of course, do anything and need not
-consult this variable at all."
-  :type 'function)
 
 (defcustom orderless-smart-case t
   "Whether to use smart case.
@@ -186,9 +171,11 @@ is determined by the values of `completion-ignore-case',
 
 ;;; Matching styles
 
-(defalias 'orderless-regexp #'identity
-  "Match a component as a regexp.
-This is simply the identity function.")
+(defun orderless-regexp (component)
+  "Match COMPONENT as a regexp."
+  (condition-case nil
+      (progn (string-match-p component "") component)
+    (invalid-regexp nil)))
 
 (defalias 'orderless-literal #'regexp-quote
   "Match a component as a literal string.
@@ -291,10 +278,10 @@ at a word boundary in the candidate.  This is similar to the
            (cl-loop
             for (x y) on (or (cddr (match-data)) (match-data)) by #'cddr
             when x do
-            (font-lock-prepend-text-property
+            (add-face-text-property
              x y
-             'face (aref orderless-match-faces (mod i n))
-             string)))
+             (aref orderless-match-faces (mod i n))
+             nil string)))
   string)
 
 (defun orderless-highlight-matches (regexps strings)
@@ -304,7 +291,7 @@ For the user's convenience, if REGEXPS is a string, it is
 converted to a list of regexps according to the value of
 `orderless-matching-styles'."
     (when (stringp regexps)
-      (setq regexps (funcall orderless-pattern-compiler regexps)))
+      (setq regexps (orderless-pattern-compiler regexps)))
     (cl-loop for original in strings
              for string = (copy-sequence original)
              collect (orderless--highlight regexps string)))
@@ -360,7 +347,7 @@ DEFAULT as the list of styles."
            when result return (cons result string)
            finally (return (cons default string))))
 
-(defun orderless-default-pattern-compiler (pattern &optional styles dispatchers)
+(defun orderless-pattern-compiler (pattern &optional styles dispatchers)
   "Build regexps to match the components of PATTERN.
 Split PATTERN on `orderless-component-separator' and compute
 matching styles for each component.  For each component the style
@@ -374,28 +361,22 @@ dispatchers.
 The STYLES default to `orderless-matching-styles', and the
 DISPATCHERS default to `orderless-dipatchers'.  Since nil gets you
 the default, if want to no dispatchers to be run, use '(ignore)
-as the value of DISPATCHERS.
-
-This function is the default for `orderless-pattern-compiler' and
-might come in handy as a subroutine to implement other pattern
-compilers."
+as the value of DISPATCHERS."
   (unless styles (setq styles orderless-matching-styles))
   (unless dispatchers (setq dispatchers orderless-style-dispatchers))
   (cl-loop
    with components = (if (functionp orderless-component-separator)
                          (funcall orderless-component-separator pattern)
-                       (split-string pattern orderless-component-separator))
+                       (split-string pattern orderless-component-separator t))
    with total = (length components)
    for component in components and index from 0
    for (newstyles . newcomp) = (orderless-dispatch
                                 dispatchers styles component index total)
-   collect
-   (if (functionp newstyles)
-       (funcall newstyles newcomp)
-     (rx-to-string
-      `(or
-        ,@(cl-loop for style in newstyles
-                   collect `(regexp ,(funcall style newcomp))))))))
+   when (functionp newstyles) do (setq newstyles (list newstyles))
+   for regexps = (cl-loop for style in newstyles
+                          for result = (funcall style newcomp)
+                          when result collect `(regexp ,result))
+   when regexps collect (rx-to-string `(or ,@regexps))))
 
 ;;; Completion style implementation
 
@@ -409,19 +390,17 @@ The predicate PRED is used to constrain the entries in TABLE."
 (defun orderless-filter (string table &optional pred)
   "Split STRING into components and find entries TABLE matching all.
 The predicate PRED is used to constrain the entries in TABLE."
-  (condition-case nil
-      (save-match-data
-        (pcase-let* ((`(,prefix . ,pattern)
-                      (orderless--prefix+pattern string table pred))
-                     (completion-regexp-list
-                      (funcall orderless-pattern-compiler pattern))
-                     (completion-ignore-case
-                      (if orderless-smart-case
-                          (cl-loop for regexp in completion-regexp-list
-                                   always (isearch-no-upper-case-p regexp t))
-                        completion-ignore-case)))
-          (all-completions prefix table pred)))
-    (invalid-regexp nil)))
+  (save-match-data
+    (pcase-let* ((`(,prefix . ,pattern)
+                  (orderless--prefix+pattern string table pred))
+                 (completion-regexp-list
+                  (orderless-pattern-compiler pattern))
+                 (completion-ignore-case
+                  (if orderless-smart-case
+                      (cl-loop for regexp in completion-regexp-list
+                               always (isearch-no-upper-case-p regexp t))
+                    completion-ignore-case)))
+      (all-completions prefix table pred))))
 
 ;;;###autoload
 (defun orderless-all-completions (string table pred _point)
@@ -444,7 +423,7 @@ This function is part of the `orderless' completion style."
          (length prefix))))))
 
 ;;;###autoload
-(defun orderless-try-completion (string table pred point &optional _metadata)
+(defun orderless-try-completion (string table pred point)
   "Complete STRING to unique matching entry in TABLE.
 This uses `orderless-all-completions' to find matches for STRING
 in TABLE among entries satisfying PRED.  If there is only one
@@ -498,7 +477,7 @@ delegates to `orderless-%s'.")
      (defun ,try-completion (string table pred point)
        ,(funcall fn-doc "try-completion")
        (let ,configuration
-         (orderless-all-completions string table pred point)))
+         (orderless-try-completion string table pred point)))
      (defun ,all-completions (string table pred point)
        ,(funcall fn-doc "all-completions")
        (let ,configuration
@@ -517,7 +496,7 @@ delegates to `orderless-%s'.")
 This function is for integration of orderless with ivy, use it as
 a value in `ivy-re-builders-alist'."
   (or (mapcar (lambda (x) (cons x t))
-              (funcall orderless-pattern-compiler str))
+              (orderless-pattern-compiler str))
       ""))
 
 (defun orderless-ivy-highlight (str)
