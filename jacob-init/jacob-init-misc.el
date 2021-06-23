@@ -56,3 +56,9 @@
 (setq save-place-file "~/.emacs.d/saveplace")
 (setq save-place-forget-unreadable-files t)
 (save-place-mode 1)
+
+(setq use-file-dialog nil)
+(setq use-dialog-box t)
+(setq inhibit-startup-message nil)
+
+

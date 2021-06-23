@@ -13,7 +13,7 @@
   (xah-fly-keys-set-layout "qwerty")
   (xah-fly-keys 1)
 
-  (add-hook 'after-init-hook (lambda () (unbind-key "C-<kp-subtract>") (define-key global-map (kbd "C-<kp-subtract> C-`") 'jacob-insert-asterisk)))
+  (add-hook 'after-init-hook (lambda () (global-set-key (kbd "C-<kp-subtract>") nil) (define-key global-map (kbd "C-<kp-subtract> C-`") 'jacob-insert-asterisk)))
 
   (defun xah-jacob-kill-word (repetitions)
     (interactive "p")
@@ -42,7 +42,7 @@
     (define-key map (kbd "v") vc-prefix-map)
     (define-key map (kbd "c") jacob-config-keymap))
 
-  (unbind-key (kbd "DEL") 'xah-fly-command-map)
+  (define-key xah-fly-command-map (kbd "DEL") nil)
 
   (global-set-key (kbd "C-z r") 'xah-jacob-kill-word)
   (global-set-key (kbd "C-z e") 'xah-jacob-backward-kill-word)

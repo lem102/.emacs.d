@@ -1,5 +1,3 @@
-(require 'pulse)
-
 (defun jacob-pulse-line (&rest _)
   "Pulse the current line."
   (pulse-momentary-highlight-region (+ (line-beginning-position) (current-indentation)) (line-end-position)))

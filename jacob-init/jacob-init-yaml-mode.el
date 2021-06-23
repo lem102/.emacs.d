@@ -1,4 +1,2 @@
-(use-package yaml-mode
-  :ensure t
-  :defer t
-  :mode ("\\.yml\\'" . yaml-mode))
+(jacob-is-installed 'yaml-mode
+  (add-to-list 'auto-mode-alist '("\\.yml\\'" . yaml-mode)))

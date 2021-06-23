@@ -1,3 +1,3 @@
-(use-package powershell
-  :ensure t
-  :mode ("\\.ps1\\'" . powershell-mode))
+(jacob-is-installed 'powershell
+  (with-eval-after-load 'powershell
+    ))

@@ -1,4 +1,6 @@
 (jacob-is-installed 'eglot
+  (add-hook 'java-mode-hook 'eglot-ensure)
+  (add-hook 'csharp-mode-hook 'eglot-ensure)
   (with-eval-after-load 'eglot
     (defun jacob-eglot-eclipse-jdt-contact
         (interactive)
@@ -21,6 +23,4 @@
       (define-key jacob-eglot-keymap (kbd "r") 'eglot-rename)
       ;; not sure if these should be bound here
       (define-key jacob-eglot-keymap (kbd "d") 'xref-find-definitions)
-      (define-key jacob-eglot-keymap (kbd "u") 'xref-find-references)))
-  (add-hook 'java-mode-hook 'eglot-ensure)
-  (add-hook 'csharp-mode-hook 'eglot-ensure))
+      (define-key jacob-eglot-keymap (kbd "u") 'xref-find-references))))

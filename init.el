@@ -2,6 +2,8 @@
 ;;; Commentary:
 ;;; Code:
 
+(global-unset-key (kbd "C-z"))
+
 (defmacro jacob-is-installed (package &rest body)
   "If PACKAGE is installed, evaluate BODY.
 Used when attempting to lazy load PACKAGE."
@@ -23,24 +25,34 @@ Used to eagerly load FEATURE."
                          ))
 
 (setq package-selected-packages '(
+                                  ahk-mode
+                                  csharp-mode
+                                  web-mode
+                                  go-mode
+                                  sml-mode
+                                  json-mode
+                                  csv-mode
+                                  powershell
+                                  yaml-mode
                                   selectrum
                                   consult
                                   orderless
                                   selectrum-prescient
                                   marginalia
                                   edit-server
-                                  ahk-mode
                                   goto-last-change
-                                  json-mode
                                   eglot
-                                  sml-mode
-                                  csharp-mode
-                                  company
                                   auctex
-                                  flycheck
+                                  expand-region
+                                  projectile
+                                  restart-emacs
+                                  color-theme-sanityinc-tomorrow
+                                  which-key
+                                  xah-fly-keys
                                   ))
 
 (package-install-selected-packages)
+(package-autoremove)
 
 (let ((jacob-config-directory (concat user-emacs-directory "jacob-init/")))
   (dolist (config-file (directory-files-recursively jacob-config-directory "\\.el$"))

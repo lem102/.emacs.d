@@ -54,3 +54,7 @@
 
 (global-set-key (kbd "C-z f") 'jacob-switch-to-previous-buffer)
 (global-set-key (kbd "C-z F") 'ibuffer)
+
+(jacob-is-installed 'goto-last-change
+  (global-set-key (kbd "C-z j") 'goto-last-change)
+  (global-set-key (kbd "C-z l") 'goto-last-change-reverse))

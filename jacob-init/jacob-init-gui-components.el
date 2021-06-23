@@ -1,5 +1,0 @@
-(setq use-file-dialog nil)
-(setq use-dialog-box t)
-(setq inhibit-startup-message nil)
-(global-unset-key (kbd "C-z"))
-(global-unset-key (kbd "C-c C-z"))
