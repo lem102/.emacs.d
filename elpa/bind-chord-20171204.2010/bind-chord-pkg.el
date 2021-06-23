@@ -1,2 +1,0 @@
-;;; Generated package description from bind-chord.el  -*- no-byte-compile: t -*-
-(define-package "bind-chord" "20171204.2010" "key-chord binding helper for use-package-chords" '((bind-key "1.0") (key-chord "0.6")) :commit "365c73d2618dd0040a32c2601c5456ab5495b812" :authors '(("Justin Talbott" . "justin@waymondo.com")) :maintainer '("Justin Talbott" . "justin@waymondo.com") :keywords '("convenience" "tools" "extensions") :url "https://github.com/waymondo/use-package-chords")
