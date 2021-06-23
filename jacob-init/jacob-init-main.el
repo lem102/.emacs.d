@@ -1,15 +1,13 @@
 ;;; -*- lexical-binding: t -*-
+;;;
+;;; Code:
 
-(use-package edit-server
-  :ensure t
-  :config
+(jacob-try-require 'edit-server
   (edit-server-start))
 
-(use-package ahk-mode
-  :ensure t
-  :mode ("\\.ahk\\$" . ahk-mode))
+(jacob-is-installed 'ahk-mode
+  (push '("\\.ahk\\$" . ahk-mode) auto-mode-alist))
 
-(use-package goto-last-change
-  :bind
-  ("C-z j" . goto-last-change)
-  ("C-z l" . goto-last-change-reverse))
+(jacob-is-installed 'goto-last-change
+  (global-set-key (kbd "C-z j") 'goto-last-change)
+  (global-set-key (kbd "C-z l") 'goto-last-change-reverse))

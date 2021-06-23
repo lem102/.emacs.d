@@ -1,5 +1,3 @@
-(use-package restart-emacs
-  :ensure t
-  :bind
-  (:map jacob-config-keymap
-        ("R" . restart-emacs)))
+(jacob-is-installed 'restart-emacs
+  (with-eval-after-load 'xah-fly-keys
+    (define-key jacob-config-keymap (kbd "R") 'restart-emacs)))

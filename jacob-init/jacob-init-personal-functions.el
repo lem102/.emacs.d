@@ -1,3 +1,26 @@
+(defun jacob-words-to-symbol (begin end)
+  ""
+  (interactive "r")
+  (if (region-active-p)
+      (let* ((simple-template (lambda (char begin end)
+                                (save-restriction
+                                  (narrow-to-region begin end)
+                                  (goto-char (point-min))
+                                  (while (search-forward " " nil t)
+                                    (replace-match char)))))
+             (hyphenate (lambda (begin end)
+                          (funcall simple-template "-" begin end)))
+             (underscore (lambda (begin end)
+                           (funcall simple-template "_" begin end))))
+        (cond
+         ((eq major-mode 'emacs-lisp-mode)
+          (funcall hyphenate begin end))
+         ((eq major-mode 'sml-mode)
+          (funcall underscore begin end))
+         (t
+          (funcall underscore begin end))))
+    (message "No selection.")))
+
 (defun jacob-insert-camel-case ()
   "ask for input, apply camel case to input and insert at point."
   (interactive)

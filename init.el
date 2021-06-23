@@ -1,30 +1,50 @@
-;;   (defun jacob-load (filename)
-;;     "Loads FILENAME from the jacob-init directory in .emacs.d.
-;; The name will never be changed ;)"
-;;     (load (concat user-emacs-directory "jacob-init/" filename) nil 'nomessage))
+;;; init.el --- Jacob's main init file. -*-lexical-binding: t-*-
+;;; Commentary:
+;;; Code:
 
-;; (jacob-load "jacob-init-main.el")
+(defmacro jacob-is-installed (package &rest body)
+  "If PACKAGE is installed, evaluate BODY.
+Used when attempting to lazy load PACKAGE."
+  (declare (indent 1))
+  `(when (package-installed-p ,package)
+     ,@body))
 
-(defun jacob-ensure-package-installed (package)
-  "Ensures that PACKAGE is installed."
-  (unless (or (package-installed-p package)
-              (require package nil 'noerror))
-    (unless (assoc package package-archive-contents)
-      (package-refresh-contents))
-    (package-install package)))
+(defmacro jacob-try-require (feature &rest body)
+  "Attempt to require FEATURE.
+If successful, evaluate BODY.
+Used to eagerly load FEATURE."
+  (declare (indent 1))
+  `(when (require ,feature nil 'noerror)
+     ,@body))
 
-(defun jacob-demand-external-package (package)
-  (jacob-ensure-package-installed package)
-  (require package))
-
-(setq package-selected-packages nil)
 (setq package-archives '(
                          ("gnu" . "https://elpa.gnu.org/packages/")
                          ("melpa" . "https://melpa.org/packages/")
                          ))
 
+(setq package-selected-packages '(
+                                  selectrum
+                                  consult
+                                  orderless
+                                  selectrum-prescient
+                                  marginalia
+                                  edit-server
+                                  ahk-mode
+                                  goto-last-change
+                                  json-mode
+                                  eglot
+                                  sml-mode
+                                  csharp-mode
+                                  company
+                                  auctex
+                                  flycheck
+                                  ))
+
+(package-install-selected-packages)
+
 (let ((jacob-config-directory (concat user-emacs-directory "jacob-init/")))
   (dolist (config-file (directory-files-recursively jacob-config-directory "\\.el$"))
-          (load config-file)))
+    (load config-file)))
 
-
+(provide 'init)
+;;; init.el ends here
