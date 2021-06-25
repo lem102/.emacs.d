@@ -3,9 +3,6 @@
 
     (setq sml-abbrev-skeletons nil)
 
-    (when (boundp 'sml-mode-abbrev-table)
-      (clear-abbrev-table sml-mode-abbrev-table))
-
     (define-skeleton jacob-sml-skeleton-val
       "insert val" nil
       > "val " - " =")
@@ -31,6 +28,9 @@
       "insert case" nil
       > "case " - " of => ")
 
+    (when (boundp 'sml-mode-abbrev-table)
+      (clear-abbrev-table sml-mode-abbrev-table))
+    
     (define-abbrev-table 'sml-mode-abbrev-table
       '(
         ("val" "" jacob-sml-skeleton-val)
