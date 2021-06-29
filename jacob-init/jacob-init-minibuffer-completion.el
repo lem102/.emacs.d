@@ -25,17 +25,7 @@
     (setq completion-in-region-function 'consult-completion-in-region)
     (setq consult-preview-key 'any)
     (dolist (command '(consult-bookmark consult-recent-file consult-buffer))
-      (setf (alist-get command consult-config) `(:preview-key ,nil))))
-
-  (global-set-key (kbd "C-z SPC e c f") 'consult-buffer)
-  (global-set-key (kbd "C-z SPC e c n") 'consult-line))
-
-(jacob-is-installed 'xah-fly-keys
-  (with-eval-after-load 'xah-fly-keys
-    (define-key xah-fly-dot-keymap (kbd "s") 'consult-line)
-    (define-key xah-fly-c-keymap (kbd "j") 'consult-recent-file)
-    (define-key xah-fly-leader-key-map (kbd "v") 'consult-yank)
-    (define-key xah-fly-leader-key-map (kbd "f") 'consult-buffer)))
+      (setf (alist-get command consult-config) `(:preview-key ,nil)))))
 
 (provide 'jacob-init-minibuffer-completion)
 

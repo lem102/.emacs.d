@@ -58,5 +58,7 @@ Used to eagerly load FEATURE."
   (dolist (config-file (directory-files-recursively jacob-config-directory "\\.el$"))
     (load config-file)))
 
+(load (concat user-emacs-directory "jacob-bindings.el"))
+
 (provide 'init)
 ;;; init.el ends here

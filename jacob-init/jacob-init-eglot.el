@@ -14,13 +14,4 @@
     (setcdr (assq 'java-mode eglot-server-programs) #'jacob-eglot-eclipse-jdt-contact)
 
     (add-to-list 'eglot-server-programs
-                 `(csharp-mode . ("d:/programming/OmniSharp/omnisharp-win-x64/OmniSharp.exe" "-lsp")))
-    
-    (with-eval-after-load 'xah-fly-keys
-      (define-prefix-command 'jacob-eglot-keymap)
-      (define-key xah-fly-dot-keymap (kbd "e") jacob-eglot-keymap)
-      (define-key jacob-eglot-keymap (kbd "a") 'eglot-code-actions)
-      (define-key jacob-eglot-keymap (kbd "r") 'eglot-rename)
-      ;; not sure if these should be bound here
-      (define-key jacob-eglot-keymap (kbd "d") 'xref-find-definitions)
-      (define-key jacob-eglot-keymap (kbd "u") 'xref-find-references))))
+                 `(csharp-mode . ("d:/programming/OmniSharp/omnisharp-win-x64/OmniSharp.exe" "-lsp")))))
