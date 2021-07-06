@@ -36,9 +36,6 @@
     (dotimes (i repetitions)
       (xah-end-of-line-or-block))))
 
-  (let ((map xah-fly-r-keymap)) 
-    (define-key map (kbd "c") 'kmacro-set-counter))
-
 (provide 'jacob-init-xah-fly-keys)
 
 ;;; jacob-init-xah-fly-keys.el ends here

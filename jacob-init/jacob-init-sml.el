@@ -38,6 +38,4 @@
         ("let" "" jacob-sml-skeleton-let)
         ("fun" "" jacob-sml-skeleton-fun)
         ("case" "" jacob-sml-skeleton-case)
-        ))
-
-    ))
+        ))))

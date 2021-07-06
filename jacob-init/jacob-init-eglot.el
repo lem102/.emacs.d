@@ -1,6 +1,8 @@
 (jacob-is-installed 'eglot
   (add-hook 'java-mode-hook 'eglot-ensure)
   (add-hook 'csharp-mode-hook 'eglot-ensure)
+  (add-hook 'js-mode-hook 'eglot-ensure)
+  (add-hook 'typescript-mode-hook 'eglot-ensure)
   (with-eval-after-load 'eglot
     (defun jacob-eglot-eclipse-jdt-contact
         (interactive)

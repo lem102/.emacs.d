@@ -3,4 +3,4 @@
 
   (with-eval-after-load 'projectile
     (setq projectile-completion-system 'default)
-    (setq projectile-indexing-method 'alien)))
+    (setq projectile-indexing-method 'native)))

@@ -34,9 +34,11 @@ Used to eagerly load FEATURE."
                                   csv-mode
                                   powershell
                                   yaml-mode
+                                  typescript-mode
                                   selectrum
                                   consult
                                   orderless
+                                  prescient
                                   selectrum-prescient
                                   marginalia
                                   edit-server

@@ -64,22 +64,18 @@
     (jacob-is-installed 'projectile
       (define-key map (kbd "p") 'projectile-command-map)))
 
-
   (let ((map xah-fly-command-map))
     (define-key map (kbd "a") 'execute-extended-command)
     (define-key map (kbd "s") (kbd "RET"))
     (define-key map (kbd "DEL") nil)
-    (define-key map (kbd "j") (kbd "C-b"))
-    (define-key map (kbd "l") (kbd "C-f"))
-    (define-key map (kbd "i") (kbd "C-p"))
-    (define-key map (kbd "k") (kbd "C-n"))
+    ;; (define-key map (kbd "j") (kbd "C-b"))
+    ;; (define-key map (kbd "l") (kbd "C-f"))
+    ;; (define-key map (kbd "i") (kbd "C-p"))
+    ;; (define-key map (kbd "k") (kbd "C-n"))
     (define-key map (kbd "4") 'jacob-split-window-below-select-new)
     (define-key map (kbd "2") 'jacob-quit-popup-window)
     (jacob-is-installed 'expand-region
-      (define-key map (kbd "8") 'er/expand-region))
-    (jacob-is-installed 'consult
-      (define-key map (kbd "v") 'consult-yank)
-      (define-key map (kbd "f") 'consult-buffer)))
+      (define-key map (kbd "8") 'er/expand-region)))
 
   (let ((map jacob-config-keymap))
     (define-key map (kbd "r") 'jacob-config-reload)
@@ -110,7 +106,10 @@
     (define-key map (kbd "o") 'jacob-insert-ampersand))
 
   (let ((map xah-fly-leader-key-map))
-    (define-key map (kbd "4") 'jacob-split-window-right-select-new))
+    (define-key map (kbd "4") 'jacob-split-window-right-select-new)
+    (jacob-is-installed 'consult
+      (define-key map (kbd "v") 'consult-yank)
+      (define-key map (kbd "f") 'consult-buffer)))
 
   (let ((map xah-fly-w-keymap))
     (define-key map (kbd "n") 'jacob-eval-and-replace))
@@ -119,6 +118,9 @@
     (define-key map (kbd "j") 'kill-this-buffer))
 
   (let ((map xah-fly-c-keymap))
-    (define-key xah-fly-c-keymap (kbd "j") 'consult-recent-file)))
+    (define-key xah-fly-c-keymap (kbd "j") 'consult-recent-file))
+
+  (let ((map xah-fly-r-keymap)) 
+    (define-key map (kbd "c") 'kmacro-set-counter)))
 
 
