@@ -34,7 +34,9 @@ retrieval.
 OVERLAY-PROPERTIES is an alist of properties attached to the
 created diagnostic, overriding the default properties and any
 properties of `flymake-overlay-control' of the diagnostic's
-type."
+type.
+
+tweaked to implement a hack by me"
       (if (not (string= text "typescript: Experimental support for decorators is a feature that is subject to change in a future release. Set the 'experimentalDecorators' option in your 'tsconfig' or 'jsconfig' to remove this warning."))
           (flymake--diag-make :buffer buffer :beg beg :end end
                               :type type :text text :data data
