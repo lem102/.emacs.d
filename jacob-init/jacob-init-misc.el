@@ -60,5 +60,3 @@
 (setq use-file-dialog nil)
 (setq use-dialog-box t)
 (setq inhibit-startup-message nil)
-
-
