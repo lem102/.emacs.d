@@ -33,29 +33,41 @@
 (setq ls-lisp-use-insert-directory-program nil)
 (setq ls-lisp-dirs-first t)
 
-(global-subword-mode 1)
+(defun jacob-prog-mode-hook-function ()
+  "hook function to run when in programming mode"
+  (global-subword-mode 1)
 
-(delete-selection-mode 1)
+  (setq show-paren-style 'parenthesis)
+  (setq show-paren-when-point-inside-paren t)
+  (setq show-paren-when-point-in-periphery nil)
+  (show-paren-mode 1)
 
-(setq show-paren-style 'parenthesis)
-(setq show-paren-when-point-inside-paren t)
-(setq show-paren-when-point-in-periphery nil)
-(show-paren-mode 1)
+  (setq electric-pair-preserve-balance t)
+  (setq electric-pair-delete-adjacent-pairs t)
+  (setq electric-pair-open-newline-between-pairs t)
+  (electric-pair-mode 1)
 
-(setq electric-pair-preserve-balance t)
-(setq electric-pair-delete-adjacent-pairs t)
-(setq electric-pair-open-newline-between-pairs t)
-(electric-pair-mode 1)
+  (remove-hook 'prog-mode-hook 'jacob-prog-mode-hook-function))
+
+(add-hook 'prog-mode-hook 'jacob-prog-mode-hook-function)
 
 (setq ibuffer-expert t)
 
-(setq savehist-file "~/.emacs.d/savehist")
-(setq savehist-save-minibuffer-history t)
-(savehist-mode 1)
+(defun jacob-find-file-hook-function ()
+  "hook function to run after file openend."
+  (setq savehist-file "~/.emacs.d/savehist")
+  (setq savehist-save-minibuffer-history t)
+  (savehist-mode 1)
 
-(setq save-place-file "~/.emacs.d/saveplace")
-(setq save-place-forget-unreadable-files t)
-(save-place-mode 1)
+  (setq save-place-file "~/.emacs.d/saveplace")
+  (setq save-place-forget-unreadable-files t)
+  (save-place-mode 1)
+
+  (delete-selection-mode 1)
+
+  (remove-hook 'find-file-hook 'jacob-find-file-hook-function))
+
+(add-hook 'find-file-hook 'jacob-find-file-hook-function)
 
 (setq use-file-dialog nil)
 (setq use-dialog-box t)
