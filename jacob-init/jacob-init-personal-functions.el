@@ -21,24 +21,48 @@
           (funcall underscore begin end))))
     (message "No selection.")))
 
-(defun jacob-insert-camel-case ()
-  "ask for input, apply camel case to input and insert at point."
+(defun jacob-create-camel-case-variable-name ()
+  "Ask for input, apply camel case to input and insert at point."
   (interactive)
-  (let* ((input (read-string "enter words to be camel cased:"))
+  (let* ((input (read-string "Enter words to be camel cased:"))
          (input-list (split-string input " ")))
     (insert (concat (car input-list)
                     (mapconcat 'capitalize
                                (cdr input-list)
                                "")))))
 
-(defun jacob-insert-pascal-case ()
-  "ask for input, apply camel case to input and insert at point."
+(defun jacob-create-pascal-case-variable-name ()
+  "Ask for input, apply pascal case to input and insert at point."
   (interactive)
-  (let* ((input (read-string "enter words to be camel cased:"))
+  (let* ((input (read-string "Enter words to be pascal cased:"))
          (input-list (split-string input " ")))
     (insert (mapconcat 'capitalize
                        input-list
                        ""))))
+
+(defun jacob-create-hyphenated-variable-name ()
+  "Ask for input, hyphenate the input and insert at point."
+  (interactive)
+  (let* ((input (read-string "Enter words to be hyphenated:"))
+         (output (with-temp-buffer
+                   (insert input)
+                   (goto-char (point-min))
+                   (while (search-forward " " nil t)
+                     (replace-match "-"))
+                   (buffer-string))))
+    (insert output)))
+
+(defun jacob-create-underscored-variable-name ()
+  "Ask for input, underscore the input and insert at point."
+  (interactive)
+  (let* ((input (read-string "Enter words to be underscored:"))
+         (output (with-temp-buffer
+                   (insert input)
+                   (goto-char (point-min))
+                   (while (search-forward " " nil t)
+                     (replace-match "_"))
+                   (buffer-string))))
+    (insert output)))
 
 (defun jacob-count-words-region ()
   "If mark active count words in region, otherwise count words in whole buffer."

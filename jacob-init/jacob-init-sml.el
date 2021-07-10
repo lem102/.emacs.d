@@ -26,7 +26,8 @@
 
     (define-skeleton jacob-sml-skeleton-case
       "insert case" nil
-      > "case " - " of => ")
+      > "case " - " of" \n
+      " => ")
 
     (when (boundp 'sml-mode-abbrev-table)
       (clear-abbrev-table sml-mode-abbrev-table))

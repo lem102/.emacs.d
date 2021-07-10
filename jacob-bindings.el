@@ -123,4 +123,38 @@
   (let ((map xah-fly-r-keymap)) 
     (define-key map (kbd "c") 'kmacro-set-counter)))
 
+
 
+;; keys for inserting symbols
+
+(with-eval-after-load 'xah-fly-keys
+  (define-prefix-command 'jacob-symbol-insertion-map)
+  (define-prefix-command 'jacob-programming-name-insertion-map)
+
+  (define-key xah-fly-insert-map (kbd "`") 'jacob-symbol-insertion-map)
+
+  (let ((map jacob-symbol-insertion-map))
+    (define-key map (kbd "`") (lambda () (interactive) (insert "`")))
+    
+    (define-key map (kbd "j") (kbd "{"))
+    (define-key map (kbd "k") (kbd "("))
+    (define-key map (kbd "l") (kbd "["))
+    (define-key map (kbd "u") (kbd "\""))
+    (define-key map (kbd "i") (kbd "'"))
+    
+    (define-key map (kbd "m") (kbd "-"))
+    (define-key map (kbd ",") (kbd "_"))
+    (define-key map (kbd ".") (kbd "="))
+    (define-key map (kbd "/") (kbd "+"))
+    
+    (define-key map (kbd "v") (kbd "~"))
+    (define-key map (kbd "c") (kbd "#"))
+    (define-key map (kbd "x") (kbd "@"))
+
+    (define-key map (kbd "z") 'jacob-programming-name-insertion-map))
+
+  (let ((map jacob-programming-name-insertion-map))
+    (define-key map (kbd "p") 'jacob-create-pascal-case-variable-name)
+    (define-key map (kbd "c") 'jacob-create-camel-case-variable-name)
+    (define-key map (kbd "h") 'jacob-create-hyphenated-variable-name)
+    (define-key map (kbd "u") 'jacob-create-underscored-variable-name)))
