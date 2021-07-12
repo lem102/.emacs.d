@@ -171,6 +171,11 @@
 
 (defun jacob-elisp-config-hook-function ()
   "Configure `emacs-lisp-mode' when hook run."
+  (when (not buffer-display-table)
+    (setq buffer-display-table (make-display-table)))
+  (aset buffer-display-table ?\^L
+        (vconcat (make-list 70 (make-glyph-code ?─ 'font-lock-comment-face))))
+  (redraw-frame)
   (flymake-mode 1)
   (define-skeleton jacob-emacs-lisp-skeleton-let
     "insert let" nil
@@ -597,11 +602,14 @@ tweaked to implement a hack by me"
     (dotimes (i repetitions)
       (xah-end-of-line-or-block))))
 
+
+
 (jacob-is-installed 'yaml-mode
   (add-to-list 'auto-mode-alist '("\\.yml\\'" . yaml-mode)))
 
-;; personal functions
 
+
+;; personal functions
 
 (defun jacob-words-to-symbol (begin end)
   ""
@@ -916,6 +924,8 @@ If user inputs yes, system is shutdown. Otherwise, nothing happens."
 
 ;; https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_pwsh?view=powershell-7.1
 
+
+
 ;; voice commands
 
 (defun jacob-recenter-top ()
@@ -952,8 +962,9 @@ If user inputs yes, system is shutdown. Otherwise, nothing happens."
   (interactive)
   (switch-to-buffer (other-buffer (current-buffer) 1)))
 
-;; key bindings
 
+
+;; key bindings
 
 (global-unset-key (kbd "C-z"))
 
@@ -1000,6 +1011,8 @@ If user inputs yes, system is shutdown. Otherwise, nothing happens."
   (jacob-is-installed 'goto-last-change
     (define-key map (kbd "C-z j") 'goto-last-change)
     (define-key map (kbd "C-z l") 'goto-last-change-reverse)))
+
+
 
 (jacob-is-installed 'xah-fly-keys
   (define-prefix-command 'jacob-config-keymap)
@@ -1083,7 +1096,6 @@ If user inputs yes, system is shutdown. Otherwise, nothing happens."
     (define-key map (kbd "c") 'kmacro-set-counter)))
 
 
-
 ;; keys for inserting symbols
 
 (with-eval-after-load 'xah-fly-keys
@@ -1117,6 +1129,8 @@ If user inputs yes, system is shutdown. Otherwise, nothing happens."
     (define-key map (kbd "c") 'jacob-create-camel-case-variable-name)
     (define-key map (kbd "h") 'jacob-create-hyphenated-variable-name)
     (define-key map (kbd "u") 'jacob-create-underscored-variable-name)))
+
+
 
 (provide 'init)
 ;;; init.el ends here
