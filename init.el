@@ -2,8 +2,12 @@
 ;;; Commentary:
 ;;; Code:
 
-;; built-in
 
+
+;; built-in
+
+
+;; garbage collection
 
 (setq gc-cons-threshold most-positive-fixnum)
 (setq gc-cons-percentage 0.6)
@@ -27,6 +31,8 @@
 (add-hook 'minibuffer-setup-hook #'doom-defer-garbage-collection-h)
 (add-hook 'minibuffer-exit-hook #'doom-restore-garbage-collection-h)
 
+
+
 (add-to-list 'load-path "~/.emacs.d/local-packages/")
 
 (setq kill-buffer-query-functions (delq 'process-kill-buffer-query-function kill-buffer-query-functions))
@@ -40,10 +46,15 @@
 (setq-default truncate-lines nil)
 (defalias 'yes-or-no-p 'y-or-n-p)
 
+
+;; unicode
+
 (prefer-coding-system 'utf-8)
 (set-default-coding-systems 'utf-8)
 (set-terminal-coding-system 'utf-8)
 (set-keyboard-coding-system 'utf-8)
+
+
 
 (setq confirm-kill-processes nil)
 (setq backup-by-copying t)
@@ -105,6 +116,8 @@
 (setq use-dialog-box t)
 (setq inhibit-startup-message nil)
 
+
+
 (column-number-mode 1)
 
 (setq-default mode-line-format (list "%*" ; saved, readonly 
@@ -112,6 +125,8 @@
                                      "%b " ; buffer name
                                      "(%l,%c)" ; position of point
                                      ))
+
+
 
 (clear-abbrev-table global-abbrev-table)
 
@@ -132,7 +147,11 @@
 
 (setq save-abbrevs nil)
 
+
+
 (setq-default c-basic-offset 4)
+
+
 
 (with-eval-after-load 'dired
   (setq dired-recursive-copies 'always)
@@ -147,6 +166,8 @@
 
   (with-eval-after-load 'dired-x
     (setq dired-guess-shell-alist-user '(("\\.mkv\\'" "mpv")))))
+
+
 
 (defun jacob-elisp-config-hook-function ()
   "Configure `emacs-lisp-mode' when hook run."
@@ -173,6 +194,8 @@
 
 (add-hook 'emacs-lisp-mode-hook 'jacob-elisp-config-hook-function)
 
+
+
 (cond
  ((string-equal system-type "windows-nt")
   (when (member "Consolas" (font-family-list))
@@ -194,6 +217,8 @@
 ;;                               (format "%s" jacob-font-size)
 ;;                             (format "%s" default-font-size)))))
 ;;   (add-to-list 'default-frame-alist `(font . ,font-name)))
+
+
 
 (with-eval-after-load 'org-mode
   (defun jacob-org-babel-tangle-delete-newline ()
@@ -217,6 +242,8 @@ in when it tangles into a file."
    'org-babel-load-languages
    '((octave . t))))
 
+
+
 (defun jacob-pulse-line (&rest _)
   "Pulse the current line."
   (pulse-momentary-highlight-region (+ (line-beginning-position) (current-indentation)) (line-end-position)))
@@ -234,8 +261,12 @@ in when it tangles into a file."
                    ))
   (advice-add command :after #'jacob-pulse-line))
 
+
+
 (load "server")
 (unless (server-running-p) (server-start))
+
+
 
 (add-hook 'emacs-startup-hook
           (lambda ()
@@ -245,12 +276,16 @@ in when it tangles into a file."
                               (time-subtract after-init-time before-init-time)))
                      gcs-done)))
 
+
+
 ;; use spaces to indent
 (setq-default indent-tabs-mode nil)
 ;; set default tab char's display width to 4 spaces
 (setq-default tab-width 4)
 ;; make tab key call indent command or insert tab character, depending on cursor position
 (setq-default tab-always-indent 'complete)
+
+
 
 (when (eq system-type 'windows-nt)
   (setq w32-pass-rwindow-to-system nil)
@@ -260,8 +295,10 @@ in when it tangles into a file."
   (setq ls-lisp-use-insert-directory-program nil)
   (setq ls-lisp-dirs-first t))
 
-;; package installation
+
 
+
+;; package installation
 
 (defmacro jacob-is-installed (package &rest body)
   "If PACKAGE is installed, evaluate BODY.
@@ -313,10 +350,16 @@ Used to eagerly load FEATURE."
                                   aggressive-indent
                                   ))
 
-(package-install-selected-packages)
+(unless (string= (package-install-selected-packages) "All your packages are already installed")
+  (package-refresh-contents)
+  (package-install-selected-packages))
 (package-autoremove)
 
-;; package configuration
+(package-initialize)
+
+
+
+;; package configuration
 
 (jacob-is-installed 'auctex
   (with-eval-after-load 'auctex
@@ -325,8 +368,12 @@ Used to eagerly load FEATURE."
     (setq-default japanese-TeX-error-messages nil)
     (TeX-global-PDF-mode 0)))
 
+
+
 (jacob-try-require 'edit-server
   (edit-server-start))
+
+
 
 (jacob-is-installed 'eglot
   (add-hook 'java-mode-hook 'eglot-ensure)
@@ -375,10 +422,13 @@ tweaked to implement a hack by me"
                             :type type :text text :data data
                             :overlay-properties overlay-properties)))))
 
+
 
 (jacob-is-installed 'aggressive-indent
   (add-hook 'sml-mode-hook #'aggressive-indent-mode)
   (add-hook 'emacs-lisp-mode-hook #'aggressive-indent-mode))
+
+
 
 (jacob-try-require 'selectrum
   (jacob-try-require 'orderless
@@ -404,9 +454,13 @@ tweaked to implement a hack by me"
     (dolist (command '(consult-bookmark consult-recent-file consult-buffer))
       (setf (alist-get command consult-config) `(:preview-key ,nil)))))
 
+
+
 (jacob-is-installed 'expand-region
   (with-eval-after-load 'expand-region
     (setq expand-region-contract-fast-key "9")))
+
+
 
 (jacob-is-installed 'projectile
   (projectile-mode 1)
@@ -414,6 +468,8 @@ tweaked to implement a hack by me"
   (with-eval-after-load 'projectile
     (setq projectile-completion-system 'default)
     (setq projectile-indexing-method 'native)))
+
+
 
 (jacob-is-installed 'sml-mode
   (with-eval-after-load 'sml-mode
@@ -458,6 +514,8 @@ tweaked to implement a hack by me"
         ("case" "" jacob-sml-skeleton-case)
         ))))
 
+
+
 (jacob-is-installed 'typescript-mode
   (with-eval-after-load 'typescript-mode
 
@@ -483,6 +541,8 @@ tweaked to implement a hack by me"
         ("if" "" jacob-typescript-skeleton-if)
         ))))
 
+
+
 (jacob-is-installed 'web-mode
   (defun jacob-web-mode-config ()
     (setq-local electric-pair-pairs '((?\" . ?\") (?\< . ?\>))))
@@ -499,8 +559,12 @@ tweaked to implement a hack by me"
     (setq web-mode-css-indent-offset 2)
     (setq web-mode-code-indent-offset 2)))
 
+
+
 (jacob-is-installed 'which-key
   (which-key-mode 1))
+
+
 
 (setq xah-fly-use-control-key nil)
 (setq xah-fly-use-meta-key t)
