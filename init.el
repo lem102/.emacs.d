@@ -171,12 +171,14 @@
 
 (defun jacob-elisp-config-hook-function ()
   "Configure `emacs-lisp-mode' when hook run."
-  (when (not buffer-display-table)
-    (setq buffer-display-table (make-display-table)))
-  (aset buffer-display-table ?\^L
-        (vconcat (make-list 70 (make-glyph-code ?─ 'font-lock-comment-face))))
-  (redraw-frame)
+  (progn
+    (when (not buffer-display-table)
+      (setq buffer-display-table (make-display-table)))
+    (aset buffer-display-table ?\^L
+          (vconcat (make-list 70 (make-glyph-code ?─ 'font-lock-comment-face))))
+    (redraw-frame))
   (flymake-mode 1)
+  (eldoc-mode 1)
   (define-skeleton jacob-emacs-lisp-skeleton-let
     "insert let" nil
     > "(let ((" - "))" \n
@@ -269,7 +271,7 @@ in when it tangles into a file."
 
 
 (load "server")
-(unless (server-running-p) (server-start))
+(server-start)
 
 
 
