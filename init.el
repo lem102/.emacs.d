@@ -240,7 +240,8 @@ in when it tangles into a file."
   "Pulse the current line."
   (pulse-momentary-highlight-region (+ (line-beginning-position) (current-indentation)) (line-end-position)))
 
-(dolist (command '(recenter-top-bottom
+(dolist (command '(
+                   recenter-top-bottom
                    scroll-up-command
                    scroll-down-command
                    other-window
@@ -251,6 +252,7 @@ in when it tangles into a file."
                    jacob-recenter-centre
                    jacob-recenter-bottom
                    ))
+  
   (advice-add command :after #'jacob-pulse-line))
 
 
@@ -287,7 +289,6 @@ in when it tangles into a file."
   (setq ls-lisp-use-insert-directory-program nil)
   (setq ls-lisp-dirs-first t))
 
-
 
 
 ;; package installation
@@ -322,6 +323,7 @@ Used to eagerly load FEATURE."
                                   csv-mode
                                   powershell
                                   yaml-mode
+                                  markdown-mode
                                   typescript-mode
                                   selectrum
                                   consult
@@ -553,6 +555,11 @@ tweaked to implement a hack by me"
 
 
 
+(jacob-is-installed 'yaml-mode
+  (add-to-list 'auto-mode-alist '("\\.yml\\'" . yaml-mode)))
+
+
+
 (jacob-is-installed 'which-key
   (which-key-mode 1))
 
@@ -588,11 +595,6 @@ tweaked to implement a hack by me"
     (interactive "p")
     (dotimes (i repetitions)
       (xah-end-of-line-or-block))))
-
-
-
-(jacob-is-installed 'yaml-mode
-  (add-to-list 'auto-mode-alist '("\\.yml\\'" . yaml-mode)))
 
 
 
