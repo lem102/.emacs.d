@@ -555,11 +555,6 @@ made typescript flymake."
 
 
 
-(jacob-is-installed 'yaml-mode
-  (add-to-list 'auto-mode-alist '("\\.yml\\'" . yaml-mode)))
-
-
-
 (jacob-is-installed 'which-key
   (which-key-mode 1))
 
