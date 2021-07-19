@@ -330,7 +330,6 @@ Used to eagerly load FEATURE."
                                   expand-region
                                   projectile
                                   restart-emacs
-                                  color-theme-sanityinc-tomorrow
                                   which-key
                                   xah-fly-keys
                                   aggressive-indent
@@ -347,6 +346,13 @@ Used to eagerly load FEATURE."
 
 
 ;; package configuration
+
+
+;; themes
+
+(load-theme 'modus-operandi t)
+
+
 
 (jacob-is-installed 'auctex
   (with-eval-after-load 'auctex
@@ -400,7 +406,8 @@ created diagnostic, overriding the default properties and any
 properties of `flymake-overlay-control' of the diagnostic's
 type.
 
-tweaked to implement a hack by me"
+tweaked to implement a hack by me. can be deleted once i have
+made typescript flymake."
       (if (not (string= text "typescript: Experimental support for decorators is a feature that is subject to change in a future release. Set the 'experimentalDecorators' option in your 'tsconfig' or 'jsconfig' to remove this warning."))
           (flymake--diag-make :buffer buffer :beg beg :end end
                               :type type :text text :data data
