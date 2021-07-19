@@ -7,15 +7,6 @@
 ;; built-in
 
 
-;; garbage collection
-
-(setq gc-cons-threshold most-positive-fixnum)
-(setq gc-cons-percentage 0.6)
-
-(add-hook 'emacs-startup-hook
-          (lambda ()
-            (setq gc-cons-threshold 16777216) ; 16mb
-            (setq gc-cons-percentage 0.1)))
 
 ;; tweak garbage collection when using the minibuffer
 
@@ -158,12 +149,11 @@
 
   (defun jacob-dired-mode-setup ()
     "hook function for dired."
+    (require 'dired-x)
+    (setq dired-guess-shell-alist-user '(("\\.mkv\\'" "mpv")))
     (dired-hide-details-mode 1))
 
-  (add-hook 'dired-mode-hook 'jacob-dired-mode-setup)
-
-  (with-eval-after-load 'dired-x
-    (setq dired-guess-shell-alist-user '(("\\.mkv\\'" "mpv")))))
+  (add-hook 'dired-mode-hook 'jacob-dired-mode-setup))
 
 
 
