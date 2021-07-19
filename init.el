@@ -334,6 +334,7 @@ Used to eagerly load FEATURE."
                                   which-key
                                   xah-fly-keys
                                   aggressive-indent
+                                  modus-themes
                                   ))
 
 (unless (string= (package-install-selected-packages) "All your packages are already installed")
