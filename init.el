@@ -557,11 +557,6 @@ tweaked to implement a hack by me"
 
 
 
-(jacob-is-installed 'yaml-mode
-  (add-to-list 'auto-mode-alist '("\\.yml\\'" . yaml-mode)))
-
-
-
 (jacob-is-installed 'which-key
   (which-key-mode 1))
 
