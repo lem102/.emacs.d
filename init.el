@@ -525,6 +525,12 @@ made typescript flymake."
       > "if (" - ") {" \n
       \n
       -2 "}")
+
+    (define-skeleton jacob-typescript-skeleton-arrow-function
+      "insert arrow function" nil
+      > "const " - " = () => {" \n
+      \n
+      -2 "}")
     
     (when (boundp 'typescript-mode-abbrev-table)
       (clear-abbrev-table typescript-mode-abbrev-table))
@@ -533,6 +539,7 @@ made typescript flymake."
       '(
         ("cl" "" jacob-typescript-skeleton-console-log)
         ("if" "" jacob-typescript-skeleton-if)
+        ("arr" "" jacob-typescript-skeleton-arrow-function)
         ))))
 
 
