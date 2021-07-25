@@ -109,7 +109,7 @@
 
 
 
-(setq-default mode-line-format (list "%*" ; saved, readonly 
+(setq-default mode-line-format (list "%*" ; saved, readonly
                                      "%m: " ; major mode
                                      "%b " ; buffer name
                                      "(%l,%c)" ; position of point
@@ -326,7 +326,6 @@ Used to eagerly load FEATURE."
                                   edit-server
                                   goto-last-change
                                   eglot
-                                  auctex
                                   expand-region
                                   projectile
                                   restart-emacs
