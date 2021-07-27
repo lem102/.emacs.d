@@ -272,6 +272,7 @@ in when it tangles into a file."
 (setq-default tab-always-indent 'complete)
 
 
+;; microsoft windows config
 
 (when (eq system-type 'windows-nt)
   (setq w32-pass-rwindow-to-system nil)
@@ -283,6 +284,20 @@ in when it tangles into a file."
 
   ;; maximize window
   (w32-send-sys-command 61488))
+
+
+;; docview config
+
+(with-eval-after-load 'doc-view-mode
+  (when (eq system-type 'windows-nt)
+    ;; To get these, install miktex.
+    (setq doc-view-ghostscript-program "mgs.exe")
+    (setq doc-view-pdf->png-converter-function 'doc-view-pdf->png-converter-ghostscript)
+    (setq doc-view-pdftotext-program "miktex-pdftotext.exe")
+    (setq doc-view-dvipdfm-program "dvipdfm.exe")
+    ;; To get this, install LibreOffice.
+    (setq doc-view-odf->pdf-converter-program "soffice.exe")
+    (setq doc-view-odf->pdf-converter-function 'doc-view-odf->pdf-converter-soffice)))
 
 
 
