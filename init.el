@@ -279,7 +279,10 @@ in when it tangles into a file."
   (setq w32-apps-modifier 'hyper)
 
   (setq ls-lisp-use-insert-directory-program nil)
-  (setq ls-lisp-dirs-first t))
+  (setq ls-lisp-dirs-first t)
+
+  ;; maximize window
+  (w32-send-sys-command 61488))
 
 
 
