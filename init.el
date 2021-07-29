@@ -393,8 +393,8 @@ Used to eagerly load FEATURE."
   (with-eval-after-load 'eglot
     (setcdr (assq 'java-mode eglot-server-programs) #'jacob-eglot-eclipse-jdt-contact)
 
-    (add-to-list 'eglot-server-programs
-                 `(csharp-mode . ("d:/programming/OmniSharp/omnisharp-win-x64/OmniSharp.exe" "-lsp")))
+    (add-to-list 'eglot-server-programs `(csharp-mode . ("d:/programming/OmniSharp/omnisharp-win-x64/OmniSharp.exe" "-lsp")))
+    (add-to-list 'eglot-server-programs `(web-mode . ("typescript-language-server" "--stdio")))
 
     (defun jacob-eglot-eclipse-jdt-contact
         (interactive)
@@ -563,6 +563,8 @@ made typescript flymake."
 
 (jacob-is-installed 'web-mode
   (defun jacob-web-mode-config ()
+    (if (string= (file-name-extension (buffer-name)) "tsx")
+        (eglot-ensure))
     (setq-local electric-pair-pairs '((?\" . ?\") (?\< . ?\>))))
 
   (add-hook 'web-mode-hook 'jacob-web-mode-config)
@@ -570,9 +572,10 @@ made typescript flymake."
   (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
   (add-to-list 'auto-mode-alist '("\\.cshtml\\'" . web-mode))
   (add-to-list 'auto-mode-alist '("\\.css\\'" . web-mode))
-
+  (add-to-list 'auto-mode-alist '("\\.tsx\\'" . web-mode))
+  
   (with-eval-after-load 'web-mode
-    (setq web-mode-engines-alist '(("razor" . "\\.cshtml\\'")))
+    (add-to-list 'web-mode-engines-alist '("razor" . "\\.cshtml\\'"))
     (setq web-mode-markup-indent-offset 2)
     (setq web-mode-css-indent-offset 2)
     (setq web-mode-code-indent-offset 2)))
@@ -1048,10 +1051,6 @@ If user inputs yes, system is shutdown. Otherwise, nothing happens."
     (define-key map (kbd "a") 'execute-extended-command)
     (define-key map (kbd "s") (kbd "RET"))
     (define-key map (kbd "DEL") nil)
-    ;; (define-key map (kbd "j") (kbd "C-b"))
-    ;; (define-key map (kbd "l") (kbd "C-f"))
-    ;; (define-key map (kbd "i") (kbd "C-p"))
-    ;; (define-key map (kbd "k") (kbd "C-n"))
     (define-key map (kbd "4") 'jacob-split-window-below-select-new)
     (define-key map (kbd "2") 'jacob-quit-popup-window)
     (jacob-is-installed 'expand-region
