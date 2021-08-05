@@ -200,7 +200,7 @@
     (set-frame-font "Menlo-12" nil t)))
  ((string-equal system-type "gnu/linux")
   (when (member "DejaVu Sans Mono" (font-family-list))
-    (set-frame-font "Deja-Vu Sans Mono-12" nil t))))
+    (set-frame-font "DejaVu Sans Mono-12" nil t))))
 
 
 
