@@ -140,6 +140,39 @@
 
 (setq-default c-basic-offset 4)
 
+(define-skeleton jacob-java-sout
+  "insert System.out.println()" nil
+  > "System.out.println(" - ")")
+
+(define-skeleton jacob-java-main
+  "insert main method." nil
+  > "public static void main(String[] args) {" \n
+  - \n
+  -4 "}")
+
+(define-skeleton jacob-java-if
+  "insert if statement." nil
+  > "if (" - ") {" \n
+  \n
+  -4 "}")
+
+(define-skeleton jacob-java-for
+  "insert for statement." nil
+  > "for (" - ") {" \n
+  \n
+  -4 "}")
+
+(when (boundp 'java-mode-abbrev-table)
+  (clear-abbrev-table java-mode-abbrev-table))
+
+(define-abbrev-table 'java-mode-abbrev-table
+  '(
+    ("sout" "" jacob-java-sout)
+    ("psvm" "" jacob-java-main)
+    ("if" "" jacob-java-if)
+    ("for" "" jacob-java-for)
+    ))
+
 
 
 (with-eval-after-load 'dired
@@ -148,7 +181,7 @@
   (setq dired-dwim-target t)
 
   (defun jacob-dired-mode-setup ()
-    "hook function for dired."
+    "Hook function for dired."
     (require 'dired-x)
     (setq dired-guess-shell-alist-user '(("\\.mkv\\'" "mpv")))
     (dired-hide-details-mode 1))
@@ -299,6 +332,29 @@ in when it tangles into a file."
     (setq doc-view-odf->pdf-converter-program "soffice.exe")
     (setq doc-view-odf->pdf-converter-function 'doc-view-odf->pdf-converter-soffice)))
 
+
+
+;; window rules
+
+(setq display-buffer-alist
+      '(("\\*e?shell\\*"
+         (display-buffer-in-side-window)
+         (window-height . 0.25)
+         (side . bottom)
+         (slot . -1))
+        ("\\*\\(Backtrace\\|Warnings\\|Compile-Log\\|[Hh]elp\\|Messages\\|compilation\\)\\*"
+         (display-buffer-in-side-window)
+         (window-width . 0.35)
+         (side . right)
+         (slot . 1))
+        ((lambda (buffer action) 
+           (string= "dired-mode" (with-current-buffer buffer
+                                   major-mode)))
+         (display-buffer-in-side-window)
+         (window-height . 0.25)
+         (side . right)
+         (slot . -1))))
+
 
 
 ;; package installation
@@ -344,7 +400,7 @@ Used to eagerly load FEATURE."
                                   edit-server
                                   goto-last-change
                                   eglot
-                                  expand-region
+                                  ;; expand-region
                                   projectile
                                   restart-emacs
                                   which-key
