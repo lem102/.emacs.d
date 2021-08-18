@@ -286,6 +286,7 @@ in when it tangles into a file."
 (server-start)
 
 
+;; time emacs startup
 
 (add-hook 'emacs-startup-hook
           (lambda ()
@@ -296,6 +297,7 @@ in when it tangles into a file."
                      gcs-done)))
 
 
+;; indentation config
 
 ;; use spaces to indent
 (setq-default indent-tabs-mode nil)
@@ -303,6 +305,16 @@ in when it tangles into a file."
 (setq-default tab-width 4)
 ;; make tab key call indent command or insert tab character, depending on cursor position
 (setq-default tab-always-indent 'complete)
+
+(defun jacob-indent-with-major-mode ()
+  "Indent buffer using current major mode.
+Designed for use in on-save hook in certain programming languages modes."
+  (if (or (string= major-mode "emacs-lisp-mode")
+          (string= major-mode "csharp-mode")
+          (string= major-mode "sml-mode"))
+      (indent-region (point-min) (point-max))))
+
+(add-hook 'before-save-hook 'jacob-indent-with-major-mode)
 
 
 ;; microsoft windows config
@@ -337,11 +349,16 @@ in when it tangles into a file."
 ;; window rules
 
 (setq display-buffer-alist
-      '(("\\*e?shell\\*"
+      '(("\\*\\(Power\\|e\\)?[Ss]hell\\*"
          (display-buffer-in-side-window)
          (window-height . 0.25)
          (side . bottom)
          (slot . -1))
+        ("\\*Async Shell Command\\*"
+         (display-buffer-in-side-window)
+         (window-height . 0.25)
+         (side . bottom)
+         (slot . 0))
         ("\\*\\(Backtrace\\|Warnings\\|Compile-Log\\|[Hh]elp\\|Messages\\|compilation\\)\\*"
          (display-buffer-in-side-window)
          (window-width . 0.35)
@@ -400,12 +417,11 @@ Used to eagerly load FEATURE."
                                   edit-server
                                   goto-last-change
                                   eglot
-                                  ;; expand-region
+                                  expand-region
                                   projectile
                                   restart-emacs
                                   which-key
                                   xah-fly-keys
-                                  aggressive-indent
                                   modus-themes
                                   ))
 
@@ -490,12 +506,7 @@ made typescript flymake."
                             :overlay-properties overlay-properties)))))
 
 
-
-(jacob-is-installed 'aggressive-indent
-  (add-hook 'sml-mode-hook #'aggressive-indent-mode)
-  (add-hook 'emacs-lisp-mode-hook #'aggressive-indent-mode))
-
-
+;; selectrum config
 
 (jacob-try-require 'selectrum
   (jacob-try-require 'orderless
@@ -588,8 +599,7 @@ made typescript flymake."
   (when (or (eq major-mode 'web-mode)
             (eq major-mode 'typescript-mode)
             (eq major-mode 'javascript-mode))
-    (shell-command (concat "npx prettier --write " buffer-file-name))
-    (revert-buffer nil t)))
+    (async-shell-command (concat "npx prettier --write " buffer-file-name))))
 
 (add-hook 'after-save-hook 'jacob-prettier-format-buffer)
 
@@ -977,9 +987,9 @@ in which case do move-beginning-of-line."
       (narrow-to-region matrix-start matrix-end)
 
       (progn
-          (goto-char (point-min))
-          (while (search-forward-regexp "[[:space:]]+" nil t)
-            (replace-match " ")))
+        (goto-char (point-min))
+        (while (search-forward-regexp "[[:space:]]+" nil t)
+          (replace-match " ")))
       
       (dolist (pair (list (quote ("[ " "["))
                           (quote ("[" "\\\\jbmat{"))
