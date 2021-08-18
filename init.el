@@ -7,6 +7,7 @@
 ;; built-in
 
 
+;; garbage collection
 
 ;; tweak garbage collection when using the minibuffer
 
@@ -23,6 +24,7 @@
 (add-hook 'minibuffer-exit-hook #'doom-restore-garbage-collection-h)
 
 
+;; misc
 
 (add-to-list 'load-path "~/.emacs.d/local-packages/")
 
@@ -46,6 +48,7 @@
 (set-keyboard-coding-system 'utf-8)
 
 
+;; misc 2: electric boogaloo
 
 (setq confirm-kill-processes nil)
 (setq backup-by-copying t)
@@ -63,11 +66,8 @@
 
 (setq line-move-visual t)
 
-(setq ls-lisp-use-insert-directory-program nil)
-(setq ls-lisp-dirs-first t)
-
 (defun jacob-prog-mode-hook-function ()
-  "hook function to run when in programming mode"
+  "Hook function to run when in programming mode."
   (global-subword-mode 1)
 
   (setq show-paren-style 'parenthesis)
@@ -87,7 +87,7 @@
 (setq ibuffer-expert t)
 
 (defun jacob-find-file-hook-function ()
-  "hook function to run after file openend."
+  "Hook function to run after file openend."
   (setq savehist-file "~/.emacs.d/savehist")
   (setq savehist-save-minibuffer-history t)
   (savehist-mode 1)
@@ -108,6 +108,7 @@
 (setq inhibit-startup-message nil)
 
 
+;; mode line
 
 (setq-default mode-line-format (list "%*" ; saved, readonly
                                      "%m: " ; major mode
@@ -116,6 +117,7 @@
                                      ))
 
 
+;; abbrev-mode
 
 (clear-abbrev-table global-abbrev-table)
 
@@ -137,6 +139,7 @@
 (setq save-abbrevs nil)
 
 
+;; cc-mode config
 
 (setq-default c-basic-offset 4)
 
@@ -174,6 +177,7 @@
     ))
 
 
+;; dired-mode config
 
 (with-eval-after-load 'dired
   (setq dired-recursive-copies 'always)
@@ -189,6 +193,7 @@
   (add-hook 'dired-mode-hook 'jacob-dired-mode-setup))
 
 
+;; emacs-lisp-mode config
 
 (defun jacob-elisp-config-hook-function ()
   "Configure `emacs-lisp-mode' when hook run."
@@ -223,6 +228,7 @@
 (add-hook 'emacs-lisp-mode-hook 'jacob-elisp-config-hook-function)
 
 
+;; font config
 
 (cond
  ((string-equal system-type "windows-nt")
@@ -236,6 +242,7 @@
     (set-frame-font "DejaVu Sans Mono-12" nil t))))
 
 
+;; org config
 
 (with-eval-after-load 'org-mode
   (defun jacob-org-babel-tangle-delete-newline ()
@@ -260,6 +267,7 @@ in when it tangles into a file."
    '((octave . t))))
 
 
+;; pulse config
 
 (defun jacob-pulse-line (&rest _)
   "Pulse the current line."
@@ -281,6 +289,8 @@ in when it tangles into a file."
   (advice-add command :after #'jacob-pulse-line))
 
 
+;; server config
+
 
 (load "server")
 (server-start)
@@ -360,7 +370,7 @@ Designed for use in on-save hook in certain programming languages modes."
          (side . bottom)
          (slot . 0))
         ("\\*\\(Backtrace\\|Warnings\\|Compile-Log\\|[Hh]elp\\|Messages\\|compilation\\)\\*"
-         (display-buffer-in-side-window)
+         (display-buffer-in-atom-window)
          (window-width . 0.35)
          (side . right)
          (slot . 1))
