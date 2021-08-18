@@ -798,20 +798,22 @@ made typescript flymake."
       (setq loop-list (cdr loop-list)))))
 
 (defun jacob-buffer-mode (buffer-or-string)
-  "Returns the major mode associated with a buffer."
+  "Return the major mode associated with BUFFER-OR-STRING."
   (with-current-buffer buffer-or-string
     major-mode))
 
 (defun jacob-config-visit ()
+  "Open the init file."
   (interactive)
-  (dired "~/.emacs.d/jacob-init"))
+  (find-file "~/.emacs.d/init.el"))
 
 (defun jacob-config-reload ()
+  "Evaluate the init file."
   (interactive)
   (load-file (expand-file-name "~/.emacs.d/init.el")))
 
 (defun jacob-org-src-block ()
-  "Replacement for C-c ' in both \"org-mode\" and when editing code blocks within \"org-mode\"."
+  "Replacement for `C-c '` in both `org-mode' and when editing code blocks within `org-mode'."
   (interactive)
   (if (bound-and-true-p org-src-mode)
       (org-edit-src-exit)
