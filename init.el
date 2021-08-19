@@ -370,7 +370,7 @@ Designed for use in on-save hook in certain programming languages modes."
          (side . bottom)
          (slot . 0))
         ("\\*\\(Backtrace\\|Warnings\\|Compile-Log\\|[Hh]elp\\|Messages\\|compilation\\)\\*"
-         (display-buffer-in-atom-window)
+         (display-buffer-in-side-window)
          (window-width . 0.35)
          (side . right)
          (slot . 1))
