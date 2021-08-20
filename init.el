@@ -28,7 +28,8 @@
 
 (add-to-list 'load-path "~/.emacs.d/local-packages/")
 
-(setq kill-buffer-query-functions (delq 'process-kill-buffer-query-function kill-buffer-query-functions))
+(setq kill-buffer-query-functions (delq 'process-kill-buffer-query-function
+                                        kill-buffer-query-functions))
 (setq read-process-output-max (* 1024 1024))
 (setq ring-bell-function 'ignore)
 (setq auto-window-vscroll nil)
@@ -358,29 +359,9 @@ Designed for use in on-save hook in certain programming languages modes."
 
 ;; window rules
 
-(setq display-buffer-alist
-      '(("\\*\\(Power\\|e\\)?[Ss]hell\\*"
-         (display-buffer-in-side-window)
-         (window-height . 0.25)
-         (side . bottom)
-         (slot . -1))
-        ("\\*Async Shell Command\\*"
-         (display-buffer-in-side-window)
-         (window-height . 0.25)
-         (side . bottom)
-         (slot . 0))
-        ("\\*\\(Backtrace\\|Warnings\\|Compile-Log\\|[Hh]elp\\|Messages\\|compilation\\)\\*"
-         (display-buffer-in-side-window)
-         (window-width . 0.35)
-         (side . right)
-         (slot . 1))
-        ((lambda (buffer action) 
-           (string= "dired-mode" (with-current-buffer buffer
-                                   major-mode)))
-         (display-buffer-in-side-window)
-         (window-height . 0.25)
-         (side . right)
-         (slot . -1))))
+(setq display-buffer-alist '(
+                             ("eshell" display-buffer-pop-up-window)
+                             ))
 
 
 
@@ -396,7 +377,7 @@ Used when attempting to lazy load PACKAGE."
 (defmacro jacob-try-require (feature &rest body)
   "Attempt to require FEATURE.
 If successful, evaluate BODY.
-Used to eagerly load FEATURE."
+Used to eagerly load feature."
   (declare (indent 1))
   `(when (require ,feature nil 'noerror)
      ,@body))
@@ -1065,6 +1046,9 @@ If user inputs yes, system is shutdown. Otherwise, nothing happens."
 
 ;; key bindings
 
+
+;; voice command keybindings
+
 (global-unset-key (kbd "C-z"))
 
 (let ((map global-map))
@@ -1101,7 +1085,7 @@ If user inputs yes, system is shutdown. Otherwise, nothing happens."
     (define-key map (kbd "C-z SPC e c f") 'consult-buffer)
     (define-key map (kbd "C-z SPC e c n") 'consult-line))
   (jacob-is-installed 'projectile
-    (define-key map (kbd "C-z SPC e p f") 'projectile-find-file))
+    (define-key map (kbd "C-z SPC e p f") 'projectile-find-file-other-window))
   (define-key map (kbd "C-z t") 'jacob-voice-mark-command)
   (define-key map (kbd "C-x 2") 'jacob-split-window-below-select-new)
   (define-key map (kbd "C-x 3") 'jacob-split-window-right-select-new)
@@ -1112,6 +1096,7 @@ If user inputs yes, system is shutdown. Otherwise, nothing happens."
     (define-key map (kbd "C-z l") 'goto-last-change-reverse)))
 
 
+;; xah-fly-keys keybindings
 
 (jacob-is-installed 'xah-fly-keys
   (define-prefix-command 'jacob-config-keymap)
@@ -1133,7 +1118,8 @@ If user inputs yes, system is shutdown. Otherwise, nothing happens."
       (define-key map (kbd "s") 'consult-line))
     ;; (define-key map (kbd "p") project-prefix-map)
     (jacob-is-installed 'projectile
-      (define-key map (kbd "p") 'projectile-command-map)))
+      (define-key map (kbd "p") 'projectile-command-map)
+      (define-key projectile-command-map (kbd "f") 'projectile-find-file-other-window)))
 
   (let ((map xah-fly-command-map))
     (define-key map (kbd "a") 'execute-extended-command)
@@ -1174,6 +1160,7 @@ If user inputs yes, system is shutdown. Otherwise, nothing happens."
 
   (let ((map xah-fly-leader-key-map))
     (define-key map (kbd "4") 'jacob-split-window-right-select-new)
+    (define-key map (kbd "m") 'dired-jump-other-window)
     (jacob-is-installed 'consult
       (define-key map (kbd "v") 'consult-yank)
       (define-key map (kbd "f") 'consult-buffer)))
@@ -1185,7 +1172,8 @@ If user inputs yes, system is shutdown. Otherwise, nothing happens."
     (define-key map (kbd "j") 'kill-this-buffer))
 
   (let ((map xah-fly-c-keymap))
-    (define-key xah-fly-c-keymap (kbd "j") 'consult-recent-file))
+    (define-key map (kbd "j") 'consult-recent-file)
+    (define-key map (kbd "e") 'find-file-other-window))
 
   (let ((map xah-fly-r-keymap)) 
     (define-key map (kbd "c") 'kmacro-set-counter)))
@@ -1201,18 +1189,18 @@ If user inputs yes, system is shutdown. Otherwise, nothing happens."
 
   (let ((map jacob-symbol-insertion-map))
     (define-key map (kbd "`") (lambda () (interactive) (insert "`")))
-    
+
     (define-key map (kbd "j") (kbd "{"))
     (define-key map (kbd "k") (kbd "("))
     (define-key map (kbd "l") (kbd "["))
     (define-key map (kbd "u") (kbd "\""))
     (define-key map (kbd "i") (kbd "'"))
-    
+
     (define-key map (kbd "m") (kbd "-"))
     (define-key map (kbd ",") (kbd "_"))
     (define-key map (kbd ".") (kbd "="))
     (define-key map (kbd "/") (kbd "+"))
-    
+
     (define-key map (kbd "v") (kbd "~"))
     (define-key map (kbd "c") (kbd "#"))
     (define-key map (kbd "x") (kbd "@"))
