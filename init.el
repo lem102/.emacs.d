@@ -1085,7 +1085,7 @@ If user inputs yes, system is shutdown. Otherwise, nothing happens."
     (define-key map (kbd "C-z SPC e c f") 'consult-buffer)
     (define-key map (kbd "C-z SPC e c n") 'consult-line))
   (jacob-is-installed 'projectile
-    (define-key map (kbd "C-z SPC e p f") 'projectile-find-file-other-window))
+    (define-key map (kbd "C-z SPC e p f") 'projectile-find-file))
   (define-key map (kbd "C-z t") 'jacob-voice-mark-command)
   (define-key map (kbd "C-x 2") 'jacob-split-window-below-select-new)
   (define-key map (kbd "C-x 3") 'jacob-split-window-right-select-new)
@@ -1173,7 +1173,7 @@ If user inputs yes, system is shutdown. Otherwise, nothing happens."
 
   (let ((map xah-fly-c-keymap))
     (define-key map (kbd "j") 'consult-recent-file)
-    (define-key map (kbd "e") 'find-file-other-window))
+    (define-key map (kbd "e") 'find-file))
 
   (let ((map xah-fly-r-keymap)) 
     (define-key map (kbd "c") 'kmacro-set-counter)))
