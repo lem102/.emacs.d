@@ -120,6 +120,8 @@
 
 ;; abbrev-mode
 
+(setq skeleton-end-newline nil)
+
 (clear-abbrev-table global-abbrev-table)
 
 (define-abbrev-table 'global-abbrev-table
@@ -272,7 +274,9 @@ in when it tangles into a file."
 
 (defun jacob-pulse-line (&rest _)
   "Pulse the current line."
-  (pulse-momentary-highlight-region (+ (line-beginning-position) (current-indentation)) (line-end-position)))
+  (pulse-momentary-highlight-region (+ (line-beginning-position)
+                                       (current-indentation))
+                                    (line-end-position)))
 
 (dolist (command '(
                    recenter-top-bottom
@@ -286,7 +290,6 @@ in when it tangles into a file."
                    jacob-recenter-centre
                    jacob-recenter-bottom
                    ))
-  
   (advice-add command :after #'jacob-pulse-line))
 
 
@@ -562,9 +565,13 @@ made typescript flymake."
       -4 "in" \n
       -4 "end")
 
-    (define-skeleton jacob-sml-skeleton-fun
-      "insert fun" nil
-      > "fun " - "() =")
+    (define-skeleton jacob-sml-skeleton-function
+      "insert function" nil
+      > "fun " - " =")
+
+    (define-skeleton jacob-sml-skeleton-anonymous-function
+      "insert anonymous functionction" nil
+      > "fn " - " => ")
 
     (define-skeleton jacob-sml-skeleton-case
       "insert case" nil
@@ -579,7 +586,8 @@ made typescript flymake."
         ("val" "" jacob-sml-skeleton-val)
         ("if" "" jacob-sml-skeleton-if)
         ("let" "" jacob-sml-skeleton-let)
-        ("fun" "" jacob-sml-skeleton-fun)
+        ("fun" "" jacob-sml-skeleton-function)
+        ("fn" "" jacob-sml-skeleton-anonymous-function)
         ("case" "" jacob-sml-skeleton-case)
         ))))
 
@@ -660,8 +668,6 @@ made typescript flymake."
 (jacob-try-require 'xah-fly-keys
   (xah-fly-keys-set-layout "qwerty")
   (xah-fly-keys 1)
-
-  (add-hook 'after-init-hook (lambda () (global-set-key (kbd "C-<kp-subtract>") nil) (define-key global-map (kbd "C-<kp-subtract> C-`") 'jacob-insert-asterisk)))
 
   (defun xah-jacob-kill-word (repetitions)
     (interactive "p")
@@ -1001,8 +1007,6 @@ If user inputs yes, system is shutdown. Otherwise, nothing happens."
   (interactive)
   (if (yes-or-no-p "Shutdown system?")
       (shell-command "pwsh -Command Stop-Computer")))
-
-;; https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_pwsh?view=powershell-7.1
 
 
 
