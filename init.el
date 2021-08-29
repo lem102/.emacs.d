@@ -341,8 +341,9 @@ Designed for use in on-save hook in certain programming languages modes."
   (setq ls-lisp-use-insert-directory-program nil)
   (setq ls-lisp-dirs-first t)
 
-  ;; maximize window
-  (w32-send-sys-command 61488))
+  (add-hook 'after-init-hook (lambda ()
+                               ;; maximize window
+                               (w32-send-sys-command 61488))))
 
 
 ;; docview config
@@ -1122,8 +1123,7 @@ If user inputs yes, system is shutdown. Otherwise, nothing happens."
       (define-key map (kbd "s") 'consult-line))
     ;; (define-key map (kbd "p") project-prefix-map)
     (jacob-is-installed 'projectile
-      (define-key map (kbd "p") 'projectile-command-map)
-      (define-key projectile-command-map (kbd "f") 'projectile-find-file-other-window)))
+      (define-key map (kbd "p") 'projectile-command-map)))
 
   (let ((map xah-fly-command-map))
     (define-key map (kbd "a") 'execute-extended-command)
