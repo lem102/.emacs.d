@@ -599,14 +599,15 @@ made typescript flymake."
   (when (or (eq major-mode 'web-mode)
             (eq major-mode 'typescript-mode)
             (eq major-mode 'javascript-mode))
-    (start-process-shell-command "" nil (concat "npx prettier --write " buffer-file-name))))
+    (shell-command (concat "npx prettier --write " buffer-file-name) nil)
+    (revert-buffer nil t)))
 
 (add-hook 'after-save-hook 'jacob-prettier-format-buffer)
 
 (jacob-is-installed 'typescript-mode
   (with-eval-after-load 'typescript-mode
 
-    (setq typescript-indent-level 2)
+    (setq typescript-indent-level 4)
     (add-to-list 'auto-mode-alist '("\\.js\\'" . typescript-mode))
 
     (define-skeleton jacob-typescript-skeleton-console-log
@@ -1164,7 +1165,6 @@ If user inputs yes, system is shutdown. Otherwise, nothing happens."
 
   (let ((map xah-fly-leader-key-map))
     (define-key map (kbd "4") 'jacob-split-window-right-select-new)
-    (define-key map (kbd "m") 'dired-jump-other-window)
     (jacob-is-installed 'consult
       (define-key map (kbd "v") 'consult-yank)
       (define-key map (kbd "f") 'consult-buffer)))
