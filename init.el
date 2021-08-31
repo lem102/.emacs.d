@@ -599,7 +599,7 @@ made typescript flymake."
   (when (or (eq major-mode 'web-mode)
             (eq major-mode 'typescript-mode)
             (eq major-mode 'javascript-mode))
-    (async-shell-command (concat "npx prettier --write " buffer-file-name))))
+    (start-process-shell-command "" nil (concat "npx prettier --write " buffer-file-name))))
 
 (add-hook 'after-save-hook 'jacob-prettier-format-buffer)
 
