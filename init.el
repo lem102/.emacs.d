@@ -358,14 +358,6 @@ Designed for use in on-save hook in certain programming languages modes."
     (setq doc-view-odf->pdf-converter-program "soffice.exe")
     (setq doc-view-odf->pdf-converter-function 'doc-view-odf->pdf-converter-soffice)))
 
-
-
-;; window rules
-
-(setq display-buffer-alist '(
-                             ("eshell" display-buffer-pop-up-window)
-                             ))
-
 
 
 ;; package installation
@@ -416,6 +408,7 @@ Used to eagerly load feature."
                                   restart-emacs
                                   which-key
                                   xah-fly-keys
+                                  xah-find
                                   modus-themes
                                   ))
 
@@ -1122,8 +1115,7 @@ If user inputs yes, system is shutdown. Otherwise, nothing happens."
       (define-key map (kbd "s") 'consult-line))
     ;; (define-key map (kbd "p") project-prefix-map)
     (jacob-is-installed 'projectile
-      (define-key map (kbd "p") 'projectile-command-map)
-      (define-key projectile-command-map (kbd "f") 'projectile-find-file-other-window)))
+      (define-key map (kbd "p") 'projectile-command-map)))
 
   (let ((map xah-fly-command-map))
     (define-key map (kbd "a") 'execute-extended-command)
@@ -1164,7 +1156,6 @@ If user inputs yes, system is shutdown. Otherwise, nothing happens."
 
   (let ((map xah-fly-leader-key-map))
     (define-key map (kbd "4") 'jacob-split-window-right-select-new)
-    (define-key map (kbd "m") 'dired-jump-other-window)
     (jacob-is-installed 'consult
       (define-key map (kbd "v") 'consult-yank)
       (define-key map (kbd "f") 'consult-buffer)))
