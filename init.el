@@ -341,8 +341,9 @@ Designed for use in on-save hook in certain programming languages modes."
   (setq ls-lisp-use-insert-directory-program nil)
   (setq ls-lisp-dirs-first t)
 
-  ;; maximize window
-  (w32-send-sys-command 61488))
+  (add-hook 'after-init-hook (lambda ()
+                               ;; maximize window
+                               (w32-send-sys-command 61488))))
 
 
 ;; docview config
@@ -591,14 +592,15 @@ made typescript flymake."
   (when (or (eq major-mode 'web-mode)
             (eq major-mode 'typescript-mode)
             (eq major-mode 'javascript-mode))
-    (async-shell-command (concat "npx prettier --write " buffer-file-name))))
+    (shell-command (concat "npx prettier --write " buffer-file-name) nil)
+    (revert-buffer nil t)))
 
 (add-hook 'after-save-hook 'jacob-prettier-format-buffer)
 
 (jacob-is-installed 'typescript-mode
   (with-eval-after-load 'typescript-mode
 
-    (setq typescript-indent-level 2)
+    (setq typescript-indent-level 4)
     (add-to-list 'auto-mode-alist '("\\.js\\'" . typescript-mode))
 
     (define-skeleton jacob-typescript-skeleton-console-log
