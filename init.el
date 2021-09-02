@@ -588,14 +588,18 @@ made typescript flymake."
 
 
 (defun jacob-prettier-format-buffer ()
-  "Use prettier to format current buffer.  Intended for use with `after-save-hook'."
+  "Use prettier to format current buffer."
+  (interactive)
   (when (or (eq major-mode 'web-mode)
             (eq major-mode 'typescript-mode)
             (eq major-mode 'javascript-mode))
-    (shell-command (concat "npx prettier --write " buffer-file-name) nil)
-    (revert-buffer nil t)))
-
-(add-hook 'after-save-hook 'jacob-prettier-format-buffer)
+    (let* ((temporary-file-extension (file-name-extension (buffer-file-name) t))
+           (temporary-file (concat "jacob-prettier-temporary-file" temporary-file-extension)))
+      (append-to-file (point-min) (point-max) temporary-file)
+      (call-process "npx" nil nil t "prettier" temporary-file "--write")
+      (erase-buffer)
+      (insert-file-contents temporary-file)
+      (delete-file temporary-file))))
 
 (jacob-is-installed 'typescript-mode
   (with-eval-after-load 'typescript-mode
