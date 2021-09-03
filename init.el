@@ -395,6 +395,7 @@ Used to eagerly load feature."
                                   yaml-mode
                                   markdown-mode
                                   typescript-mode
+                                  racket-mode
                                   selectrum
                                   consult
                                   orderless
@@ -430,6 +431,12 @@ Used to eagerly load feature."
 (load-theme 'modus-operandi t)
 
 
+;; racket-mode
+
+(jacob-is-installed 'racket-mode
+  (add-hook 'racket-mode-hook 'racket-xp-mode))
+
+;; auctex
 
 (jacob-is-installed 'auctex
   (with-eval-after-load 'auctex
