@@ -324,6 +324,7 @@ in when it tangles into a file."
   "Indent buffer using current major mode.
 Designed for use in on-save hook in certain programming languages modes."
   (if (or (string= major-mode "emacs-lisp-mode")
+          (string= major-mode "racket-mode")
           (string= major-mode "csharp-mode")
           (string= major-mode "sml-mode"))
       (indent-region (point-min) (point-max))))
@@ -344,6 +345,11 @@ Designed for use in on-save hook in certain programming languages modes."
   (add-hook 'after-init-hook (lambda ()
                                ;; maximize window
                                (w32-send-sys-command 61488))))
+
+
+;; winner-mode
+
+(winner-mode 1)
 
 
 ;; docview config
@@ -1095,7 +1101,7 @@ If user inputs yes, system is shutdown. Otherwise, nothing happens."
     (define-key map (kbd "C-z SPC e c f") 'consult-buffer)
     (define-key map (kbd "C-z SPC e c n") 'consult-line))
   (jacob-is-installed 'projectile
-    (define-key map (kbd "C-z SPC e p f") 'projectile-find-file))
+    (define-key map (kbd "C-z SPC e p") 'projectile-command-map))
   (define-key map (kbd "C-z t") 'jacob-voice-mark-command)
   (define-key map (kbd "C-x 2") 'jacob-split-window-below-select-new)
   (define-key map (kbd "C-x 3") 'jacob-split-window-right-select-new)
