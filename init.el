@@ -418,6 +418,7 @@ Used to eagerly load feature."
                                   xah-fly-keys
                                   xah-find
                                   modus-themes
+                                  magit
                                   ))
 
 (unless (string= (package-install-selected-packages) "All your packages are already installed")
@@ -466,7 +467,7 @@ Used to eagerly load feature."
   (with-eval-after-load 'eglot
     (setcdr (assq 'java-mode eglot-server-programs) #'jacob-eglot-eclipse-jdt-contact)
 
-    (add-to-list 'eglot-server-programs `(csharp-mode . ("d:/programming/OmniSharp/omnisharp-win-x64/OmniSharp.exe" "-lsp")))
+    (add-to-list 'eglot-server-programs `(csharp-mode . ("C:/Users/Jacob.Leeming/Downloads/omnisharp-win-x64/OmniSharp.exe" "-lsp")))
     (add-to-list 'eglot-server-programs `(web-mode . ("typescript-language-server" "--stdio")))
 
     (defun jacob-eglot-eclipse-jdt-contact
@@ -618,7 +619,6 @@ made typescript flymake."
   (with-eval-after-load 'typescript-mode
 
     (setq typescript-indent-level 4)
-    (add-to-list 'auto-mode-alist '("\\.js\\'" . typescript-mode))
 
     (define-skeleton jacob-typescript-skeleton-console-log
       "insert console.log" nil
@@ -1141,7 +1141,8 @@ If user inputs yes, system is shutdown. Otherwise, nothing happens."
     (define-key map (kbd "s") (kbd "RET"))
     (define-key map (kbd "DEL") nil)
     (define-key map (kbd "4") 'jacob-split-window-below-select-new)
-    (define-key map (kbd "2") 'jacob-quit-popup-window)
+    (define-key map (kbd "1") 'winner-undo)
+    (define-key map (kbd "2") 'winner-redo)
     (jacob-is-installed 'expand-region
       (define-key map (kbd "8") 'er/expand-region)))
 
