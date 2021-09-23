@@ -49,6 +49,25 @@
 (set-keyboard-coding-system 'utf-8)
 
 
+;; prettify-symbols-mode
+
+(global-prettify-symbols-mode 1)
+
+(defun jacob-racket-setup-prettify-symbols ()
+  "Make some word or string show as pretty Unicode symbols."
+  (setq prettify-symbols-alist
+        '(
+          ("lambda" . 955) ; λ
+          ("->" . 8594)    ; →
+          ("=>" . 8658)    ; ⇒
+          ("map" . 8614)   ; ↦
+          ("<=" . 8804)
+          (">=" . 8805)
+          )))
+
+(add-hook 'racket-mode-hook 'jacob-racket-setup-prettify-symbols)
+
+
 ;; misc 2: electric boogaloo
 
 (setq confirm-kill-processes nil)
