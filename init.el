@@ -155,7 +155,7 @@
     ("key" "\"\": Key(\"\"),")
     ))
 
-(abbrev-mode 1)
+(set-default 'abbrev-mode t)
 
 (setq save-abbrevs nil)
 
