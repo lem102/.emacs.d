@@ -49,6 +49,24 @@
 (set-keyboard-coding-system 'utf-8)
 
 
+;; prettify-symbols-mode
+
+(defun jacob-racket-setup-prettify-symbols ()
+  "Make some word or string show as pretty Unicode symbols."
+  (setq prettify-symbols-alist
+        '(
+          ("lambda" . 955) ; λ
+          ("->" . 8594)    ; →
+          ("=>" . 8658)    ; ⇒
+          ("map" . 8614)   ; ↦
+          ("<=" . 8804)
+          (">=" . 8805)
+          ))
+  (prettify-symbols-mode 1))
+
+(add-hook 'racket-mode-hook 'jacob-racket-setup-prettify-symbols)
+
+
 ;; misc 2: electric boogaloo
 
 (setq confirm-kill-processes nil)
@@ -140,6 +158,35 @@
 (set-default 'abbrev-mode t)
 
 (setq save-abbrevs nil)
+
+
+;; javascript-mode
+
+(define-skeleton jacob-javascript-skeleton-console-log
+  "insert console.log" nil
+  > "console.log(" - ");")
+
+(define-skeleton jacob-javascript-skeleton-if
+  "insert if statement" nil
+  > "if (" - ") {" \n
+  \n
+  -2 "}")
+
+(define-skeleton jacob-javascript-skeleton-arrow-function
+  "insert arrow function" nil
+  > "const " - " = () => {" \n
+  \n
+  -2 "}")
+
+(when (boundp 'js-mode-abbrev-table)
+  (clear-abbrev-table js-mode-abbrev-table))
+
+(define-abbrev-table 'js-mode-abbrev-table
+  '(
+    ("cl" "" jacob-javascript-skeleton-console-log)
+    ("if" "" jacob-javascript-skeleton-if)
+    ("arr" "" jacob-javascript-skeleton-arrow-function)
+    ))
 
 
 ;; cc-mode config
@@ -295,7 +342,6 @@ in when it tangles into a file."
 
 ;; server config
 
-
 (load "server")
 (server-start)
 
@@ -325,7 +371,7 @@ in when it tangles into a file."
 Designed for use in on-save hook in certain programming languages modes."
   (if (or (string= major-mode "emacs-lisp-mode")
           (string= major-mode "racket-mode")
-          (string= major-mode "csharp-mode")
+          (string= major-mode "csharp-tree-sitter-mode")
           (string= major-mode "sml-mode"))
       (indent-region (point-min) (point-max))))
 
@@ -419,6 +465,10 @@ Used to eagerly load feature."
                                   xah-find
                                   modus-themes
                                   magit
+                                  tsc
+                                  tree-sitter-langs
+                                  tree-sitter-indent
+                                  tree-sitter
                                   ))
 
 (unless (string= (package-install-selected-packages) "All your packages are already installed")
@@ -442,6 +492,7 @@ Used to eagerly load feature."
 
 (jacob-is-installed 'racket-mode
   (add-hook 'racket-mode-hook 'racket-xp-mode))
+
 
 ;; auctex
 
@@ -458,16 +509,46 @@ Used to eagerly load feature."
   (edit-server-start))
 
 
+;; csharp-mode
+
+(jacob-is-installed 'csharp-mode
+  (add-to-list 'auto-mode-alist '("\\.cs\\'" . csharp-tree-sitter-mode))
+  (with-eval-after-load 'csharp-tree-sitter
+
+    (define-skeleton jacob-csharp-skeleton-console-writeline
+      "insert console.writeline" nil
+      > "Console.WriteLine(" - ")")
+
+    (define-skeleton jacob-csharp-skeleton-if
+      "insert if statement" nil
+      > "if (" - ")" \n
+      -4 "{"\n
+      \n
+      -4 "}")
+    
+    (when (boundp 'csharp-tree-sitter-mode-abbrev-table)
+      (clear-abbrev-table csharp-tree-sitter-mode-abbrev-table))
+    
+    (define-abbrev-table 'csharp-tree-sitter-mode-abbrev-table
+      '(
+        ("cwl" "" jacob-csharp-skeleton-console-writeline)
+        ("if" "" jacob-csharp-skeleton-if)
+        ("pu" "public")
+        ("pr" "private")
+        ("as" "async")
+        ("st" "static")
+        ))))
+
+
 
 (jacob-is-installed 'eglot
   (add-hook 'java-mode-hook 'eglot-ensure)
-  (add-hook 'csharp-mode-hook 'eglot-ensure)
-  (add-hook 'js-mode-hook 'eglot-ensure)
+  (add-hook 'csharp-tree-sitter-mode-hook 'eglot-ensure)
   (add-hook 'typescript-mode-hook 'eglot-ensure)
   (with-eval-after-load 'eglot
     (setcdr (assq 'java-mode eglot-server-programs) #'jacob-eglot-eclipse-jdt-contact)
 
-    (add-to-list 'eglot-server-programs `(csharp-mode . ("C:/Users/Jacob.Leeming/Downloads/omnisharp-win-x64/OmniSharp.exe" "-lsp")))
+    (add-to-list 'eglot-server-programs `(csharp-tree-sitter-mode . ("d:/programming/omnisharp-roslyn-1.37.15/artifacts/publish/OmniSharp.Stdio.Driver/win7-x64/OmniSharp.exe" "-lsp")))
     (add-to-list 'eglot-server-programs `(web-mode . ("typescript-language-server" "--stdio")))
 
     (defun jacob-eglot-eclipse-jdt-contact
