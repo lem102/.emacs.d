@@ -71,7 +71,7 @@
   "Hook function to run when in programming mode."
   (global-subword-mode 1)
 
-  (setq show-paren-style 'parenthesis)
+  (setq show-paren-style 'expression)
   (setq show-paren-when-point-inside-paren t)
   (setq show-paren-when-point-in-periphery nil)
   (show-paren-mode 1)
