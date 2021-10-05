@@ -89,7 +89,7 @@
   "Hook function to run when in programming mode."
   (global-subword-mode 1)
 
-  (setq show-paren-style 'expression)
+  (setq show-paren-style 'parenthesis)
   (setq show-paren-when-point-inside-paren t)
   (setq show-paren-when-point-in-periphery nil)
   (show-paren-mode 1)
@@ -547,6 +547,7 @@ Used to eagerly load feature."
   (add-hook 'typescript-mode-hook 'eglot-ensure)
   (with-eval-after-load 'eglot
     (setcdr (assq 'java-mode eglot-server-programs) #'jacob-eglot-eclipse-jdt-contact)
+    (add-to-list 'eglot-server-programs '((js-mode typescript-mode) . ("typescript-language-server" "--stdio")))
 
     (add-to-list 'eglot-server-programs `(csharp-tree-sitter-mode . ("d:/programming/omnisharp-roslyn-1.37.15/artifacts/publish/OmniSharp.Stdio.Driver/win7-x64/OmniSharp.exe" "-lsp")))
     (add-to-list 'eglot-server-programs `(web-mode . ("typescript-language-server" "--stdio")))
