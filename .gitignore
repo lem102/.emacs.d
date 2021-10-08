@@ -37,3 +37,6 @@ custom.el
 # Ignore all .elc (byte-compiled emacs lisp) files
 *.elc
 srecode-map.el
+/racket-mode/
+/transient/
+/eshell/lastdir

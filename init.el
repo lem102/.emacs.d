@@ -1208,7 +1208,7 @@ If user inputs yes, system is shutdown. Otherwise, nothing happens."
       (define-key map (kbd "u") 'xref-find-references)))
 
   (let ((map xah-fly-dot-keymap))
-    (define-key map (kbd "v") vc-prefix-map)
+    ;; (define-key map (kbd "v") vc-prefix-map)
     (define-key map (kbd "c") jacob-config-keymap)
     (jacob-is-installed 'eglot
       (define-key map (kbd "e") jacob-eglot-keymap))
@@ -1216,7 +1216,11 @@ If user inputs yes, system is shutdown. Otherwise, nothing happens."
       (define-key map (kbd "s") 'consult-line))
     ;; (define-key map (kbd "p") project-prefix-map)
     (jacob-is-installed 'projectile
-      (define-key map (kbd "p") 'projectile-command-map)))
+      (define-key map (kbd "p") 'projectile-command-map))
+    (jacob-is-installed 'magit
+      (define-key map (kbd "v") 'magit-status))
+    (jacob-is-installed 'modus-themes
+      (define-key map (kbd "t") 'modus-themes-toggle)))
 
   (let ((map xah-fly-command-map))
     (define-key map (kbd "a") 'execute-extended-command)
