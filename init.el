@@ -783,7 +783,9 @@ made typescript flymake."
   (defun xah-jacob-end-of-line-or-block (repetitions)
     (interactive "p")
     (dotimes (i repetitions)
-      (xah-end-of-line-or-block))))
+      (xah-end-of-line-or-block)))
+
+  (add-hook 'dired-mode-hook 'xah-fly-insert-mode-activate))
 
 
 
@@ -1203,9 +1205,7 @@ If user inputs yes, system is shutdown. Otherwise, nothing happens."
   (jacob-is-installed 'eglot
     (let ((map jacob-eglot-keymap))
       (define-key map (kbd "a") 'eglot-code-actions)
-      (define-key map (kbd "r") 'eglot-rename)
-      (define-key map (kbd "d") 'xref-find-definitions)
-      (define-key map (kbd "u") 'xref-find-references)))
+      (define-key map (kbd "r") 'eglot-rename)))
 
   (let ((map xah-fly-dot-keymap))
     ;; (define-key map (kbd "v") vc-prefix-map)
@@ -1277,7 +1277,18 @@ If user inputs yes, system is shutdown. Otherwise, nothing happens."
     (define-key map (kbd "e") 'find-file))
 
   (let ((map xah-fly-r-keymap)) 
-    (define-key map (kbd "c") 'kmacro-set-counter)))
+    (define-key map (kbd "c") 'kmacro-set-counter))
+
+  ;; dired rebinding
+  (let ((map dired-mode-map))
+    (define-key map (kbd "p") 'dired-maybe-insert-subdir)
+    (define-key map (kbd "n") 'dired-do-kill-lines)
+    (define-key map (kbd "i") 'dired-previous-line)
+    (define-key map (kbd "k") 'dired-next-line)
+    (define-key map (kbd "a") 'execute-extended-command)
+    (define-key map (kbd "s") 'dired-find-file)
+    
+    ))
 
 
 ;; keys for inserting symbols
