@@ -233,6 +233,7 @@
   (setq dired-recursive-copies 'always)
   (setq dired-recursive-deletes 'top)
   (setq dired-dwim-target t)
+  (setq delete-by-moving-to-trash t)
 
   (defun jacob-dired-mode-setup ()
     "Hook function for dired."
@@ -753,6 +754,7 @@ made typescript flymake."
   (which-key-mode 1))
 
 
+;; xah-fly-keys config
 
 (setq xah-fly-use-control-key nil)
 (setq xah-fly-use-meta-key t)
@@ -783,7 +785,17 @@ made typescript flymake."
     (dotimes (i repetitions)
       (xah-end-of-line-or-block)))
 
-  (add-hook 'dired-mode-hook 'xah-fly-insert-mode-activate))
+  (add-hook 'dired-mode-hook 'xah-fly-insert-mode-activate)
+
+  (defun jacob-maybe-activate-command-mode-on-quit ()
+    "Hook function that will possibly activate xah-fly-keys
+    command mode depending on the major mode of the buffer that
+    is being quitted."
+    (let ((major-mode-list (list 'dired-mode)))
+      (if (member major-mode major-mode-list)
+          (xah-fly-command-mode-activate))))
+  
+  (add-hook 'quit-window-hook 'jacob-maybe-activate-command-mode-on-quit))
 
 
 
@@ -1278,13 +1290,18 @@ If user inputs yes, system is shutdown. Otherwise, nothing happens."
 
   ;; dired rebinding
   (let ((map dired-mode-map))
-    (define-key map (kbd "p") 'dired-maybe-insert-subdir)
-    (define-key map (kbd "n") 'dired-do-kill-lines)
     (define-key map (kbd "i") 'dired-previous-line)
     (define-key map (kbd "k") 'dired-next-line)
     (define-key map (kbd "a") 'execute-extended-command)
-    (define-key map (kbd "s") 'dired-find-file)
-    
+    (define-key map (kbd "s") 'dired-find-alternate-file)
+    (define-key map (kbd "e") 'dired-mark)
+    (define-key map (kbd "r") 'dired-unmark)
+    (define-key map (kbd "R") 'dired-unmark-all-marks)
+    (define-key map (kbd "x") 'dired-do-rename)
+    (define-key map (kbd "c") 'dired-do-copy)
+    (define-key map (kbd "d") 'dired-do-delete) ; we skip the "flag, delete" process as files are sent to system bin on deletion
+    (define-key map (kbd "u") 'dired-up-directory)
+    (define-key map (kbd "j") 'dired-goto-file)
     ))
 
 
