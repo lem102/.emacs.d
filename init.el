@@ -464,7 +464,6 @@ Used to eagerly load feature."
                                   xah-fly-keys
                                   xah-find
                                   modus-themes
-                                  magit
                                   tsc
                                   tree-sitter-langs
                                   tree-sitter-indent
@@ -738,9 +737,8 @@ made typescript flymake."
 
   (add-hook 'web-mode-hook 'jacob-web-mode-config)
 
-  (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
+  
   (add-to-list 'auto-mode-alist '("\\.cshtml\\'" . web-mode))
-  (add-to-list 'auto-mode-alist '("\\.css\\'" . web-mode))
   (add-to-list 'auto-mode-alist '("\\.tsx\\'" . web-mode))
   
   (with-eval-after-load 'web-mode
@@ -1208,7 +1206,7 @@ If user inputs yes, system is shutdown. Otherwise, nothing happens."
       (define-key map (kbd "r") 'eglot-rename)))
 
   (let ((map xah-fly-dot-keymap))
-    ;; (define-key map (kbd "v") vc-prefix-map)
+    (define-key map (kbd "v") vc-prefix-map)
     (define-key map (kbd "c") jacob-config-keymap)
     (jacob-is-installed 'eglot
       (define-key map (kbd "e") jacob-eglot-keymap))
@@ -1217,8 +1215,7 @@ If user inputs yes, system is shutdown. Otherwise, nothing happens."
     ;; (define-key map (kbd "p") project-prefix-map)
     (jacob-is-installed 'projectile
       (define-key map (kbd "p") 'projectile-command-map))
-    (jacob-is-installed 'magit
-      (define-key map (kbd "v") 'magit-status))
+    (define-key map (kbd "v") vc-prefix-map)
     (jacob-is-installed 'modus-themes
       (define-key map (kbd "t") 'modus-themes-toggle)))
 
@@ -1289,41 +1286,6 @@ If user inputs yes, system is shutdown. Otherwise, nothing happens."
     (define-key map (kbd "s") 'dired-find-file)
     
     ))
-
-
-;; keys for inserting symbols
-
-(with-eval-after-load 'xah-fly-keys
-  (define-prefix-command 'jacob-symbol-insertion-map)
-  (define-prefix-command 'jacob-programming-name-insertion-map)
-
-  (define-key xah-fly-insert-map (kbd "`") 'jacob-symbol-insertion-map)
-
-  (let ((map jacob-symbol-insertion-map))
-    (define-key map (kbd "`") (lambda () (interactive) (insert "`")))
-
-    (define-key map (kbd "j") (kbd "{"))
-    (define-key map (kbd "k") (kbd "("))
-    (define-key map (kbd "l") (kbd "["))
-    (define-key map (kbd "u") (kbd "\""))
-    (define-key map (kbd "i") (kbd "'"))
-
-    (define-key map (kbd "m") (kbd "-"))
-    (define-key map (kbd ",") (kbd "_"))
-    (define-key map (kbd ".") (kbd "="))
-    (define-key map (kbd "/") (kbd "+"))
-
-    (define-key map (kbd "v") (kbd "~"))
-    (define-key map (kbd "c") (kbd "#"))
-    (define-key map (kbd "x") (kbd "@"))
-
-    (define-key map (kbd "z") 'jacob-programming-name-insertion-map))
-
-  (let ((map jacob-programming-name-insertion-map))
-    (define-key map (kbd "p") 'jacob-create-pascal-case-variable-name)
-    (define-key map (kbd "c") 'jacob-create-camel-case-variable-name)
-    (define-key map (kbd "h") 'jacob-create-hyphenated-variable-name)
-    (define-key map (kbd "u") 'jacob-create-underscored-variable-name)))
 
 
 
