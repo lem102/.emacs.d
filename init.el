@@ -469,6 +469,7 @@ Used to eagerly load feature."
                                   tree-sitter-langs
                                   tree-sitter-indent
                                   tree-sitter
+                                  inf-ruby
                                   ))
 
 (unless (string= (package-install-selected-packages) "All your packages are already installed")
