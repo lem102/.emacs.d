@@ -274,6 +274,7 @@
     '(
       ("let" "" jacob-emacs-lisp-skeleton-let)
       ("defun" "" jacob-emacs-lisp-skeleton-defun)
+      ("int" "(interactive)")
       )))
 
 (add-hook 'emacs-lisp-mode-hook 'jacob-elisp-config-hook-function)
@@ -925,6 +926,19 @@ made typescript flymake."
   "Evaluate the init file."
   (interactive)
   (load-file (expand-file-name "~/.emacs.d/init.el")))
+
+(defun jacob-config-update ()
+  "Download latest version of config from git."
+  (interactive)
+  (eshell-command "git -C ~/.emacs.d pull"))
+
+(jacob-is-installed 'restart-emacs
+  (with-eval-after-load 'restart-emacs
+    (defun jacob-config-update-then-restart ()
+      "Update config then restart."
+      (interactive)
+      (jacob-config-update)
+      (restart-emacs))))
 
 (defun jacob-org-src-block ()
   "Replacement for `C-c '` in both `org-mode' and when editing code blocks within `org-mode'."

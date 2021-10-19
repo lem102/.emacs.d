@@ -1,6 +1,3 @@
-# Ignore the non-example environment file
-jacob-init/jacob-init-environment-setup.el
-
 # Directories
 games
 auto-save-list
