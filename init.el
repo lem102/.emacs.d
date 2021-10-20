@@ -471,6 +471,8 @@ Used to eagerly load feature."
                                   tree-sitter-indent
                                   tree-sitter
                                   inf-ruby
+                                  fsharp-mode
+                                  eglot-fsharp
                                   ))
 
 (unless (string= (package-install-selected-packages) "All your packages are already installed")
@@ -542,11 +544,16 @@ Used to eagerly load feature."
         ))))
 
 
+;; eglot
 
 (jacob-is-installed 'eglot
   (add-hook 'java-mode-hook 'eglot-ensure)
   (add-hook 'csharp-tree-sitter-mode-hook 'eglot-ensure)
   (add-hook 'typescript-mode-hook 'eglot-ensure)
+  ;; (add-hook 'fsharp-mode-hook (lambda ()
+  ;; (require 'eglot-fsharp)
+  ;; (setcdr (assq 'fsharp-mode eglot-server-programs) (list "d:/programming/tools/FsAutoComplete-0.47.2/bin/release_netcore/fsautocomplete.exe")) ; bypass eglot-fsharps attempts to install server automatically
+  ;; (eglot-ensure)))
   (with-eval-after-load 'eglot
     (setcdr (assq 'java-mode eglot-server-programs) #'jacob-eglot-eclipse-jdt-contact)
     (add-to-list 'eglot-server-programs '((js-mode typescript-mode) . ("typescript-language-server" "--stdio")))
@@ -590,6 +597,12 @@ made typescript flymake."
         (flymake--diag-make :buffer buffer :beg 0 :end 0
                             :type type :text text :data data
                             :overlay-properties overlay-properties)))))
+
+
+;; fsharp-mode
+
+(with-eval-after-load 'fsharp-mode
+  (setq inferior-fsharp-program "dotnet fsi --fsi-server-input-codepage:65001"))
 
 
 ;; selectrum config
