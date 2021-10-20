@@ -550,16 +550,15 @@ Used to eagerly load feature."
   (add-hook 'java-mode-hook 'eglot-ensure)
   (add-hook 'csharp-tree-sitter-mode-hook 'eglot-ensure)
   (add-hook 'typescript-mode-hook 'eglot-ensure)
-  ;; (add-hook 'fsharp-mode-hook (lambda ()
-  ;; (require 'eglot-fsharp)
-  ;; (setcdr (assq 'fsharp-mode eglot-server-programs) (list "d:/programming/tools/FsAutoComplete-0.47.2/bin/release_netcore/fsautocomplete.exe")) ; bypass eglot-fsharps attempts to install server automatically
-  ;; (eglot-ensure)))
+  (add-hook 'fsharp-mode-hook (lambda ()
+                                (when (eq system-type 'gnu/linux)
+                                  (require 'eglot-fsharp)
+                                  (eglot-ensure))))
   (with-eval-after-load 'eglot
     (setcdr (assq 'java-mode eglot-server-programs) #'jacob-eglot-eclipse-jdt-contact)
-    (add-to-list 'eglot-server-programs '((js-mode typescript-mode) . ("typescript-language-server" "--stdio")))
+    (add-to-list 'eglot-server-programs '((web-mode js-mode typescript-mode) . ("typescript-language-server" "--stdio")))
 
     (add-to-list 'eglot-server-programs `(csharp-tree-sitter-mode . ("d:/programming/omnisharp-roslyn-1.37.15/artifacts/publish/OmniSharp.Stdio.Driver/win7-x64/OmniSharp.exe" "-lsp")))
-    (add-to-list 'eglot-server-programs `(web-mode . ("typescript-language-server" "--stdio")))
 
     (defun jacob-eglot-eclipse-jdt-contact
         (interactive)
