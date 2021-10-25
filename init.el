@@ -235,6 +235,9 @@
   (setq dired-dwim-target t)
   (setq delete-by-moving-to-trash t)
 
+  (setq ls-lisp-use-insert-directory-program nil)
+  (setq ls-lisp-dirs-first t)
+
   (defun jacob-dired-mode-setup ()
     "Hook function for dired."
     (require 'dired-x)
@@ -386,9 +389,6 @@ Designed for use in on-save hook in certain programming languages modes."
   (setq w32-pass-rwindow-to-system nil)
   (setq w32-rwindow-modifier 'super)
   (setq w32-apps-modifier 'hyper)
-
-  (setq ls-lisp-use-insert-directory-program nil)
-  (setq ls-lisp-dirs-first t)
 
   (add-hook 'after-init-hook (lambda ()
                                ;; maximize window
