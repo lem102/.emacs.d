@@ -235,6 +235,7 @@
   (setq dired-dwim-target t)
   (setq delete-by-moving-to-trash t)
 
+  (require 'ls-lisp)
   (setq ls-lisp-use-insert-directory-program nil)
   (setq ls-lisp-dirs-first t)
 
@@ -438,6 +439,10 @@ Used to eagerly load feature."
                          ))
 
 (setq package-selected-packages '(
+                                  ;; essential
+                                  xah-fly-keys
+                                  expand-region
+                                  ;; major modes
                                   ahk-mode
                                   csharp-mode
                                   web-mode
@@ -450,29 +455,34 @@ Used to eagerly load feature."
                                   markdown-mode
                                   typescript-mode
                                   racket-mode
+                                  feature-mode
+                                  fsharp-mode
+                                  dotenv-mode
+                                  ;; completion enhancements
                                   selectrum
                                   consult
                                   orderless
                                   prescient
                                   selectrum-prescient
                                   marginalia
-                                  edit-server
-                                  goto-last-change
-                                  eglot
-                                  expand-region
-                                  projectile
-                                  restart-emacs
-                                  which-key
-                                  xah-fly-keys
-                                  xah-find
-                                  modus-themes
+                                  ;; tree sitter
                                   tsc
                                   tree-sitter-langs
                                   tree-sitter-indent
                                   tree-sitter
-                                  inf-ruby
-                                  fsharp-mode
+                                  ;; programming
+                                  eglot
                                   eglot-fsharp
+                                  inf-ruby
+                                  ;; MS Windows
+                                  projectile
+                                  xah-find
+                                  ;; misc
+                                  edit-server
+                                  goto-last-change
+                                  restart-emacs
+                                  which-key
+                                  modus-themes ; will be included in emacs 28
                                   ))
 
 (unless (string= (package-install-selected-packages) "All your packages are already installed")
@@ -642,8 +652,7 @@ made typescript flymake."
   (projectile-mode 1)
 
   (with-eval-after-load 'projectile
-    (setq projectile-completion-system 'default)
-    (setq projectile-indexing-method 'native)))
+    (setq projectile-completion-system 'default)))
 
 
 
@@ -1141,6 +1150,14 @@ If user inputs yes, system is shutdown. Otherwise, nothing happens."
   (if (yes-or-no-p "Shutdown system?")
       (shell-command "pwsh -Command Stop-Computer")))
 
+(defun jacob-eshell ()
+  "Call the `eshell' command.  
+If the current buffer is an eshell buffer, call the `eshell' command
+with universal argument."
+  (interactive)
+  (let ((current-prefix-arg (eq major-mode 'eshell-mode)))
+    (call-interactively 'eshell)))
+
 
 
 ;; voice commands
@@ -1315,12 +1332,15 @@ If user inputs yes, system is shutdown. Otherwise, nothing happens."
   (let ((map xah-fly-r-keymap)) 
     (define-key map (kbd "c") 'kmacro-set-counter))
 
+  (let ((map xah-fly-n-keymap))
+    (define-key map (kbd "d") 'jacob-eshell))
+
   ;; dired rebinding
   (let ((map dired-mode-map))
     (define-key map (kbd "i") 'dired-previous-line)
     (define-key map (kbd "k") 'dired-next-line)
     (define-key map (kbd "a") 'execute-extended-command)
-    (define-key map (kbd "s") 'dired-find-alternate-file)
+    (define-key map (kbd "s") 'dired-find-file)
     (define-key map (kbd "e") 'dired-mark)
     (define-key map (kbd "r") 'dired-unmark)
     (define-key map (kbd "R") 'dired-unmark-all-marks)
