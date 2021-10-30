@@ -478,7 +478,6 @@ Used to eagerly load feature."
                                   projectile
                                   xah-find
                                   ;; misc
-                                  edit-server
                                   goto-last-change
                                   restart-emacs
                                   which-key
@@ -516,11 +515,6 @@ Used to eagerly load feature."
     (setq TeX-parse-self t)
     (setq-default japanese-TeX-error-messages nil)
     (TeX-global-PDF-mode 0)))
-
-
-
-(jacob-try-require 'edit-server
-  (edit-server-start))
 
 
 ;; csharp-mode
