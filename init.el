@@ -129,10 +129,12 @@
 
 ;; mode line
 
+(column-number-mode 1)
+(line-number-mode 1)
 (setq-default mode-line-format (list "%*" ; saved, readonly
                                      "%m: " ; major mode
                                      "%b " ; buffer name
-                                     "(%l,%c)" ; position of point
+                                     mode-line-position
                                      ))
 
 
@@ -260,16 +262,16 @@
     (redraw-frame))
   (flymake-mode 1)
   (eldoc-mode 1)
+  
   (define-skeleton jacob-emacs-lisp-skeleton-let
     "insert let" nil
-    > "(let ((" - "))" \n
-    ")")
+    > "let ((" - ")) \n")
 
   (define-skeleton jacob-emacs-lisp-skeleton-defun
     "insert defun" nil
-    > "(defun " - " ()" \n
+    > "defun " - " ()" \n
     -2 "\"\"" \n
-    ")")
+    )
 
   (when (boundp 'emacs-lisp-mode-abbrev-table)
     (clear-abbrev-table emacs-lisp-mode-abbrev-table))
