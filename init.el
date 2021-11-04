@@ -260,16 +260,16 @@
     (redraw-frame))
   (flymake-mode 1)
   (eldoc-mode 1)
+  
   (define-skeleton jacob-emacs-lisp-skeleton-let
     "insert let" nil
-    > "(let ((" - "))" \n
-    ")")
+    > "let ((" - ")) \n")
 
   (define-skeleton jacob-emacs-lisp-skeleton-defun
     "insert defun" nil
-    > "(defun " - " ()" \n
+    > "defun " - " ()" \n
     -2 "\"\"" \n
-    ")")
+    )
 
   (when (boundp 'emacs-lisp-mode-abbrev-table)
     (clear-abbrev-table emacs-lisp-mode-abbrev-table))
