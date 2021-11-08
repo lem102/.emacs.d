@@ -632,9 +632,12 @@ made typescript flymake."
 (jacob-is-installed 'consult
   (with-eval-after-load 'consult
     (setq completion-in-region-function 'consult-completion-in-region)
-    (setq consult-preview-key 'any)
     (dolist (command '(consult-bookmark consult-recent-file consult-buffer))
-      (setf (alist-get command consult-config) `(:preview-key ,nil)))))
+      (setf (alist-get command consult-config) `(:preview-key ,nil)))
+    (setq consult-project-root-function
+          (lambda ()
+            (when-let (project (project-current))
+              (car (project-roots project)))))))
 
 
 
@@ -1264,9 +1267,10 @@ with universal argument."
       (define-key map (kbd "e") jacob-eglot-keymap))
     (jacob-is-installed 'consult
       (define-key map (kbd "s") 'consult-line))
-    ;; (define-key map (kbd "p") project-prefix-map)
-    (jacob-is-installed 'projectile
-      (define-key map (kbd "p") 'projectile-command-map))
+    (if (eq system-type 'windows-nt)
+        (jacob-is-installed 'projectile
+          (define-key map (kbd "p") 'projectile-command-map))
+      (define-key map (kbd "p") project-prefix-map))
     (define-key map (kbd "v") vc-prefix-map)
     (jacob-is-installed 'modus-themes
       (define-key map (kbd "t") 'modus-themes-toggle)))
