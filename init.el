@@ -941,7 +941,7 @@ made typescript flymake."
 (defun jacob-config-visit ()
   "Open the init file."
   (interactive)
-  (find-file "~/.emacs.d/init.el"))
+  (call-interactively (find-file "~/.emacs.d/init.el")))
 
 (defun jacob-config-reload ()
   "Evaluate the init file."
