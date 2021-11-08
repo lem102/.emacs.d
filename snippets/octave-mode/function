@@ -1,7 +1,0 @@
-# -*- mode: snippet -*-
-# name: jacob octave function
-# key: func
-# --
-function[${1:returnValue}] = ${2:functionName}($3)
-  $0
-end

@@ -1,8 +1,0 @@
-# -*- mode: snippet -*-
-# name: jacob snippetblock
-# key: snippetblock
-# --
-*** ${1:snippetname}
-#+BEGIN_SRC snippet :tangle ./${2:major-mode}/$1
-$0
-#+END_SRC
