@@ -1,6 +1,8 @@
 ;;; consult-selectrum.el --- Selectrum integration for Consult -*- lexical-binding: t -*-
 
-;; This file is not part of GNU Emacs.
+;; Copyright (C) 2021  Free Software Foundation, Inc.
+
+;; This file is part of GNU Emacs.
 
 ;; This program is free software: you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -26,50 +28,43 @@
 
 ;; NOTE: It is not guaranteed that Selectrum is available during compilation!
 (defvar selectrum-default-value-format)
-(defvar selectrum-fix-vertical-window-height)
 (defvar selectrum-highlight-candidates-function)
 (defvar selectrum-is-active)
-(defvar selectrum-move-default-candidate)
 (defvar selectrum-refine-candidates-function)
-(declare-function selectrum-exhibit "selectrum")
-(declare-function selectrum-get-current-candidate "selectrum")
+(defvar selectrum--history-hash)
+(declare-function selectrum-exhibit "ext:selectrum")
+(declare-function selectrum-get-current-candidate "ext:selectrum")
 
-(defun consult-selectrum--filter (_category highlight)
-  "Return selectrum filter function with HIGHLIGHT."
+(defun consult-selectrum--filter-adv (orig pattern cands category highlight)
+  "Advice for ORIG `consult--completion-filter' function.
+See `consult--completion-filter' for arguments PATTERN, CANDS, CATEGORY and HIGHLIGHT."
   ;; Do not use selectrum-is-active here, since we want to always use
   ;; the Selectrum filtering when Selectrum is installed, even when
   ;; Selectrum is currently not active.
   ;; However if `selectrum-refine-candidates-function' is the default
   ;; function, which uses the completion styles, the Selectrum filtering
-  ;; is not used and `consult--default-completion-filter' takes over.
-  (when (and (eq completing-read-function 'selectrum-completing-read)
-             (not (eq selectrum-refine-candidates-function
-                      'selectrum-refine-candidates-using-completions-styles)))
-    (if highlight
-        (lambda (str cands)
-          (funcall selectrum-highlight-candidates-function str
-                   (funcall selectrum-refine-candidates-function str cands)))
-      selectrum-refine-candidates-function)))
+  ;; is not used and the original function is called.
+  (if (and (eq completing-read-function 'selectrum-completing-read)
+           (not (eq selectrum-refine-candidates-function
+                    'selectrum-refine-candidates-using-completions-styles)))
+      (if highlight
+          (funcall selectrum-highlight-candidates-function pattern
+                   (funcall selectrum-refine-candidates-function pattern cands))
+        (funcall selectrum-refine-candidates-function pattern cands))
+    (funcall orig pattern cands category highlight)))
 
 (defun consult-selectrum--candidate ()
   "Return current selectrum candidate."
   (and selectrum-is-active (selectrum-get-current-candidate)))
 
-(defun consult-selectrum--refresh ()
-  "Refresh selectrum view."
+(defun consult-selectrum--refresh (&optional reset)
+  "Refresh completion UI, keep current candidate unless RESET is non-nil."
   (when selectrum-is-active
-    (if consult--narrow
-        (setq-local selectrum-default-value-format nil)
-      (kill-local-variable 'selectrum-default-value-format))
-    (selectrum-exhibit 'keep-selected)))
-
-(cl-defun consult-selectrum--read-setup-adv (candidates &key default-top &allow-other-keys)
-  "Advice for `consult--read-setup' for Selectrum specific setup.
-
-See `consult--read' for the CANDIDATES and DEFAULT-TOP arguments."
-  (setq-local selectrum-move-default-candidate default-top)
-  ;; Fix selectrum height for async completion table
-  (when (functionp candidates) (setq-local selectrum-fix-vertical-window-height t)))
+    (when consult--narrow
+      (setq-local selectrum-default-value-format nil))
+    (when reset
+      (setq-local selectrum--history-hash nil))
+    (selectrum-exhibit (not reset))))
 
 (defun consult-selectrum--split-wrap (orig split)
   "Wrap candidates highlight/refinement ORIG function, splitting the input using SPLIT."
@@ -88,11 +83,20 @@ SPLIT is the splitter function."
     (setq-local selectrum-highlight-candidates-function
 		(consult-selectrum--split-wrap selectrum-highlight-candidates-function split))))
 
-(add-hook 'consult--completion-filter-hook #'consult-selectrum--filter)
+(defun consult-selectrum--crm-adv (&rest args)
+  "Setup crm for Selectrum given ARGS."
+  (consult--minibuffer-with-setup-hook
+      (lambda ()
+        (when selectrum-is-active
+          (setq-local selectrum-default-value-format nil)))
+    (apply args)))
+
 (add-hook 'consult--completion-candidate-hook #'consult-selectrum--candidate)
 (add-hook 'consult--completion-refresh-hook #'consult-selectrum--refresh)
-(advice-add #'consult--read-setup :before #'consult-selectrum--read-setup-adv)
+(advice-add #'consult-completing-read-multiple :around #'consult-selectrum--crm-adv)
+(advice-add #'consult--completion-filter :around #'consult-selectrum--filter-adv)
 (advice-add #'consult--split-setup :around #'consult-selectrum--split-setup-adv)
+(define-key consult-async-map [remap selectrum-insert-current-candidate] 'selectrum-next-page)
 
 (provide 'consult-selectrum)
 ;;; consult-selectrum.el ends here

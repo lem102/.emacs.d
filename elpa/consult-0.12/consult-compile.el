@@ -1,6 +1,8 @@
 ;;; consult-compile.el --- Provides the command `consult-compile-error' -*- lexical-binding: t -*-
 
-;; This file is not part of GNU Emacs.
+;; Copyright (C) 2021  Free Software Foundation, Inc.
+
+;; This file is part of GNU Emacs.
 
 ;; This program is free software: you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -65,28 +67,30 @@
 
 (defun consult-compile--error-lookup (_ candidates cand)
   "Lookup marker of CAND by accessing CANDIDATES list."
-  (when-let (cand (car (member cand candidates)))
-    (let ((marker (get-text-property 0 'consult-compile--marker cand))
-          (loc (get-text-property 0 'consult-compile--loc cand)))
-      (when (buffer-live-p (marker-buffer marker))
-        (consult--position-marker
-         ;; taken from compile.el
-         (apply #'compilation-find-file
-                marker
-                (caar (compilation--loc->file-struct loc))
-                (cadar (compilation--loc->file-struct loc))
-                (compilation--file-struct->formats
-                 (compilation--loc->file-struct loc)))
-         (compilation--loc->line loc)
-         (compilation--loc->col loc))))))
+  (when-let ((cand (car (member cand candidates)))
+             (marker (get-text-property 0 'consult-compile--marker cand))
+             (loc (get-text-property 0 'consult-compile--loc cand))
+             (buffer (marker-buffer marker))
+             (default-directory (buffer-local-value 'default-directory buffer)))
+    (consult--position-marker
+     ;; taken from compile.el
+     (apply #'compilation-find-file
+            marker
+            (caar (compilation--loc->file-struct loc))
+            (cadar (compilation--loc->file-struct loc))
+            (compilation--file-struct->formats
+             (compilation--loc->file-struct loc)))
+     (compilation--loc->line loc)
+     (compilation--loc->col loc))))
 
 (defun consult-compile--compilation-buffers (file)
   "Return a list of compilation buffers relevant to FILE."
-  (seq-filter (lambda (buffer)
-                (with-current-buffer buffer
-                  (and (compilation-buffer-internal-p)
-                       (file-in-directory-p file default-directory))))
-              (buffer-list)))
+  (consult--buffer-query
+   :sort 'alpha :predicate
+   (lambda (buffer)
+     (with-current-buffer buffer
+       (and (compilation-buffer-internal-p)
+            (file-in-directory-p file default-directory))))))
 
 ;;;###autoload
 (defun consult-compile-error ()
@@ -109,7 +113,7 @@ preview of the currently selected error."
    :require-match t
    :history t ;; disable history
    :lookup #'consult-compile--error-lookup
-   :title (consult--type-title consult-compile--narrow)
+   :group (consult--type-group consult-compile--narrow)
    :narrow (consult--type-narrow consult-compile--narrow)
    :history '(:input consult-compile--history)
    :state (consult--jump-state 'consult-preview-error)))

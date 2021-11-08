@@ -9,6 +9,34 @@
 ;;;### (autoloads nil "consult" "consult.el" (0 0 0 0))
 ;;; Generated autoloads from consult.el
 
+(autoload 'consult-completion-in-region "consult" "\
+Use minibuffer completion as the UI for `completion-at-point'.
+
+The function is called with 4 arguments: START END COLLECTION PREDICATE.
+The arguments and expected return value are as specified for
+`completion-in-region'. Use as a value for `completion-in-region-function'.
+
+The function can be configured via `consult-customize'.
+
+    (consult-customize consult-completion-in-region
+                       :completion-styles (basic)
+                       :cycle-threshold 3)
+
+These configuration options are supported:
+
+    * :cycle-threshold - Cycling threshold (def: `completion-cycle-threshold')
+    * :completion-styles - Use completion styles (def: `completion-styles')
+    * :require-match - Require matches when completing (def: nil)
+    * :prompt - The prompt string shown in the minibuffer
+
+\(fn START END COLLECTION &optional PREDICATE)" nil nil)
+
+(autoload 'consult-completing-read-multiple "consult" "\
+Enhanced replacement for `completing-read-multiple'.
+See `completing-read-multiple' for the documentation of the arguments.
+
+\(fn PROMPT TABLE &optional PRED REQUIRE-MATCH INITIAL-INPUT HIST DEF INHERIT-INPUT-METHOD)" nil nil)
+
 (autoload 'consult-multi-occur "consult" "\
 Improved version of `multi-occur' based on `completing-read-multiple'.
 
@@ -23,26 +51,42 @@ This command supports narrowing to a heading level and candidate preview.
 The symbol at point is added to the future history." t nil)
 
 (autoload 'consult-mark "consult" "\
-Jump to a marker in the buffer-local `mark-ring'.
+Jump to a marker in MARKERS list (defaults to buffer-local `mark-ring').
 
 The command supports preview of the currently selected marker position.
-The symbol at point is added to the future history." t nil)
+The symbol at point is added to the future history.
+
+\(fn &optional MARKERS)" t nil)
 
 (autoload 'consult-global-mark "consult" "\
-Jump to a marker in `global-mark-ring'.
+Jump to a marker in MARKERS list (defaults to `global-mark-ring').
 
 The command supports preview of the currently selected marker position.
-The symbol at point is added to the future history." t nil)
+The symbol at point is added to the future history.
+
+\(fn &optional MARKERS)" t nil)
 
 (autoload 'consult-line "consult" "\
-Search for a matching line and jump to the line beginning.
+Search for a matching line.
 
-The default candidate is a non-empty line closest to point.
-This command obeys narrowing. Optional INITIAL input can be provided.
-The search starting point is changed if the START prefix argument is set.
-The symbol at point and the last `isearch-string' is added to the future history.
+Depending on the setting `consult-line-point-placement' the command jumps to
+the beginning or the end of the first match on the line or the line beginning.
+The default candidate is the non-empty line next to point. This command obeys
+narrowing. Optional INITIAL input can be provided. The search starting point is
+changed if the START prefix argument is set. The symbol at point and the last
+`isearch-string' is added to the future history.
 
 \(fn &optional INITIAL START)" t nil)
+
+(autoload 'consult-line-multi "consult" "\
+Search for a matching line in multiple buffers.
+
+By default search across all project buffers. If the prefix argument QUERY is
+non-nil, all buffers are searched. Optional INITIAL input can be provided. See
+`consult-line' for more information. In order to search a subset of buffers,
+QUERY can be set to a plist according to `consult--buffer-query'.
+
+\(fn QUERY &optional INITIAL)" t nil)
 
 (autoload 'consult-keep-lines "consult" "\
 Select a subset of the lines in the current buffer with live preview.
@@ -64,8 +108,9 @@ Hide or show lines using overlays.
 The selected lines are shown and the other lines hidden. When called
 interactively, the lines selected are those that match the minibuffer input. In
 order to match the inverse of the input, prefix the input with `! '. With
-optional prefix argument SHOW reveal the hidden lines. When called from elisp,
-the filtering is performed by a FILTER function. This command obeys narrowing.
+optional prefix argument SHOW reveal the hidden lines. Alternatively the
+command can be restarted to reveal the lines. When called from elisp, the
+filtering is performed by a FILTER function. This command obeys narrowing.
 
 FILTER is the filter function.
 INITIAL is the initial input.
@@ -82,33 +127,12 @@ narrowing and the settings `consult-goto-line-numbers' and
 \(fn &optional ARG)" t nil)
 
 (autoload 'consult-recent-file "consult" "\
-Find recent using `completing-read'." t nil)
+Find recent file using `completing-read'." t nil)
 
 (autoload 'consult-file-externally "consult" "\
 Open FILE externally using the default application of the system.
 
 \(fn FILE)" t nil)
-
-(autoload 'consult-completion-in-region "consult" "\
-Prompt for completion of region in the minibuffer if non-unique.
-
-The function is called with 4 arguments: START END COLLECTION PREDICATE.
-The arguments and expected return value are as specified for
-`completion-in-region'. Use as a value for `completion-in-region-function'.
-
-The function can be configured via `consult-config'.
-
-    (setf (alist-get #'consult-completion-in-region consult-config)
-      '(:completion-styles (basic)))
-
-These configuration options are supported:
-
-    * :cycle-threshold - Cycling threshold (def: `completion-cycle-threshold')
-    * :completion-styles - Use completion styles (def: `completion-styles')
-    * :require-match - Require matches when completing (def: nil)
-    * :prompt - The prompt string shown in the minibuffer
-
-\(fn START END COLLECTION &optional PREDICATE)" nil nil)
 
 (autoload 'consult-mode-command "consult" "\
 Run a command from any of the given MODES.
@@ -321,16 +345,20 @@ Select item from flattened `imenu' using `completing-read' with preview.
 
 The command supports preview and narrowing. See the variable
 `consult-imenu-config', which configures the narrowing.
+The symbol at point is added to the future history.
 
-See also `consult-project-imenu'." t nil)
+See also `consult-imenu-multi'." t nil)
 
-(autoload 'consult-project-imenu "consult-imenu" "\
+(autoload 'consult-imenu-multi "consult-imenu" "\
 Select item from the imenus of all buffers from the same project.
 
 In order to determine the buffers belonging to the same project, the
 `consult-project-root-function' is used. Only the buffers with the
 same major mode as the current buffer are used. See also
-`consult-imenu' for more details." t nil)
+`consult-imenu' for more details. In order to search a subset of buffers,
+QUERY can be set to a plist according to `consult--buffer-query'.
+
+\(fn &optional QUERY)" t nil)
 
 (if (fboundp 'register-definition-prefixes) (register-definition-prefixes "consult-imenu" '("consult-imenu-")))
 

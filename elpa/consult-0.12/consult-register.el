@@ -1,6 +1,8 @@
 ;;; consult-register.el --- Consult commands for registers -*- lexical-binding: t -*-
 
-;; This file is not part of GNU Emacs.
+;; Copyright (C) 2021  Free Software Foundation, Inc.
+
+;; This file is part of GNU Emacs.
 
 ;; This program is free software: you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -75,10 +77,11 @@ This function can be used as `register-preview-function'."
 (defun consult-register--format (reg)
   "Format register REG for preview."
   (pcase-let ((`(,key . ,val) reg))
-    (let* ((key-str (single-key-description key))
-           (fmt (format "%%-%ds " (max 3 (length key-str)))))
+    (let* ((key-str (propertize (single-key-description key) 'face 'consult-key))
+           (len (max 3 (length key-str))))
       (concat
-       (format fmt (propertize key-str 'face 'consult-key))
+       key-str
+       (make-string (- len (length key-str)) ?\s)
        ;; Special printing for certain register types
        (cond
         ;; Display full string
@@ -87,14 +90,14 @@ This function can be used as `register-preview-function'."
            (setq val (mapconcat #'identity val "\n")))
          (mapconcat #'identity
                     (seq-take (split-string (string-trim val) "\n") 3)
-                    (format fmt "\n")))
+                    (concat "\n" (make-string len ?\s))))
         ;; Display 'file-query
         ((eq (car-safe val) 'file-query)
          (format "%s at position %d"
                  (propertize (abbreviate-file-name (cadr val)) 'face 'consult-file)
                  (caddr val)))
         ;; Display full line of buffer
-        ((and (markerp val) (buffer-live-p (marker-buffer val)))
+        ((and (markerp val) (marker-buffer val))
          (with-current-buffer (marker-buffer val)
            (save-restriction
              (save-excursion
@@ -148,7 +151,7 @@ register access functions. The command supports narrowing, see
                    (when-let (reg (get-register cand))
                      (and (markerp reg) reg))
                    restore)))
-      :title (consult--type-title narrow)
+      :group (consult--type-group narrow)
       :narrow (consult--type-narrow narrow)
       :sort nil
       :require-match t
@@ -198,7 +201,7 @@ This function is derived from `register-read-with-preview'."
                       action-list "  "))
                     (fit-window-to-buffer)))))))
 	 (timer (when (numberp register-preview-delay)
-	          (run-with-timer register-preview-delay nil preview)))
+	          (run-at-time register-preview-delay nil preview)))
 	 (help-chars (seq-remove #'get-register (cons help-char help-event-list))))
     (unwind-protect
         (while (not reg)

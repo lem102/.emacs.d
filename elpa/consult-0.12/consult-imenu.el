@@ -1,6 +1,8 @@
 ;;; consult-imenu.el --- Consult commands for imenu -*- lexical-binding: t -*-
 
-;; This file is not part of GNU Emacs.
+;; Copyright (C) 2021  Free Software Foundation, Inc.
+
+;; This file is part of GNU Emacs.
 
 ;; This program is free software: you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -132,24 +134,22 @@ TYPES is the mode-specific types configuration."
         (puthash (car item) 0 ht)))))
 
 (defun consult-imenu--items ()
-  "Return cached imenu candidates."
+  "Return cached imenu candidates, may error."
   (unless (equal (car consult-imenu--cache) (buffer-modified-tick))
     (setq consult-imenu--cache (cons (buffer-modified-tick) (consult-imenu--compute))))
   (cdr consult-imenu--cache))
 
-(defun consult-imenu--all-items (buffers)
-  "Return all imenu items from each BUFFERS."
-  (seq-mapcat (lambda (buf) (with-current-buffer buf (consult-imenu--items))) buffers))
+(defun consult-imenu--items-safe ()
+  "Return cached imenu candidates, will not error."
+  (condition-case err
+      (consult-imenu--items)
+    (t (message "Cannot create Imenu for buffer %s (%s)"
+                (buffer-name) (error-message-string err))
+       nil)))
 
-(defun consult-imenu--project-buffers ()
-  "Return project buffers with the same `major-mode' as the current buffer."
-  (if-let (root (consult--project-root))
-      (seq-filter (lambda (buf)
-                    (when-let (file (buffer-file-name buf))
-                      (and (eq (buffer-local-value 'major-mode buf) major-mode)
-                           (string-prefix-p root file))))
-                  (buffer-list))
-    (list (current-buffer))))
+(defun consult-imenu--multi-items (buffers)
+  "Return all imenu items from BUFFERS."
+  (apply #'append (consult--buffer-map buffers #'consult-imenu--items-safe)))
 
 (defun consult-imenu--jump (item)
   "Jump to imenu ITEM via `consult--jump'.
@@ -161,10 +161,8 @@ this function can jump across buffers."
     (`(,_ . ,pos) (consult--jump pos))
     (_ (error "Unknown imenu item: %S" item))))
 
-(defun consult-imenu--select (items)
-  "Select from imenu ITEMS with preview.
-
-The symbol at point is added to the future history."
+(defun consult-imenu--select (prompt items)
+  "Select from imenu ITEMS given PROMPT string."
   (let ((narrow
          (mapcar (lambda (x) (cons (car x) (cadr x)))
                  (plist-get (cdr (seq-find (lambda (x) (derived-mode-p (car x)))
@@ -174,7 +172,7 @@ The symbol at point is added to the future history."
     (consult-imenu--jump
      (consult--read
       (or items (user-error "Imenu is empty"))
-      :prompt "Go to item: "
+      :prompt prompt
       :state
       (let ((preview (consult--jump-preview)))
         (lambda (cand restore)
@@ -182,7 +180,7 @@ The symbol at point is added to the future history."
           ;; in order to avoid any bad side effects.
           (funcall preview (and (markerp (cdr cand)) (cdr cand)) restore)))
       :require-match t
-      :title
+      :group
       (when narrow
         (lambda (cand transform)
           (when-let (type (get-text-property 0 'consult--type cand))
@@ -191,10 +189,10 @@ The symbol at point is added to the future history."
               (alist-get type narrow)))))
       :narrow
       (when narrow
-        (cons
-         (lambda (cand)
-           (eq (get-text-property 0 'consult--type (car cand)) consult--narrow))
-         narrow))
+        (list :predicate
+              (lambda (cand)
+                (eq (get-text-property 0 'consult--type (car cand)) consult--narrow))
+              :keys narrow))
       :category 'imenu
       :lookup #'consult--lookup-cons
       :history 'consult-imenu--history
@@ -207,21 +205,28 @@ The symbol at point is added to the future history."
 
 The command supports preview and narrowing. See the variable
 `consult-imenu-config', which configures the narrowing.
+The symbol at point is added to the future history.
 
-See also `consult-project-imenu'."
+See also `consult-imenu-multi'."
   (interactive)
-  (consult-imenu--select (consult-imenu--items)))
+  (consult-imenu--select "Go to item: " (consult-imenu--items)))
 
 ;;;###autoload
-(defun consult-project-imenu ()
+(defun consult-imenu-multi (&optional query)
   "Select item from the imenus of all buffers from the same project.
 
 In order to determine the buffers belonging to the same project, the
 `consult-project-root-function' is used. Only the buffers with the
 same major mode as the current buffer are used. See also
-`consult-imenu' for more details."
-  (interactive)
-  (consult-imenu--select (consult-imenu--all-items (consult-imenu--project-buffers))))
+`consult-imenu' for more details. In order to search a subset of buffers,
+QUERY can be set to a plist according to `consult--buffer-query'."
+  (interactive "P")
+  (unless (keywordp (car-safe query))
+    (setq query (list :sort 'alpha :mode major-mode
+                      :directory (and (not query) 'project))))
+  (let ((buffers (consult--buffer-query-prompt "Go to item" query)))
+    (consult-imenu--select (car buffers)
+                           (consult-imenu--multi-items (cdr buffers)))))
 
 (provide 'consult-imenu)
 ;;; consult-imenu.el ends here
