@@ -436,7 +436,8 @@ Used to eagerly load feature."
      ,@body))
 
 (setq package-archives '(
-                         ("gnu" . "https://elpa.gnu.org/packages/")
+                         ("GNU" . "https://elpa.gnu.org/packages/")
+                         ("non-GNU" . "https://elpa.nongnu.org/nongnu/")
                          ("melpa" . "https://melpa.org/packages/")
                          ))
 
