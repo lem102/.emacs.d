@@ -460,6 +460,7 @@ Used to eagerly load feature."
                                   feature-mode
                                   fsharp-mode
                                   dotenv-mode
+                                  restclient
                                   ;; completion enhancements
                                   selectrum
                                   consult
@@ -531,10 +532,9 @@ Used to eagerly load feature."
 
     (define-skeleton jacob-csharp-skeleton-if
       "insert if statement" nil
-      > "if (" - ")" \n
-      -4 "{"\n
+      > "if (" - ") {" \n
       \n
-      -4 "}")
+      "}")
     
     (when (boundp 'csharp-tree-sitter-mode-abbrev-table)
       (clear-abbrev-table csharp-tree-sitter-mode-abbrev-table))
@@ -564,7 +564,7 @@ Used to eagerly load feature."
     (setcdr (assq 'java-mode eglot-server-programs) #'jacob-eglot-eclipse-jdt-contact)
     (add-to-list 'eglot-server-programs '((web-mode js-mode typescript-mode) . ("typescript-language-server" "--stdio")))
 
-    (add-to-list 'eglot-server-programs `(csharp-tree-sitter-mode . ("d:/programming/omnisharp-roslyn-1.37.15/artifacts/publish/OmniSharp.Stdio.Driver/win7-x64/OmniSharp.exe" "-lsp")))
+    (add-to-list 'eglot-server-programs `(csharp-tree-sitter-mode . ("/home/jacob/dev/omnisharp-linux-x64.tar/run" "-lsp")))
 
     (defun jacob-eglot-eclipse-jdt-contact
         (interactive)
