@@ -1,2 +1,0 @@
-;;; Generated package description from c:/Users/lem/.emacs.d/elpa/edit-server-20181016.1125/edit-server.el  -*- no-byte-compile: t -*-
-(define-package "edit-server" "20181016.1125" "server that responds to edit requests from Chrome" 'nil :commit "1632acab5624637031326bd902e2ad7ccb6b4c90" :authors '(("Alex Bennée" . "alex@bennee.com")) :maintainer '("Alex Bennée" . "alex@bennee.com") :url "https://github.com/stsquad/emacs_chrome")
