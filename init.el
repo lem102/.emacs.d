@@ -945,12 +945,11 @@ made typescript flymake."
   (eshell-command "git -C ~/.emacs.d pull"))
 
 (jacob-is-installed 'restart-emacs
-  (with-eval-after-load 'restart-emacs
-    (defun jacob-config-update-then-restart ()
-      "Update config then restart."
-      (interactive)
-      (jacob-config-update)
-      (restart-emacs))))
+  (defun jacob-config-update-then-restart ()
+    "Update config then restart."
+    (interactive)
+    (jacob-config-update)
+    (restart-emacs)))
 
 (defun jacob-org-src-block ()
   "Replacement for `C-c '` in both `org-mode' and when editing code blocks within `org-mode'."
