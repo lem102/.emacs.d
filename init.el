@@ -611,7 +611,7 @@ made typescript flymake."
   (setq inferior-fsharp-program "dotnet fsi --fsi-server-input-codepage:65001"))
 
 
-;; selectrum config
+;; selectrum
 
 (jacob-try-require 'selectrum
   (jacob-try-require 'orderless
@@ -630,6 +630,9 @@ made typescript flymake."
   (setq enable-recursive-minibuffers t)
   (selectrum-mode 1))
 
+
+;; consult
+
 (jacob-is-installed 'consult
   (with-eval-after-load 'consult
     (setq completion-in-region-function 'consult-completion-in-region)
@@ -639,7 +642,10 @@ made typescript flymake."
     (setq consult-project-root-function
           (lambda ()
             (when-let (project (project-current))
-              (car (project-roots project)))))))
+              (car (project-roots project)))))
+
+    (setq xref-show-xrefs-function 'consult-xref)
+    (setq xref-show-definitions-function 'consult-xref)))
 
 
 
