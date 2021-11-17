@@ -564,6 +564,7 @@ Used to eagerly load feature."
   (with-eval-after-load 'eglot
     (setcdr (assq 'java-mode eglot-server-programs) #'jacob-eglot-eclipse-jdt-contact)
     (add-to-list 'eglot-server-programs '((web-mode js-mode typescript-mode) . ("typescript-language-server" "--stdio")))
+    (add-to-list 'eglot-server-programs '(go-mode . ("/home/jacob/go/bin/gopls")))
 
     (add-to-list 'eglot-server-programs `(csharp-tree-sitter-mode . ("/home/jacob/dev/omnisharp-linux-x64.tar/run" "-lsp")))
 
