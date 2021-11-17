@@ -831,6 +831,73 @@ made typescript flymake."
 
 ;; personal functions
 
+(defun jacob-curl-to-restclient (start end)
+  "Convert the curl command between START and END to the restclient syntax.
+
+Designed to be used on the curl commands created by api
+explorers/swagger type things.
+
+Curl commands that have parameters in a different order to
+request type, headers, request body will not be perfect."
+  (interactive "r")
+  (save-restriction
+    (narrow-to-region start end)
+
+    ;; get rid of the curl call
+    (goto-char (point-min))
+    (while (search-forward "curl" nil t)
+      (replace-match ""))
+
+    ;; get everything on the same line
+    (goto-char (point-min))
+    (while (search-forward "\\\n" nil t)
+      (replace-match ""))
+
+    ;; remove superfluous spaces
+    (goto-char (point-min))
+    (while (re-search-forward " +" nil t)
+      (replace-match " "))
+
+    ;; this is where order will start to matter
+    ;; split each component onto its own line
+    (goto-char (point-min))
+    (let ((case-fold-search nil))
+      (while (re-search-forward " -[A-Z] " nil t)
+        (replace-match "\n")))
+
+    ;; remove single quotes
+    (goto-char (point-min))
+    (while (search-forward "'" nil t)
+      (replace-match ""))
+
+    (goto-char (point-min))
+    (while (search-forward " -d " nil t)
+      (replace-match "\n\n"))
+
+    (json-reformat-region (point) (point-max))
+
+    (goto-char (point-min))
+    (delete-char 1)))
+
+(defun jacob-async-shell-command (command)
+  "Wrapper command for `async-shell-command'."
+  (interactive
+   (list
+    (read-shell-command (if shell-command-prompt-show-cwd
+                            (format-message "Async shell command in `%s': "
+                                            (abbreviate-file-name
+                                             default-directory))
+                          "Async shell command: ")
+                        nil nil
+			            (let ((filename
+			                   (cond
+				                (buffer-file-name)
+				                ((eq major-mode 'dired-mode)
+				                 (dired-get-filename nil t)))))
+			              (and filename (file-relative-name filename))))))
+  (async-shell-command command
+                       (concat "* " default-directory " " command " *")))
+
 (defun jacob-words-to-symbol (begin end)
   ""
   (interactive "r")
@@ -1343,7 +1410,8 @@ with universal argument."
     (define-key map (kbd "c") 'kmacro-set-counter))
 
   (let ((map xah-fly-n-keymap))
-    (define-key map (kbd "d") 'jacob-eshell))
+    (define-key map (kbd "d") 'jacob-eshell)
+    (define-key map (kbd "3") 'jacob-async-shell-command))
 
   ;; dired rebinding
   (let ((map dired-mode-map))
