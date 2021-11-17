@@ -1,5 +1,5 @@
-alias grh git reset --hard
-alias gco git checkout $1
+alias gco git checkout $*
+alias grh git reset --hard $*
 alias ll ls -la
 alias pk eshell-up-peek $1
 alias up eshell-up $1
@@ -7,7 +7,7 @@ alias ff find-file $1
 alias d dired $1
 alias ga git add $*
 alias gc git commit -m $*
-alias gs git status
-alias gp git push
-alias gP git pull
+alias gs git status $*
+alias gp git push $*
+alias gP git pull $*
 alias gpsu git push --set-upstream origin HEAD
