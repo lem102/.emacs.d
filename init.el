@@ -832,6 +832,14 @@ made typescript flymake."
 
 ;; personal functions
 
+(jacob-is-installed 'consult
+  (defun jacob-project-search ()
+    "If current project is a git project, use consult git grep, otherwise use consult grep."
+    (interactive)
+    (if (eq "Git" (vc-backend (buffer-file-name)))
+        (call-interactively (consult-git-grep))
+      (call-interactively (consult-grep)))))
+
 (defun jacob-curl-to-restclient (start end)
   "Convert the curl command between START and END to the restclient syntax.
 
@@ -1348,7 +1356,7 @@ with universal argument."
       (progn
         (define-key map (kbd "p") project-prefix-map)
         (let ((map project-prefix-map))
-          (define-key map (kbd "g") 'consult-grep))))
+          (define-key map (kbd "g") 'jacob-project-search))))
     (define-key map (kbd "v") vc-prefix-map)
     (jacob-is-installed 'modus-themes
       (define-key map (kbd "t") 'modus-themes-toggle)))
