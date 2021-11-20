@@ -836,7 +836,7 @@ made typescript flymake."
   (defun jacob-project-search ()
     "If current project is a git project, use consult git grep, otherwise use consult grep."
     (interactive)
-    (if (eq "Git" (vc-backend (buffer-file-name)))
+    (if (eq 'Git (vc-backend (buffer-file-name)))
         (call-interactively (consult-git-grep))
       (call-interactively (consult-grep)))))
 
