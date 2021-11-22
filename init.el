@@ -417,6 +417,12 @@ Designed for use in on-save hook in certain programming languages modes."
     (setq doc-view-odf->pdf-converter-function 'doc-view-odf->pdf-converter-soffice)))
 
 
+;; compilation mode config
+
+(setq compilation-always-kill t)
+(setq compilation-scroll-output t)
+
+
 
 ;; package installation
 
