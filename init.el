@@ -521,6 +521,12 @@ Used to eagerly load feature."
     (TeX-global-PDF-mode 0)))
 
 
+;; restclient
+
+(jacob-is-installed 'restclient
+  (add-to-list 'auto-mode-alist '("\\.http\\'" . restclient-mode)))
+
+
 ;; csharp-mode
 
 (jacob-is-installed 'csharp-mode
@@ -731,7 +737,7 @@ made typescript flymake."
 (jacob-is-installed 'typescript-mode
   (with-eval-after-load 'typescript-mode
 
-    (setq typescript-indent-level 4)
+    (setq typescript-indent-level 2)
 
     (define-skeleton jacob-typescript-skeleton-console-log
       "insert console.log" nil
