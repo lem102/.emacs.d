@@ -10,7 +10,13 @@ var
 image-dired
 eshell/lastdir
 elpa/archives/gnu/archive-contents
+elpa/archives/GNU/
+elpa/archives/non-GNU/
 elpa/archives/melpa/archive-contents
+FsAutoComplete
+/racket-mode/
+/transient/
+/eshell/lastdir
 
 # Files in root directory
 projects
@@ -30,10 +36,11 @@ savehist
 saveplace
 amx-items
 custom.el
+eww-bookmarks
+srecode-map.el
 
 # Ignore all .elc (byte-compiled emacs lisp) files
 *.elc
-srecode-map.el
-/racket-mode/
-/transient/
-/eshell/lastdir
+
+
+

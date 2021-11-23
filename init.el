@@ -129,10 +129,12 @@
 
 ;; mode line
 
+(column-number-mode 1)
+(line-number-mode 1)
 (setq-default mode-line-format (list "%*" ; saved, readonly
                                      "%m: " ; major mode
                                      "%b " ; buffer name
-                                     "(%l,%c)" ; position of point
+                                     mode-line-position
                                      ))
 
 
@@ -235,6 +237,10 @@
   (setq dired-dwim-target t)
   (setq delete-by-moving-to-trash t)
 
+  (require 'ls-lisp)
+  (setq ls-lisp-use-insert-directory-program nil)
+  (setq ls-lisp-dirs-first t)
+
   (defun jacob-dired-mode-setup ()
     "Hook function for dired."
     (require 'dired-x)
@@ -256,16 +262,16 @@
     (redraw-frame))
   (flymake-mode 1)
   (eldoc-mode 1)
+  
   (define-skeleton jacob-emacs-lisp-skeleton-let
     "insert let" nil
-    > "(let ((" - "))" \n
-    ")")
+    > "let ((" - ")) \n")
 
   (define-skeleton jacob-emacs-lisp-skeleton-defun
     "insert defun" nil
-    > "(defun " - " ()" \n
+    > "defun " - " ()" \n
     -2 "\"\"" \n
-    ")")
+    )
 
   (when (boundp 'emacs-lisp-mode-abbrev-table)
     (clear-abbrev-table emacs-lisp-mode-abbrev-table))
@@ -387,9 +393,6 @@ Designed for use in on-save hook in certain programming languages modes."
   (setq w32-rwindow-modifier 'super)
   (setq w32-apps-modifier 'hyper)
 
-  (setq ls-lisp-use-insert-directory-program nil)
-  (setq ls-lisp-dirs-first t)
-
   (add-hook 'after-init-hook (lambda ()
                                ;; maximize window
                                (w32-send-sys-command 61488))))
@@ -414,6 +417,12 @@ Designed for use in on-save hook in certain programming languages modes."
     (setq doc-view-odf->pdf-converter-function 'doc-view-odf->pdf-converter-soffice)))
 
 
+;; compilation mode config
+
+(setq compilation-always-kill t)
+(setq compilation-scroll-output t)
+
+
 
 ;; package installation
 
@@ -433,11 +442,16 @@ Used to eagerly load feature."
      ,@body))
 
 (setq package-archives '(
-                         ("gnu" . "https://elpa.gnu.org/packages/")
+                         ("GNU" . "https://elpa.gnu.org/packages/")
+                         ("non-GNU" . "https://elpa.nongnu.org/nongnu/")
                          ("melpa" . "https://melpa.org/packages/")
                          ))
 
 (setq package-selected-packages '(
+                                  ;; essential
+                                  xah-fly-keys
+                                  expand-region
+                                  ;; major modes
                                   ahk-mode
                                   csharp-mode
                                   web-mode
@@ -450,29 +464,34 @@ Used to eagerly load feature."
                                   markdown-mode
                                   typescript-mode
                                   racket-mode
+                                  feature-mode
+                                  fsharp-mode
+                                  dotenv-mode
+                                  restclient
+                                  ;; completion enhancements
                                   selectrum
                                   consult
                                   orderless
                                   prescient
                                   selectrum-prescient
                                   marginalia
-                                  edit-server
-                                  goto-last-change
-                                  eglot
-                                  expand-region
-                                  projectile
-                                  restart-emacs
-                                  which-key
-                                  xah-fly-keys
-                                  xah-find
-                                  modus-themes
+                                  ;; tree sitter
                                   tsc
                                   tree-sitter-langs
                                   tree-sitter-indent
                                   tree-sitter
-                                  inf-ruby
-                                  fsharp-mode
+                                  ;; programming
+                                  eglot
                                   eglot-fsharp
+                                  inf-ruby
+                                  ;; MS Windows
+                                  projectile
+                                  xah-find
+                                  ;; misc
+                                  goto-last-change
+                                  restart-emacs
+                                  which-key
+                                  modus-themes ; will be included in emacs 28
                                   ))
 
 (unless (string= (package-install-selected-packages) "All your packages are already installed")
@@ -508,9 +527,10 @@ Used to eagerly load feature."
     (TeX-global-PDF-mode 0)))
 
 
+;; restclient
 
-(jacob-try-require 'edit-server
-  (edit-server-start))
+(jacob-is-installed 'restclient
+  (add-to-list 'auto-mode-alist '("\\.http\\'" . restclient-mode)))
 
 
 ;; csharp-mode
@@ -525,10 +545,9 @@ Used to eagerly load feature."
 
     (define-skeleton jacob-csharp-skeleton-if
       "insert if statement" nil
-      > "if (" - ")" \n
-      -4 "{"\n
+      > "if (" - ") {" \n
       \n
-      -4 "}")
+      "}")
     
     (when (boundp 'csharp-tree-sitter-mode-abbrev-table)
       (clear-abbrev-table csharp-tree-sitter-mode-abbrev-table))
@@ -557,8 +576,9 @@ Used to eagerly load feature."
   (with-eval-after-load 'eglot
     (setcdr (assq 'java-mode eglot-server-programs) #'jacob-eglot-eclipse-jdt-contact)
     (add-to-list 'eglot-server-programs '((web-mode js-mode typescript-mode) . ("typescript-language-server" "--stdio")))
+    (add-to-list 'eglot-server-programs '(go-mode . ("/home/jacob/go/bin/gopls")))
 
-    (add-to-list 'eglot-server-programs `(csharp-tree-sitter-mode . ("d:/programming/omnisharp-roslyn-1.37.15/artifacts/publish/OmniSharp.Stdio.Driver/win7-x64/OmniSharp.exe" "-lsp")))
+    (add-to-list 'eglot-server-programs `(csharp-tree-sitter-mode . ("/home/jacob/dev/omnisharp-linux-x64.tar/run" "-lsp")))
 
     (defun jacob-eglot-eclipse-jdt-contact
         (interactive)
@@ -604,7 +624,7 @@ made typescript flymake."
   (setq inferior-fsharp-program "dotnet fsi --fsi-server-input-codepage:65001"))
 
 
-;; selectrum config
+;; selectrum
 
 (jacob-try-require 'selectrum
   (jacob-try-require 'orderless
@@ -623,12 +643,22 @@ made typescript flymake."
   (setq enable-recursive-minibuffers t)
   (selectrum-mode 1))
 
+
+;; consult
+
 (jacob-is-installed 'consult
   (with-eval-after-load 'consult
     (setq completion-in-region-function 'consult-completion-in-region)
-    (setq consult-preview-key 'any)
-    (dolist (command '(consult-bookmark consult-recent-file consult-buffer))
-      (setf (alist-get command consult-config) `(:preview-key ,nil)))))
+
+    (setq consult-preview-raw-size 0)
+
+    (setq consult-project-root-function
+          (lambda ()
+            (when-let (project (project-current))
+              (car (project-roots project)))))
+
+    (setq xref-show-xrefs-function 'consult-xref)
+    (setq xref-show-definitions-function 'consult-xref)))
 
 
 
@@ -642,8 +672,7 @@ made typescript flymake."
   (projectile-mode 1)
 
   (with-eval-after-load 'projectile
-    (setq projectile-completion-system 'default)
-    (setq projectile-indexing-method 'native)))
+    (setq projectile-completion-system 'default)))
 
 
 
@@ -714,7 +743,7 @@ made typescript flymake."
 (jacob-is-installed 'typescript-mode
   (with-eval-after-load 'typescript-mode
 
-    (setq typescript-indent-level 4)
+    (setq typescript-indent-level 2)
 
     (define-skeleton jacob-typescript-skeleton-console-log
       "insert console.log" nil
@@ -814,6 +843,81 @@ made typescript flymake."
 
 
 ;; personal functions
+
+(jacob-is-installed 'consult
+  (defun jacob-project-search ()
+    "If current project is a git project, use consult git grep, otherwise use consult grep."
+    (interactive)
+    (if (eq 'Git (vc-backend (buffer-file-name)))
+        (call-interactively (consult-git-grep))
+      (call-interactively (consult-grep)))))
+
+(defun jacob-curl-to-restclient (start end)
+  "Convert the curl command between START and END to the restclient syntax.
+
+Designed to be used on the curl commands created by api
+explorers/swagger type things.
+
+Curl commands that have parameters in a different order to
+request type, headers, request body will not be perfect."
+  (interactive "r")
+  (save-restriction
+    (narrow-to-region start end)
+
+    ;; get rid of the curl call
+    (goto-char (point-min))
+    (while (search-forward "curl" nil t)
+      (replace-match ""))
+
+    ;; get everything on the same line
+    (goto-char (point-min))
+    (while (search-forward "\\\n" nil t)
+      (replace-match ""))
+
+    ;; remove superfluous spaces
+    (goto-char (point-min))
+    (while (re-search-forward " +" nil t)
+      (replace-match " "))
+
+    ;; this is where order will start to matter
+    ;; split each component onto its own line
+    (goto-char (point-min))
+    (let ((case-fold-search nil))
+      (while (re-search-forward " -[A-Z] " nil t)
+        (replace-match "\n")))
+
+    ;; remove single quotes
+    (goto-char (point-min))
+    (while (search-forward "'" nil t)
+      (replace-match ""))
+
+    (goto-char (point-min))
+    (while (search-forward " -d " nil t)
+      (replace-match "\n\n"))
+
+    (json-reformat-region (point) (point-max))
+
+    (goto-char (point-min))
+    (delete-char 1)))
+
+(defun jacob-async-shell-command (command)
+  "Wrapper command for `async-shell-command'."
+  (interactive
+   (list
+    (read-shell-command (if shell-command-prompt-show-cwd
+                            (format-message "Async shell command in `%s': "
+                                            (abbreviate-file-name
+                                             default-directory))
+                          "Async shell command: ")
+                        nil nil
+			            (let ((filename
+			                   (cond
+				                (buffer-file-name)
+				                ((eq major-mode 'dired-mode)
+				                 (dired-get-filename nil t)))))
+			              (and filename (file-relative-name filename))))))
+  (async-shell-command command
+                       (concat "* " default-directory " " command " *")))
 
 (defun jacob-words-to-symbol (begin end)
   ""
@@ -932,7 +1036,7 @@ made typescript flymake."
 (defun jacob-config-visit ()
   "Open the init file."
   (interactive)
-  (find-file "~/.emacs.d/init.el"))
+  (call-interactively (find-file "~/.emacs.d/init.el")))
 
 (defun jacob-config-reload ()
   "Evaluate the init file."
@@ -945,12 +1049,11 @@ made typescript flymake."
   (eshell-command "git -C ~/.emacs.d pull"))
 
 (jacob-is-installed 'restart-emacs
-  (with-eval-after-load 'restart-emacs
-    (defun jacob-config-update-then-restart ()
-      "Update config then restart."
-      (interactive)
-      (jacob-config-update)
-      (restart-emacs))))
+  (defun jacob-config-update-then-restart ()
+    "Update config then restart."
+    (interactive)
+    (jacob-config-update)
+    (restart-emacs)))
 
 (defun jacob-org-src-block ()
   "Replacement for `C-c '` in both `org-mode' and when editing code blocks within `org-mode'."
@@ -1141,6 +1244,14 @@ If user inputs yes, system is shutdown. Otherwise, nothing happens."
   (if (yes-or-no-p "Shutdown system?")
       (shell-command "pwsh -Command Stop-Computer")))
 
+(defun jacob-eshell ()
+  "Call the `eshell' command.  
+If the current buffer is an eshell buffer, call the `eshell' command
+with universal argument."
+  (interactive)
+  (let ((current-prefix-arg (eq major-mode 'eshell-mode)))
+    (call-interactively 'eshell)))
+
 
 
 ;; voice commands
@@ -1251,9 +1362,13 @@ If user inputs yes, system is shutdown. Otherwise, nothing happens."
       (define-key map (kbd "e") jacob-eglot-keymap))
     (jacob-is-installed 'consult
       (define-key map (kbd "s") 'consult-line))
-    ;; (define-key map (kbd "p") project-prefix-map)
-    (jacob-is-installed 'projectile
-      (define-key map (kbd "p") 'projectile-command-map))
+    (if (eq system-type 'windows-nt)
+        (jacob-is-installed 'projectile
+          (define-key map (kbd "p") 'projectile-command-map))
+      (progn
+        (define-key map (kbd "p") project-prefix-map)
+        (let ((map project-prefix-map))
+          (define-key map (kbd "g") 'jacob-project-search))))
     (define-key map (kbd "v") vc-prefix-map)
     (jacob-is-installed 'modus-themes
       (define-key map (kbd "t") 'modus-themes-toggle)))
@@ -1315,12 +1430,16 @@ If user inputs yes, system is shutdown. Otherwise, nothing happens."
   (let ((map xah-fly-r-keymap)) 
     (define-key map (kbd "c") 'kmacro-set-counter))
 
+  (let ((map xah-fly-n-keymap))
+    (define-key map (kbd "d") 'jacob-eshell)
+    (define-key map (kbd "3") 'jacob-async-shell-command))
+
   ;; dired rebinding
   (let ((map dired-mode-map))
     (define-key map (kbd "i") 'dired-previous-line)
     (define-key map (kbd "k") 'dired-next-line)
     (define-key map (kbd "a") 'execute-extended-command)
-    (define-key map (kbd "s") 'dired-find-alternate-file)
+    (define-key map (kbd "s") 'dired-find-file)
     (define-key map (kbd "e") 'dired-mark)
     (define-key map (kbd "r") 'dired-unmark)
     (define-key map (kbd "R") 'dired-unmark-all-marks)

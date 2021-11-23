@@ -1,7 +1,0 @@
-# -*- mode: snippet -*-
-# name: jacob foreach
-# key: fore
-# --
-for (${1:ElementType} ${2:element} : ${3:collection}) {
-    $0
-}
