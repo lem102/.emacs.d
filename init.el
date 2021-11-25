@@ -1357,6 +1357,7 @@ with universal argument."
 
   (let ((map xah-fly-dot-keymap))
     (define-key map (kbd "v") vc-prefix-map)
+    (define-key map (kbd "t") tab-prefix-map)
     (define-key map (kbd "c") jacob-config-keymap)
     (jacob-is-installed 'eglot
       (define-key map (kbd "e") jacob-eglot-keymap))
@@ -1371,7 +1372,7 @@ with universal argument."
           (define-key map (kbd "g") 'jacob-project-search))))
     (define-key map (kbd "v") vc-prefix-map)
     (jacob-is-installed 'modus-themes
-      (define-key map (kbd "t") 'modus-themes-toggle)))
+      (define-key map (kbd "b") 'modus-themes-toggle)))
 
   (let ((map xah-fly-command-map))
     (define-key map (kbd "a") 'execute-extended-command)
