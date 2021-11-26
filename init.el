@@ -1425,7 +1425,8 @@ version control, call `project-eshell' instead."
       (define-key map (kbd "f") 'consult-buffer)))
 
   (let ((map xah-fly-w-keymap))
-    (define-key map (kbd "n") 'jacob-eval-and-replace))
+    (define-key map (kbd "n") 'jacob-eval-and-replace)
+    (define-key map (kbd ",") 'tab-bar-close-tab))
 
   (let ((map xah-fly-t-keymap))
     (define-key map (kbd "j") 'kill-this-buffer))
@@ -1439,7 +1440,8 @@ version control, call `project-eshell' instead."
 
   (let ((map xah-fly-n-keymap))
     (define-key map (kbd "d") 'jacob-eshell-dwim)
-    (define-key map (kbd "3") 'jacob-async-shell-command))
+    (define-key map (kbd "3") 'jacob-async-shell-command)
+    (define-key map (kbd "g") 'tab-bar-new-tab))
 
   ;; dired rebinding
   (let ((map dired-mode-map))
