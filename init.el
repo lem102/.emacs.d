@@ -1421,7 +1421,7 @@ version control, call `project-eshell' instead."
   (let ((map xah-fly-leader-key-map))
     (define-key map (kbd "4") 'jacob-split-window-right-select-new)
     (jacob-is-installed 'consult
-      (define-key map (kbd "v") 'consult-yank)
+      (define-key map (kbd "v") 'consult-yank-from-kill-ring)
       (define-key map (kbd "f") 'consult-buffer)))
 
   (let ((map xah-fly-w-keymap))
