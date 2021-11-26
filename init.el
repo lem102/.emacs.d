@@ -1244,13 +1244,18 @@ If user inputs yes, system is shutdown. Otherwise, nothing happens."
   (if (yes-or-no-p "Shutdown system?")
       (shell-command "pwsh -Command Stop-Computer")))
 
-(defun jacob-eshell ()
-  "Call the `eshell' command.  
-If the current buffer is an eshell buffer, call the `eshell' command
-with universal argument."
+(defun jacob-eshell-dwim ()
+  "Call different eshell commands depending on the context.
+
+If the current buffer is an eshell buffer, call the `eshell'
+command with universal argument.  If the current buffer is under
+version control, call `project-eshell' instead."
   (interactive)
-  (let ((current-prefix-arg (eq major-mode 'eshell-mode)))
-    (call-interactively 'eshell)))
+  (let ((current-prefix-arg (eq major-mode 'eshell-mode))
+        (eshell-command (if (eq 'Git (vc-backend (buffer-file-name)))
+                            'project-eshell
+                          'eshell)))
+    (call-interactively eshell-command)))
 
 
 
@@ -1381,6 +1386,7 @@ with universal argument."
     (define-key map (kbd "4") 'jacob-split-window-below-select-new)
     (define-key map (kbd "1") 'winner-undo)
     (define-key map (kbd "2") 'winner-redo)
+    (define-key map (kbd "`") 'tab-next)
     (jacob-is-installed 'expand-region
       (define-key map (kbd "8") 'er/expand-region)))
 
@@ -1432,7 +1438,7 @@ with universal argument."
     (define-key map (kbd "c") 'kmacro-set-counter))
 
   (let ((map xah-fly-n-keymap))
-    (define-key map (kbd "d") 'jacob-eshell)
+    (define-key map (kbd "d") 'jacob-eshell-dwim)
     (define-key map (kbd "3") 'jacob-async-shell-command))
 
   ;; dired rebinding
