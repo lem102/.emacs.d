@@ -1389,7 +1389,7 @@ version control, call `project-eshell' instead."
     (define-key map (kbd "a") 'execute-extended-command)
     (define-key map (kbd "s") (kbd "RET"))
     (define-key map (kbd "DEL") nil)
-    (define-key map (kbd "4") 'jacob-split-window-below-select-new)
+    (define-key map (kbd "4") 'jacob-split-window-right-select-new)
     (define-key map (kbd "1") 'winner-undo)
     (define-key map (kbd "2") 'winner-redo)
     (define-key map (kbd "`") 'tab-next)
@@ -1425,7 +1425,7 @@ version control, call `project-eshell' instead."
     (define-key map (kbd "o") 'jacob-insert-ampersand))
 
   (let ((map xah-fly-leader-key-map))
-    (define-key map (kbd "4") 'jacob-split-window-right-select-new)
+    (define-key map (kbd "4") 'jacob-split-window-below-select-new)
     (jacob-is-installed 'consult
       (define-key map (kbd "v") 'consult-yank-from-kill-ring)
       (define-key map (kbd "f") 'consult-buffer)))
@@ -1447,7 +1447,7 @@ version control, call `project-eshell' instead."
   (let ((map xah-fly-n-keymap))
     (define-key map (kbd "d") 'jacob-eshell-dwim)
     (define-key map (kbd "3") 'jacob-async-shell-command)
-    (define-key map (kbd "g") 'tab-bar-new-tab))
+    (define-key map (kbd "g") 'jacob-new-tab))
 
   ;; dired rebinding
   (let ((map dired-mode-map))
