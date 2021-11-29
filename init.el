@@ -844,6 +844,12 @@ made typescript flymake."
 
 ;; personal functions
 
+(defun jacob-new-tab ()
+  "Make a new tab and give it a name."
+  (interactive)
+  (tab-bar-new-tab)
+  (call-interactively 'tab-rename))
+
 (jacob-is-installed 'consult
   (defun jacob-project-search ()
     "If current project is a git project, use consult git grep, otherwise use consult grep."
