@@ -172,13 +172,19 @@
   "insert if statement" nil
   > "if (" - ") {" \n
   \n
-  -2 "}")
+  "}")
+
+(define-skeleton jacob-javascript-skeleton-const
+  "insert const binding" nil
+  > "const " - " =")
+
+(define-skeleton jacob-javascript-skeleton-let
+  "insert let binding" nil
+  > "let " - " =")
 
 (define-skeleton jacob-javascript-skeleton-arrow-function
   "insert arrow function" nil
-  > "const " - " = () => {" \n
-  \n
-  -2 "}")
+  > "(" - ") => ")
 
 (when (boundp 'js-mode-abbrev-table)
   (clear-abbrev-table js-mode-abbrev-table))
@@ -188,6 +194,8 @@
     ("cl" "" jacob-javascript-skeleton-console-log)
     ("if" "" jacob-javascript-skeleton-if)
     ("arr" "" jacob-javascript-skeleton-arrow-function)
+    ("c" "" jacob-javascript-skeleton-const)
+    ("l" "" jacob-javascript-skeleton-let)
     ))
 
 
