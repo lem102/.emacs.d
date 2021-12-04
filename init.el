@@ -165,17 +165,17 @@
 ;; javascript-mode
 
 (define-skeleton jacob-javascript-skeleton-console-log
-  "insert console.log" nil
+  "insert console.log"
   > "console.log(" - ");")
 
 (define-skeleton jacob-javascript-skeleton-if
-  "insert if statement" nil
+  "insert if statement"
   > "if (" - ") {" \n
   \n
   "}")
 
 (define-skeleton jacob-javascript-skeleton-const
-  "insert const binding" nil
+  "insert const binding"
   > "const " - " =")
 
 (define-skeleton jacob-javascript-skeleton-let
@@ -584,9 +584,20 @@ Used to eagerly load feature."
   (with-eval-after-load 'eglot
     (setcdr (assq 'java-mode eglot-server-programs) #'jacob-eglot-eclipse-jdt-contact)
     (add-to-list 'eglot-server-programs '((web-mode js-mode typescript-mode) . ("typescript-language-server" "--stdio")))
+
+    ;; (add-to-list 'eglot-server-programs '((js-mode typescript-mode) . (eglot-deno "deno" "lsp")))
+
+    ;; (defclass eglot-deno (eglot-lsp-server) ()
+    ;;   :documentation "A custom class for deno lsp.")
+
+    ;; (cl-defmethod eglot-initialization-options ((server eglot-deno))
+    ;;   "Passes through required deno initialization options"
+    ;;   (list :enable t
+    ;;         :lint t))
+    
     (add-to-list 'eglot-server-programs '(go-mode . ("/home/jacob/go/bin/gopls")))
 
-    (add-to-list 'eglot-server-programs `(csharp-tree-sitter-mode . ("/home/jacob/dev/omnisharp-linux-x64.tar/run" "-lsp")))
+    (add-to-list 'eglot-server-programs `(csharp-tree-sitter-mode . ("/home/jacob/Downloads/omnisharp-linux-x64.tar/run" "-lsp")))
 
     (defun jacob-eglot-eclipse-jdt-contact
         (interactive)
@@ -753,30 +764,16 @@ made typescript flymake."
 
     (setq typescript-indent-level 2)
 
-    (define-skeleton jacob-typescript-skeleton-console-log
-      "insert console.log" nil
-      > "console.log(" - ");")
-
-    (define-skeleton jacob-typescript-skeleton-if
-      "insert if statement" nil
-      > "if (" - ") {" \n
-      \n
-      -2 "}")
-
-    (define-skeleton jacob-typescript-skeleton-arrow-function
-      "insert arrow function" nil
-      > "const " - " = () => {" \n
-      \n
-      -2 "}")
-    
     (when (boundp 'typescript-mode-abbrev-table)
       (clear-abbrev-table typescript-mode-abbrev-table))
     
     (define-abbrev-table 'typescript-mode-abbrev-table
       '(
-        ("cl" "" jacob-typescript-skeleton-console-log)
-        ("if" "" jacob-typescript-skeleton-if)
-        ("arr" "" jacob-typescript-skeleton-arrow-function)
+        ("cl" "" jacob-javascript-skeleton-console-log)
+        ("if" "" jacob-javascript-skeleton-if)
+        ("arr" "" jacob-javascript-skeleton-arrow-function)
+        ("c" "" jacob-javascript-skeleton-const)
+        ("l" "" jacob-javascript-skeleton-let)
         ))))
 
 
@@ -835,8 +832,6 @@ made typescript flymake."
     (interactive "p")
     (dotimes (i repetitions)
       (xah-end-of-line-or-block)))
-
-  (add-hook 'dired-mode-hook 'xah-fly-insert-mode-activate)
 
   (defun jacob-maybe-activate-command-mode-on-quit ()
     "Hook function that will possibly activate xah-fly-keys
@@ -1457,7 +1452,6 @@ version control, call `project-eshell' instead."
     (define-key map (kbd "3") 'jacob-async-shell-command)
     (define-key map (kbd "g") 'jacob-new-tab))
 
-  ;; dired rebinding
   (let ((map dired-mode-map))
     (define-key map (kbd "i") 'dired-previous-line)
     (define-key map (kbd "k") 'dired-next-line)
@@ -1470,8 +1464,7 @@ version control, call `project-eshell' instead."
     (define-key map (kbd "c") 'dired-do-copy)
     (define-key map (kbd "d") 'dired-do-delete) ; we skip the "flag, delete" process as files are sent to system bin on deletion
     (define-key map (kbd "u") 'dired-up-directory)
-    (define-key map (kbd "j") 'dired-goto-file)
-    ))
+    (define-key map (kbd "j") 'dired-goto-file)))
 
 
 
