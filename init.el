@@ -255,7 +255,14 @@
     (setq dired-guess-shell-alist-user '(("\\.mkv\\'" "mpv")))
     (dired-hide-details-mode 1))
 
-  (add-hook 'dired-mode-hook 'jacob-dired-mode-setup))
+  (add-hook 'dired-mode-hook 'jacob-dired-mode-setup)
+
+  (jacob-is-installed 'xah-fly-keys
+    (add-hook 'dired-mode-hook 'xah-fly-insert-mode-activate)
+    (add-to-list 'window-state-change-functions (function (lambda (arg)
+                                                            (message "%s" major-mode)
+                                                            (if (eq major-mode 'dired-mode)
+                                                                (xah-fly-insert-mode-activate)))))))
 
 
 ;; emacs-lisp-mode config
@@ -514,9 +521,9 @@ Used to eagerly load feature."
 ;; package configuration
 
 
-;; themes
+;; theme
 
-(load-theme 'modus-operandi t)
+(load-theme 'modus-vivendi t)
 
 
 ;; racket-mode
