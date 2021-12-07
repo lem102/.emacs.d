@@ -255,14 +255,7 @@
     (setq dired-guess-shell-alist-user '(("\\.mkv\\'" "mpv")))
     (dired-hide-details-mode 1))
 
-  (add-hook 'dired-mode-hook 'jacob-dired-mode-setup)
-
-  (jacob-is-installed 'xah-fly-keys
-    (add-hook 'dired-mode-hook 'xah-fly-insert-mode-activate)
-    (add-to-list 'window-state-change-functions (function (lambda (arg)
-                                                            (message "%s" major-mode)
-                                                            (if (eq major-mode 'dired-mode)
-                                                                (xah-fly-insert-mode-activate)))))))
+  (add-hook 'dired-mode-hook 'jacob-dired-mode-setup))
 
 
 ;; emacs-lisp-mode config
@@ -840,15 +833,19 @@ made typescript flymake."
     (dotimes (i repetitions)
       (xah-end-of-line-or-block)))
 
-  (defun jacob-maybe-activate-command-mode-on-quit ()
-    "Hook function that will possibly activate xah-fly-keys
-    command mode depending on the major mode of the buffer that
-    is being quitted."
-    (let ((major-mode-list (list 'dired-mode)))
-      (if (member major-mode major-mode-list)
-          (xah-fly-command-mode-activate))))
-  
-  (add-hook 'quit-window-hook 'jacob-maybe-activate-command-mode-on-quit))
+  (defun jacob-change-xah-mode-for-major-modes (arg)
+    "Function designed to reside in `window-state-change-functions'.
+
+If current major mode is in major-mode-list, change to xfk insert mode,
+otherwise change to command mode. Do nothing if in minibuffer."
+    (if (not (minibufferp (current-buffer)))
+        (let ((major-mode-list (list 'dired-mode
+                                     'vc-dir-mode)))
+          (if (member major-mode major-mode-list)
+              (xah-fly-insert-mode-activate)
+            (xah-fly-command-mode-activate)))))
+
+  (add-to-list 'window-state-change-functions (function jacob-change-xah-mode-for-major-modes)))
 
 
 
@@ -1471,7 +1468,16 @@ version control, call `project-eshell' instead."
     (define-key map (kbd "c") 'dired-do-copy)
     (define-key map (kbd "d") 'dired-do-delete) ; we skip the "flag, delete" process as files are sent to system bin on deletion
     (define-key map (kbd "u") 'dired-up-directory)
-    (define-key map (kbd "j") 'dired-goto-file)))
+    (define-key map (kbd "j") 'dired-goto-file))
+
+  (with-eval-after-load 'vc-dir
+    (let ((map vc-dir-mode-map)) 
+      (define-key map (kbd "i") 'vc-dir-previous-line)
+      (define-key map (kbd "k") 'vc-dir-next-line)
+      (define-key map (kbd "o") 'vc-dir-next-directory)
+      (define-key map (kbd "u") 'vc-dir-previous-directory)
+      (define-key map (kbd "e") 'vc-dir-mark)
+      (define-key map (kbd "r") 'vc-dir-unmark))))
 
 
 
