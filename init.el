@@ -1456,6 +1456,9 @@ version control, call `project-eshell' instead."
     (define-key map (kbd "3") 'jacob-async-shell-command)
     (define-key map (kbd "g") 'jacob-new-tab))
 
+  (let ((map vc-prefix-map))
+    (define-key map (kbd "p") 'vc-push))
+
   (defun jacob-define-common-keys (map)
     "Define some common keys for given keymap MAP."
     (define-key map (kbd "a") 'execute-extended-command)
