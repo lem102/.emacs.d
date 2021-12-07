@@ -1059,7 +1059,7 @@ request type, headers, request body will not be perfect."
 (defun jacob-config-update ()
   "Download latest version of config from git."
   (interactive)
-  (eshell-command "git -C ~/.emacs.d pull"))
+  (shell-command "git -C ~/.emacs.d pull"))
 
 (jacob-is-installed 'restart-emacs
   (defun jacob-config-update-then-restart ()
@@ -1456,10 +1456,18 @@ version control, call `project-eshell' instead."
     (define-key map (kbd "3") 'jacob-async-shell-command)
     (define-key map (kbd "g") 'jacob-new-tab))
 
+  (defun jacob-define-common-keys (map)
+    "Define some common keys for given keymap MAP."
+    (define-key map (kbd "a") 'execute-extended-command)
+    (define-key map (kbd ",") 'xah-next-window-or-frame)
+    (define-key map (kbd "SPC") 'xah-fly-leader-key-map)
+    (define-key map (kbd "3") 'delete-other-windows)
+    (define-key map (kbd "4") 'jacob-split-window-right-select-new))
+
   (let ((map dired-mode-map))
+    (jacob-define-common-keys map)
     (define-key map (kbd "i") 'dired-previous-line)
     (define-key map (kbd "k") 'dired-next-line)
-    (define-key map (kbd "a") 'execute-extended-command)
     (define-key map (kbd "s") 'dired-find-file)
     (define-key map (kbd "e") 'dired-mark)
     (define-key map (kbd "r") 'dired-unmark)
@@ -1471,11 +1479,13 @@ version control, call `project-eshell' instead."
     (define-key map (kbd "j") 'dired-goto-file))
 
   (with-eval-after-load 'vc-dir
-    (let ((map vc-dir-mode-map)) 
+    (let ((map vc-dir-mode-map))
+      (jacob-define-common-keys map)
       (define-key map (kbd "i") 'vc-dir-previous-line)
       (define-key map (kbd "k") 'vc-dir-next-line)
       (define-key map (kbd "o") 'vc-dir-next-directory)
       (define-key map (kbd "u") 'vc-dir-previous-directory)
+      (define-key map (kbd "s") 'vc-dir-find-file)
       (define-key map (kbd "e") 'vc-dir-mark)
       (define-key map (kbd "r") 'vc-dir-unmark))))
 
