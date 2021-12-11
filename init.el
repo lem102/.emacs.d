@@ -840,7 +840,10 @@ If current major mode is in major-mode-list, change to xfk insert mode,
 otherwise change to command mode. Do nothing if in minibuffer."
     (if (not (minibufferp (current-buffer)))
         (let ((major-mode-list (list 'dired-mode
-                                     'vc-dir-mode)))
+                                     'vc-dir-mode
+                                     'Info-mode
+                                     'calendar-mode
+                                     )))
           (if (member major-mode major-mode-list)
               (xah-fly-insert-mode-activate)
             (xah-fly-command-mode-activate)))))
@@ -1465,7 +1468,9 @@ version control, call `project-eshell' instead."
     (define-key map (kbd ",") 'xah-next-window-or-frame)
     (define-key map (kbd "SPC") 'xah-fly-leader-key-map)
     (define-key map (kbd "3") 'delete-other-windows)
-    (define-key map (kbd "4") 'jacob-split-window-right-select-new))
+    (define-key map (kbd "4") 'jacob-split-window-right-select-new)
+    (define-key map (kbd "1") 'winner-undo)
+    (define-key map (kbd "2") 'winner-redo))
 
   (let ((map dired-mode-map))
     (jacob-define-common-keys map)
@@ -1490,7 +1495,17 @@ version control, call `project-eshell' instead."
       (define-key map (kbd "u") 'vc-dir-previous-directory)
       (define-key map (kbd "s") 'vc-dir-find-file)
       (define-key map (kbd "e") 'vc-dir-mark)
-      (define-key map (kbd "r") 'vc-dir-unmark))))
+      (define-key map (kbd "r") 'vc-dir-unmark)))
+
+  (let ((map Info-mode-map))
+    (jacob-define-common-keys map)
+    (define-key map (kbd "i") 'scroll-down-command)
+    (define-key map (kbd "k") 'scroll-up-command)
+    (define-key map (kbd "u") 'Info-up))
+
+  (with-eval-after-load 'calendar
+    (let ((map calendar-mode-map)) 
+      (jacob-define-common-keys map))))
 
 
 
