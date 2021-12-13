@@ -310,6 +310,10 @@
 
 ;; org config
 
+;; this rebinds key in calendar mode unless set to nil, very annoying
+(setq org-calendar-to-agenda-key nil)
+(setq org-calendar-insert-diary-entry-key nil)
+
 (with-eval-after-load 'org-mode
   (defun jacob-org-babel-tangle-delete-newline ()
     "Some code to get rid of the newline org babel likes to add
@@ -371,6 +375,17 @@ in when it tangles into a file."
                              (float-time
                               (time-subtract after-init-time before-init-time)))
                      gcs-done)))
+
+
+;; calender + diary config
+
+(setq diary-file "/ssh:pi@81.152.164.221:/home/pi/org/jacobsDiary.diary")
+(with-eval-after-load 'calendar
+  (setq diary-date-forms diary-european-date-forms)
+  (add-hook 'calendar-today-visible-hook 'calendar-mark-today))
+(setq calendar-date-style "european")
+(setq calendar-week-start-day 1)
+
 
 
 ;; indentation config
@@ -1465,6 +1480,7 @@ version control, call `project-eshell' instead."
   (defun jacob-define-common-keys (map)
     "Define some common keys for given keymap MAP."
     (define-key map (kbd "a") 'execute-extended-command)
+    (define-key map (kbd "`") 'tab-next)
     (define-key map (kbd ",") 'xah-next-window-or-frame)
     (define-key map (kbd "SPC") 'xah-fly-leader-key-map)
     (define-key map (kbd "3") 'delete-other-windows)
@@ -1505,7 +1521,11 @@ version control, call `project-eshell' instead."
 
   (with-eval-after-load 'calendar
     (let ((map calendar-mode-map)) 
-      (jacob-define-common-keys map))))
+      (jacob-define-common-keys map)
+      (define-key map (kbd "i") 'calendar-backward-week)
+      (define-key map (kbd "k") 'calendar-forward-week)
+      (define-key map (kbd "j") 'calendar-backward-day)
+      (define-key map (kbd "l") 'calendar-forward-day))))
 
 
 
