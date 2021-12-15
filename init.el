@@ -379,7 +379,7 @@ in when it tangles into a file."
 
 ;; calender + diary config
 
-(setq diary-file "/ssh:pi@81.152.164.221:/home/pi/org/jacobsDiary.diary")
+(setq diary-file "/ssh:pi@86.173.178.227:/home/pi/org/jacobsDiary.diary")
 (with-eval-after-load 'calendar
   (setq diary-date-forms diary-european-date-forms)
   (add-hook 'calendar-today-visible-hook 'calendar-mark-today))
@@ -571,6 +571,13 @@ Used to eagerly load feature."
       > "if (" - ") {" \n
       \n
       "}")
+
+    (define-skeleton jacob-csharp-skeleton-lock
+      "insert lock statement"
+      > "lock(" - ")"
+      \n "{"
+      \n
+      \n "}")
     
     (when (boundp 'csharp-tree-sitter-mode-abbrev-table)
       (clear-abbrev-table csharp-tree-sitter-mode-abbrev-table))
@@ -579,6 +586,7 @@ Used to eagerly load feature."
       '(
         ("cwl" "" jacob-csharp-skeleton-console-writeline)
         ("if" "" jacob-csharp-skeleton-if)
+        ("lock" "" jacob-csharp-skeleton-lock)
         ("pu" "public")
         ("pr" "private")
         ("as" "async")
