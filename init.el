@@ -5,7 +5,6 @@
 
 
 ;; built-in
-
 
 ;; garbage collection
 
@@ -131,11 +130,20 @@
 
 (column-number-mode 1)
 (line-number-mode 1)
+
 (setq-default mode-line-format (list "%*" ; saved, readonly
                                      "%m: " ; major mode
                                      "%b " ; buffer name
                                      mode-line-position
+                                     global-mode-string ; for use with org timer
                                      ))
+
+
+;; tramp
+
+;; lots of problems. for now, disable it!
+(require 'tramp-archive)
+(setq tramp-archive-enabled nil)
 
 
 ;; abbrev-mode
@@ -379,13 +387,12 @@ in when it tangles into a file."
 
 ;; calender + diary config
 
-(setq diary-file "/ssh:pi@86.173.178.227:/home/pi/org/jacobsDiary.diary")
+(setq diary-file "/ssh:pi@81.152.164.200:/home/pi/org/jacobsDiary.diary")
 (with-eval-after-load 'calendar
   (setq diary-date-forms diary-european-date-forms)
   (add-hook 'calendar-today-visible-hook 'calendar-mark-today))
 (setq calendar-date-style "european")
 (setq calendar-week-start-day 1)
-
 
 
 ;; indentation config
@@ -620,7 +627,7 @@ Used to eagerly load feature."
     
     (add-to-list 'eglot-server-programs '(go-mode . ("/home/jacob/go/bin/gopls")))
 
-    (add-to-list 'eglot-server-programs `(csharp-tree-sitter-mode . ("/home/jacob/Downloads/omnisharp-linux-x64.tar/run" "-lsp")))
+    (add-to-list 'eglot-server-programs `(csharp-tree-sitter-mode . ("/home/jacob/Downloads/omnisharp-linux-x64-net6.0.tar/OmniSharp" "-lsp")))
 
     (defun jacob-eglot-eclipse-jdt-contact
         (interactive)
@@ -876,6 +883,12 @@ otherwise change to command mode. Do nothing if in minibuffer."
 
 
 ;; personal functions
+
+(defun jacob-start-timer ()
+  "Run a 25 min timer."
+  (interactive)
+  (require 'org-timer)
+  (org-timer-set-timer "25"))
 
 (defun jacob-new-tab ()
   "Make a new tab and give it a name."
