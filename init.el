@@ -23,6 +23,18 @@
 (add-hook 'minibuffer-exit-hook #'doom-restore-garbage-collection-h)
 
 
+;; read environment file
+
+(defvar jacob-raspberry-pi-ip-address
+  nil "IP address of rasperry pi.")
+
+(defvar jacob-omnisharp-language-server-path
+  nil "Location of the omnisharp executable/start script.")
+
+(if (file-exists-p "~/.emacs.d/environment.el")
+    (load-file "~/.emacs.d/environment.el"))
+
+
 ;; misc
 
 (add-to-list 'load-path "~/.emacs.d/local-packages/")
@@ -387,7 +399,10 @@ in when it tangles into a file."
 
 ;; calender + diary config
 
-(setq diary-file "/ssh:pi@81.152.164.200:/home/pi/org/jacobsDiary.diary")
+(if (boundp 'jacob-raspberry-pi-ip-address)
+    (setq diary-file (concat "/ssh:pi@" jacob-raspberry-pi-ip-address ":/home/pi/org/jacobsDiary.diary"))
+  )
+
 (with-eval-after-load 'calendar
   (setq diary-date-forms diary-european-date-forms)
   (add-hook 'calendar-today-visible-hook 'calendar-mark-today))
@@ -627,7 +642,7 @@ Used to eagerly load feature."
     
     (add-to-list 'eglot-server-programs '(go-mode . ("/home/jacob/go/bin/gopls")))
 
-    (add-to-list 'eglot-server-programs `(csharp-tree-sitter-mode . ("/home/jacob/Downloads/omnisharp-linux-x64-net6.0.tar/OmniSharp" "-lsp")))
+    (add-to-list 'eglot-server-programs `(csharp-tree-sitter-mode . (,jacob-omnisharp-language-server-path "-lsp")))
 
     (defun jacob-eglot-eclipse-jdt-contact
         (interactive)
