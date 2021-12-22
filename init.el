@@ -642,7 +642,8 @@ Used to eagerly load feature."
     
     (add-to-list 'eglot-server-programs '(go-mode . ("/home/jacob/go/bin/gopls")))
 
-    (add-to-list 'eglot-server-programs `(csharp-tree-sitter-mode . (,jacob-omnisharp-language-server-path "-lsp")))
+    (if (boundp 'jacob-omnisharp-language-server-path)
+        (add-to-list 'eglot-server-programs `(csharp-tree-sitter-mode . (,jacob-omnisharp-language-server-path "-lsp"))))
 
     (defun jacob-eglot-eclipse-jdt-contact
         (interactive)
@@ -898,6 +899,31 @@ otherwise change to command mode. Do nothing if in minibuffer."
 
 
 ;; personal functions
+
+(defun jacob-prepare-cheekyLad-dev ()
+  "Setup tabs and windows for cheekyLad development."
+  (interactive)
+  (let ((pi-publish-directory (concat "/ssh:pi@" jacob-raspberry-pi-ip-address ":/home/pi/cheekyLad/bot/"))) 
+    (make-frame)
+    (other-frame 1)
+
+    (tab-rename "code")
+    (dired "~/dev/cheeky-lad")
+    
+    (tab-new)
+    (tab-rename "publish")
+    (dired "./bin/Debug/net6.0/linux-arm/publish/")
+    (dired-mark 5)
+    (split-window-right)
+    (other-window 1)
+    (dired pi-publish-directory)
+
+    (tab-new)
+    (tab-rename "pi-run")
+    (let ((default-directory pi-publish-directory))
+      (eshell))
+
+    (tab-next)))
 
 (defun jacob-start-timer ()
   "Run a 25 min timer."
