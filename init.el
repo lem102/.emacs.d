@@ -877,24 +877,7 @@ made typescript flymake."
   (defun xah-jacob-end-of-line-or-block (repetitions)
     (interactive "p")
     (dotimes (i repetitions)
-      (xah-end-of-line-or-block)))
-
-  (defun jacob-change-xah-mode-for-major-modes (arg)
-    "Function designed to reside in `window-state-change-functions'.
-
-If current major mode is in major-mode-list, change to xfk insert mode,
-otherwise change to command mode. Do nothing if in minibuffer."
-    (if (not (minibufferp (current-buffer)))
-        (let ((major-mode-list (list 'dired-mode
-                                     'vc-dir-mode
-                                     'Info-mode
-                                     'calendar-mode
-                                     )))
-          (if (member major-mode major-mode-list)
-              (xah-fly-insert-mode-activate)
-            (xah-fly-command-mode-activate)))))
-
-  (add-to-list 'window-state-change-functions (function jacob-change-xah-mode-for-major-modes)))
+      (xah-end-of-line-or-block))))
 
 
 
@@ -1393,6 +1376,11 @@ version control, call `project-eshell' instead."
 ;; key bindings
 
 
+;; macros
+
+(fset 'jacob-return-macro [return])
+
+
 ;; voice command keybindings
 
 (global-unset-key (kbd "C-z"))
@@ -1474,7 +1462,7 @@ version control, call `project-eshell' instead."
 
   (let ((map xah-fly-command-map))
     (define-key map (kbd "a") 'execute-extended-command)
-    (define-key map (kbd "s") (kbd "RET"))
+    (define-key map (kbd "s") 'jacob-return-macro)
     (define-key map (kbd "DEL") nil)
     (define-key map (kbd "4") 'jacob-split-window-right-select-new)
     (define-key map (kbd "1") 'winner-undo)
@@ -1539,55 +1527,45 @@ version control, call `project-eshell' instead."
   (let ((map vc-prefix-map))
     (define-key map (kbd "p") 'vc-push))
 
-  (defun jacob-define-common-keys (map)
-    "Define some common keys for given keymap MAP."
-    (define-key map (kbd "a") 'execute-extended-command)
-    (define-key map (kbd "`") 'tab-next)
-    (define-key map (kbd ",") 'xah-next-window-or-frame)
-    (define-key map (kbd "SPC") 'xah-fly-leader-key-map)
-    (define-key map (kbd "3") 'delete-other-windows)
-    (define-key map (kbd "4") 'jacob-split-window-right-select-new)
-    (define-key map (kbd "1") 'winner-undo)
-    (define-key map (kbd "2") 'winner-redo))
-
-  (let ((map dired-mode-map))
-    (jacob-define-common-keys map)
-    (define-key map (kbd "i") 'dired-previous-line)
-    (define-key map (kbd "k") 'dired-next-line)
-    (define-key map (kbd "s") 'dired-find-file)
-    (define-key map (kbd "e") 'dired-mark)
-    (define-key map (kbd "r") 'dired-unmark)
-    (define-key map (kbd "R") 'dired-unmark-all-marks)
-    (define-key map (kbd "x") 'dired-do-rename)
-    (define-key map (kbd "c") 'dired-do-copy)
-    (define-key map (kbd "d") 'dired-do-delete) ; we skip the "flag, delete" process as files are sent to system bin on deletion
-    (define-key map (kbd "u") 'dired-up-directory)
-    (define-key map (kbd "j") 'dired-goto-file))
+  (with-eval-after-load 'dired
+    (let ((map dired-mode-map))
+      (define-key map [remap xah-reformat-lines] 'quit-window)
+      (define-key map [remap previous-line] 'dired-previous-line)
+      (define-key map [remap next-line] 'dired-next-line)
+      (define-key map [remap jacob-return-macro] 'dired-find-file)
+      (define-key map [remap xah-backward-kill-word] 'dired-mark)
+      (define-key map [remap xah-kill-word] 'dired-unmark)
+      (define-key map [remap xah-cut-line-or-region] 'dired-do-rename)
+      (define-key map [remap xah-copy-all-or-region] 'dired-do-copy)
+      (define-key map [remap xah-delete-backward-char-or-bracket-text] 'dired-do-delete) ; we skip the "flag, delete" process as files are sent to system bin on deletion
+      (define-key map [remap backward-word] 'dired-up-directory)
+      (define-key map [remap backward-char] 'dired-goto-file)))
 
   (with-eval-after-load 'vc-dir
     (let ((map vc-dir-mode-map))
-      (jacob-define-common-keys map)
-      (define-key map (kbd "i") 'vc-dir-previous-line)
-      (define-key map (kbd "k") 'vc-dir-next-line)
-      (define-key map (kbd "o") 'vc-dir-next-directory)
-      (define-key map (kbd "u") 'vc-dir-previous-directory)
-      (define-key map (kbd "s") 'vc-dir-find-file)
-      (define-key map (kbd "e") 'vc-dir-mark)
-      (define-key map (kbd "r") 'vc-dir-unmark)))
+      (define-key map [remap xah-reformat-lines] 'quit-window)
+      (define-key map [remap previous-line] 'vc-dir-previous-line)
+      (define-key map [remap next-line] 'vc-dir-next-line)
+      (define-key map [remap forward-word] 'vc-dir-next-directory)
+      (define-key map [remap backward-word] 'vc-dir-previous-directory)
+      (define-key map [remap jacob-return-macro] 'vc-dir-find-file)
+      (define-key map [remap xah-backward-left-bracket] 'vc-dir-mark)
+      (define-key map [remap xah-forward-right-bracket] 'vc-dir-unmark)))
 
-  (let ((map Info-mode-map))
-    (jacob-define-common-keys map)
-    (define-key map (kbd "i") 'scroll-down-command)
-    (define-key map (kbd "k") 'scroll-up-command)
-    (define-key map (kbd "u") 'Info-up))
+  (with-eval-after-load 'Info
+    (let ((map Info-mode-map))
+      (define-key map [remap xah-reformat-lines] 'quit-window)
+      (define-key map [remap previous-line] 'scroll-down-command)
+      (define-key map [remap next-line] 'scroll-up-command)
+      (define-key map [remap backward-word] 'Info-up)))
 
   (with-eval-after-load 'calendar
-    (let ((map calendar-mode-map)) 
-      (jacob-define-common-keys map)
-      (define-key map (kbd "i") 'calendar-backward-week)
-      (define-key map (kbd "k") 'calendar-forward-week)
-      (define-key map (kbd "j") 'calendar-backward-day)
-      (define-key map (kbd "l") 'calendar-forward-day))))
+    (let ((map calendar-mode-map))
+      (define-key map [remap xah-reformat-lines] 'quit-window)
+      (define-key map [remap previous-line] 'calendar-backward-week)
+      (define-key map [remap next-line] 'calendar-forward-week)
+      (define-key map [remap backward-char] 'calendar-backward-day)
+      (define-key map [remap forward-char] 'calendar-forward-day))))
 
 
 
