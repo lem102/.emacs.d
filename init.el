@@ -1527,45 +1527,46 @@ version control, call `project-eshell' instead."
   (let ((map vc-prefix-map))
     (define-key map (kbd "p") 'vc-push))
 
-  (with-eval-after-load 'dired
+  (let ((f (lambda (major-mode-keymap key command)
+             (define-key major-mode-keymap (vector 'remap (lookup-key xah-fly-command-map key)) command))))
     (let ((map dired-mode-map))
-      (define-key map [remap xah-reformat-lines] 'quit-window)
-      (define-key map [remap previous-line] 'dired-previous-line)
-      (define-key map [remap next-line] 'dired-next-line)
-      (define-key map [remap jacob-return-macro] 'dired-find-file)
-      (define-key map [remap xah-backward-kill-word] 'dired-mark)
-      (define-key map [remap xah-kill-word] 'dired-unmark)
-      (define-key map [remap xah-cut-line-or-region] 'dired-do-rename)
-      (define-key map [remap xah-copy-all-or-region] 'dired-do-copy)
-      (define-key map [remap xah-delete-backward-char-or-bracket-text] 'dired-do-delete) ; we skip the "flag, delete" process as files are sent to system bin on deletion
-      (define-key map [remap backward-word] 'dired-up-directory)
-      (define-key map [remap backward-char] 'dired-goto-file)))
+      (funcall f map (kbd "q") 'quit-window)
+      (funcall f map (kbd "i") 'dired-previous-line)
+      (funcall f map (kbd "k") 'dired-next-line)
+      (funcall f map (kbd "s") 'dired-find-file)
+      (funcall f map (kbd "e") 'dired-mark)
+      (funcall f map (kbd "r") 'dired-unmark)
+      (funcall f map (kbd "x") 'dired-do-rename)
+      (funcall f map (kbd "c") 'dired-do-copy)
+      (funcall f map (kbd "d") 'dired-do-delete) ; we skip the "flag, delete" process as files are sent to system bin on deletion
+      (funcall f map (kbd "u") 'dired-up-directory)
+      (funcall f map (kbd "j") 'dired-goto-file))
 
-  (with-eval-after-load 'vc-dir
-    (let ((map vc-dir-mode-map))
-      (define-key map [remap xah-reformat-lines] 'quit-window)
-      (define-key map [remap previous-line] 'vc-dir-previous-line)
-      (define-key map [remap next-line] 'vc-dir-next-line)
-      (define-key map [remap forward-word] 'vc-dir-next-directory)
-      (define-key map [remap backward-word] 'vc-dir-previous-directory)
-      (define-key map [remap jacob-return-macro] 'vc-dir-find-file)
-      (define-key map [remap xah-backward-left-bracket] 'vc-dir-mark)
-      (define-key map [remap xah-forward-right-bracket] 'vc-dir-unmark)))
+    (with-eval-after-load 'vc-dir
+      (let ((map vc-dir-mode-map))
+        (funcall f map (kbd "q") 'quit-window)
+        (funcall f map (kbd "i") 'vc-dir-previous-line)
+        (funcall f map (kbd "k") 'vc-dir-next-line)
+        (funcall f map (kbd "o") 'vc-dir-next-directory)
+        (funcall f map (kbd "u") 'vc-dir-previous-directory)
+        (funcall f map (kbd "s") 'vc-dir-find-file)
+        (funcall f map (kbd "e") 'vc-dir-mark)
+        (funcall f map (kbd "r") 'vc-dir-unmark)))
 
-  (with-eval-after-load 'Info
-    (let ((map Info-mode-map))
-      (define-key map [remap xah-reformat-lines] 'quit-window)
-      (define-key map [remap previous-line] 'scroll-down-command)
-      (define-key map [remap next-line] 'scroll-up-command)
-      (define-key map [remap backward-word] 'Info-up)))
+    (with-eval-after-load 'Info
+      (let ((map Info-mode-map))
+        (funcall f map (kbd "q") 'quit-window)
+        (funcall f map (kbd "k") 'scroll-down-command)
+        (funcall f map (kbd "i") 'scroll-up-command)
+        (funcall f map (kbd "u") 'Info-up)))
 
-  (with-eval-after-load 'calendar
-    (let ((map calendar-mode-map))
-      (define-key map [remap xah-reformat-lines] 'quit-window)
-      (define-key map [remap previous-line] 'calendar-backward-week)
-      (define-key map [remap next-line] 'calendar-forward-week)
-      (define-key map [remap backward-char] 'calendar-backward-day)
-      (define-key map [remap forward-char] 'calendar-forward-day))))
+    (with-eval-after-load 'calendar
+      (let ((map calendar-mode-map))
+        (funcall f map (kbd "q") 'quit-window)
+        (funcall f map (kbd "i") 'calendar-backward-week)
+        (funcall f map (kbd "k") 'calendar-forward-week)
+        (funcall f map (kbd "j") 'calendar-backward-day)
+        (funcall f map (kbd "l") 'calendar-forward-day)))))
 
 
 
