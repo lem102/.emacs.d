@@ -1574,6 +1574,7 @@ version control, call `project-eshell' instead."
         (funcall f map (kbd "k") 'calendar-forward-week)
         (funcall f map (kbd "j") 'calendar-backward-day)
         (funcall f map (kbd "l") 'calendar-forward-day)
+        (funcall f map (kbd "d") 'diary-view-entries)
         (funcall f map (kbd "s") 'diary-insert-entry)))))
 
 
