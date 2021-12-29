@@ -400,8 +400,7 @@ in when it tangles into a file."
 ;; calender + diary config
 
 (if (boundp 'jacob-raspberry-pi-ip-address)
-    (setq diary-file (concat "/ssh:pi@" jacob-raspberry-pi-ip-address ":/home/pi/org/jacobsDiary.diary"))
-  )
+    (setq diary-file (concat "/ssh:pi@" jacob-raspberry-pi-ip-address ":/home/pi/org/jacobsDiary.diary")))
 
 (with-eval-after-load 'calendar
   (setq diary-date-forms diary-european-date-forms)
@@ -1566,7 +1565,9 @@ version control, call `project-eshell' instead."
         (funcall f map (kbd "i") 'calendar-backward-week)
         (funcall f map (kbd "k") 'calendar-forward-week)
         (funcall f map (kbd "j") 'calendar-backward-day)
-        (funcall f map (kbd "l") 'calendar-forward-day)))))
+        (funcall f map (kbd "l") 'calendar-forward-day)
+        (funcall f map (kbd "d") 'diary-view-entries)
+        (funcall f map (kbd "s") 'diary-insert-entry)))))
 
 
 
