@@ -410,6 +410,12 @@ in when it tangles into a file."
   (add-hook 'calendar-today-visible-hook 'calendar-mark-today))
 
 
+;; remember config
+
+(with-eval-after-load 'remember
+  (setq remember-data-file (concat "/ssh:pi@" jacob-raspberry-pi-ip-address ":/home/pi/org/remember")))
+
+
 ;; indentation config
 
 ;; use spaces to indent
