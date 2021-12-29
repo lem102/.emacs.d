@@ -397,16 +397,17 @@ in when it tangles into a file."
                      gcs-done)))
 
 
-;; calender + diary config
+;; calendar + diary config
 
 (if (boundp 'jacob-raspberry-pi-ip-address)
     (setq diary-file (concat "/ssh:pi@" jacob-raspberry-pi-ip-address ":/home/pi/org/jacobsDiary.diary")))
 
 (with-eval-after-load 'calendar
   (setq diary-date-forms diary-european-date-forms)
+  (setq calendar-date-style 'european)
+  (setq calendar-date-display-form '((format "%02d/%02d/%04d" (string-to-number day) (string-to-number month) (string-to-number year))))
+  (setq calendar-week-start-day 1)
   (add-hook 'calendar-today-visible-hook 'calendar-mark-today))
-(setq calendar-date-style "european")
-(setq calendar-week-start-day 1)
 
 
 ;; indentation config
@@ -1552,12 +1553,13 @@ version control, call `project-eshell' instead."
         (funcall f map (kbd "e") 'vc-dir-mark)
         (funcall f map (kbd "r") 'vc-dir-unmark)))
 
-    (with-eval-after-load 'Info
+    (with-eval-after-load 'info
       (let ((map Info-mode-map))
         (funcall f map (kbd "q") 'quit-window)
-        (funcall f map (kbd "k") 'scroll-down-command)
-        (funcall f map (kbd "i") 'scroll-up-command)
-        (funcall f map (kbd "u") 'Info-up)))
+        (funcall f map (kbd "l") 'Info-scroll-up)
+        (funcall f map (kbd "j") 'Info-scroll-down)
+        (funcall f map (kbd "i") 'Info-up)
+        (funcall f map (kbd "k") 'Info-menu)))
 
     (with-eval-after-load 'calendar
       (let ((map calendar-mode-map))
