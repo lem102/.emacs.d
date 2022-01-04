@@ -410,6 +410,12 @@ in when it tangles into a file."
   (add-hook 'calendar-today-visible-hook 'calendar-mark-today))
 
 
+;; remember config
+
+(with-eval-after-load 'remember
+  (setq remember-data-file (concat "/ssh:pi@" jacob-raspberry-pi-ip-address ":/home/pi/org/remember")))
+
+
 ;; indentation config
 
 ;; use spaces to indent
@@ -1552,7 +1558,9 @@ version control, call `project-eshell' instead."
         (funcall f map (kbd "u") 'vc-dir-previous-directory)
         (funcall f map (kbd "s") 'vc-dir-find-file)
         (funcall f map (kbd "e") 'vc-dir-mark)
-        (funcall f map (kbd "r") 'vc-dir-unmark)))
+        (funcall f map (kbd "r") 'vc-dir-unmark)
+        (funcall f map (kbd "v") 'vc-next-action)
+        (funcall f map (kbd "p") 'vc-push)))
 
     (with-eval-after-load 'info
       (let ((map Info-mode-map))
