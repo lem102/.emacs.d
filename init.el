@@ -537,6 +537,7 @@ Used to eagerly load feature."
                                   restart-emacs
                                   which-key
                                   modus-themes ; will be included in emacs 28
+                                  docker-tramp
                                   ))
 
 (unless (string= (package-install-selected-packages) "All your packages are already installed")
