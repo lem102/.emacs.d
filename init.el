@@ -890,6 +890,11 @@ made typescript flymake."
 
 ;; personal functions
 
+(defun jacob-goto-pi ()
+  "Connect to raspberry pi."
+  (interactive)
+  (find-file (concat "/ssh:pi@" jacob-raspberry-pi-ip-address ":")))
+
 (defun jacob-prepare-cheekyLad-dev ()
   "Setup tabs and windows for cheekyLad development."
   (interactive)
@@ -1162,6 +1167,13 @@ request type, headers, request body will not be perfect."
   (interactive)
   (split-window-right)
   (other-window 1))
+
+(defun jacob-split-window ()
+  "Split window correctly."
+  (interactive)
+  (if (= (% (count-windows) 2) 0)
+      (jacob-split-window-below-select-new)
+    (jacob-split-window-right-select-new)))
 
 (load-file (expand-file-name "~/.emacs.d/myLisp/jacob-long-time.el"))
 
@@ -1471,7 +1483,7 @@ version control, call `project-eshell' instead."
     (define-key map (kbd "a") 'execute-extended-command)
     (define-key map (kbd "s") 'jacob-return-macro)
     (define-key map (kbd "DEL") nil)
-    (define-key map (kbd "4") 'jacob-split-window-right-select-new)
+    (define-key map (kbd "4") 'jacob-split-window)
     (define-key map (kbd "1") 'winner-undo)
     (define-key map (kbd "2") 'winner-redo)
     (define-key map (kbd "`") 'tab-next)
@@ -1507,7 +1519,7 @@ version control, call `project-eshell' instead."
     (define-key map (kbd "o") 'jacob-insert-ampersand))
 
   (let ((map xah-fly-leader-key-map))
-    (define-key map (kbd "4") 'jacob-split-window-below-select-new)
+    ;; (define-key map (kbd "4") 'jacob-split-window-below-select-new)
     (jacob-is-installed 'consult
       (define-key map (kbd "v") 'consult-yank-from-kill-ring)
       (define-key map (kbd "f") 'consult-buffer)))
