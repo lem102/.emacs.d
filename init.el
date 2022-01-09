@@ -568,6 +568,26 @@ Used to eagerly load feature."
   (add-hook 'racket-mode-hook 'racket-xp-mode))
 
 
+;; go-mode
+
+(jacob-is-installed 'go-mode
+  (define-skeleton jacob-go-fmt-println
+    "insert go print statement"
+    > "fmt.Println(" - ")")
+
+  (define-skeleton jacob-go-fmt-printf
+    "insert go print statement"
+    > "fmt.Printf(" - ")")
+  
+  (when (boundp 'go-mode-abbrev-table)
+    (clear-abbrev-table go-mode-abbrev-table))
+  
+  (define-abbrev-table 'go-mode-abbrev-table
+    '(
+      ("fpl" "" jacob-go-fmt-println)
+      ("fpf" "" jacob-go-fmt-printf)
+      )))
+
 ;; auctex
 
 (jacob-is-installed 'auctex
@@ -1576,8 +1596,13 @@ version control, call `project-eshell' instead."
         (funcall f map (kbd "k") 'calendar-forward-week)
         (funcall f map (kbd "j") 'calendar-backward-day)
         (funcall f map (kbd "l") 'calendar-forward-day)
+        (funcall f map (kbd "u") 'calendar-backward-month)
+        (funcall f map (kbd "o") 'calendar-forward-month)
         (funcall f map (kbd "d") 'diary-view-entries)
-        (funcall f map (kbd "s") 'diary-insert-entry)))))
+        (funcall f map (kbd "s") 'diary-insert-entry)
+        (funcall f map (kbd "m") 'diary-mark-entries)
+        (funcall f map (kbd ".") 'calendar-goto-today)
+        (funcall f map (kbd "t") 'calendar-set-mark)))))
 
 
 
