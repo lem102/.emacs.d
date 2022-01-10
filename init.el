@@ -31,6 +31,9 @@
 (defvar jacob-omnisharp-language-server-path
   nil "Location of the omnisharp executable/start script.")
 
+(defvar jacob-font-size
+  12 "Font size to use.")
+
 (if (file-exists-p "~/.emacs.d/environment.el")
     (load-file "~/.emacs.d/environment.el"))
 
@@ -316,16 +319,18 @@
 
 ;; font config
 
-(cond
- ((string-equal system-type "windows-nt")
-  (when (member "Consolas" (font-family-list))
-    (set-frame-font "Consolas-12" nil t)))
- ((string-equal system-type "darwin")
-  (when (member "Menlo" (font-family-list))
-    (set-frame-font "Menlo-12" nil t)))
- ((string-equal system-type "gnu/linux")
-  (when (member "DejaVu Sans Mono" (font-family-list))
-    (set-frame-font "DejaVu Sans Mono-12" nil t))))
+(let ((size (number-to-string jacob-font-size)))
+  (cond
+   ((string-equal system-type "windows-nt")
+    (when (member "Consolas" (font-family-list))
+      (set-frame-font (concat "Consolas-" size) nil t)))
+   ((string-equal system-type "darwin")
+    (when (member "Menlo" (font-family-list))
+      (set-frame-font (concat "Menlo-" size) nil t)))
+   ((string-equal system-type "gnu/linux")
+    (when (member "DejaVu Sans Mono" (font-family-list))
+      (set-frame-font (concat "DejaVu Sans Mono-" size) nil t)))))
+
 
 
 ;; org config
@@ -1483,7 +1488,8 @@ version control, call `project-eshell' instead."
     (define-key map (kbd "a") 'execute-extended-command)
     (define-key map (kbd "s") 'jacob-return-macro)
     (define-key map (kbd "DEL") nil)
-    (define-key map (kbd "4") 'jacob-split-window)
+    (define-key map (kbd "4") 'jacob-split-window-right-select-new)
+    ;; (define-key map (kbd "4") 'jacob-split-window)
     (define-key map (kbd "1") 'winner-undo)
     (define-key map (kbd "2") 'winner-redo)
     (define-key map (kbd "`") 'tab-next)
@@ -1519,7 +1525,7 @@ version control, call `project-eshell' instead."
     (define-key map (kbd "o") 'jacob-insert-ampersand))
 
   (let ((map xah-fly-leader-key-map))
-    ;; (define-key map (kbd "4") 'jacob-split-window-below-select-new)
+    (define-key map (kbd "4") 'jacob-split-window-below-select-new)
     (jacob-is-installed 'consult
       (define-key map (kbd "v") 'consult-yank-from-kill-ring)
       (define-key map (kbd "f") 'consult-buffer)))
