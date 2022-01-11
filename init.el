@@ -549,6 +549,7 @@ Used to eagerly load feature."
                                   which-key
                                   modus-themes ; will be included in emacs 28
                                   docker-tramp
+                                  noccur
                                   ))
 
 (unless (string= (package-install-selected-packages) "All your packages are already installed")
