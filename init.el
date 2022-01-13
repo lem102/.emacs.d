@@ -187,39 +187,47 @@
 
 ;; javascript-mode
 
-(define-skeleton jacob-javascript-skeleton-console-log
-  "insert console.log"
-  > "console.log(" - ");")
+(defun jacob-javascript-config-hook-function ()
+  "Configure `js-mode' when hook run."
 
-(define-skeleton jacob-javascript-skeleton-if
-  "insert if statement"
-  > "if (" - ") {" \n
-  \n
-  "}")
+  (jacob-is-installed 'prettier
+    (prettier-mode 1))
+  
+  (define-skeleton jacob-javascript-skeleton-console-log
+    "insert console.log"
+    > "console.log(" - ");")
 
-(define-skeleton jacob-javascript-skeleton-const
-  "insert const binding"
-  > "const " - " =")
+  (define-skeleton jacob-javascript-skeleton-if
+    "insert if statement"
+    > "if (" - ") {" \n
+    \n
+    "}")
 
-(define-skeleton jacob-javascript-skeleton-let
-  "insert let binding" nil
-  > "let " - " =")
+  (define-skeleton jacob-javascript-skeleton-const
+    "insert const binding"
+    > "const " - " =")
 
-(define-skeleton jacob-javascript-skeleton-arrow-function
-  "insert arrow function" nil
-  > "(" - ") => ")
+  (define-skeleton jacob-javascript-skeleton-let
+    "insert let binding" nil
+    > "let " - " =")
 
-(when (boundp 'js-mode-abbrev-table)
-  (clear-abbrev-table js-mode-abbrev-table))
+  (define-skeleton jacob-javascript-skeleton-arrow-function
+    "insert arrow function" nil
+    > "(" - ") => ")
 
-(define-abbrev-table 'js-mode-abbrev-table
-  '(
-    ("cl" "" jacob-javascript-skeleton-console-log)
-    ("if" "" jacob-javascript-skeleton-if)
-    ("arr" "" jacob-javascript-skeleton-arrow-function)
-    ("c" "" jacob-javascript-skeleton-const)
-    ("l" "" jacob-javascript-skeleton-let)
-    ))
+  (when (boundp 'js-mode-abbrev-table)
+    (clear-abbrev-table js-mode-abbrev-table))
+
+  (define-abbrev-table 'js-mode-abbrev-table
+    '(
+      ("cl" "" jacob-javascript-skeleton-console-log)
+      ("if" "" jacob-javascript-skeleton-if)
+      ("arr" "" jacob-javascript-skeleton-arrow-function)
+      ("c" "" jacob-javascript-skeleton-const)
+      ("l" "" jacob-javascript-skeleton-let)
+      )))
+
+(add-hook 'js-mode-hook 'jacob-javascript-config-hook-function)
 
 
 ;; cc-mode config
@@ -540,6 +548,7 @@ Used to eagerly load feature."
                                   eglot
                                   eglot-fsharp
                                   inf-ruby
+                                  prettier
                                   ;; MS Windows
                                   projectile
                                   xah-find
@@ -823,25 +832,15 @@ made typescript flymake."
         ))))
 
 
-
-(defun jacob-prettier-format-buffer ()
-  "Use prettier to format current buffer."
-  (interactive)
-  (when (or (eq major-mode 'web-mode)
-            (eq major-mode 'typescript-mode)
-            (eq major-mode 'javascript-mode))
-    (let* ((temporary-file-extension (file-name-extension (buffer-file-name) t))
-           (temporary-file (concat "jacob-prettier-temporary-file" temporary-file-extension)))
-      (append-to-file (point-min) (point-max) temporary-file)
-      (call-process "npx" nil nil t "prettier" temporary-file "--write")
-      (erase-buffer)
-      (insert-file-contents temporary-file)
-      (delete-file temporary-file))))
+;; typescript-mode
 
 (jacob-is-installed 'typescript-mode
   (with-eval-after-load 'typescript-mode
 
     (setq typescript-indent-level 2)
+
+    (jacob-is-installed 'prettier
+      (prettier-mode 1))
 
     (when (boundp 'typescript-mode-abbrev-table)
       (clear-abbrev-table typescript-mode-abbrev-table))
@@ -1195,11 +1194,13 @@ request type, headers, request body will not be perfect."
   (other-window 1))
 
 (defun jacob-split-window ()
-  "Split window correctly."
+  "Custom window split depending on the width and height of the current window.
+Switch to new window."
   (interactive)
-  (if (= (% (count-windows) 2) 0)
-      (jacob-split-window-below-select-new)
-    (jacob-split-window-right-select-new)))
+  (if (>= (window-body-height) (round (window-body-width) 2.3))
+      (split-window-below)
+    (split-window-right))
+  (other-window 1))
 
 (load-file (expand-file-name "~/.emacs.d/myLisp/jacob-long-time.el"))
 
@@ -1509,8 +1510,8 @@ version control, call `project-eshell' instead."
     (define-key map (kbd "a") 'execute-extended-command)
     (define-key map (kbd "s") 'jacob-return-macro)
     (define-key map (kbd "DEL") nil)
-    (define-key map (kbd "4") 'jacob-split-window-right-select-new)
-    ;; (define-key map (kbd "4") 'jacob-split-window)
+    ;; (define-key map (kbd "4") 'jacob-split-window-right-select-new)
+    (define-key map (kbd "4") 'jacob-split-window)
     (define-key map (kbd "1") 'winner-undo)
     (define-key map (kbd "2") 'winner-redo)
     (define-key map (kbd "`") 'tab-next)
@@ -1546,7 +1547,7 @@ version control, call `project-eshell' instead."
     (define-key map (kbd "o") 'jacob-insert-ampersand))
 
   (let ((map xah-fly-leader-key-map))
-    (define-key map (kbd "4") 'jacob-split-window-below-select-new)
+    ;; (define-key map (kbd "4") 'jacob-split-window-below-select-new)
     (jacob-is-installed 'consult
       (define-key map (kbd "v") 'consult-yank-from-kill-ring)
       (define-key map (kbd "f") 'consult-buffer)))
