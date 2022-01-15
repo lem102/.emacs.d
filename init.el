@@ -548,7 +548,7 @@ Used to eagerly load feature."
                                   eglot
                                   eglot-fsharp
                                   inf-ruby
-                                  prettier
+                                  prettier ; TODO: find replacement, this has too many dependencies and it makes me sad :(
                                   ;; MS Windows
                                   projectile
                                   xah-find
@@ -559,6 +559,7 @@ Used to eagerly load feature."
                                   modus-themes ; will be included in emacs 28
                                   docker-tramp
                                   noccur
+                                  with-editor
                                   ))
 
 (unless (string= (package-install-selected-packages) "All your packages are already installed")
