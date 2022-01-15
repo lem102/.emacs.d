@@ -52,6 +52,7 @@
 (setq history-length 1000)
 (setq history-delete-duplicates t)
 (setq-default truncate-lines nil)
+(setq use-dialog-box nil)
 (defalias 'yes-or-no-p 'y-or-n-p)
 
 
