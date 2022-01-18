@@ -550,9 +550,6 @@ Used to eagerly load feature."
                                   eglot-fsharp
                                   inf-ruby
                                   prettier ; TODO: find replacement, this has too many dependencies and it makes me sad :(
-                                  ;; MS Windows
-                                  projectile
-                                  xah-find
                                   ;; misc
                                   goto-last-change
                                   restart-emacs
@@ -774,14 +771,6 @@ made typescript flymake."
 (jacob-is-installed 'expand-region
   (with-eval-after-load 'expand-region
     (setq expand-region-contract-fast-key "9")))
-
-
-
-(jacob-is-installed 'projectile
-  (projectile-mode 1)
-
-  (with-eval-after-load 'projectile
-    (setq projectile-completion-system 'default)))
 
 
 
@@ -1466,8 +1455,6 @@ version control, call `project-eshell' instead."
     (define-key map (kbd "C-z SPC i j") 'consult-recent-file)
     (define-key map (kbd "C-z SPC e c f") 'consult-buffer)
     (define-key map (kbd "C-z SPC e c n") 'consult-line))
-  (jacob-is-installed 'projectile
-    (define-key map (kbd "C-z SPC e p") 'projectile-command-map))
   (define-key map (kbd "C-z t") 'jacob-voice-mark-command)
   (define-key map (kbd "C-x 2") 'jacob-split-window-below-select-new)
   (define-key map (kbd "C-x 3") 'jacob-split-window-right-select-new)
@@ -1493,17 +1480,13 @@ version control, call `project-eshell' instead."
     (define-key map (kbd "v") vc-prefix-map)
     (define-key map (kbd "t") tab-prefix-map)
     (define-key map (kbd "c") jacob-config-keymap)
+    (define-key map (kbd "p") project-prefix-map)
     (jacob-is-installed 'eglot
       (define-key map (kbd "e") jacob-eglot-keymap))
     (jacob-is-installed 'consult
       (define-key map (kbd "s") 'consult-line))
-    (if (eq system-type 'windows-nt)
-        (jacob-is-installed 'projectile
-          (define-key map (kbd "p") 'projectile-command-map))
-      (progn
-        (define-key map (kbd "p") project-prefix-map)
-        (let ((map project-prefix-map))
-          (define-key map (kbd "g") 'jacob-project-search))))
+    (let ((map project-prefix-map))
+      (define-key map (kbd "g") 'jacob-project-search))
     (define-key map (kbd "v") vc-prefix-map)
     (jacob-is-installed 'modus-themes
       (define-key map (kbd "b") 'modus-themes-toggle)))
