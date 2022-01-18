@@ -460,7 +460,15 @@ Designed for use in on-save hook in certain programming languages modes."
 
   (add-hook 'after-init-hook (lambda ()
                                ;; maximize window
-                               (w32-send-sys-command 61488))))
+                               (w32-send-sys-command 61488)))
+
+  (defun jacob-confirm-terminate-batch-job ()
+    "Type y and enter to terminate batch job after sending ^C."
+    (when (not (null eshell-process-list))
+      (insert "y")
+      (eshell-send-input)))
+
+  (advice-add 'eshell-interrupt-process :after #'jacob-confirm-terminate-batch-job))
 
 
 ;; winner-mode
