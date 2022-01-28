@@ -191,8 +191,8 @@
 (defun jacob-javascript-config-hook-function ()
   "Configure `js-mode' when hook run."
 
-  (jacob-is-installed 'prettier
-    (prettier-mode 1))
+  ;; (jacob-is-installed 'prettier
+  ;; (prettier-mode 1))
   
   (define-skeleton jacob-javascript-skeleton-console-log
     "insert console.log"
@@ -541,6 +541,7 @@ Used to eagerly load feature."
                                   fsharp-mode
                                   dotenv-mode
                                   restclient
+                                  dockerfile-mode
                                   ;; completion enhancements
                                   selectrum
                                   consult
@@ -838,8 +839,8 @@ made typescript flymake."
 
     (setq typescript-indent-level 2)
 
-    (jacob-is-installed 'prettier
-      (prettier-mode 1))
+    ;; (jacob-is-installed 'prettier
+    ;; (prettier-mode 1))
 
     (when (boundp 'typescript-mode-abbrev-table)
       (clear-abbrev-table typescript-mode-abbrev-table))
@@ -1560,7 +1561,6 @@ version control, call `project-eshell' instead."
     (define-key map (kbd "c") 'kmacro-set-counter))
 
   (let ((map xah-fly-n-keymap))
-    (define-key map (kbd "d") 'jacob-eshell-dwim)
     (define-key map (kbd "3") 'jacob-async-shell-command)
     (define-key map (kbd "g") 'jacob-new-tab))
 
