@@ -1215,26 +1215,19 @@ Switch to new window."
                                     (string-to-number (format-time-string "%M")))
                    ".")))
 
-(defun jacob-xah-insert-bracket-pair (@left-bracket @right-bracket)
-  "Heavily simplified version of Xah's excellent function. 
-My usecases differ to his, so I have removed a vast amount of the functionality. 
-Now, this function will insert a pair, or wrap the region if it is active.
-
-Original Version can be found here:
-URL `http://ergoemacs.org/emacs/elisp_insert_brackets_by_pair.html'"
-
+(defun jacob-insert-bracket-pair (left-bracket right-bracket)
+  "Insert pair of brackets at point if region is inactive, otherwise wrap region."
   (if (use-region-p)
-      (let (($p1 (region-beginning))
-            ($p2 (region-end)))
-        (goto-char $p2)
-        (insert @right-bracket)
-        (goto-char $p1)
-        (insert @left-bracket)
-        (goto-char (+ $p2 2)))
-    (let ($p1 $p2)
-      (setq $p1 (point) $p2 (point))
-      (insert @left-bracket @right-bracket)
-      (search-backward @right-bracket))))
+      (let ((start (region-beginning))
+            (end (region-end)))
+        (goto-char end)
+        (insert right-bracket)
+        (goto-char start)
+        (insert left-bracket)
+        (goto-char (+ end 2)))
+    (progn
+      (insert left-bracket right-bracket)
+      (backward-char))))
 
 (defun jacob-back-to-indentation-or-beginning-of-line ()
   "Do back-to-indentation unless at end of indentation
@@ -1247,27 +1240,27 @@ in which case do move-beginning-of-line."
 
 (defun jacob-xah-insert-paren ()
   (interactive)
-  (jacob-xah-insert-bracket-pair "(" ")"))
+  (jacob-insert-bracket-pair "(" ")"))
 
 (defun jacob-xah-insert-square-bracket ()
   (interactive)
-  (jacob-xah-insert-bracket-pair "[" "]"))
+  (jacob-insert-bracket-pair "[" "]"))
 
 (defun jacob-xah-insert-brace ()
   (interactive)
-  (jacob-xah-insert-bracket-pair "{" "}"))
+  (jacob-insert-bracket-pair "{" "}"))
 
 (defun jacob-xah-insert-ascii-double-quote ()
   (interactive)
-  (jacob-xah-insert-bracket-pair "\"" "\""))
+  (jacob-insert-bracket-pair "\"" "\""))
 
 (defun jacob-xah-insert-ascii-single-quote ()
   (interactive)
-  (jacob-xah-insert-bracket-pair "'" "'"))
+  (jacob-insert-bracket-pair "'" "'"))
 
 (defun jacob-xah-insert-angled-bracket ()
   (interactive)
-  (jacob-xah-insert-bracket-pair "<" ">"))
+  (jacob-insert-bracket-pair "<" ">"))
 
 (defun jacob-insert-plus ()
   (interactive)
