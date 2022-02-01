@@ -157,6 +157,10 @@
 
 ;; tramp
 
+(defvar jacob-raspberry-pi-connection-string
+  (concat "/" tramp-default-method ":pi@" jacob-raspberry-pi-ip-address ":")
+  "Raspberry Pi connection string for tramp.")
+
 ;; lots of problems. for now, disable it!
 (require 'tramp-archive)
 (setq tramp-archive-enabled nil)
@@ -414,7 +418,7 @@ in when it tangles into a file."
 ;; calendar + diary config
 
 (if (boundp 'jacob-raspberry-pi-ip-address)
-    (setq diary-file (concat "/ssh:pi@" jacob-raspberry-pi-ip-address ":/home/pi/org/jacobsDiary.diary")))
+    (setq diary-file (concat jacob-raspberry-pi-connection-string "/home/pi/org/jacobsDiary.diary")))
 
 (with-eval-after-load 'calendar
   (setq diary-date-forms diary-european-date-forms)
@@ -427,7 +431,7 @@ in when it tangles into a file."
 ;; remember config
 
 (with-eval-after-load 'remember
-  (setq remember-data-file (concat "/ssh:pi@" jacob-raspberry-pi-ip-address ":/home/pi/org/remember")))
+  (setq remember-data-file (concat jacob-raspberry-pi-connection-string "/home/pi/org/remember")))
 
 
 ;; indentation config
@@ -918,12 +922,12 @@ made typescript flymake."
 (defun jacob-goto-pi ()
   "Connect to raspberry pi."
   (interactive)
-  (find-file (concat "/ssh:pi@" jacob-raspberry-pi-ip-address ":")))
+  (find-file jacob-raspberry-pi-connection-string))
 
 (defun jacob-prepare-cheekyLad-dev ()
   "Setup tabs and windows for cheekyLad development."
   (interactive)
-  (let ((pi-publish-directory (concat "/ssh:pi@" jacob-raspberry-pi-ip-address ":/home/pi/cheekyLad/bot/"))) 
+  (let ((pi-publish-directory (concat jacob-raspberry-pi-connection-string "/home/pi/cheekyLad/bot/"))) 
     (make-frame)
     (other-frame 1)
 
