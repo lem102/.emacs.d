@@ -157,9 +157,11 @@
 
 ;; tramp
 
-(defvar jacob-raspberry-pi-connection-string
+(with-eval-after-load 'tramp
+  (defvar jacob-raspberry-pi-connection-string
   (concat "/" tramp-default-method ":pi@" jacob-raspberry-pi-ip-address ":")
-  "Raspberry Pi connection string for tramp.")
+  "Raspberry Pi connection string for tramp."))
+
 
 ;; lots of problems. for now, disable it!
 (require 'tramp-archive)
@@ -425,6 +427,7 @@ in when it tangles into a file."
   (setq calendar-date-style 'european)
   (setq calendar-date-display-form '((format "%02d/%02d/%04d" (string-to-number day) (string-to-number month) (string-to-number year))))
   (setq calendar-week-start-day 1)
+  (setq calendar-mark-holidays-flag t)
   (add-hook 'calendar-today-visible-hook 'calendar-mark-today))
 
 
