@@ -159,8 +159,8 @@
 
 (with-eval-after-load 'tramp
   (defvar jacob-raspberry-pi-connection-string
-  (concat "/" tramp-default-method ":pi@" jacob-raspberry-pi-ip-address ":")
-  "Raspberry Pi connection string for tramp."))
+    (concat "/" tramp-default-method ":pi@" jacob-raspberry-pi-ip-address ":")
+    "Raspberry Pi connection string for tramp."))
 
 
 ;; lots of problems. for now, disable it!
@@ -1616,7 +1616,12 @@ version control, call `project-eshell' instead."
         (funcall f map (kbd "s") 'diary-insert-entry)
         (funcall f map (kbd "m") 'diary-mark-entries)
         (funcall f map (kbd ".") 'calendar-goto-today)
-        (funcall f map (kbd "t") 'calendar-set-mark)))))
+        (funcall f map (kbd "t") 'calendar-set-mark)))
+
+    (with-eval-after-load 'doc-view
+      (let ((map doc-view-mode-map)) 
+        (funcall f map (kbd "l") 'doc-view-next-page)
+        (funcall f map (kbd "j") 'doc-view-previous-page)))))
 
 
 
