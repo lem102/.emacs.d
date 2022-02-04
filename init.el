@@ -34,6 +34,9 @@
 (defvar jacob-font-size
   12 "Font size to use.")
 
+(defvar jacob-camunda-modeler-executable
+  nil "Full path to camunda modeler executable.")
+
 (if (file-exists-p "~/.emacs.d/environment.el")
     (load-file "~/.emacs.d/environment.el"))
 
@@ -921,6 +924,11 @@ made typescript flymake."
 
 
 ;; personal functions
+
+(defun jacob-open-in-camunda-modeler ()
+  "Attempt to open current file in camunda modeler."
+  (interactive)
+  (start-process "camunda-modeler" nil jacob-camunda-modeler-executable buffer-file-name))
 
 (defun jacob-goto-pi ()
   "Connect to raspberry pi."
