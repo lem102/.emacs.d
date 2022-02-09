@@ -556,8 +556,8 @@ Used to eagerly load feature."
                                   selectrum
                                   consult
                                   orderless
-                                  prescient
-                                  selectrum-prescient
+                                  ;; prescient
+                                  ;; selectrum-prescient
                                   marginalia
                                   ;; tree sitter
                                   tsc
@@ -749,24 +749,25 @@ made typescript flymake."
   (setq inferior-fsharp-program "dotnet fsi --fsi-server-input-codepage:65001"))
 
 
+;; orderless
+
+(jacob-try-require 'orderless
+  (setq completion-styles '(orderless)))
+
+
 ;; selectrum
 
 (jacob-try-require 'selectrum
-  (jacob-try-require 'orderless
-    (setq completion-styles '(orderless)))
-
-  (jacob-try-require 'prescient
-    (jacob-try-require 'selectrum-prescient
-      (selectrum-prescient-mode 1))
-    (prescient-persist-mode 1))
-
-  (jacob-try-require 'marginalia
-    (marginalia-mode 1))
-
   (setq selectrum-display-action nil)
   (setq selectrum-max-window-height 25)
   (setq enable-recursive-minibuffers t)
   (selectrum-mode 1))
+
+
+;; marginalia
+
+(jacob-try-require 'marginalia
+  (marginalia-mode 1))
 
 
 ;; consult
@@ -846,6 +847,8 @@ made typescript flymake."
 
 (jacob-is-installed 'typescript-mode
   (with-eval-after-load 'typescript-mode
+
+    (jacob-javascript-config-hook-function)
 
     (setq typescript-indent-level 2)
 
