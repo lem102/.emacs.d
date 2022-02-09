@@ -15,4 +15,6 @@ File: dir,	Node: Top	This is the top of the INFO tree
 * Menu:
 
 Emacs
-* Vertico: (vertico).           VERTical Interactive COmpletion.
+* Icomplete-vertical: (icomplete-vertical).
+                                Display Icomplete completion candidates 
+                                  vertically.

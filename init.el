@@ -158,6 +158,14 @@
                                      ))
 
 
+;; icomplete
+
+(icomplete-mode 1)
+(setq icomplete-separator "\n")
+(define-key icomplete-minibuffer-map (kbd "RET") 'icomplete-force-complete-and-exit)
+(define-key icomplete-minibuffer-map (kbd "<tab>") 'icomplete-force-complete)
+
+
 ;; tramp
 
 (with-eval-after-load 'tramp
@@ -553,7 +561,7 @@ Used to eagerly load feature."
                                   restclient
                                   dockerfile-mode
                                   ;; completion enhancements
-                                  vertico
+                                  icomplete-vertical
                                   consult
                                   orderless
                                   marginalia
@@ -754,10 +762,8 @@ Used to eagerly load feature."
   (setq completion-styles '(orderless)))
 
 
-;; vertico
 
-(jacob-try-require 'vertico
-  (vertico-mode 1))
+(icomplete-vertical-mode 1)
 
 
 ;; marginalia
@@ -1576,6 +1582,11 @@ version control, call `project-eshell' instead."
 
   (let ((f (lambda (major-mode-keymap key command)
              (define-key major-mode-keymap (vector 'remap (lookup-key xah-fly-command-map key)) command))))
+
+    (let ((map icomplete-minibuffer-map))
+      (funcall f map (kbd "i") 'icomplete-backward-completions)
+      (funcall f map (kbd "k") 'icomplete-forward-completions))
+    
     (let ((map dired-mode-map))
       (funcall f map (kbd "q") 'quit-window)
       (funcall f map (kbd "i") 'dired-previous-line)
