@@ -173,6 +173,10 @@
     (concat "/" tramp-default-method ":pi@" jacob-raspberry-pi-ip-address ":")
     "Raspberry Pi connection string for tramp."))
 
+(setq vc-ignore-dir-regexp
+      (format "\\(%s\\)\\|\\(%s\\)"
+              vc-ignore-dir-regexp
+              tramp-file-name-regexp))
 
 ;; lots of problems. for now, disable it!
 (require 'tramp-archive)
@@ -430,7 +434,7 @@ in when it tangles into a file."
 
 ;; calendar + diary config
 
-(if (boundp 'jacob-raspberry-pi-ip-address)
+(if (and (boundp 'jacob-raspberry-pi-ip-address) (boundp 'jacob-raspberry-pi-connection-string))
     (setq diary-file (concat jacob-raspberry-pi-connection-string "/home/pi/org/jacobsDiary.diary")))
 
 (with-eval-after-load 'calendar
@@ -438,8 +442,16 @@ in when it tangles into a file."
   (setq calendar-date-style 'european)
   (setq calendar-date-display-form '((format "%02d/%02d/%04d" (string-to-number day) (string-to-number month) (string-to-number year))))
   (setq calendar-week-start-day 1)
+  (setq calendar-mark-diary-entries-flag t)
   (setq calendar-mark-holidays-flag t)
   (add-hook 'calendar-today-visible-hook 'calendar-mark-today))
+
+(run-with-idle-timer 5 nil (lambda ()
+                             (make-frame)
+                             (other-frame 1)
+                             (diary)
+                             (ignore-errors (delete-window))
+                             (calendar)))
 
 
 ;; remember config
@@ -561,7 +573,7 @@ Used to eagerly load feature."
                                   restclient
                                   dockerfile-mode
                                   ;; completion enhancements
-                                  icomplete-vertical
+                                  icomplete-vertical ; will be included in emacs 28
                                   consult
                                   orderless
                                   marginalia
@@ -574,7 +586,7 @@ Used to eagerly load feature."
                                   eglot
                                   eglot-fsharp
                                   inf-ruby
-                                  prettier ; TODO: find replacement, this has too many dependencies and it makes me sad :(
+                                  prettier ; TODO: find replacement, this has too many dependencies and it makes me sad :( I think just indentation that isn't all over the place would be good
                                   ;; misc
                                   goto-last-change
                                   restart-emacs
@@ -1521,7 +1533,6 @@ version control, call `project-eshell' instead."
     (define-key map (kbd "4") 'jacob-split-window)
     (define-key map (kbd "1") 'winner-undo)
     (define-key map (kbd "2") 'winner-redo)
-    (define-key map (kbd "`") 'tab-next)
     (jacob-is-installed 'expand-region
       (define-key map (kbd "8") 'er/expand-region)))
 
@@ -1574,8 +1585,7 @@ version control, call `project-eshell' instead."
     (define-key map (kbd "c") 'kmacro-set-counter))
 
   (let ((map xah-fly-n-keymap))
-    (define-key map (kbd "3") 'jacob-async-shell-command)
-    (define-key map (kbd "g") 'jacob-new-tab))
+    (define-key map (kbd "3") 'jacob-async-shell-command))
 
   (let ((map vc-prefix-map))
     (define-key map (kbd "p") 'vc-push))
