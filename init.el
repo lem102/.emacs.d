@@ -553,11 +553,9 @@ Used to eagerly load feature."
                                   restclient
                                   dockerfile-mode
                                   ;; completion enhancements
-                                  selectrum
+                                  vertico
                                   consult
                                   orderless
-                                  ;; prescient
-                                  ;; selectrum-prescient
                                   marginalia
                                   ;; tree sitter
                                   tsc
@@ -714,33 +712,34 @@ Used to eagerly load feature."
         (unwind-protect (eglot--eclipse-jdt-contact nil)
           (setenv "CLASSPATH" cp))))
 
-    (defun eglot--make-diag (buffer
-                             beg
-                             end
-                             type
-                             text
-                             &optional data
-                             overlay-properties)
-      "Make a Flymake diagnostic for BUFFER's region from BEG to END.
-TYPE is a diagnostic symbol and TEXT is string describing the
-problem detected in this region.  DATA is any object that the
-caller wishes to attach to the created diagnostic for later
-retrieval.
- 
-OVERLAY-PROPERTIES is an alist of properties attached to the
-created diagnostic, overriding the default properties and any
-properties of `flymake-overlay-control' of the diagnostic's
-type.
+    ;; (defun eglot--make-diag (buffer
+    ;;                              beg
+    ;;                              end
+    ;;                              type
+    ;;                              text
+    ;;                              &optional data
+    ;;                              overlay-properties)
+    ;;       "Make a Flymake diagnostic for BUFFER's region from BEG to END.
+    ;; TYPE is a diagnostic symbol and TEXT is string describing the
+    ;; problem detected in this region.  DATA is any object that the
+    ;; caller wishes to attach to the created diagnostic for later
+    ;; retrieval.
+    
+    ;; OVERLAY-PROPERTIES is an alist of properties attached to the
+    ;; created diagnostic, overriding the default properties and any
+    ;; properties of `flymake-overlay-control' of the diagnostic's
+    ;; type.
 
-tweaked to implement a hack by me. can be deleted once i have
-made typescript flymake."
-      (if (not (string= text "typescript: Experimental support for decorators is a feature that is subject to change in a future release. Set the 'experimentalDecorators' option in your 'tsconfig' or 'jsconfig' to remove this warning."))
-          (flymake--diag-make :buffer buffer :beg beg :end end
-                              :type type :text text :data data
-                              :overlay-properties overlay-properties)
-        (flymake--diag-make :buffer buffer :beg 0 :end 0
-                            :type type :text text :data data
-                            :overlay-properties overlay-properties)))))
+    ;; tweaked to implement a hack by me. can be deleted once i have
+    ;; made typescript flymake."
+    ;;       (if (not (string= text "typescript: Experimental support for decorators is a feature that is subject to change in a future release. Set the 'experimentalDecorators' option in your 'tsconfig' or 'jsconfig' to remove this warning."))
+    ;;           (flymake--diag-make :buffer buffer :beg beg :end end
+    ;;                               :type type :text text :data data
+    ;;                               :overlay-properties overlay-properties)
+    ;;         (flymake--diag-make :buffer buffer :beg 0 :end 0
+    ;;                             :type type :text text :data data
+    ;;                             :overlay-properties overlay-properties)))
+    ))
 
 
 ;; fsharp-mode
@@ -755,13 +754,10 @@ made typescript flymake."
   (setq completion-styles '(orderless)))
 
 
-;; selectrum
+;; vertico
 
-(jacob-try-require 'selectrum
-  (setq selectrum-display-action nil)
-  (setq selectrum-max-window-height 25)
-  (setq enable-recursive-minibuffers t)
-  (selectrum-mode 1))
+(jacob-try-require 'vertico
+  (vertico-mode 1))
 
 
 ;; marginalia
