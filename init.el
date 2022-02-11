@@ -942,6 +942,16 @@ Used to eagerly load feature."
 
 ;; personal functions
 
+(defun jacob-get-temperature ()
+  "Get the temperature for next 6 days."
+  (let ((json (json-read-from-string (with-current-buffer (url-retrieve-synchronously "https://www.metaweather.com/api/location/13527/")
+                                       (goto-char url-http-end-of-headers)
+                                       (delete-region (point-min) (point))
+                                       (buffer-string)))))
+    (seq-map (lambda (x)
+               (cdr (assq 'the_temp x)))
+             (cdr (assq 'consolidated_weather json)))))
+
 (defun jacob-open-in-camunda-modeler ()
   "Attempt to open current file in camunda modeler."
   (interactive)
