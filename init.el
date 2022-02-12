@@ -446,16 +446,20 @@ in when it tangles into a file."
   (setq calendar-mark-holidays-flag t)
   (add-hook 'calendar-today-visible-hook 'calendar-mark-today))
 
-(run-with-idle-timer 5 nil (lambda ()
-                             (make-frame)
-                             (other-frame 1)
-                             (diary)
-                             (calendar)
-                             (diary-view-entries)
-                             (other-window 1)
-                             (split-window-horizontally)
-                             (other-window 1)
-                             (find-file (concat jacob-raspberry-pi-connection-string "/home/pi/org/todo.org"))))
+(defun jacob-launch-dashboard-when-idle ()
+  "Launch informative dashboard after idle time."
+  (run-with-idle-timer 5 nil (lambda ()
+                               (make-frame)
+                               (other-frame 1)
+                               (diary)
+                               (calendar)
+                               (diary-view-entries)
+                               (other-window 1)
+                               (split-window-horizontally)
+                               (other-window 1)
+                               (find-file (concat jacob-raspberry-pi-connection-string "/home/pi/org/todo.org")))))
+
+(add-hook 'after-init-hook 'jacob-launch-dashboard-when-idle)
 
 
 ;; remember config
