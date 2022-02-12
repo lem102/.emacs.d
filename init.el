@@ -1599,7 +1599,8 @@ version control, call `project-eshell' instead."
 
     (let ((map icomplete-minibuffer-map))
       (funcall f map (kbd "i") 'icomplete-backward-completions)
-      (funcall f map (kbd "k") 'icomplete-forward-completions))
+      (funcall f map (kbd "k") 'icomplete-forward-completions)
+      (funcall f map (kbd "d") 'icomplete-fido-backward-updir))
     
     (let ((map dired-mode-map))
       (funcall f map (kbd "q") 'quit-window)
