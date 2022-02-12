@@ -450,8 +450,12 @@ in when it tangles into a file."
                              (make-frame)
                              (other-frame 1)
                              (diary)
-                             (ignore-errors (delete-window))
-                             (calendar)))
+                             (calendar)
+                             (diary-view-entries)
+                             (other-window 1)
+                             (split-window-horizontally)
+                             (other-window 1)
+                             (find-file (concat jacob-raspberry-pi-connection-string "/home/pi/org/todo.org"))))
 
 
 ;; remember config
@@ -1649,7 +1653,11 @@ version control, call `project-eshell' instead."
     (with-eval-after-load 'doc-view
       (let ((map doc-view-mode-map)) 
         (funcall f map (kbd "l") 'doc-view-next-page)
-        (funcall f map (kbd "j") 'doc-view-previous-page)))))
+        (funcall f map (kbd "j") 'doc-view-previous-page)))
+
+    (with-eval-after-load 'diff-mode
+      (let ((map diff-mode-map)) 
+        (funcall f map (kbd "q") 'quit-window)))))
 
 
 
