@@ -446,12 +446,20 @@ in when it tangles into a file."
   (setq calendar-mark-holidays-flag t)
   (add-hook 'calendar-today-visible-hook 'calendar-mark-today))
 
-(run-with-idle-timer 5 nil (lambda ()
-                             (make-frame)
-                             (other-frame 1)
-                             (diary)
-                             (ignore-errors (delete-window))
-                             (calendar)))
+(defun jacob-launch-dashboard-when-idle ()
+  "Launch informative dashboard after idle time."
+  (run-with-idle-timer 5 nil (lambda ()
+                               (make-frame)
+                               (other-frame 1)
+                               (diary)
+                               (calendar)
+                               (diary-view-entries)
+                               (other-window 1)
+                               (split-window-horizontally)
+                               (other-window 1)
+                               (find-file (concat jacob-raspberry-pi-connection-string "/home/pi/org/todo.org")))))
+
+(add-hook 'after-init-hook 'jacob-launch-dashboard-when-idle)
 
 
 ;; remember config
@@ -1605,7 +1613,8 @@ version control, call `project-eshell' instead."
 
     (let ((map icomplete-minibuffer-map))
       (funcall f map (kbd "i") 'icomplete-backward-completions)
-      (funcall f map (kbd "k") 'icomplete-forward-completions))
+      (funcall f map (kbd "k") 'icomplete-forward-completions)
+      (funcall f map (kbd "d") 'icomplete-fido-backward-updir))
     
     (let ((map dired-mode-map))
       (funcall f map (kbd "q") 'quit-window)
@@ -1659,7 +1668,11 @@ version control, call `project-eshell' instead."
     (with-eval-after-load 'doc-view
       (let ((map doc-view-mode-map)) 
         (funcall f map (kbd "l") 'doc-view-next-page)
-        (funcall f map (kbd "j") 'doc-view-previous-page)))))
+        (funcall f map (kbd "j") 'doc-view-previous-page)))
+
+    (with-eval-after-load 'diff-mode
+      (let ((map diff-mode-map)) 
+        (funcall f map (kbd "q") 'quit-window)))))
 
 
 
