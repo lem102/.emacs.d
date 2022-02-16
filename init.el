@@ -1082,6 +1082,30 @@ request type, headers, request body will not be perfect."
   (async-shell-command command
                        (concat "* " default-directory " " command " *")))
 
+(defun jacob-format-words-into-symbol ()
+  "Format either current selection or number of words before point in variety of different styles."
+  (interactive)
+  (let ((style (completing-read "choose: " '("camel" "pascal" "kebab" "snake")))
+        (words
+         (let ((start (if (region-active-p)
+                          (region-beginning)
+                        (save-excursion
+                          (backward-word (string-to-number (read-from-minibuffer "how many words backward? ")))
+                          (point))))
+               (end (if (region-active-p)
+                        (region-end)
+                      (point))))
+           (split-string (delete-and-extract-region start end) " "))))
+    (insert (cond ((string-equal style "camel")
+                   (concat (car words)
+                           (mapconcat 'capitalize (cdr words) "")))
+                  ((string-equal style "pascal")
+                   (mapconcat 'capitalize words ""))
+                  ((string-equal style "kebab")
+                   (string-join words "-"))
+                  ((string-equal style "snake")
+                   (string-join words "_"))))))
+
 (defun jacob-words-to-symbol (begin end)
   ""
   (interactive "r")
@@ -1551,6 +1575,7 @@ version control, call `project-eshell' instead."
     (define-key map (kbd "4") 'jacob-split-window)
     (define-key map (kbd "1") 'winner-undo)
     (define-key map (kbd "2") 'winner-redo)
+    (define-key map (kbd "'") 'jacob-format-words-into-symbol)
     (jacob-is-installed 'expand-region
       (define-key map (kbd "8") 'er/expand-region)))
 
@@ -1589,8 +1614,7 @@ version control, call `project-eshell' instead."
       (define-key map (kbd "f") 'consult-buffer)))
 
   (let ((map xah-fly-w-keymap))
-    (define-key map (kbd "n") 'jacob-eval-and-replace)
-    (define-key map (kbd ",") 'tab-bar-close-tab))
+    (define-key map (kbd "n") 'jacob-eval-and-replace))
 
   (let ((map xah-fly-t-keymap))
     (define-key map (kbd "j") 'kill-this-buffer))
