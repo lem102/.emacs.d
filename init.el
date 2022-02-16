@@ -770,23 +770,22 @@ Used to eagerly load feature."
     ))
 
 
-;; fsharp-mode
 
-(with-eval-after-load 'fsharp-mode
-  (setq inferior-fsharp-program "dotnet fsi --fsi-server-input-codepage:65001"))
+(jacob-is-installed 'fsharp-mode
+  (with-eval-after-load 'fsharp-mode
+    (setq inferior-fsharp-program "dotnet fsi --fsi-server-input-codepage:65001")))
 
 
-;; orderless
 
 (jacob-try-require 'orderless
-  (setq completion-styles '(orderless)))
+  (setq completion-styles '(orderless initials)))
 
 
 
-(icomplete-vertical-mode 1)
+(jacob-try-require 'icomplete-vertical-mode
+  (icomplete-vertical-mode 1))
 
 
-;; marginalia
 
 (jacob-try-require 'marginalia
   (marginalia-mode 1))
