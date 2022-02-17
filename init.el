@@ -782,7 +782,7 @@ Used to eagerly load feature."
 
 
 
-(jacob-try-require 'icomplete-vertical-mode
+(jacob-try-require 'icomplete-vertical
   (icomplete-vertical-mode 1))
 
 
@@ -1084,7 +1084,7 @@ request type, headers, request body will not be perfect."
 (defun jacob-format-words-into-symbol ()
   "Format either current selection or number of words before point in variety of different styles."
   (interactive)
-  (let ((style (completing-read "choose: " '("camel" "pascal" "kebab" "snake")))
+  (let ((style (completing-read "choose: " '("camel" "pascal" "kebab" "snake" "screaming snake")))
         (words
          (let ((start (if (region-active-p)
                           (region-beginning)
@@ -1103,7 +1103,9 @@ request type, headers, request body will not be perfect."
                   ((string-equal style "kebab")
                    (string-join words "-"))
                   ((string-equal style "snake")
-                   (string-join words "_"))))))
+                   (string-join words "_"))
+                  ((string-equal style "screaming snake")
+                   (mapconcat 'upcase words "_"))))))
 
 (defun jacob-words-to-symbol (begin end)
   ""
