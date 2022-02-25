@@ -183,57 +183,39 @@
 (setq tramp-archive-enabled nil)
 
 
-;; abbrev-mode
+;; abbrev and skeletons
 
 (setq skeleton-end-newline nil)
-
-(clear-abbrev-table global-abbrev-table)
-
-(define-abbrev-table 'global-abbrev-table
-  '(
-
-    ))
-
-(when (boundp 'python-mode-abbrev-table)
-  (clear-abbrev-table python-mode-abbrev-table))
-
-(define-abbrev-table 'python-mode-abbrev-table
-  '(
-    ("key" "\"\": Key(\"\"),")
-    ))
 
 (set-default 'abbrev-mode t)
 
 (setq save-abbrevs nil)
 
 
-;; javascript-mode
+;; js-mode
 
-(defun jacob-javascript-config-hook-function ()
+(defun jacob-js-config-hook-function ()
   "Configure `js-mode' when hook run."
 
-  ;; (jacob-is-installed 'prettier
-  ;; (prettier-mode 1))
-  
-  (define-skeleton jacob-javascript-skeleton-console-log
+  (define-skeleton jacob-js-skeleton-console-log
     "insert console.log"
     > "console.log(" - ");")
 
-  (define-skeleton jacob-javascript-skeleton-if
+  (define-skeleton jacob-js-skeleton-if
     "insert if statement"
     > "if (" - ") {" \n
     \n
     "}")
 
-  (define-skeleton jacob-javascript-skeleton-const
+  (define-skeleton jacob-js-skeleton-const
     "insert const binding"
-    > "const " - " =")
+    > "const " - " = ")
 
-  (define-skeleton jacob-javascript-skeleton-let
+  (define-skeleton jacob-js-skeleton-let
     "insert let binding" nil
-    > "let " - " =")
+    > "let " - " = ")
 
-  (define-skeleton jacob-javascript-skeleton-arrow-function
+  (define-skeleton jacob-js-skeleton-arrow-function
     "insert arrow function" nil
     > "(" - ") => ")
 
@@ -242,14 +224,14 @@
 
   (define-abbrev-table 'js-mode-abbrev-table
     '(
-      ("cl" "" jacob-javascript-skeleton-console-log)
-      ("if" "" jacob-javascript-skeleton-if)
-      ("arr" "" jacob-javascript-skeleton-arrow-function)
-      ("c" "" jacob-javascript-skeleton-const)
-      ("l" "" jacob-javascript-skeleton-let)
+      ("cl" "" jacob-js-skeleton-console-log)
+      ("if" "" jacob-js-skeleton-if)
+      ("fun" "" jacob-js-skeleton-arrow-function)
+      ("con" "" jacob-js-skeleton-const)
+      ("let" "" jacob-js-skeleton-let)
       )))
 
-(add-hook 'js-mode-hook 'jacob-javascript-config-hook-function)
+(add-hook 'js-mode-hook 'jacob-js-config-hook-function)
 
 
 ;; cc-mode config
@@ -315,12 +297,6 @@
 
 (defun jacob-elisp-config-hook-function ()
   "Configure `emacs-lisp-mode' when hook run."
-  (progn
-    (when (not buffer-display-table)
-      (setq buffer-display-table (make-display-table)))
-    (aset buffer-display-table ?\^L
-          (vconcat (make-list 70 (make-glyph-code ?─ 'font-lock-comment-face))))
-    (redraw-frame))
   (flymake-mode 1)
   (eldoc-mode 1)
   
@@ -864,41 +840,35 @@ Used to eagerly load feature."
         ))))
 
 
-;; typescript-mode
 
 (jacob-is-installed 'typescript-mode
   (with-eval-after-load 'typescript-mode
 
-    (jacob-javascript-config-hook-function)
-
-    (setq typescript-indent-level 2)
-
-    ;; (jacob-is-installed 'prettier
-    ;; (prettier-mode 1))
+    (jacob-js-config-hook-function)
 
     (when (boundp 'typescript-mode-abbrev-table)
       (clear-abbrev-table typescript-mode-abbrev-table))
     
     (define-abbrev-table 'typescript-mode-abbrev-table
       '(
-        ("cl" "" jacob-javascript-skeleton-console-log)
-        ("if" "" jacob-javascript-skeleton-if)
-        ("arr" "" jacob-javascript-skeleton-arrow-function)
-        ("c" "" jacob-javascript-skeleton-const)
-        ("l" "" jacob-javascript-skeleton-let)
+        ("cl" "" jacob-js-skeleton-console-log)
+        ("if" "" jacob-js-skeleton-if)
+        ("arr" "" jacob-js-skeleton-arrow-function)
+        ("con" "" jacob-js-skeleton-const)
+        ("let" "" jacob-js-skeleton-let)
         ))))
 
 
 
 (jacob-is-installed 'web-mode
   (defun jacob-web-mode-config ()
+    
     (if (string= (file-name-extension (buffer-name)) "tsx")
         (eglot-ensure))
     (setq-local electric-pair-pairs '((?\" . ?\") (?\< . ?\>))))
 
   (add-hook 'web-mode-hook 'jacob-web-mode-config)
 
-  
   (add-to-list 'auto-mode-alist '("\\.cshtml\\'" . web-mode))
   (add-to-list 'auto-mode-alist '("\\.tsx\\'" . web-mode))
   
@@ -906,7 +876,19 @@ Used to eagerly load feature."
     (add-to-list 'web-mode-engines-alist '("razor" . "\\.cshtml\\'"))
     (setq web-mode-markup-indent-offset 2)
     (setq web-mode-css-indent-offset 2)
-    (setq web-mode-code-indent-offset 2)))
+    (setq web-mode-code-indent-offset 2)
+
+    (jacob-js-config-hook-function)
+
+    (when (boundp 'web-mode-abbrev-table)
+      (clear-abbrev-table web-mode-abbrev-table))
+
+    (define-abbrev-table 'web-mode-abbrev-table
+      ("cl" "" jacob-js-skeleton-console-log)
+      ("if" "" jacob-js-skeleton-if)
+      ("arr" "" jacob-js-skeleton-arrow-function)
+      ("con" "" jacob-js-skeleton-const)
+      ("let" "" jacob-js-skeleton-let))))
 
 
 
