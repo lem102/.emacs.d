@@ -2,6 +2,24 @@
 ;;; Commentary:
 ;;; Code:
 
+(defvar jacob-emacs-mode (cond ((member "--planner" command-line-args)
+                                (setq command-line-args (delete "--planner" command-line-args))
+                                (setq frame-title-format "Emacs Planner")
+                                'planner)
+                               (t
+                                (setq frame-title-format "Emacs Master")
+                                'master))
+  "The mode of this Emacs.")
+
+(defmacro jacob-is-emacs-mode (mode &rest body)
+  "If MODE is the current Emacs mode, evaluate BODY."
+  (declare (indent 1))
+  `(when (eq jacob-emacs-mode ,mode)
+     ,@body))
+
+(jacob-is-emacs-mode 'master
+  (start-process "Emacs planner" nil "emacs" "--planner"))
+
 
 
 ;; built-in
@@ -393,8 +411,9 @@ in when it tangles into a file."
 
 ;; server config
 
-(load "server")
-(server-start)
+(when (equal jacob-emacs-mode 'master)
+  (load "server")
+  (server-start))
 
 
 ;; time emacs startup
@@ -422,20 +441,20 @@ in when it tangles into a file."
   (setq calendar-mark-holidays-flag t)
   (add-hook 'calendar-today-visible-hook 'calendar-mark-today))
 
-(defun jacob-launch-dashboard-when-idle ()
-  "Launch informative dashboard after idle time."
-  (run-with-idle-timer 5 nil (lambda ()
-                               (make-frame)
-                               (other-frame 1)
-                               (diary)
-                               (calendar)
-                               (diary-view-entries)
-                               (other-window 1)
-                               (split-window-horizontally)
-                               (other-window 1)
-                               (find-file (concat jacob-raspberry-pi-connection-string "/home/pi/org/todo.org")))))
-
-(add-hook 'after-init-hook 'jacob-launch-dashboard-when-idle)
+(if (equal jacob-emacs-mode 'planner)
+    (progn
+      (defun jacob-launch-dashboard-when-idle ()
+        "Launch informative dashboard after idle time."
+        (run-with-idle-timer 2 nil (lambda ()
+                                     (calendar)
+                                     (diary-view-entries)
+                                     (other-window 1)
+                                     (split-window-horizontally)
+                                     (other-window 1)
+                                     (find-file (concat jacob-raspberry-pi-connection-string "/home/pi/org/todo.org"))
+                                     
+                                     )))
+      (add-hook 'after-init-hook 'jacob-launch-dashboard-when-idle)))
 
 
 ;; remember config
@@ -472,9 +491,10 @@ Designed for use in on-save hook in certain programming languages modes."
   (setq w32-rwindow-modifier 'super)
   (setq w32-apps-modifier 'hyper)
 
-  (add-hook 'after-init-hook (lambda ()
-                               ;; maximize window
-                               (w32-send-sys-command 61488)))
+  (when (eq jacob-emacs-mode 'master)
+    (add-hook 'after-init-hook (lambda ()
+                                 ;; maximize window
+                                 (w32-send-sys-command 61488))))
 
   (defun jacob-confirm-terminate-batch-job ()
     "Type y and enter to terminate batch job after sending ^C."
@@ -595,7 +615,8 @@ Used to eagerly load feature."
 
 ;; theme
 
-(load-theme 'modus-vivendi t)
+(jacob-is-installed 'modus-themes
+  (load-theme 'modus-vivendi t))
 
 
 ;; racket-mode
