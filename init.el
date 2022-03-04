@@ -18,7 +18,7 @@
      ,@body))
 
 (jacob-is-emacs-mode 'master
-  (start-process "Emacs planner" nil "emacs" "--planner"))
+  (start-process "Emacs Planner" nil "emacs" "--planner"))
 
 
 
@@ -355,13 +355,14 @@
     (when (member "DejaVu Sans Mono" (font-family-list))
       (set-frame-font (concat "DejaVu Sans Mono-" size) nil t)))))
 
-
 
 ;; org config
 
 ;; this rebinds key in calendar mode unless set to nil, very annoying
 (setq org-calendar-to-agenda-key nil)
 (setq org-calendar-insert-diary-entry-key nil)
+
+(add-hook 'org-mode-hook 'org-indent-mode)
 
 (with-eval-after-load 'org-mode
   (defun jacob-org-babel-tangle-delete-newline ()
@@ -711,17 +712,19 @@ Used to eagerly load feature."
                                   (eglot-ensure))))
   (with-eval-after-load 'eglot
     (setcdr (assq 'java-mode eglot-server-programs) #'jacob-eglot-eclipse-jdt-contact)
+
+    
     (add-to-list 'eglot-server-programs '((web-mode js-mode typescript-mode) . ("typescript-language-server" "--stdio")))
 
     ;; (add-to-list 'eglot-server-programs '((js-mode typescript-mode) . (eglot-deno "deno" "lsp")))
 
     ;; (defclass eglot-deno (eglot-lsp-server) ()
-    ;;   :documentation "A custom class for deno lsp.")
+    ;; :documentation "A custom class for deno lsp.")
 
     ;; (cl-defmethod eglot-initialization-options ((server eglot-deno))
-    ;;   "Passes through required deno initialization options"
-    ;;   (list :enable t
-    ;;         :lint t))
+    ;; "Passes through required deno initialization options"
+    ;; (list :enable t
+    ;; :lint t))
     
     (add-to-list 'eglot-server-programs '(go-mode . ("/home/jacob/go/bin/gopls")))
 
@@ -874,7 +877,7 @@ Used to eagerly load feature."
       '(
         ("cl" "" jacob-js-skeleton-console-log)
         ("if" "" jacob-js-skeleton-if)
-        ("arr" "" jacob-js-skeleton-arrow-function)
+        ("fun" "" jacob-js-skeleton-arrow-function)
         ("con" "" jacob-js-skeleton-const)
         ("let" "" jacob-js-skeleton-let)
         ))))
