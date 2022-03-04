@@ -1639,6 +1639,9 @@ version control, call `project-eshell' instead."
   (let ((map vc-prefix-map))
     (define-key map (kbd "p") 'vc-push))
 
+  (let ((map minibuffer-local-completion-map)) 
+    (define-key map (kbd "SPC") 'self-insert-command))
+
   (let ((f (lambda (major-mode-keymap key command)
              (define-key major-mode-keymap (vector 'remap (lookup-key xah-fly-command-map key)) command))))
 
