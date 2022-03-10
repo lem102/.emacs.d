@@ -219,6 +219,10 @@
     "insert arrow function" nil
     > "(" - ") => ")
 
+  (define-skeleton jacob-js-skeleton-for-each
+    "insert forEach"
+    > "forEach(" - ")")
+
   (when (boundp 'js-mode-abbrev-table)
     (clear-abbrev-table js-mode-abbrev-table))
 
@@ -229,6 +233,9 @@
       ("fun" "" jacob-js-skeleton-arrow-function)
       ("con" "" jacob-js-skeleton-const)
       ("let" "" jacob-js-skeleton-let)
+      ("eq" "===")
+      ("neq" "!==")
+      ("fore" "" jacob-js-skeleton-for-each)
       )))
 
 (add-hook 'js-mode-hook 'jacob-js-config-hook-function)
@@ -435,7 +442,7 @@ in when it tangles into a file."
                                (other-window 1)
                                (find-file (concat jacob-raspberry-pi-connection-string "/home/pi/org/todo.org")))))
 
-(add-hook 'after-init-hook 'jacob-launch-dashboard-when-idle)
+;;(add-hook 'after-init-hook 'jacob-launch-dashboard-when-idle)
 
 
 ;; remember config
