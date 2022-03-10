@@ -2,6 +2,24 @@
 ;;; Commentary:
 ;;; Code:
 
+(defvar jacob-emacs-mode (cond ((member "--planner" command-line-args)
+                                (setq command-line-args (delete "--planner" command-line-args))
+                                (setq frame-title-format "Emacs Planner")
+                                'planner)
+                               (t
+                                (setq frame-title-format "Emacs Master")
+                                'master))
+  "The mode of this Emacs.")
+
+(defmacro jacob-is-emacs-mode (mode &rest body)
+  "If MODE is the current Emacs mode, evaluate BODY."
+  (declare (indent 1))
+  `(when (eq jacob-emacs-mode ,mode)
+     ,@body))
+
+(jacob-is-emacs-mode 'master
+                     (start-process "Emacs Planner" nil "emacs" "--planner"))
+
 
 
 ;; built-in
@@ -344,13 +362,14 @@
     (when (member "DejaVu Sans Mono" (font-family-list))
       (set-frame-font (concat "DejaVu Sans Mono-" size) nil t)))))
 
-
 
 ;; org config
 
 ;; this rebinds key in calendar mode unless set to nil, very annoying
 (setq org-calendar-to-agenda-key nil)
 (setq org-calendar-insert-diary-entry-key nil)
+
+(add-hook 'org-mode-hook 'org-indent-mode)
 
 (with-eval-after-load 'org-mode
   (defun jacob-org-babel-tangle-delete-newline ()
@@ -400,8 +419,9 @@ in when it tangles into a file."
 
 ;; server config
 
-(load "server")
-(server-start)
+(when (equal jacob-emacs-mode 'master)
+  (load "server")
+  (server-start))
 
 
 ;; time emacs startup
@@ -429,20 +449,20 @@ in when it tangles into a file."
   (setq calendar-mark-holidays-flag t)
   (add-hook 'calendar-today-visible-hook 'calendar-mark-today))
 
-(defun jacob-launch-dashboard-when-idle ()
-  "Launch informative dashboard after idle time."
-  (run-with-idle-timer 5 nil (lambda ()
-                               (make-frame)
-                               (other-frame 1)
-                               (diary)
-                               (calendar)
-                               (diary-view-entries)
-                               (other-window 1)
-                               (split-window-horizontally)
-                               (other-window 1)
-                               (find-file (concat jacob-raspberry-pi-connection-string "/home/pi/org/todo.org")))))
-
-;;(add-hook 'after-init-hook 'jacob-launch-dashboard-when-idle)
+(if (equal jacob-emacs-mode 'planner)
+    (progn
+      (defun jacob-launch-dashboard-when-idle ()
+        "Launch informative dashboard after idle time."
+        (run-with-idle-timer 2 nil (lambda ()
+                                     (calendar)
+                                     (diary-view-entries)
+                                     (other-window 1)
+                                     (split-window-horizontally)
+                                     (other-window 1)
+                                     (find-file (concat jacob-raspberry-pi-connection-string "/home/pi/org/todo.org"))
+                                     
+                                     )))
+      (add-hook 'after-init-hook 'jacob-launch-dashboard-when-idle)))
 
 
 ;; remember config
@@ -479,9 +499,10 @@ Designed for use in on-save hook in certain programming languages modes."
   (setq w32-rwindow-modifier 'super)
   (setq w32-apps-modifier 'hyper)
 
-  (add-hook 'after-init-hook (lambda ()
-                               ;; maximize window
-                               (w32-send-sys-command 61488)))
+  (when (eq jacob-emacs-mode 'master)
+    (add-hook 'after-init-hook (lambda ()
+                                 ;; maximize window
+                                 (w32-send-sys-command 61488))))
 
   (defun jacob-confirm-terminate-batch-job ()
     "Type y and enter to terminate batch job after sending ^C."
@@ -602,7 +623,8 @@ Used to eagerly load feature."
 
 ;; theme
 
-(load-theme 'modus-vivendi t)
+(jacob-is-installed 'modus-themes
+  (load-theme 'modus-vivendi t))
 
 
 ;; racket-mode
@@ -697,17 +719,19 @@ Used to eagerly load feature."
                                   (eglot-ensure))))
   (with-eval-after-load 'eglot
     (setcdr (assq 'java-mode eglot-server-programs) #'jacob-eglot-eclipse-jdt-contact)
+
+    
     (add-to-list 'eglot-server-programs '((web-mode js-mode typescript-mode) . ("typescript-language-server" "--stdio")))
 
     ;; (add-to-list 'eglot-server-programs '((js-mode typescript-mode) . (eglot-deno "deno" "lsp")))
 
     ;; (defclass eglot-deno (eglot-lsp-server) ()
-    ;;   :documentation "A custom class for deno lsp.")
+    ;; :documentation "A custom class for deno lsp.")
 
     ;; (cl-defmethod eglot-initialization-options ((server eglot-deno))
-    ;;   "Passes through required deno initialization options"
-    ;;   (list :enable t
-    ;;         :lint t))
+    ;; "Passes through required deno initialization options"
+    ;; (list :enable t
+    ;; :lint t))
     
     (add-to-list 'eglot-server-programs '(go-mode . ("/home/jacob/go/bin/gopls")))
 
@@ -860,7 +884,7 @@ Used to eagerly load feature."
       '(
         ("cl" "" jacob-js-skeleton-console-log)
         ("if" "" jacob-js-skeleton-if)
-        ("arr" "" jacob-js-skeleton-arrow-function)
+        ("fun" "" jacob-js-skeleton-arrow-function)
         ("con" "" jacob-js-skeleton-const)
         ("let" "" jacob-js-skeleton-let)
         ))))
@@ -1621,6 +1645,9 @@ version control, call `project-eshell' instead."
 
   (let ((map vc-prefix-map))
     (define-key map (kbd "p") 'vc-push))
+
+  (let ((map minibuffer-local-completion-map)) 
+    (define-key map (kbd "SPC") 'self-insert-command))
 
   (let ((f (lambda (major-mode-keymap key command)
              (define-key major-mode-keymap (vector 'remap (lookup-key xah-fly-command-map key)) command))))
