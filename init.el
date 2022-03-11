@@ -168,12 +168,16 @@
 (column-number-mode 1)
 (line-number-mode 1)
 
-(setq-default mode-line-format (list "%*" ; saved, readonly
-                                     "%m: " ; major mode
-                                     "%b " ; buffer name
-                                     mode-line-position
-                                     global-mode-string ; for use with org timer
-                                     ))
+(defvar jacob-mode-line-format
+  (list "%*" ; saved, readonly
+        "%m: " ; major mode
+        "%b " ; buffer name
+        mode-line-position
+        global-mode-string ; for use with org timer
+        )
+  "Custom mode line format.")
+
+(setq-default mode-line-format jacob-mode-line-format)
 
 
 ;; icomplete
@@ -354,6 +358,17 @@
    ((string-equal system-type "gnu/linux")
     (when (member "DejaVu Sans Mono" (font-family-list))
       (set-frame-font (concat "DejaVu Sans Mono-" size) nil t)))))
+
+;; enable emoji fonts
+(set-fontset-font
+ t
+ '(#x1f300 . #x1fad0)
+ (cond
+  ((member "Apple Color Emoji" (font-family-list)) "Apple Color Emoji")
+  ((member "Noto Color Emoji" (font-family-list)) "Noto Color Emoji")
+  ((member "Noto Emoji" (font-family-list)) "Noto Emoji")
+  ((member "Segoe UI Emoji" (font-family-list)) "Segoe UI Emoji")
+  ((member "Symbola" (font-family-list)) "Symbola")))
 
 
 ;; org config
@@ -574,6 +589,7 @@ Used to eagerly load feature."
                                   racket-mode
                                   feature-mode
                                   fsharp-mode
+                                  purescript-mode
                                   dotenv-mode
                                   restclient
                                   dockerfile-mode
@@ -774,6 +790,21 @@ Used to eagerly load feature."
 (jacob-is-installed 'fsharp-mode
   (with-eval-after-load 'fsharp-mode
     (setq inferior-fsharp-program "dotnet fsi --fsi-server-input-codepage:65001")))
+
+
+
+(jacob-is-installed 'purescript-mode
+  (with-eval-after-load 'purescript-mode
+    (when (boundp 'purescript-mode-abbrev-table)
+      (clear-abbrev-table purescript-mode-abbrev-table))
+
+    (define-abbrev-table 'purescript-mode-abbrev-table
+      '(
+        ("fa" "∀")
+        ("ar" "->")
+        ))
+
+    (add-hook 'purescript-mode-hook 'turn-on-purescript-indentation)))
 
 
 
@@ -999,6 +1030,13 @@ Used to eagerly load feature."
       (eshell))
 
     (tab-next)))
+
+(defun jacob-toggle-modeline ()
+  "Toggle visibility of modeline."
+  (interactive)
+  (setq mode-line-format (if (null mode-line-format)
+                             jacob-mode-line-format
+                           nil)))
 
 (defun jacob-start-timer ()
   "Run a 25 min timer."
