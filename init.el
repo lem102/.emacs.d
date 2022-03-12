@@ -208,10 +208,17 @@
 ;; abbrev and skeletons
 
 (setq skeleton-end-newline nil)
-
 (set-default 'abbrev-mode t)
-
 (setq save-abbrevs nil)
+
+(when (boundp 'global-abbrev-table)
+  (clear-abbrev-table 'global-abbrev-table))
+
+(define-abbrev-table 'global-abbrev-table
+  '(
+    ("dal" "$")
+    ("eke" "=")
+    ))
 
 
 ;; js-mode
@@ -939,11 +946,13 @@ Used to eagerly load feature."
       (clear-abbrev-table web-mode-abbrev-table))
 
     (define-abbrev-table 'web-mode-abbrev-table
-      ("cl" "" jacob-js-skeleton-console-log)
-      ("if" "" jacob-js-skeleton-if)
-      ("arr" "" jacob-js-skeleton-arrow-function)
-      ("con" "" jacob-js-skeleton-const)
-      ("let" "" jacob-js-skeleton-let))))
+      '(
+        ("cl" "" jacob-js-skeleton-console-log)
+        ("if" "" jacob-js-skeleton-if)
+        ("arr" "" jacob-js-skeleton-arrow-function)
+        ("con" "" jacob-js-skeleton-const)
+        ("let" "" jacob-js-skeleton-let)
+        ))))
 
 
 
