@@ -18,7 +18,7 @@
      ,@body))
 
 (jacob-is-emacs-mode 'master
-  (start-process "Emacs Planner" nil "emacs" "--planner"))
+                     (start-process "Emacs Planner" nil "emacs" "--planner"))
 
 
 
@@ -248,6 +248,10 @@
     "insert arrow function" nil
     > "(" - ") => ")
 
+  (define-skeleton jacob-js-skeleton-for-each
+    "insert forEach"
+    > "forEach(" - ")")
+
   (when (boundp 'js-mode-abbrev-table)
     (clear-abbrev-table js-mode-abbrev-table))
 
@@ -258,6 +262,9 @@
       ("fun" "" jacob-js-skeleton-arrow-function)
       ("con" "" jacob-js-skeleton-const)
       ("let" "" jacob-js-skeleton-let)
+      ("eq" "===")
+      ("neq" "!==")
+      ("fore" "" jacob-js-skeleton-for-each)
       )))
 
 (add-hook 'js-mode-hook 'jacob-js-config-hook-function)
