@@ -18,7 +18,7 @@
      ,@body))
 
 (jacob-is-emacs-mode 'master
-                     (start-process "Emacs Planner" nil "emacs" "--planner"))
+  (start-process "Emacs Planner" nil "emacs" "--planner"))
 
 
 
@@ -212,12 +212,13 @@
 (setq save-abbrevs nil)
 
 (when (boundp 'global-abbrev-table)
-  (clear-abbrev-table 'global-abbrev-table))
+  (clear-abbrev-table global-abbrev-table))
 
 (define-abbrev-table 'global-abbrev-table
   '(
     ("dal" "$")
     ("eke" "=")
+    ("sco" "_")
     ))
 
 
@@ -816,6 +817,15 @@ Used to eagerly load feature."
       '(
         ("fa" "∀")
         ("ar" "->")
+        ("nil" "Nil")
+        ("maybe" "Maybe")
+        ("unit" "Unit")
+        ("int" "Int")
+        ("boolean" "Boolean")
+        ("nothing" "Nothing")
+        ("just" "Just")
+        ("effect" "Effect")
+        ("list" "List")
         ))
 
     (add-hook 'purescript-mode-hook 'turn-on-purescript-indentation)))
