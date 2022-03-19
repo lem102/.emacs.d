@@ -180,14 +180,6 @@
 (setq-default mode-line-format jacob-mode-line-format)
 
 
-;; icomplete
-
-(icomplete-mode 1)
-(setq icomplete-separator "\n")
-(define-key icomplete-minibuffer-map (kbd "RET") 'icomplete-force-complete-and-exit)
-(define-key icomplete-minibuffer-map (kbd "<tab>") 'icomplete-force-complete)
-
-
 ;; tramp
 
 (with-eval-after-load 'tramp
@@ -609,7 +601,7 @@ Used to eagerly load feature."
                                   restclient
                                   dockerfile-mode
                                   ;; completion enhancements
-                                  icomplete-vertical ; will be included in emacs 28
+                                  vertico
                                   consult
                                   orderless
                                   marginalia
@@ -621,6 +613,7 @@ Used to eagerly load feature."
                                   ;; programming
                                   eglot
                                   eglot-fsharp
+                                  lsp-mode
                                   inf-ruby
                                   prettier ; TODO: find replacement, this has too many dependencies and it makes me sad :( I think just indentation that isn't all over the place would be good
                                   ;; misc
@@ -735,7 +728,7 @@ Used to eagerly load feature."
 
 (jacob-is-installed 'eglot
   (add-hook 'java-mode-hook 'eglot-ensure)
-  (add-hook 'csharp-tree-sitter-mode-hook 'eglot-ensure)
+  ;; (add-hook 'csharp-tree-sitter-mode-hook 'eglot-ensure)
   (add-hook 'typescript-mode-hook 'eglot-ensure)
   (add-hook 'fsharp-mode-hook (lambda ()
                                 (when (eq system-type 'gnu/linux)
@@ -759,9 +752,6 @@ Used to eagerly load feature."
     
     (add-to-list 'eglot-server-programs '(go-mode . ("/home/jacob/go/bin/gopls")))
 
-    (if (boundp 'jacob-omnisharp-language-server-path)
-        (add-to-list 'eglot-server-programs `(csharp-tree-sitter-mode . (,jacob-omnisharp-language-server-path "-lsp"))))
-
     (defun jacob-eglot-eclipse-jdt-contact
         (interactive)
       "Contact with the jdt server input INTERACTIVE."
@@ -769,36 +759,16 @@ Used to eagerly load feature."
             (jdt-home jacob-eclipse-jdt-file-path))
         (setenv "CLASSPATH" (concat cp ":" jdt-home))
         (unwind-protect (eglot--eclipse-jdt-contact nil)
-          (setenv "CLASSPATH" cp))))
+          (setenv "CLASSPATH" cp))))))
 
-    ;; (defun eglot--make-diag (buffer
-    ;;                              beg
-    ;;                              end
-    ;;                              type
-    ;;                              text
-    ;;                              &optional data
-    ;;                              overlay-properties)
-    ;;       "Make a Flymake diagnostic for BUFFER's region from BEG to END.
-    ;; TYPE is a diagnostic symbol and TEXT is string describing the
-    ;; problem detected in this region.  DATA is any object that the
-    ;; caller wishes to attach to the created diagnostic for later
-    ;; retrieval.
-    
-    ;; OVERLAY-PROPERTIES is an alist of properties attached to the
-    ;; created diagnostic, overriding the default properties and any
-    ;; properties of `flymake-overlay-control' of the diagnostic's
-    ;; type.
+
+;; lsp mode config, for csharp only
 
-    ;; tweaked to implement a hack by me. can be deleted once i have
-    ;; made typescript flymake."
-    ;;       (if (not (string= text "typescript: Experimental support for decorators is a feature that is subject to change in a future release. Set the 'experimentalDecorators' option in your 'tsconfig' or 'jsconfig' to remove this warning."))
-    ;;           (flymake--diag-make :buffer buffer :beg beg :end end
-    ;;                               :type type :text text :data data
-    ;;                               :overlay-properties overlay-properties)
-    ;;         (flymake--diag-make :buffer buffer :beg 0 :end 0
-    ;;                             :type type :text text :data data
-    ;;                             :overlay-properties overlay-properties)))
-    ))
+(jacob-is-installed 'lsp-mode
+  (setq lsp-lens-enable nil)
+  (setq lsp-headerline-breadcrumb-enable nil)
+  
+  (add-hook 'csharp-tree-sitter-mode-hook 'lsp))
 
 
 
@@ -837,8 +807,8 @@ Used to eagerly load feature."
 
 
 
-(jacob-try-require 'icomplete-vertical
-  (icomplete-vertical-mode 1))
+(jacob-try-require 'vertico
+  (vertico-mode 1))
 
 
 
@@ -1709,11 +1679,6 @@ version control, call `project-eshell' instead."
   (let ((f (lambda (major-mode-keymap key command)
              (define-key major-mode-keymap (vector 'remap (lookup-key xah-fly-command-map key)) command))))
 
-    (let ((map icomplete-minibuffer-map))
-      (funcall f map (kbd "i") 'icomplete-backward-completions)
-      (funcall f map (kbd "k") 'icomplete-forward-completions)
-      (funcall f map (kbd "d") 'icomplete-fido-backward-updir))
-    
     (let ((map dired-mode-map))
       (funcall f map (kbd "q") 'quit-window)
       (funcall f map (kbd "i") 'dired-previous-line)
