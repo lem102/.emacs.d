@@ -141,6 +141,8 @@
 
 (setq ibuffer-expert t)
 
+(delete-selection-mode 1)
+
 (defun jacob-find-file-hook-function ()
   "Hook function to run after file openend."
   (setq savehist-file "~/.emacs.d/savehist")
@@ -151,7 +153,6 @@
   (setq save-place-forget-unreadable-files t)
   (save-place-mode 1)
 
-  (delete-selection-mode 1)
   (auto-save-visited-mode 1)
 
   (remove-hook 'find-file-hook 'jacob-find-file-hook-function))
