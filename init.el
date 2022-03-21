@@ -103,6 +103,12 @@
 (add-hook 'racket-mode-hook 'jacob-racket-setup-prettify-symbols)
 
 
+;; help at point
+
+(setq-default help-at-pt-display-when-idle t)
+(help-at-pt-set-timer)
+
+
 ;; misc 2: electric boogaloo
 
 (setq confirm-kill-processes nil)
@@ -768,6 +774,7 @@ Used to eagerly load feature."
 (jacob-is-installed 'lsp-mode
   (setq lsp-lens-enable nil)
   (setq lsp-headerline-breadcrumb-enable nil)
+  (setq lsp-eldoc-render-all t)
   
   (add-hook 'csharp-tree-sitter-mode-hook 'lsp))
 
