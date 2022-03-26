@@ -105,7 +105,7 @@
 
 ;; help at point
 
-(setq-default help-at-pt-display-when-idle t)
+(setq-default help-at-pt-display-when-idle '(flymake-diagnostic))
 (help-at-pt-set-timer)
 
 
@@ -774,7 +774,8 @@ Used to eagerly load feature."
 (jacob-is-installed 'lsp-mode
   (setq lsp-lens-enable nil)
   (setq lsp-headerline-breadcrumb-enable nil)
-  (setq lsp-eldoc-render-all t)
+  (setq lsp-eldoc-render-all nil)
+  (setq lsp-eldoc-enable-hover nil)
   
   (add-hook 'csharp-tree-sitter-mode-hook 'lsp))
 
@@ -804,6 +805,7 @@ Used to eagerly load feature."
         ("just" "Just")
         ("effect" "Effect")
         ("list" "List")
+        ("tuple" "Tuple")
         ))
 
     (add-hook 'purescript-mode-hook 'turn-on-purescript-indentation)))
