@@ -1665,9 +1665,6 @@ version control, call `project-eshell' instead."
   (let ((map xah-fly-w-keymap))
     (define-key map (kbd "n") 'jacob-eval-and-replace))
 
-  (let ((map xah-fly-t-keymap))
-    (define-key map (kbd "j") 'kill-this-buffer))
-
   (let ((map xah-fly-c-keymap))
     (define-key map (kbd "j") 'consult-recent-file)
     (define-key map (kbd "e") 'find-file))
@@ -1691,7 +1688,7 @@ version control, call `project-eshell' instead."
       (funcall f map (kbd "q") 'quit-window)
       (funcall f map (kbd "i") 'dired-previous-line)
       (funcall f map (kbd "k") 'dired-next-line)
-      (funcall f map (kbd "s") 'dired-find-file)
+      (funcall f map (kbd "s") 'dired-find-alternate-file)
       (funcall f map (kbd "e") 'dired-mark)
       (funcall f map (kbd "r") 'dired-unmark)
       (funcall f map (kbd "x") 'dired-do-rename)
