@@ -216,9 +216,9 @@
 (define-abbrev-table 'global-abbrev-table
   '(
     ("dal" "$")
-    ("eke" "=")
-    ("eke2" "==")
-    ("eke3" "===")
+    ("eq" "=")
+    ("eeq" "==")
+    ("eeeq" "===")
     ("sco" "_")
     ))
 
@@ -640,6 +640,7 @@ Used to eagerly load feature."
   (package-install-selected-packages))
 (package-autoremove)
 
+(setq warning-suppress-types '((package reinitialization)))
 (package-initialize)
 
 
@@ -717,6 +718,24 @@ Used to eagerly load feature."
       \n "{"
       \n
       \n "}")
+
+    (define-skeleton jacob-csharp-method
+      "insert method"
+      > "private void " - "()"
+      \n "{"
+      \n
+      \n "}")
+
+    (define-skeleton jacob-csharp-var
+      "insert var declaration"
+      > "var " - " = ")
+
+    (define-skeleton jacob-csharp-class
+      "insert class"
+      > "public class " -
+      \n "{"
+      \n
+      \n "}")
     
     (when (boundp 'csharp-tree-sitter-mode-abbrev-table)
       (clear-abbrev-table csharp-tree-sitter-mode-abbrev-table))
@@ -730,6 +749,11 @@ Used to eagerly load feature."
         ("pr" "private")
         ("as" "async")
         ("st" "static")
+        ("ns" "namespace")
+        ("meth" "" jacob-csharp-method)
+        ("guid" "Guid")
+        ("var" "" jacob-csharp-var)
+        ("class" "" jacob-csharp-class)
         ))))
 
 
@@ -776,8 +800,8 @@ Used to eagerly load feature."
 (jacob-is-installed 'lsp-mode
   (setq lsp-lens-enable nil)
   (setq lsp-headerline-breadcrumb-enable nil)
-  (setq lsp-eldoc-render-all nil)
-  (setq lsp-eldoc-enable-hover nil)
+  (setq lsp-eldoc-render-all t)
+  (setq lsp-eldoc-enable-hover t)
   
   (add-hook 'csharp-tree-sitter-mode-hook 'lsp))
 
@@ -1753,3 +1777,4 @@ version control, call `project-eshell' instead."
 
 (provide 'init)
 ;;; init.el ends here
+
