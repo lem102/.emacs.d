@@ -471,9 +471,7 @@ in when it tangles into a file."
                                      (other-window 1)
                                      (split-window-horizontally)
                                      (other-window 1)
-                                     (find-file (concat jacob-raspberry-pi-connection-string "/home/pi/org/todo.org"))
-                                     
-                                     )))
+                                     (find-file (concat jacob-raspberry-pi-connection-string "/home/pi/org/todo.org")))))
       (add-hook 'after-init-hook 'jacob-launch-dashboard-when-idle)))
 
 
@@ -614,11 +612,8 @@ Used to eagerly load feature."
                                   inf-ruby
                                   prettier ; TODO: find replacement, this has too many dependencies and it makes me sad :( I think just indentation that isn't all over the place would be good
                                   ;; misc
-                                  goto-last-change
                                   restart-emacs
-                                  which-key
                                   docker-tramp
-                                  noccur
                                   with-editor
                                   ))
 
