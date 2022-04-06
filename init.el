@@ -951,6 +951,7 @@ Used to eagerly load feature."
         ("arr" "" jacob-js-skeleton-arrow-function)
         ("con" "" jacob-js-skeleton-const)
         ("let" "" jacob-js-skeleton-let)
+        ("fun" "" jacob-js-skeleton-arrow-function)
         ))))
 
 
@@ -1668,6 +1669,9 @@ version control, call `project-eshell' instead."
 
   (let ((map xah-fly-w-keymap))
     (define-key map (kbd "n") 'jacob-eval-and-replace))
+
+  (let ((map xah-fly-t-keymap)) 
+    (define-key map (kbd "j") 'xah-close-current-buffer))
 
   (let ((map xah-fly-c-keymap))
     (define-key map (kbd "j") 'consult-recent-file)
