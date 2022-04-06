@@ -204,6 +204,10 @@
 (setq tramp-archive-enabled nil)
 
 
+;; theme
+(load-theme 'modus-vivendi t)
+
+
 ;; abbrev and skeletons
 
 (setq skeleton-end-newline nil)
@@ -629,7 +633,6 @@ Used to eagerly load feature."
                                   goto-last-change
                                   restart-emacs
                                   which-key
-                                  modus-themes ; will be included in emacs 28
                                   docker-tramp
                                   noccur
                                   with-editor
@@ -646,12 +649,6 @@ Used to eagerly load feature."
 
 
 ;; package configuration
-
-
-;; theme
-
-(jacob-is-installed 'modus-themes
-  (load-theme 'modus-vivendi t))
 
 
 ;; racket-mode
