@@ -204,9 +204,10 @@
 (setq tramp-archive-enabled nil)
 
 
-;; abbrev and skeletons
+;; abbrev and skeletons config
 
 (setq skeleton-end-newline nil)
+(setq abbrev-suggest t)
 (set-default 'abbrev-mode t)
 (setq save-abbrevs nil)
 
@@ -317,6 +318,7 @@
   (setq dired-recursive-deletes 'top)
   (setq dired-dwim-target t)
   (setq delete-by-moving-to-trash t)
+  (setq dired-kill-when-opening-new-dired-buffer t)
 
   (require 'ls-lisp)
   (setq ls-lisp-use-insert-directory-program nil)
@@ -770,8 +772,10 @@ Used to eagerly load feature."
   (with-eval-after-load 'eglot
     (setcdr (assq 'java-mode eglot-server-programs) #'jacob-eglot-eclipse-jdt-contact)
 
+    (if (boundp 'jacob-omnisharp-language-server-path)
+        (add-to-list 'eglot-server-programs `(csharp-tree-sitter-mode . (,jacob-omnisharp-language-server-path "-lsp"))))
     
-    (add-to-list 'eglot-server-programs '((web-mode js-mode typescript-mode) . ("typescript-language-server" "--stdio")))
+    ;; (add-to-list 'eglot-server-programs '((web-mode js-mode typescript-mode) . ("typescript-language-server" "--stdio")))
 
     ;; (add-to-list 'eglot-server-programs '((js-mode typescript-mode) . (eglot-deno "deno" "lsp")))
 
@@ -803,7 +807,8 @@ Used to eagerly load feature."
   (setq lsp-eldoc-render-all t)
   (setq lsp-eldoc-enable-hover t)
   
-  (add-hook 'csharp-tree-sitter-mode-hook 'lsp))
+  (add-hook 'csharp-tree-sitter-mode-hook 'lsp)
+  )
 
 
 
@@ -1697,6 +1702,9 @@ version control, call `project-eshell' instead."
     (define-key map (kbd "j") 'consult-recent-file)
     (define-key map (kbd "e") 'find-file))
 
+  (let ((map xah-fly-t-keymap)) 
+    (define-key map (kbd "j") 'kill-current-buffer))
+
   (let ((map xah-fly-r-keymap)) 
     (define-key map (kbd "c") 'kmacro-set-counter))
 
@@ -1716,7 +1724,7 @@ version control, call `project-eshell' instead."
       (funcall f map (kbd "q") 'quit-window)
       (funcall f map (kbd "i") 'dired-previous-line)
       (funcall f map (kbd "k") 'dired-next-line)
-      (funcall f map (kbd "s") 'dired-find-alternate-file)
+      (funcall f map (kbd "s") 'dired-find-file)
       (funcall f map (kbd "e") 'dired-mark)
       (funcall f map (kbd "r") 'dired-unmark)
       (funcall f map (kbd "x") 'dired-do-rename)
