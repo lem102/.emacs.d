@@ -74,7 +74,7 @@
 (setq history-delete-duplicates t)
 (setq-default truncate-lines nil)
 (setq use-dialog-box nil)
-(defalias 'yes-or-no-p 'y-or-n-p)
+(setq use-short-answers t)
 
 
 ;; unicode
@@ -83,24 +83,6 @@
 (set-default-coding-systems 'utf-8)
 (set-terminal-coding-system 'utf-8)
 (set-keyboard-coding-system 'utf-8)
-
-
-;; prettify-symbols-mode
-
-(defun jacob-racket-setup-prettify-symbols ()
-  "Make some word or string show as pretty Unicode symbols."
-  (setq prettify-symbols-alist
-        '(
-          ("lambda" . 955) ; λ
-          ("->" . 8594)    ; →
-          ("=>" . 8658)    ; ⇒
-          ("map" . 8614)   ; ↦
-          ("<=" . 8804)
-          (">=" . 8805)
-          ))
-  (prettify-symbols-mode 1))
-
-(add-hook 'racket-mode-hook 'jacob-racket-setup-prettify-symbols)
 
 
 ;; help at point
