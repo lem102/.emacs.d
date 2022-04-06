@@ -74,7 +74,7 @@
 (setq history-delete-duplicates t)
 (setq-default truncate-lines nil)
 (setq use-dialog-box nil)
-(defalias 'yes-or-no-p 'y-or-n-p)
+(setq use-short-answers t)
 
 
 ;; unicode
@@ -83,24 +83,6 @@
 (set-default-coding-systems 'utf-8)
 (set-terminal-coding-system 'utf-8)
 (set-keyboard-coding-system 'utf-8)
-
-
-;; prettify-symbols-mode
-
-(defun jacob-racket-setup-prettify-symbols ()
-  "Make some word or string show as pretty Unicode symbols."
-  (setq prettify-symbols-alist
-        '(
-          ("lambda" . 955) ; λ
-          ("->" . 8594)    ; →
-          ("=>" . 8658)    ; ⇒
-          ("map" . 8614)   ; ↦
-          ("<=" . 8804)
-          (">=" . 8805)
-          ))
-  (prettify-symbols-mode 1))
-
-(add-hook 'racket-mode-hook 'jacob-racket-setup-prettify-symbols)
 
 
 ;; help at point
@@ -204,7 +186,11 @@
 (setq tramp-archive-enabled nil)
 
 
-;; abbrev and skeletons config
+;; theme
+(load-theme 'modus-vivendi t)
+
+
+;; abbrev and skeletons
 
 (setq skeleton-end-newline nil)
 (setq abbrev-suggest t)
@@ -631,7 +617,6 @@ Used to eagerly load feature."
                                   goto-last-change
                                   restart-emacs
                                   which-key
-                                  modus-themes ; will be included in emacs 28
                                   docker-tramp
                                   noccur
                                   with-editor
@@ -648,12 +633,6 @@ Used to eagerly load feature."
 
 
 ;; package configuration
-
-
-;; theme
-
-(jacob-is-installed 'modus-themes
-  (load-theme 'modus-vivendi t))
 
 
 ;; racket-mode
@@ -980,6 +959,7 @@ Used to eagerly load feature."
         ("arr" "" jacob-js-skeleton-arrow-function)
         ("con" "" jacob-js-skeleton-const)
         ("let" "" jacob-js-skeleton-let)
+        ("fun" "" jacob-js-skeleton-arrow-function)
         ))))
 
 
@@ -1697,6 +1677,9 @@ version control, call `project-eshell' instead."
 
   (let ((map xah-fly-w-keymap))
     (define-key map (kbd "n") 'jacob-eval-and-replace))
+
+  (let ((map xah-fly-t-keymap)) 
+    (define-key map (kbd "j") 'xah-close-current-buffer))
 
   (let ((map xah-fly-c-keymap))
     (define-key map (kbd "j") 'consult-recent-file)
