@@ -1305,7 +1305,7 @@ request type, headers, request body will not be perfect."
 (defun jacob-config-visit ()
   "Open the init file."
   (interactive)
-  (call-interactively (find-file "~/.emacs.d/init.el")))
+  (find-file "~/.emacs.d/init.el"))
 
 (defun jacob-config-reload ()
   "Evaluate the init file."
