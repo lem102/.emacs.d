@@ -7,7 +7,6 @@
                                 (setq frame-title-format "Emacs Planner")
                                 'planner)
                                (t
-                                (setq frame-title-format "Emacs Master")
                                 'master))
   "The mode of this Emacs.")
 
@@ -18,7 +17,10 @@
      ,@body))
 
 (jacob-is-emacs-mode 'master
-  (start-process "Emacs Planner" nil "emacs" "--planner"))
+  (defun jacob-open-planner ()
+    "Start a new emacs process configured to be a planner."
+    (interactive)
+    (start-process "Emacs Planner" nil "emacs" "--planner")))
 
 
 
@@ -67,8 +69,8 @@
                                         kill-buffer-query-functions))
 (setq read-process-output-max (* 1024 1024))
 (setq ring-bell-function 'ignore)
-(setq auto-window-vscroll nil)
 (setq scroll-conservatively 100)
+(setq mouse-wheel-progressive-speed nil)
 (setq create-lockfiles nil)
 (setq history-length 1000)
 (setq history-delete-duplicates t)
@@ -186,7 +188,8 @@
 (setq tramp-archive-enabled nil)
 
 
-;; theme
+;; theme config
+
 (load-theme 'modus-vivendi t)
 
 
@@ -461,18 +464,17 @@ in when it tangles into a file."
   (setq calendar-mark-holidays-flag t)
   (add-hook 'calendar-today-visible-hook 'calendar-mark-today))
 
-(if (equal jacob-emacs-mode 'planner)
-    (progn
-      (defun jacob-launch-dashboard-when-idle ()
-        "Launch informative dashboard after idle time."
-        (run-with-idle-timer 2 nil (lambda ()
-                                     (calendar)
-                                     (diary-view-entries)
-                                     (other-window 1)
-                                     (split-window-horizontally)
-                                     (other-window 1)
-                                     (find-file (concat jacob-raspberry-pi-connection-string "/home/pi/org/todo.org")))))
-      (add-hook 'after-init-hook 'jacob-launch-dashboard-when-idle)))
+(jacob-is-emacs-mode 'planner
+  (defun jacob-launch-dashboard-when-idle ()
+    "Launch informative dashboard after idle time."
+    (run-with-idle-timer 1 nil (lambda ()
+                                 (calendar)
+                                 (diary-view-entries)
+                                 (other-window 1)
+                                 (split-window-horizontally)
+                                 (other-window 1)
+                                 (find-file (concat jacob-raspberry-pi-connection-string "/home/pi/org/todo.org")))))
+  (add-hook 'after-init-hook 'jacob-launch-dashboard-when-idle))
 
 
 ;; remember config
@@ -509,7 +511,7 @@ Designed for use in on-save hook in certain programming languages modes."
   (setq w32-rwindow-modifier 'super)
   (setq w32-apps-modifier 'hyper)
 
-  (when (eq jacob-emacs-mode 'master)
+  (jacob-is-emacs-mode 'master
     (add-hook 'after-init-hook (lambda ()
                                  ;; maximize window
                                  (w32-send-sys-command 61488))))
