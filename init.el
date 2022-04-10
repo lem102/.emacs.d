@@ -95,12 +95,14 @@
 
 ;; misc 2: electric boogaloo
 
+(repeat-mode 1)
+
 (setq confirm-kill-processes nil)
 (setq backup-by-copying t)
 (setq make-backup-files nil)
 (setq auto-save-default nil)
 
-(add-hook 'after-init-hook (lambda () (recentf-mode 1)))
+(recentf-mode 1)
 
 (setq dabbrev-case-fold-search nil)
 (setq dabbrev-case-replace nil)
@@ -362,17 +364,36 @@
 
 ;; font config
 
-(let ((size (number-to-string jacob-font-size)))
-  (cond
-   ((string-equal system-type "windows-nt")
-    (when (member "Consolas" (font-family-list))
-      (set-frame-font (concat "Consolas-" size) nil t)))
-   ((string-equal system-type "darwin")
-    (when (member "Menlo" (font-family-list))
-      (set-frame-font (concat "Menlo-" size) nil t)))
-   ((string-equal system-type "gnu/linux")
-    (when (member "DejaVu Sans Mono" (font-family-list))
-      (set-frame-font (concat "DejaVu Sans Mono-" size) nil t)))))
+(defvar jacob-font-name
+  (cond ((string-equal system-type "windows-nt")
+         (when (member "Consolas" (font-family-list))
+           "Consolas-"))
+        ((string-equal system-type "darwin")
+         (when (member "Menlo" (font-family-list))
+           "Menlo-"))
+        ((string-equal system-type "gnu/linux")
+         (when (member "DejaVu Sans Mono" (font-family-list))
+           "DejaVu Sans Mono-"))))
+
+(defun jacob-set-font-size (size)
+  "Set font to SIZE."
+  (if (>= size 0)
+      (let ((string-size (number-to-string size)))
+        (set-frame-font (concat jacob-font-name string-size) nil t)
+        (setq jacob-font-size size))
+    nil))
+
+(defun jacob-font-size-increase ()
+  "Increase font size by two steps."
+  (interactive) 
+  (jacob-set-font-size (+ jacob-font-size 2)))
+
+(defun jacob-font-size-decrease ()
+  "Decrease font size by two steps."
+  (interactive) 
+  (jacob-set-font-size (- jacob-font-size 2)))
+
+(jacob-set-font-size jacob-font-size)
 
 ;; enable emoji fonts
 (set-fontset-font
