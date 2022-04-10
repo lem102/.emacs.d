@@ -871,21 +871,20 @@ Used to eagerly load feature."
   (marginalia-mode 1))
 
 
-;; consult
+;; consult config
 
 (jacob-is-installed 'consult
-  (with-eval-after-load 'consult
-    (setq completion-in-region-function 'consult-completion-in-region)
+  (setq completion-in-region-function 'consult-completion-in-region)
 
-    (setq consult-preview-raw-size 0)
+  (setq consult-preview-raw-size 0)
 
-    (setq consult-project-root-function
-          (lambda ()
-            (when-let (project (project-current))
-              (car (project-roots project)))))
+  (setq consult-project-root-function
+        (lambda ()
+          (when-let (project (project-current))
+            (car (project-roots project)))))
 
-    (setq xref-show-xrefs-function 'consult-xref)
-    (setq xref-show-definitions-function 'consult-xref)))
+  (setq xref-show-xrefs-function 'consult-xref)
+  (setq xref-show-definitions-function 'consult-xref))
 
 
 
