@@ -213,6 +213,14 @@
     ))
 
 
+;; icomplete config
+
+;; (icomplete-mode 1)
+;; (icomplete-vertical-mode 1)
+;; (define-key icomplete-minibuffer-map (kbd "RET") 'icomplete-force-complete-and-exit)
+;; (define-key icomplete-minibuffer-map (kbd "<tab>") 'icomplete-force-complete)
+
+
 ;; js-mode
 
 (defun jacob-js-config-hook-function ()
@@ -735,7 +743,7 @@ Used to eagerly load feature."
         ))))
 
 
-;; eglot
+;; eglot config
 
 (jacob-is-installed 'eglot
   (add-hook 'java-mode-hook 'eglot-ensure)
@@ -751,7 +759,7 @@ Used to eagerly load feature."
     (if (boundp 'jacob-omnisharp-language-server-path)
         (add-to-list 'eglot-server-programs `(csharp-tree-sitter-mode . (,jacob-omnisharp-language-server-path "-lsp"))))
     
-    ;; (add-to-list 'eglot-server-programs '((web-mode js-mode typescript-mode) . ("typescript-language-server" "--stdio")))
+    (add-to-list 'eglot-server-programs '((web-mode js-mode typescript-mode) . ("typescript-language-server" "--stdio")))
 
     ;; (add-to-list 'eglot-server-programs '((js-mode typescript-mode) . (eglot-deno "deno" "lsp")))
 
@@ -1623,8 +1631,7 @@ version control, call `project-eshell' instead."
     (let ((map project-prefix-map))
       (define-key map (kbd "g") 'jacob-project-search))
     (define-key map (kbd "v") vc-prefix-map)
-    (jacob-is-installed 'modus-themes
-      (define-key map (kbd "b") 'modus-themes-toggle)))
+    (define-key map (kbd "b") 'modus-themes-toggle))
 
   (let ((map xah-fly-command-map))
     (define-key map (kbd "a") 'execute-extended-command)
@@ -1753,6 +1760,11 @@ version control, call `project-eshell' instead."
       (let ((map doc-view-mode-map)) 
         (funcall f map (kbd "l") 'doc-view-next-page)
         (funcall f map (kbd "j") 'doc-view-previous-page)))
+
+    ;;    (let ((map icomplete-minibuffer-map))
+    ;;      (funcall f map (kbd "i") 'icomplete-backward-completions)
+    ;;      (funcall f map (kbd "k") 'icomplete-forward-completions)
+    ;;      (funcall f map (kbd "d") 'icomplete-fido-backward-updir))
 
     (with-eval-after-load 'diff-mode
       (let ((map diff-mode-map)) 
