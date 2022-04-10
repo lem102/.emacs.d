@@ -395,6 +395,15 @@
 
 (jacob-set-font-size jacob-font-size)
 
+(defvar jacob-font-size-repeat-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map "a" 'jacob-font-size-increase)
+    (define-key map "s" 'jacob-font-size-decrease)
+    map))
+
+(put 'jacob-font-size-increase 'repeat-map 'jacob-font-size-repeat-map)
+(put 'jacob-font-size-decrease 'repeat-map 'jacob-font-size-repeat-map)
+
 ;; enable emoji fonts
 (set-fontset-font
  t
@@ -1717,6 +1726,7 @@ version control, call `project-eshell' instead."
     (define-key map (kbd "c") 'kmacro-set-counter))
 
   (let ((map xah-fly-n-keymap))
+    (define-key map "a" 'jacob-font-size-increase)
     (define-key map (kbd "3") 'jacob-async-shell-command))
 
   (let ((map vc-prefix-map))
