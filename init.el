@@ -641,16 +641,13 @@ Used to eagerly load feature."
                                   orderless
                                   marginalia
                                   ;; tree sitter
-                                  tsc
                                   tree-sitter-langs
                                   tree-sitter-indent
-                                  tree-sitter
                                   ;; programming
                                   eglot
                                   eglot-fsharp
                                   lsp-mode
                                   inf-ruby
-                                  prettier ; TODO: find replacement, this has too many dependencies and it makes me sad :( I think just indentation that isn't all over the place would be good
                                   ;; misc
                                   restart-emacs
                                   docker-tramp
