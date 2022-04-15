@@ -131,6 +131,8 @@
 
 (add-hook 'prog-mode-hook 'jacob-prog-mode-hook-function)
 
+(setq switch-to-buffer-obey-display-actions t)
+
 (setq ibuffer-expert t)
 
 (delete-selection-mode 1)
