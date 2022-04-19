@@ -61,22 +61,54 @@
     (load-file "~/.emacs.d/environment.el"))
 
 
-;; misc
+;; mouse config
 
-(add-to-list 'load-path "~/.emacs.d/local-packages/")
+(setq scroll-conservatively 100)
+(setq mouse-wheel-progressive-speed nil)
+
+
+;; user interface config
+
+(setq-default use-dialog-box nil)
+(setq use-short-answers t)
+(setq ring-bell-function 'ignore)
+(setq-default truncate-lines nil)
+(setq confirm-kill-processes nil)
+(setq switch-to-buffer-obey-display-actions t)
+(setq disabled-command-function nil)
 
 (setq kill-buffer-query-functions (delq 'process-kill-buffer-query-function
                                         kill-buffer-query-functions))
-(setq read-process-output-max (* 1024 1024))
-(setq ring-bell-function 'ignore)
-(setq scroll-conservatively 100)
-(setq mouse-wheel-progressive-speed nil)
+
+
+;; backup/saving config
+
 (setq create-lockfiles nil)
 (setq history-length 1000)
 (setq history-delete-duplicates t)
-(setq-default truncate-lines nil)
-(setq use-dialog-box nil)
-(setq use-short-answers t)
+(setq backup-by-copying t)
+(setq make-backup-files nil)
+(setq auto-save-default nil)
+(recentf-mode 1)
+
+(setq savehist-file "~/.emacs.d/savehist")
+(setq savehist-save-minibuffer-history t)
+(savehist-mode 1)
+
+(setq save-place-file "~/.emacs.d/saveplace")
+(setq save-place-forget-unreadable-files t)
+(save-place-mode 1)
+
+(auto-save-visited-mode 1)
+
+
+;; misc config
+
+(add-to-list 'load-path "~/.emacs.d/local-packages/")
+
+(setq read-process-output-max (* 1024 1024))
+
+(setq custom-file (make-temp-file "emacs-custom-"))
 
 
 ;; unicode
@@ -93,67 +125,28 @@
 (help-at-pt-set-timer)
 
 
-;; misc 2: electric boogaloo
+;; editing config
+
+(global-subword-mode 1)
+
+(setq show-paren-style 'parenthesis)
+(setq show-paren-when-point-inside-paren t)
+(setq show-paren-when-point-in-periphery nil)
+(show-paren-mode 1)
+
+(setq electric-pair-preserve-balance t)
+(setq electric-pair-delete-adjacent-pairs t)
+(setq electric-pair-open-newline-between-pairs t)
+(electric-pair-mode 1)
+
+(delete-selection-mode 1)
 
 (repeat-mode 1)
-
-(setq confirm-kill-processes nil)
-(setq backup-by-copying t)
-(setq make-backup-files nil)
-(setq auto-save-default nil)
-
-(recentf-mode 1)
 
 (setq dabbrev-case-fold-search nil)
 (setq dabbrev-case-replace nil)
 
-(setq custom-file (make-temp-file "emacs-custom-"))
-
-(setq disabled-command-function nil)
-
 (setq line-move-visual t)
-
-(defun jacob-prog-mode-hook-function ()
-  "Hook function to run when in programming mode."
-  (global-subword-mode 1)
-
-  (setq show-paren-style 'parenthesis)
-  (setq show-paren-when-point-inside-paren t)
-  (setq show-paren-when-point-in-periphery nil)
-  (show-paren-mode 1)
-
-  (setq electric-pair-preserve-balance t)
-  (setq electric-pair-delete-adjacent-pairs t)
-  (setq electric-pair-open-newline-between-pairs t)
-  (electric-pair-mode 1)
-
-  (remove-hook 'prog-mode-hook 'jacob-prog-mode-hook-function))
-
-(add-hook 'prog-mode-hook 'jacob-prog-mode-hook-function)
-
-(setq ibuffer-expert t)
-
-(delete-selection-mode 1)
-
-(defun jacob-find-file-hook-function ()
-  "Hook function to run after file openend."
-  (setq savehist-file "~/.emacs.d/savehist")
-  (setq savehist-save-minibuffer-history t)
-  (savehist-mode 1)
-
-  (setq save-place-file "~/.emacs.d/saveplace")
-  (setq save-place-forget-unreadable-files t)
-  (save-place-mode 1)
-
-  (auto-save-visited-mode 1)
-
-  (remove-hook 'find-file-hook 'jacob-find-file-hook-function))
-
-(add-hook 'find-file-hook 'jacob-find-file-hook-function)
-
-(setq use-file-dialog nil)
-(setq use-dialog-box t)
-(setq inhibit-startup-message nil)
 
 
 ;; mode line
@@ -1698,7 +1691,7 @@ version control, call `project-eshell' instead."
     (define-key map "z" 'jacob-insert-apostrophe)
     (define-key map "x" 'jacob-insert-at)
     (define-key map "c" 'jacob-insert-hash)
-    (define-key map "d" "DEL")
+    (define-key map (kbd "d") (kbd "<backspace>"))
     (define-key map "v" 'jacob-insert-tilde)
     (define-key map "e" 'jacob-insert-dollar-sign)
     (define-key map "r" 'jacob-insert-caret)
