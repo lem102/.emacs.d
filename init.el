@@ -1577,6 +1577,11 @@ version control, call `project-eshell' instead."
   (interactive)
   (switch-to-buffer (other-buffer (current-buffer) 1)))
 
+(defun josh-kill-process-on-port ()
+  "Ask for a port, kill process on that port.  For powershell."
+  (interactive)
+  (shell-command (concat "powershell.exe -File %home%\\Downloads\\Jacob.ps1 -localPort " (read-from-minibuffer "port: "))))
+
 
 
 ;; key bindings
