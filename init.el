@@ -81,6 +81,21 @@
                                         kill-buffer-query-functions))
 
 
+;; screen sharing config
+
+(define-minor-mode screen-sharing-mode
+  "Minor mode for sharing screens."
+  :global t
+  :group 'jacob
+  (if screen-sharing-mode
+      (progn
+        (global-hl-line-mode 1)
+        (global-display-line-numbers-mode 1))
+    (progn
+      (global-hl-line-mode 0)
+      (global-display-line-numbers-mode 0))))
+
+
 ;; backup/saving config
 
 (setq create-lockfiles nil)
@@ -1799,4 +1814,3 @@ version control, call `project-eshell' instead."
 
 (provide 'init)
 ;;; init.el ends here
-
