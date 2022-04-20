@@ -83,7 +83,7 @@
 
 ;; screen sharing config
 
-(define-minor-mode screen-sharing-mode
+(define-minor-mode jacob-screen-sharing-mode
   "Minor mode for sharing screens."
   :global t
   :group 'jacob
