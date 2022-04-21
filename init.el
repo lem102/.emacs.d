@@ -659,7 +659,6 @@ Used to eagerly load feature."
                                   ;; misc
                                   restart-emacs
                                   docker-tramp
-                                  with-editor
                                   ))
 
 (unless (string= (package-install-selected-packages) "All your packages are already installed")
