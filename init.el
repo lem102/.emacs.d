@@ -174,7 +174,7 @@
         "%m: " ; major mode
         "%b " ; buffer name
         mode-line-position
-        global-mode-string ; for use with org timer
+        mode-line-misc-info ; for use with org timer
         )
   "Custom mode line format.")
 
@@ -659,6 +659,7 @@ Used to eagerly load feature."
                                   ;; misc
                                   restart-emacs
                                   docker-tramp
+                                  memento-mori
                                   ))
 
 (unless (string= (package-install-selected-packages) "All your packages are already installed")
@@ -699,6 +700,18 @@ Used to eagerly load feature."
       ("fpl" "" jacob-go-fmt-println)
       ("fpf" "" jacob-go-fmt-printf)
       )))
+
+
+;; memento mori config
+
+(setq memento-mori-birth-date "1997-11-23")
+(memento-mori-mode 1)
+
+(defun memento-mori-update ()
+  "Update `memento-mori-age-string' based on the current time."
+  (setq memento-mori-age-string
+        (format " %.2f" (memento-mori-age))))
+
 
 ;; auctex
 

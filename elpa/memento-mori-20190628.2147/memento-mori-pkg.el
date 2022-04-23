@@ -1,0 +1,2 @@
+;;; Generated package description from memento-mori.el  -*- no-byte-compile: t -*-
+(define-package "memento-mori" "20190628.2147" "Reminder of mortality" '((emacs "24") (cl-lib "0.5")) :commit "b99c5ff526079fc5a1e1be097534855da176bc2b" :authors '(("Lassi Kortela" . "lassi@lassi.io")) :maintainer '("Lassi Kortela" . "lassi@lassi.io") :keywords '("help") :url "https://github.com/lassik/emacs-memento-mori")
