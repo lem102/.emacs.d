@@ -659,7 +659,6 @@ Used to eagerly load feature."
                                   ;; misc
                                   restart-emacs
                                   docker-tramp
-                                  memento-mori
                                   ))
 
 (unless (string= (package-install-selected-packages) "All your packages are already installed")
@@ -700,17 +699,6 @@ Used to eagerly load feature."
       ("fpl" "" jacob-go-fmt-println)
       ("fpf" "" jacob-go-fmt-printf)
       )))
-
-
-;; memento mori config
-
-(setq memento-mori-birth-date "1997-11-23")
-(memento-mori-mode 1)
-
-(defun memento-mori-update ()
-  "Update `memento-mori-age-string' based on the current time."
-  (setq memento-mori-age-string
-        (format " %.2f" (memento-mori-age))))
 
 
 ;; auctex
