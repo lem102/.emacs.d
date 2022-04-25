@@ -87,7 +87,7 @@
   "Minor mode for sharing screens."
   :global t
   :group 'jacob
-  (if screen-sharing-mode
+  (if jacob-screen-sharing-mode
       (progn
         (global-hl-line-mode 1)
         (global-display-line-numbers-mode 1))
