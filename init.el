@@ -76,6 +76,7 @@
 (setq confirm-kill-processes nil)
 (setq switch-to-buffer-obey-display-actions t)
 (setq disabled-command-function nil)
+(setq enable-recursive-minibuffers t)
 
 (setq kill-buffer-query-functions (delq 'process-kill-buffer-query-function
                                         kill-buffer-query-functions))
@@ -1042,6 +1043,21 @@ Used to eagerly load feature."
 
 ;; personal functions
 
+(defun jacob-web-request-helper (method url &optional headers data)
+  "Helper function for making web requests.
+METHOD, HEADERS and DATA are for the corresponding url-request variables.
+  URL is the address to send the request to.
+  Returns a string containing the response."
+  (require 'json)
+  (with-current-buffer (let ((url-request-method method)
+                             (url-request-extra-headers headers)
+                             (url-request-data data))
+                         (url-retrieve-synchronously url))
+    ;; (beginning-of-buffer)
+    ;; (search-forward "\n\n" nil t)
+    ;; (json-reformat-region (point) (point-max))
+    (buffer-string)))
+
 (defun jacob-get-temperature ()
   "Get the temperature for next 6 days."
   (let ((json (json-read-from-string (with-current-buffer (url-retrieve-synchronously "https://www.metaweather.com/api/location/13527/")
@@ -1547,6 +1563,11 @@ version control, call `project-eshell' instead."
                           'eshell)))
     (call-interactively eshell-command)))
 
+(defun josh-kill-process-on-port ()
+  "Ask for a port, kill process on that port.  For powershell."
+  (interactive)
+  (shell-command (concat "powershell.exe -File %home%\\Downloads\\Jacob.ps1 -localPort " (read-from-minibuffer "port: "))))
+
 
 
 ;; voice commands
@@ -1584,11 +1605,6 @@ version control, call `project-eshell' instead."
 (defun jacob-switch-to-previous-buffer ()
   (interactive)
   (switch-to-buffer (other-buffer (current-buffer) 1)))
-
-(defun josh-kill-process-on-port ()
-  "Ask for a port, kill process on that port.  For powershell."
-  (interactive)
-  (shell-command (concat "powershell.exe -File %home%\\Downloads\\Jacob.ps1 -localPort " (read-from-minibuffer "port: "))))
 
 
 
