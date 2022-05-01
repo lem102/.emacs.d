@@ -754,7 +754,25 @@ Used to eagerly load feature."
 
     (define-skeleton jacob-csharp-class
       "insert class"
-      > "public class " -
+      > "public "
+      (let ((case-fold-search nil)
+            (file-name (file-name-base (buffer-file-name))))
+        (concat (if (string-match "^I.+" file-name)
+                    "interface"
+                  "class")
+                " "
+                file-name))
+      \n "{"
+      \n -
+      \n "}")
+
+    (define-skeleton jacob-csharp-property
+      "insert class property"
+      > "public string " - " { get; set; }")
+
+    (define-skeleton jacob-csharp-constructor
+      "insert constructor"
+      > "public " - "()"
       \n "{"
       \n
       \n "}")
@@ -776,6 +794,8 @@ Used to eagerly load feature."
         ("guid" "Guid")
         ("var" "" jacob-csharp-var)
         ("class" "" jacob-csharp-class)
+        ("prop" "" jacob-csharp-property)
+        ("ctor" "" jacob-csharp-constructor)
         ))))
 
 
@@ -1053,9 +1073,10 @@ METHOD, HEADERS and DATA are for the corresponding url-request variables.
                              (url-request-extra-headers headers)
                              (url-request-data data))
                          (url-retrieve-synchronously url))
-    ;; (beginning-of-buffer)
-    ;; (search-forward "\n\n" nil t)
-    ;; (json-reformat-region (point) (point-max))
+    (beginning-of-buffer)
+    (when (search-forward-regexp "Content-Type: application/[a-z+]*json" nil t)
+      (search-forward "\n\n" nil t)
+      (json-reformat-region (point) (point-max)))
     (buffer-string)))
 
 (defun jacob-get-temperature ()
