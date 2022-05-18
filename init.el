@@ -358,6 +358,10 @@
     -2 "\"\"" \n
     )
 
+  (define-skeleton jacob-emacs-lisp-skeleton-cond
+    "insert cond" nil
+    > "cond (" - ")")
+
   (when (boundp 'emacs-lisp-mode-abbrev-table)
     (clear-abbrev-table emacs-lisp-mode-abbrev-table))
 
@@ -366,6 +370,7 @@
       ("let" "" jacob-emacs-lisp-skeleton-let)
       ("defun" "" jacob-emacs-lisp-skeleton-defun)
       ("int" "(interactive)")
+      ("cond" "" jacob-emacs-lisp-skeleton-cond)
       )))
 
 (add-hook 'emacs-lisp-mode-hook 'jacob-elisp-config-hook-function)
