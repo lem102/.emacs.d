@@ -217,7 +217,7 @@
 (define-abbrev-table 'global-abbrev-table
   '(
     ("dal" "$")
-    ("eq" "=")
+    ;; ("eq" "=")
     ("eeq" "==")
     ("eeeq" "===")
     ("sco" "_")
@@ -360,7 +360,7 @@
 
   (define-skeleton jacob-emacs-lisp-skeleton-cond
     "insert cond" nil
-    > "cond (" - ")")
+    > "cond ((" - "))")
 
   (when (boundp 'emacs-lisp-mode-abbrev-table)
     (clear-abbrev-table emacs-lisp-mode-abbrev-table))
@@ -1593,6 +1593,17 @@ version control, call `project-eshell' instead."
   "Ask for a port, kill process on that port.  For powershell."
   (interactive)
   (shell-command (concat "powershell.exe -File %home%\\Downloads\\Jacob.ps1 -localPort " (read-from-minibuffer "port: "))))
+
+(defun jacob-lookup-youtube ()
+  "Ask for a string to search.
+Search youtube for string and display in browser."
+  (interactive)
+  (let ((search-query (read-from-minibuffer "YouTube: ")))
+    (browse-url (concat "https://www.youtube.com/results?search_query=" search-query))))
+
+(defun jacob-bookmark-jump-to-url (bookmark)
+  "Open link stored in the filename property of BOOKMARK in browser."
+  (browse-url (cdr (assoc 'filename (cdr bookmark)))))
 
 
 
