@@ -458,7 +458,10 @@ in when it tangles into a file."
 
   (org-babel-do-load-languages
    'org-babel-load-languages
-   '((octave . t))))
+   '((octave . t)))
+  
+  (setq org-confirm-babel-evaluate nil))
+
 
 
 ;; pulse config
@@ -649,6 +652,7 @@ Used to eagerly load feature."
                                   dotenv-mode
                                   restclient
                                   dockerfile-mode
+                                  kotlin-mode
                                   ;; completion enhancements
                                   vertico
                                   consult
