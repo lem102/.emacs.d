@@ -126,6 +126,8 @@
 
 (setq custom-file (make-temp-file "emacs-custom-"))
 
+(setq inhibit-startup-screen t)
+
 
 ;; unicode
 
@@ -350,26 +352,27 @@
   
   (define-skeleton jacob-emacs-lisp-skeleton-let
     "insert let" nil
-    > "let ((" - ")) \n")
+    > "(let ((" - "))" \n
+    ")")
 
   (define-skeleton jacob-emacs-lisp-skeleton-defun
     "insert defun" nil
-    > "defun " - " ()" \n
+    > "(defun " - " ()" \n
     -2 "\"\"" \n
-    )
+    ")")
 
   (define-skeleton jacob-emacs-lisp-skeleton-cond
     "insert cond" nil
-    > "cond ((" - "))")
-
-  (when (boundp 'emacs-lisp-mode-abbrev-table)
-    (clear-abbrev-table emacs-lisp-mode-abbrev-table))
+    > "(cond ((" - "))" \n
+    ")")
 
   (define-abbrev-table 'emacs-lisp-mode-abbrev-table
     '(
-      ("let" "" jacob-emacs-lisp-skeleton-let)
+      ("def" "defun" backward-delete-char)
       ("defun" "" jacob-emacs-lisp-skeleton-defun)
-      ("int" "(interactive)")
+      ("let" "" jacob-emacs-lisp-skeleton-let)
+      ("int" "interactive" backward-delete-char)
+      ("interactive" "(interactive)" backward-delete-char)
       ("cond" "" jacob-emacs-lisp-skeleton-cond)
       )))
 
