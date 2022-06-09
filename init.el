@@ -656,6 +656,7 @@ Used to eagerly load feature."
                                   restclient
                                   dockerfile-mode
                                   kotlin-mode
+                                  gdscript-mode
                                   ;; completion enhancements
                                   vertico
                                   consult
