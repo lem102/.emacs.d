@@ -672,6 +672,8 @@ Used to eagerly load feature."
                                   docker-tramp
                                   ))
 
+(package-install 'xah-fly-keys)
+
 (unless (string= (package-install-selected-packages) "All your packages are already installed")
   (package-refresh-contents)
   (package-install-selected-packages))
@@ -892,6 +894,55 @@ Used to eagerly load feature."
     (add-hook 'purescript-mode-hook 'turn-on-purescript-indentation)))
 
 
+
+;; kotlin-mode config
+
+(jacob-is-installed 'kotlin-mode
+  (with-eval-after-load 'kotlin-mode
+
+    (define-skeleton jacob-kotlin-test
+      "Insert kotlin function"
+      > "@Test" \n
+      "fun " - "() {" \n
+      \n
+      -4 "}")
+
+    (define-skeleton jacob-kotlin-function
+      "Insert kotlin function"
+      > "fun " - "() {" \n
+      -4 \n
+      -4 "}")
+
+    (define-skeleton jacob-kotlin-val
+      "Insert kotlin val"
+      > "val " - " = ")
+
+    (define-skeleton jacob-kotlin-println
+      "Insert kotlin println"
+      > "println(" - ")")
+
+    (define-skeleton jacob-kotlin-when
+      "Insert kotlin when"
+      > "when (" - ") {" \n
+      "else -> " \n
+      -4 "}")
+
+    (define-skeleton jacob-kotlin-list
+      "Insert kotlin list"
+      > "listOf(" - ")")
+    
+    (define-abbrev-table 'kotlin-mode-abbrev-table
+      '(
+        ("ar" "->")
+        ("int" "Int")
+        ("string" "String")
+        ("char" "Char")
+        ("fun" "" jacob-kotlin-function)
+        ("val" "" jacob-kotlin-val)
+        ("pl" "" jacob-kotlin-println)
+        ("when" "" jacob-kotlin-when)
+        ("listof" "" jacob-kotlin-list)
+        ("test" "" jacob-kotlin-test)))))
 
 (jacob-try-require 'orderless
   (setq completion-styles '(orderless initials)))
@@ -1605,6 +1656,13 @@ Search youtube for string and display in browser."
   (interactive)
   (let ((search-query (read-from-minibuffer "YouTube: ")))
     (browse-url (concat "https://www.youtube.com/results?search_query=" search-query))))
+
+(defun jacob-lookup-wikipedia ()
+  "Ask for a string to search.
+Search youtube for string and display in browser."
+  (interactive)
+  (let ((search-query (read-from-minibuffer "Wikipedia: ")))
+    (browse-url (concat "https://en.wikipedia.org/wiki/" search-query))))
 
 (defun jacob-bookmark-jump-to-url (bookmark)
   "Open link stored in the filename property of BOOKMARK in browser."
