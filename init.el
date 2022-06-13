@@ -128,6 +128,8 @@
 
 (setq inhibit-startup-screen t)
 
+(setq split-height-threshold nil)
+
 
 ;; unicode
 
