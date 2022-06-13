@@ -1083,7 +1083,7 @@ Used to eagerly load feature."
   (add-hook 'web-mode-hook 'jacob-web-mode-config)
 
   (add-to-list 'auto-mode-alist '("\\.cshtml\\'" . web-mode))
-  (add-to-list 'auto-mode-alist '("\\.tsx\\'" . web-mode))
+  ;; (add-to-list 'auto-mode-alist '("\\.tsx\\'" . web-mode))
   
   (with-eval-after-load 'web-mode
     (add-to-list 'web-mode-engines-alist '("razor" . "\\.cshtml\\'"))
