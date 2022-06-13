@@ -692,6 +692,13 @@ Used to eagerly load feature."
 ;; package configuration
 
 
+;; tree sitter config
+
+(jacob-is-installed 'tree-sitter
+  (global-tree-sitter-mode)
+  )
+
+
 ;; racket-mode
 
 (jacob-is-installed 'racket-mode
@@ -1037,6 +1044,17 @@ Used to eagerly load feature."
 
 
 (jacob-is-installed 'typescript-mode
+
+  (define-derived-mode typescript-react-mode typescript-mode
+    "Typescript TSX")
+
+  (add-to-list 'auto-mode-alist '("\\.tsx?\\'" . typescript-react-mode))
+  (with-eval-after-load 'tree-sitter
+    (add-to-list 'tree-sitter-major-mode-language-alist '(typescript-react-mode . tsx)))
+
+  (jacob-try-require 'tsi
+    (add-hook 'typescript-mode-hook (lambda () (tsi-typescript-mode 1))))
+  
   (with-eval-after-load 'typescript-mode
 
     (jacob-js-config-hook-function)
