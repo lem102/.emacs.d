@@ -1,4 +1,4 @@
-;;; tree-sitter-autoloads.el --- automatically extracted autoloads
+;;; tree-sitter-autoloads.el --- automatically extracted autoloads  -*- lexical-binding: t -*-
 ;;
 ;;; Code:
 
@@ -12,10 +12,19 @@
 (autoload 'tree-sitter-mode "tree-sitter" "\
 Minor mode that keeps an up-to-date syntax tree using incremental parsing.
 
-If called interactively, enable Tree-Sitter mode if ARG is
-positive, and disable it if ARG is zero or negative.  If called
-from Lisp, also enable the mode if ARG is omitted or nil, and
-toggle it if ARG is `toggle'; disable the mode otherwise.
+This is a minor mode.  If called interactively, toggle the
+`tree-sitter mode' mode.  If the prefix argument is positive,
+enable the mode, and if it is zero or negative, disable the mode.
+
+If called from Lisp, toggle the mode if ARG is `toggle'.  Enable
+the mode if ARG is nil, omitted, or is a positive number.
+Disable the mode if ARG is a negative number.
+
+To check whether the minor mode is enabled in the current buffer,
+evaluate `tree-sitter-mode'.
+
+The mode's hook is called both when the mode is enabled and when
+it is disabled.
 
 \(fn &optional ARG)" t nil)
 
@@ -37,22 +46,35 @@ or call the function `global-tree-sitter-mode'.")
 (autoload 'global-tree-sitter-mode "tree-sitter" "\
 Toggle Tree-Sitter mode in all buffers.
 With prefix ARG, enable Global Tree-Sitter mode if ARG is positive;
-otherwise, disable it.  If called from Lisp, enable the mode if
-ARG is omitted or nil.
+otherwise, disable it.
+
+If called from Lisp, toggle the mode if ARG is `toggle'.
+Enable the mode if ARG is nil, omitted, or is a positive number.
+Disable the mode if ARG is a negative number.
 
 Tree-Sitter mode is enabled in all buffers where
 `turn-on-tree-sitter-mode' would do it.
+
 See `tree-sitter-mode' for more information on Tree-Sitter mode.
 
 \(fn &optional ARG)" t nil)
 
-(autoload 'tree-sitter-node-at-point "tree-sitter" "\
-Return the smallest syntax node at point whose type is NODE-TYPE.
-If NODE-TYPE is nil, return the smallest syntax node at point.
+(define-obsolete-function-alias 'tree-sitter-node-at-point 'tree-sitter-node-at-pos "2021-08-30")
 
-\(fn &optional NODE-TYPE)" nil nil)
+(autoload 'tree-sitter-node-at-pos "tree-sitter" "\
+Return the smallest syntax node of type NODE-TYPE at POS.
+NODE-TYPE may be a symbol, corresponding to a named syntax node; a string,
+corresponding to an anonymous node, or a keyword, holding a special value. For
+the special value `:named', return the smallest named node at POS. For the
+special value `:anonymous', return the smallest anonymous node at POS. IF POS is
+nil, POS defaults to the point. Unless IGNORE-INVALID-TYPE is non-nil, signal an
+error when a specified named NODE-TYPE does not exist in the current grammar.
+Whenever NODE-TYPE is non-nil (other than `:named'), it is possible for the
+function to return nil.
 
-(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "tree-sitter" '("tree-sitter-")))
+\(fn &optional NODE-TYPE POS IGNORE-INVALID-TYPE)" nil nil)
+
+(register-definition-prefixes "tree-sitter" '("tree-sitter-"))
 
 ;;;***
 
@@ -60,7 +82,7 @@ If NODE-TYPE is nil, return the smallest syntax node at point.
 ;;;;;;  0 0))
 ;;; Generated autoloads from tree-sitter-cli.el
 
-(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "tree-sitter-cli" '("tree-sitter-cli-")))
+(register-definition-prefixes "tree-sitter-cli" '("tree-sitter-cli-"))
 
 ;;;***
 
@@ -72,10 +94,20 @@ If NODE-TYPE is nil, return the smallest syntax node at point.
 Toggle syntax tree debugging for the current buffer.
 This mode displays the syntax tree in another buffer, and keeps it up-to-date.
 
-If called interactively, enable Tree-Sitter-Debug mode if ARG is
-positive, and disable it if ARG is zero or negative.  If called
-from Lisp, also enable the mode if ARG is omitted or nil, and
-toggle it if ARG is `toggle'; disable the mode otherwise.
+This is a minor mode.  If called interactively, toggle the
+`Tree-Sitter-Debug mode' mode.  If the prefix argument is
+positive, enable the mode, and if it is zero or negative, disable
+the mode.
+
+If called from Lisp, toggle the mode if ARG is `toggle'.  Enable
+the mode if ARG is nil, omitted, or is a positive number.
+Disable the mode if ARG is a negative number.
+
+To check whether the minor mode is enabled in the current buffer,
+evaluate `tree-sitter-debug-mode'.
+
+The mode's hook is called both when the mode is enabled and when
+it is disabled.
 
 \(fn &optional ARG)" t nil)
 
@@ -93,7 +125,7 @@ build queries and cursors once, then reuse them.
 
 \(fn PATTERNS &optional MATCHES TAG-ASSIGNER)" nil nil)
 
-(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "tree-sitter-debug" '("tree-sitter-debug-")))
+(register-definition-prefixes "tree-sitter-debug" '("tree-sitter-debug-"))
 
 ;;;***
 
@@ -118,7 +150,7 @@ instead, to make this restoration exact.
 
 (function-put 'tree-sitter-save-excursion 'lisp-indent-function '0)
 
-(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "tree-sitter-extras" '("tree-sitter-")))
+(register-definition-prefixes "tree-sitter-extras" '("tree-sitter-"))
 
 ;;;***
 
@@ -145,10 +177,19 @@ Toggle syntax highlighting based on Tree-sitter's syntax tree.
 If `tree-sitter-hl-default-patterns' is nil, turning on this mode does nothing,
 and does not interfere with `font-lock-mode'.
 
-If called interactively, enable Tree-Sitter-Hl mode if ARG is
-positive, and disable it if ARG is zero or negative.  If called
-from Lisp, also enable the mode if ARG is omitted or nil, and
-toggle it if ARG is `toggle'; disable the mode otherwise.
+This is a minor mode.  If called interactively, toggle the
+`Tree-Sitter-Hl mode' mode.  If the prefix argument is positive,
+enable the mode, and if it is zero or negative, disable the mode.
+
+If called from Lisp, toggle the mode if ARG is `toggle'.  Enable
+the mode if ARG is nil, omitted, or is a positive number.
+Disable the mode if ARG is a negative number.
+
+To check whether the minor mode is enabled in the current buffer,
+evaluate `tree-sitter-hl-mode'.
+
+The mode's hook is called both when the mode is enabled and when
+it is disabled.
 
 Enabling this automatically enables `tree-sitter-mode' in the buffer.
 
@@ -158,7 +199,7 @@ To enable this automatically whenever `tree-sitter-mode' is enabled:
 
 \(fn &optional ARG)" t nil)
 
-(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "tree-sitter-hl" '("tree-sitter-hl-")))
+(register-definition-prefixes "tree-sitter-hl" '("tree-sitter-hl-"))
 
 ;;;***
 
@@ -180,7 +221,7 @@ to be LANG-SYMBOL's name, prefixed with \"tree_sitter_\".
 
 \(fn LANG-SYMBOL &optional FILE NATIVE-SYMBOL-NAME)" nil nil)
 
-(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "tree-sitter-load" '("tree-sitter-l")))
+(register-definition-prefixes "tree-sitter-load" '("tree-sitter-l"))
 
 ;;;***
 
@@ -193,7 +234,7 @@ Provide means for developers to write and test tree-sitter queries.
 
 The buffer on focus when the command is called is set as the target buffer." t nil)
 
-(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "tree-sitter-query" '("tree-sitter-query-")))
+(register-definition-prefixes "tree-sitter-query" '("tree-sitter-"))
 
 ;;;***
 

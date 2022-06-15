@@ -37,11 +37,17 @@
   "Face for highlight captures in matches."
   :group 'tree-sitter-query)
 
+(defun tree-sitter--echo (&rest args)
+  "Display a transient message, without logging it in the `*Messages*' buffer."
+  (let (message-log-max)
+    (apply #'message args)))
+
 (defun tree-sitter-query--highlight-capture (capture)
   "Highlight CAPTURE in the current buffer."
-  (pcase-let* ((`(,capture-name . ,captured-node) capture)
+  (pcase-let* ((`(,capture-symbol . ,captured-node) capture)
                (`(,node-start . ,node-end) (tsc-node-position-range captured-node))
-               (overlay (make-overlay node-start node-end)))
+               (overlay (make-overlay node-start node-end))
+               (capture-name (symbol-name capture-symbol)))
     ;; Ensure the overlay is deleted when it becomes empty.
     (overlay-put overlay 'evaporate t)
     (overlay-put overlay 'face 'tree-sitter-query-match)
@@ -54,11 +60,22 @@
   (with-current-buffer tree-sitter-query--target-buffer
     (tsc--without-restriction
       (remove-overlays)
-      (let* ((query (tsc-make-query tree-sitter-language patterns #'identity))
-             (root-node (tsc-root-node tree-sitter-tree))
-             (captures (tsc-query-captures query root-node #'tsc--buffer-substring-no-properties)))
+      (when-let*
+          ((query
+            (condition-case err
+                (tsc-make-query tree-sitter-language patterns)
+              ((tsc-query-invalid-node-type
+                tsc-query-invalid-field
+                tsc-query-invalid-capture)
+               (tree-sitter--echo "%s: %s" (get (car err) 'error-message) (cadr err))
+               nil)
+              (tsc-query-invalid
+               (tree-sitter--echo "%s" (get (car err) 'error-message))
+               nil)))
+           (root-node (tsc-root-node tree-sitter-tree))
+           (captures (tsc-query-captures query root-node #'tsc--buffer-substring-no-properties)))
         (if (= (length captures) 0)
-            (message "No matches found")
+            (tree-sitter--echo "No captures found")
           (mapc #'tree-sitter-query--highlight-capture captures))))))
 
 (defun tree-sitter-query--after-change (&rest _args)
