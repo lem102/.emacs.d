@@ -1045,16 +1045,20 @@ Used to eagerly load feature."
 
 (jacob-is-installed 'typescript-mode
 
+  (put 'tsi-typescript-indent-offset 'safe-local-variable #'numberp)
+
   (define-derived-mode typescript-react-mode typescript-mode
     "Typescript TSX")
 
   (add-to-list 'auto-mode-alist '("\\.tsx?\\'" . typescript-react-mode))
   (with-eval-after-load 'tree-sitter
-    (add-to-list 'tree-sitter-major-mode-language-alist '(typescript-react-mode . tsx)))
+    (add-to-list 'tree-sitter-major-mode-language-alist '(typescript-react-mode . tsx))
 
-  (jacob-try-require 'tsi
-    (add-hook 'typescript-mode-hook (lambda () (tsi-typescript-mode 1))))
-  
+    (jacob-try-require 'tsi
+      (jacob-try-require 'tsi-typescript
+        (add-hook 'typescript-mode-hook (lambda () (tsi-typescript-mode 1)))
+        (add-hook 'typescript-react-mode-hook (lambda () (tsi-typescript-mode 1))))))
+
   (with-eval-after-load 'typescript-mode
 
     (jacob-js-config-hook-function)
@@ -1350,6 +1354,38 @@ request type, headers, request body will not be perfect."
          (t
           (funcall underscore begin end))))
     (message "No selection.")))
+
+(defvar jacob-format-words-2-style-and-start nil
+  "Pair of currently selected style and starting point.
+If nil, means you havent used the command for the first time yet.")
+
+(defun jacob-format-words-2 ()
+  "Command for formating words into identifiers when writing code.
+
+On first use, ask for formatting style (e.g. kebab, camel, etc).
+Store current point, and selected style.
+
+On second use, format from current point to point saved from first use
+in the selected style also from first use."
+  (interactive)
+  (if jacob-format-words-2-style-and-start
+      (let* ((style (car jacob-format-words-2-style-and-start))
+             (start-point (cdr jacob-format-words-2-style-and-start))
+             (words (split-string (delete-and-extract-region start-point (point)) " ")))
+        (insert (pcase style
+                  ("camelCase" (concat (car words)
+                                       (mapconcat 'capitalize (cdr words) "")))
+                  ("PascalCase" (mapconcat 'capitalize words ""))
+                  ("kebab-case" (string-join words "-"))
+                  ("snake_case" (string-join words "_"))
+                  ("SCREAMING_SNAKE_CASE" (mapconcat 'upcase words "_"))))
+        (setq jacob-format-words-2-style-and-start nil))
+    (let ((style-choice (pcase major-mode
+                          ('emacs-lisp-mode "kebab-case")
+                          (_ (completing-read "choose: " '("camelCase" "PascalCase" "kebab-case" "snake_case" "SCREAMING_SNAKE_CASE"))))))
+      (message (concat style-choice " selected"))
+      (setq jacob-format-words-2-style-and-start (cons style-choice
+                                                       (point))))))
 
 (defun jacob-create-camel-case-variable-name ()
   "Ask for input, apply camel case to input and insert at point."
@@ -1819,7 +1855,7 @@ Search youtube for string and display in browser."
     (define-key map "4" 'other-window-prefix)
     (define-key map "1" 'winner-undo)
     (define-key map "2" 'winner-redo)
-    (define-key map "'" 'jacob-format-words-into-symbol)
+    (define-key map "'" 'jacob-format-words-2)
     (jacob-is-installed 'expand-region
       (define-key map "8" 'er/expand-region)))
 
