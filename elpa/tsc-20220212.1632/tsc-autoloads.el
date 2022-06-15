@@ -1,4 +1,4 @@
-;;; tsc-autoloads.el --- automatically extracted autoloads
+;;; tsc-autoloads.el --- automatically extracted autoloads  -*- lexical-binding: t -*-
 ;;
 ;;; Code:
 
@@ -9,14 +9,14 @@
 ;;;### (autoloads nil "tsc" "tsc.el" (0 0 0 0))
 ;;; Generated autoloads from tsc.el
 
-(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "tsc" '("tsc-")))
+(register-definition-prefixes "tsc" '("tsc-"))
 
 ;;;***
 
 ;;;### (autoloads nil "tsc-dyn-get" "tsc-dyn-get.el" (0 0 0 0))
 ;;; Generated autoloads from tsc-dyn-get.el
 
-(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "tsc-dyn-get" '("tsc-")))
+(register-definition-prefixes "tsc-dyn-get" '("tsc-"))
 
 ;;;***
 
