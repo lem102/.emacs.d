@@ -692,13 +692,6 @@ Used to eagerly load feature."
 ;; package configuration
 
 
-;; tree sitter config
-
-(jacob-is-installed 'tree-sitter
-  (global-tree-sitter-mode)
-  )
-
-
 ;; racket-mode
 
 (jacob-is-installed 'racket-mode
@@ -1042,6 +1035,7 @@ Used to eagerly load feature."
         ))))
 
 
+;; typescript config
 
 (jacob-is-installed 'typescript-mode
 
@@ -1111,9 +1105,10 @@ Used to eagerly load feature."
         ))))
 
 
+;; tree sitter config
 
-(jacob-is-installed 'which-key
-  (which-key-mode 1))
+(jacob-is-installed 'tree-sitter
+  (add-hook 'typescript-react-mode-hook (lambda () (global-tree-sitter-mode 1))))
 
 
 ;; xah-fly-keys config
@@ -1151,15 +1146,27 @@ Used to eagerly load feature."
 
 ;; personal functions
 
-(defun jacob-web-request-helper (method url &optional headers data)
+(defun jacob-alist-to-form-data (alist)
+  "Convert ALIST to form-data for http request."
+  (mapconcat (lambda (x)
+               (concat (car x) "=" (cdr x)))
+             alist
+             "&"))
+
+(defun jacob-web-request-helper (method url &optional headers data data-format-function)
   "Helper function for making web requests.
 METHOD, HEADERS and DATA are for the corresponding url-request variables.
-  URL is the address to send the request to.
-  Returns a string containing the response."
+URL is the address to send the request to.
+Returns a string containing the response.
+
+DATA-FORMAT-FUNCTION is a function that takes one argument and returns
+a string."
   (require 'json)
   (with-current-buffer (let ((url-request-method method)
                              (url-request-extra-headers headers)
-                             (url-request-data data))
+                             (url-request-data (if (null data-format-function)
+                                                   data
+                                                 (funcall data-format-function data))))
                          (url-retrieve-synchronously url))
     (beginning-of-buffer)
     (when (search-forward-regexp "Content-Type: application/[a-z+]*json" nil t)
@@ -1380,9 +1387,7 @@ in the selected style also from first use."
                   ("snake_case" (string-join words "_"))
                   ("SCREAMING_SNAKE_CASE" (mapconcat 'upcase words "_"))))
         (setq jacob-format-words-2-style-and-start nil))
-    (let ((style-choice (pcase major-mode
-                          ('emacs-lisp-mode "kebab-case")
-                          (_ (completing-read "choose: " '("camelCase" "PascalCase" "kebab-case" "snake_case" "SCREAMING_SNAKE_CASE"))))))
+    (let ((style-choice (completing-read "choose: " '("camelCase" "PascalCase" "kebab-case" "snake_case" "SCREAMING_SNAKE_CASE"))))
       (message (concat style-choice " selected"))
       (setq jacob-format-words-2-style-and-start (cons style-choice
                                                        (point))))))
