@@ -942,6 +942,8 @@ Used to eagerly load feature."
         ("int" "Int")
         ("string" "String")
         ("char" "Char")
+        ("list" "List")
+        ("neq" "!=")
         ("fun" "" jacob-kotlin-function)
         ("val" "" jacob-kotlin-val)
         ("pl" "" jacob-kotlin-println)
