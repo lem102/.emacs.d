@@ -130,6 +130,8 @@
 
 (setq split-height-threshold nil)
 
+(setq parens-require-spaces nil)
+
 
 ;; bookmark config
 
@@ -1559,20 +1561,6 @@ Switch to new window."
                                     (string-to-number (format-time-string "%M")))
                    ".")))
 
-(defun jacob-insert-bracket-pair (left-bracket right-bracket)
-  "Insert pair of brackets at point if region is inactive, otherwise wrap region."
-  (if (use-region-p)
-      (let ((start (region-beginning))
-            (end (region-end)))
-        (goto-char end)
-        (insert right-bracket)
-        (goto-char start)
-        (insert left-bracket)
-        (goto-char (+ end 2)))
-    (progn
-      (insert left-bracket right-bracket)
-      (backward-char))))
-
 (defun jacob-back-to-indentation-or-beginning-of-line ()
   "Do back-to-indentation unless at end of indentation
 in which case do move-beginning-of-line."
@@ -1581,30 +1569,6 @@ in which case do move-beginning-of-line."
            (eq last-command this-command))
       (move-beginning-of-line nil)
     (back-to-indentation)))
-
-(defun jacob-xah-insert-paren ()
-  (interactive)
-  (jacob-insert-bracket-pair "(" ")"))
-
-(defun jacob-xah-insert-square-bracket ()
-  (interactive)
-  (jacob-insert-bracket-pair "[" "]"))
-
-(defun jacob-xah-insert-brace ()
-  (interactive)
-  (jacob-insert-bracket-pair "{" "}"))
-
-(defun jacob-xah-insert-ascii-double-quote ()
-  (interactive)
-  (jacob-insert-bracket-pair "\"" "\""))
-
-(defun jacob-xah-insert-ascii-single-quote ()
-  (interactive)
-  (jacob-insert-bracket-pair "'" "'"))
-
-(defun jacob-xah-insert-angled-bracket ()
-  (interactive)
-  (jacob-insert-bracket-pair "<" ">"))
 
 (defun jacob-insert-plus ()
   (interactive)
@@ -1777,6 +1741,10 @@ Search youtube for string and display in browser."
   (interactive)
   (switch-to-buffer (other-buffer (current-buffer) 1)))
 
+(defun jacob-xah-define-key (major-mode-keymap key command)
+  "In MAJOR-MODE-KEYMAP bind KEY to COMMAND only when in xfk command mode."
+  (define-key major-mode-keymap (vector 'remap (lookup-key xah-fly-command-map key)) command))
+
 
 
 ;; key bindings
@@ -1880,12 +1848,27 @@ Search youtube for string and display in browser."
     (jacob-is-installed 'restart-emacs
       (define-key map "R" 'restart-emacs)))
 
+  (defvar jacob-insert-parentheses-character ?k)
+  (defvar jacob-insert-square-bracket-character ?l)
+  (defvar jacob-insert-curly-brace-character ?j)
+  (defvar jacob-insert-double-quote-character ?u)
+  (defvar jacob-insert-single-quote-character ?i)
+  (defvar jacob-insert-angle-bracket-character ?h)
+
+  (setq insert-pair-alist `((,jacob-insert-parentheses-character ?\( ?\))
+                            (,jacob-insert-square-bracket-character ?\[ ?\])
+                            (,jacob-insert-curly-brace-character ?\{ ?\})
+                            (,jacob-insert-double-quote-character ?\" ?\")
+                            (,jacob-insert-single-quote-character ?\' ?\')
+                            (,jacob-insert-angle-bracket-character ?\< ?\>)))
+
   (let ((map xah-fly-e-keymap))
-    (define-key map "k" 'jacob-xah-insert-paren)
-    (define-key map "l" 'jacob-xah-insert-square-bracket)
-    (define-key map "j" 'jacob-xah-insert-brace)
-    (define-key map "u" 'jacob-xah-insert-ascii-double-quote)
-    (define-key map "i" 'jacob-xah-insert-ascii-single-quote)
+    (define-key map (char-to-string jacob-insert-parentheses-character) 'insert-pair)
+    (define-key map (char-to-string jacob-insert-square-bracket-character) 'insert-pair)
+    (define-key map (char-to-string jacob-insert-curly-brace-character) 'insert-pair)
+    (define-key map (char-to-string jacob-insert-double-quote-character) 'insert-pair)
+    (define-key map (char-to-string jacob-insert-single-quote-character) 'insert-pair)
+    (define-key map (char-to-string jacob-insert-angle-bracket-character) 'insert-pair)
     (define-key map "m" 'xah-insert-hyphen)
     (define-key map "," 'xah-insert-low-line)
     (define-key map "." 'jacob-insert-equals)
@@ -1893,14 +1876,13 @@ Search youtube for string and display in browser."
     (define-key map "z" 'jacob-insert-apostrophe)
     (define-key map "x" 'jacob-insert-at)
     (define-key map "c" 'jacob-insert-hash)
-    (define-key map (kbd "d") (kbd "<backspace>"))
+    (define-key map (kbd "d") 'backward-delete-char)
     (define-key map "v" 'jacob-insert-tilde)
     (define-key map "e" 'jacob-insert-dollar-sign)
     (define-key map "r" 'jacob-insert-caret)
     (define-key map "o" 'jacob-insert-ampersand))
 
   (let ((map xah-fly-leader-key-map))
-    ;; (define-key map "4" 'jacob-split-window-below-select-new)
     (jacob-is-installed 'consult
       (define-key map "v" 'consult-yank-from-kill-ring)
       (define-key map "f" 'consult-buffer)))
@@ -1931,71 +1913,63 @@ Search youtube for string and display in browser."
   (let ((map minibuffer-local-completion-map)) 
     (define-key map "SPC" 'self-insert-command))
 
-  (let ((f (lambda (major-mode-keymap key command)
-             (define-key major-mode-keymap (vector 'remap (lookup-key xah-fly-command-map key)) command))))
+  (let ((map dired-mode-map))
+    (jacob-xah-define-key map "q" 'quit-window)
+    (jacob-xah-define-key map "i" 'dired-previous-line)
+    (jacob-xah-define-key map "k" 'dired-next-line)
+    (jacob-xah-define-key map "s" 'dired-find-file)
+    (jacob-xah-define-key map "e" 'dired-mark)
+    (jacob-xah-define-key map "r" 'dired-unmark)
+    (jacob-xah-define-key map "x" 'dired-do-rename)
+    (jacob-xah-define-key map "c" 'dired-do-copy)
+    (jacob-xah-define-key map "d" 'dired-do-delete) ; we skip the "flag, delete" process as files are sent to system bin on deletion
+    (jacob-xah-define-key map "u" 'dired-up-directory)
+    (jacob-xah-define-key map "j" 'dired-goto-file))
 
-    (let ((map dired-mode-map))
-      (funcall f map "q" 'quit-window)
-      (funcall f map "i" 'dired-previous-line)
-      (funcall f map "k" 'dired-next-line)
-      (funcall f map "s" 'dired-find-file)
-      (funcall f map "e" 'dired-mark)
-      (funcall f map "r" 'dired-unmark)
-      (funcall f map "x" 'dired-do-rename)
-      (funcall f map "c" 'dired-do-copy)
-      (funcall f map "d" 'dired-do-delete) ; we skip the "flag, delete" process as files are sent to system bin on deletion
-      (funcall f map "u" 'dired-up-directory)
-      (funcall f map "j" 'dired-goto-file))
+  (with-eval-after-load 'vc-dir
+    (let ((map vc-dir-mode-map))
+      (jacob-xah-define-key map "q" 'quit-window)
+      (jacob-xah-define-key map "i" 'vc-dir-previous-line)
+      (jacob-xah-define-key map "k" 'vc-dir-next-line)
+      (jacob-xah-define-key map "o" 'vc-dir-next-directory)
+      (jacob-xah-define-key map "u" 'vc-dir-previous-directory)
+      (jacob-xah-define-key map "s" 'vc-dir-find-file)
+      (jacob-xah-define-key map "e" 'vc-dir-mark)
+      (jacob-xah-define-key map "r" 'vc-dir-unmark)
+      (jacob-xah-define-key map "v" 'vc-next-action)
+      (jacob-xah-define-key map "p" 'vc-push)))
 
-    (with-eval-after-load 'vc-dir
-      (let ((map vc-dir-mode-map))
-        (funcall f map "q" 'quit-window)
-        (funcall f map "i" 'vc-dir-previous-line)
-        (funcall f map "k" 'vc-dir-next-line)
-        (funcall f map "o" 'vc-dir-next-directory)
-        (funcall f map "u" 'vc-dir-previous-directory)
-        (funcall f map "s" 'vc-dir-find-file)
-        (funcall f map "e" 'vc-dir-mark)
-        (funcall f map "r" 'vc-dir-unmark)
-        (funcall f map "v" 'vc-next-action)
-        (funcall f map "p" 'vc-push)))
+  (with-eval-after-load 'info
+    (let ((map Info-mode-map))
+      (jacob-xah-define-key map "q" 'quit-window)
+      (jacob-xah-define-key map "l" 'Info-scroll-up)
+      (jacob-xah-define-key map "j" 'Info-scroll-down)
+      (jacob-xah-define-key map "i" 'Info-up)
+      (jacob-xah-define-key map "k" 'Info-menu)))
 
-    (with-eval-after-load 'info
-      (let ((map Info-mode-map))
-        (funcall f map "q" 'quit-window)
-        (funcall f map "l" 'Info-scroll-up)
-        (funcall f map "j" 'Info-scroll-down)
-        (funcall f map "i" 'Info-up)
-        (funcall f map "k" 'Info-menu)))
+  (with-eval-after-load 'calendar
+    (let ((map calendar-mode-map))
+      (jacob-xah-define-key map "q" 'quit-window)
+      (jacob-xah-define-key map "i" 'calendar-backward-week)
+      (jacob-xah-define-key map "k" 'calendar-forward-week)
+      (jacob-xah-define-key map "j" 'calendar-backward-day)
+      (jacob-xah-define-key map "l" 'calendar-forward-day)
+      (jacob-xah-define-key map "u" 'calendar-backward-month)
+      (jacob-xah-define-key map "o" 'calendar-forward-month)
+      (jacob-xah-define-key map "d" 'diary-view-entries)
+      (jacob-xah-define-key map "s" 'diary-insert-entry)
+      (jacob-xah-define-key map "m" 'diary-mark-entries)
+      (jacob-xah-define-key map "." 'calendar-goto-today)
+      (jacob-xah-define-key map "t" 'calendar-set-mark)))
 
-    (with-eval-after-load 'calendar
-      (let ((map calendar-mode-map))
-        (funcall f map "q" 'quit-window)
-        (funcall f map "i" 'calendar-backward-week)
-        (funcall f map "k" 'calendar-forward-week)
-        (funcall f map "j" 'calendar-backward-day)
-        (funcall f map "l" 'calendar-forward-day)
-        (funcall f map "u" 'calendar-backward-month)
-        (funcall f map "o" 'calendar-forward-month)
-        (funcall f map "d" 'diary-view-entries)
-        (funcall f map "s" 'diary-insert-entry)
-        (funcall f map "m" 'diary-mark-entries)
-        (funcall f map "." 'calendar-goto-today)
-        (funcall f map "t" 'calendar-set-mark)))
+  (with-eval-after-load 'doc-view
+    (let ((map doc-view-mode-map)) 
+      (jacob-xah-define-key map "l" 'doc-view-next-page)
+      (jacob-xah-define-key map "j" 'doc-view-previous-page)))
 
-    (with-eval-after-load 'doc-view
-      (let ((map doc-view-mode-map)) 
-        (funcall f map "l" 'doc-view-next-page)
-        (funcall f map "j" 'doc-view-previous-page)))
-
-    ;;    (let ((map icomplete-minibuffer-map))
-    ;;      (funcall f map "i" 'icomplete-backward-completions)
-    ;;      (funcall f map "k" 'icomplete-forward-completions)
-    ;;      (funcall f map "d" 'icomplete-fido-backward-updir))
-
-    (with-eval-after-load 'diff-mode
-      (let ((map diff-mode-map)) 
-        (funcall f map "q" 'quit-window)))))
+  (with-eval-after-load 'diff-mode
+    (let ((map diff-mode-map)) 
+      (jacob-xah-define-key map "q" 'quit-window))))
 
 
 
