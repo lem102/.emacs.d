@@ -1183,16 +1183,6 @@ a string."
       (json-reformat-region (point) (point-max)))
     (buffer-string)))
 
-(defun jacob-get-temperature ()
-  "Get the temperature for next 6 days."
-  (let ((json (json-read-from-string (with-current-buffer (url-retrieve-synchronously "https://www.metaweather.com/api/location/13527/")
-                                       (goto-char url-http-end-of-headers)
-                                       (delete-region (point-min) (point))
-                                       (buffer-string)))))
-    (seq-map (lambda (x)
-               (cdr (assq 'the_temp x)))
-             (cdr (assq 'consolidated_weather json)))))
-
 (defun jacob-open-in-camunda-modeler ()
   "Attempt to open current file in camunda modeler."
   (interactive)
@@ -1202,31 +1192,6 @@ a string."
   "Connect to raspberry pi."
   (interactive)
   (find-file jacob-raspberry-pi-connection-string))
-
-(defun jacob-prepare-cheekyLad-dev ()
-  "Setup tabs and windows for cheekyLad development."
-  (interactive)
-  (let ((pi-publish-directory (concat jacob-raspberry-pi-connection-string "/home/pi/cheekyLad/bot/"))) 
-    (make-frame)
-    (other-frame 1)
-
-    (tab-rename "code")
-    (dired "~/dev/cheeky-lad")
-    
-    (tab-new)
-    (tab-rename "publish")
-    (dired "./bin/Debug/net6.0/linux-arm/publish/")
-    (dired-mark 5)
-    (split-window-right)
-    (other-window 1)
-    (dired pi-publish-directory)
-
-    (tab-new)
-    (tab-rename "pi-run")
-    (let ((default-directory pi-publish-directory))
-      (eshell))
-
-    (tab-next)))
 
 (defun jacob-toggle-modeline ()
   "Toggle visibility of modeline."
@@ -1255,54 +1220,6 @@ a string."
         (consult-git-grep)
       (consult-grep))))
 
-(defun jacob-curl-to-restclient (start end)
-  "Convert the curl command between START and END to the restclient syntax.
-
-Designed to be used on the curl commands created by api
-explorers/swagger type things.
-
-Curl commands that have parameters in a different order to
-request type, headers, request body will not be perfect."
-  (interactive "r")
-  (save-restriction
-    (narrow-to-region start end)
-
-    ;; get rid of the curl call
-    (goto-char (point-min))
-    (while (search-forward "curl" nil t)
-      (replace-match ""))
-
-    ;; get everything on the same line
-    (goto-char (point-min))
-    (while (search-forward "\\\n" nil t)
-      (replace-match ""))
-
-    ;; remove superfluous spaces
-    (goto-char (point-min))
-    (while (re-search-forward " +" nil t)
-      (replace-match " "))
-
-    ;; this is where order will start to matter
-    ;; split each component onto its own line
-    (goto-char (point-min))
-    (let ((case-fold-search nil))
-      (while (re-search-forward " -[A-Z] " nil t)
-        (replace-match "\n")))
-
-    ;; remove single quotes
-    (goto-char (point-min))
-    (while (search-forward "'" nil t)
-      (replace-match ""))
-
-    (goto-char (point-min))
-    (while (search-forward " -d " nil t)
-      (replace-match "\n\n"))
-
-    (json-reformat-region (point) (point-max))
-
-    (goto-char (point-min))
-    (delete-char 1)))
-
 (defun jacob-async-shell-command (command)
   "Wrapper command for `async-shell-command'."
   (interactive
@@ -1321,55 +1238,6 @@ request type, headers, request body will not be perfect."
 			              (and filename (file-relative-name filename))))))
   (async-shell-command command
                        (concat "* " default-directory " " command " *")))
-
-(defun jacob-format-words-into-symbol ()
-  "Format either current selection or number of words before point in variety of different styles."
-  (interactive)
-  (let ((style (completing-read "choose: " '("camel" "pascal" "kebab" "snake" "screaming snake")))
-        (words
-         (let ((start (if (region-active-p)
-                          (region-beginning)
-                        (save-excursion
-                          (backward-word (string-to-number (read-from-minibuffer "how many words backward? ")))
-                          (point))))
-               (end (if (region-active-p)
-                        (region-end)
-                      (point))))
-           (split-string (delete-and-extract-region start end) " "))))
-    (insert (cond ((string-equal style "camel")
-                   (concat (car words)
-                           (mapconcat 'capitalize (cdr words) "")))
-                  ((string-equal style "pascal")
-                   (mapconcat 'capitalize words ""))
-                  ((string-equal style "kebab")
-                   (string-join words "-"))
-                  ((string-equal style "snake")
-                   (string-join words "_"))
-                  ((string-equal style "screaming snake")
-                   (mapconcat 'upcase words "_"))))))
-
-(defun jacob-words-to-symbol (begin end)
-  ""
-  (interactive "r")
-  (if (region-active-p)
-      (let* ((simple-template (lambda (char begin end)
-                                (save-restriction
-                                  (narrow-to-region begin end)
-                                  (goto-char (point-min))
-                                  (while (search-forward " " nil t)
-                                    (replace-match char)))))
-             (hyphenate (lambda (begin end)
-                          (funcall simple-template "-" begin end)))
-             (underscore (lambda (begin end)
-                           (funcall simple-template "_" begin end))))
-        (cond
-         ((eq major-mode 'emacs-lisp-mode)
-          (funcall hyphenate begin end))
-         ((eq major-mode 'sml-mode)
-          (funcall underscore begin end))
-         (t
-          (funcall underscore begin end))))
-    (message "No selection.")))
 
 (defvar jacob-format-words-2-style-and-start nil
   "Pair of currently selected style and starting point.
@@ -1401,49 +1269,6 @@ in the selected style also from first use."
       (setq jacob-format-words-2-style-and-start (cons style-choice
                                                        (point))))))
 
-(defun jacob-create-camel-case-variable-name ()
-  "Ask for input, apply camel case to input and insert at point."
-  (interactive)
-  (let* ((input (read-string "Enter words to be camel cased:"))
-         (input-list (split-string input " ")))
-    (insert (concat (car input-list)
-                    (mapconcat 'capitalize
-                               (cdr input-list)
-                               "")))))
-
-(defun jacob-create-pascal-case-variable-name ()
-  "Ask for input, apply pascal case to input and insert at point."
-  (interactive)
-  (let* ((input (read-string "Enter words to be pascal cased:"))
-         (input-list (split-string input " ")))
-    (insert (mapconcat 'capitalize
-                       input-list
-                       ""))))
-
-(defun jacob-create-hyphenated-variable-name ()
-  "Ask for input, hyphenate the input and insert at point."
-  (interactive)
-  (let* ((input (read-string "Enter words to be hyphenated:"))
-         (output (with-temp-buffer
-                   (insert input)
-                   (goto-char (point-min))
-                   (while (search-forward " " nil t)
-                     (replace-match "-"))
-                   (buffer-string))))
-    (insert output)))
-
-(defun jacob-create-underscored-variable-name ()
-  "Ask for input, underscore the input and insert at point."
-  (interactive)
-  (let* ((input (read-string "Enter words to be underscored:"))
-         (output (with-temp-buffer
-                   (insert input)
-                   (goto-char (point-min))
-                   (while (search-forward " " nil t)
-                     (replace-match "_"))
-                   (buffer-string))))
-    (insert output)))
-
 (defun jacob-count-words-region ()
   "If mark active count words in region, otherwise count words in whole buffer."
   (interactive)
@@ -1454,14 +1279,6 @@ in the selected style also from first use."
 
 (define-key global-map (kbd "M-=") 'jacob-count-words-region)
 
-(defun jacob-original-find-file ()
-  "Uses the original file-file mechanism.
-  Useful for dealing with files on other servers.
-  (at least on Microsoft Windows)"
-  (interactive)
-  (let ((completing-read-function 'completing-read-default))
-    (call-interactively 'find-file)))
-
 (defun jacob-eval-and-replace ()
   "Replace the preceding sexp with its value."
   (interactive)
@@ -1471,26 +1288,6 @@ in the selected style also from first use."
              (current-buffer))
     (error (message "Invalid expression")
            (insert (current-kill 0)))))
-
-(defun jacob-quit-popup-window ()
-  (interactive)
-  (let ((loop-list (window-list))
-        (window-not-found t))
-    (while (and loop-list window-not-found)
-      (let* ((window (car loop-list))
-             (mode (jacob-buffer-mode (window-buffer window))))
-        (if (or (eq mode 'help-mode)
-                (eq mode 'compilation-mode)
-                (eq mode 'special-mode))
-            (progn
-              (quit-window :window window)
-              (setq window-found nil))))
-      (setq loop-list (cdr loop-list)))))
-
-(defun jacob-buffer-mode (buffer-or-string)
-  "Return the major mode associated with BUFFER-OR-STRING."
-  (with-current-buffer buffer-or-string
-    major-mode))
 
 (defun jacob-config-visit ()
   "Open the init file."
@@ -1514,19 +1311,6 @@ in the selected style also from first use."
     (jacob-config-update)
     (restart-emacs)))
 
-(defun jacob-org-src-block ()
-  "Replacement for `C-c '` in both `org-mode' and when editing code blocks within `org-mode'."
-  (interactive)
-  (if (bound-and-true-p org-src-mode)
-      (org-edit-src-exit)
-    (if (equal major-mode 'org-mode)
-        (org-edit-special))))
-
-(defun jacob-recompile-packages ()
-  "Recompile all packages."
-  (interactive)
-  (byte-recompile-directory package-user-dir nil 'force))
-
 (defun jacob-split-window-below-select-new ()
   "Splits current window vertically, then switch to new window."
   (interactive)
@@ -1537,15 +1321,6 @@ in the selected style also from first use."
   "Splits current window horizontally, then switch to new window."
   (interactive)
   (split-window-right)
-  (other-window 1))
-
-(defun jacob-split-window ()
-  "Custom window split depending on the width and height of the current window.
-Switch to new window."
-  (interactive)
-  (if (>= (window-body-height) (round (window-body-width) 2.3))
-      (split-window-below)
-    (split-window-right))
   (other-window 1))
 
 (load-file (expand-file-name "~/.emacs.d/myLisp/jacob-long-time.el"))
@@ -1560,15 +1335,6 @@ Switch to new window."
                    (jacob-long-time (string-to-number (format-time-string "%H"))
                                     (string-to-number (format-time-string "%M")))
                    ".")))
-
-(defun jacob-back-to-indentation-or-beginning-of-line ()
-  "Do back-to-indentation unless at end of indentation
-in which case do move-beginning-of-line."
-  (interactive)
-  (if (and (not (equal (point) (line-beginning-position)))
-           (eq last-command this-command))
-      (move-beginning-of-line nil)
-    (back-to-indentation)))
 
 (defun jacob-insert-plus ()
   (interactive)
@@ -1662,7 +1428,7 @@ in which case do move-beginning-of-line."
 (defun jacob-system-shutdown ()
   "Prompts for yes/no input.
 
-If user inputs yes, system is shutdown. Otherwise, nothing happens."
+If user inputs yes, system is shutdown.  Otherwise, nothing happens."
   (interactive)
   (if (yes-or-no-p "Shutdown system?")
       (shell-command "pwsh -Command Stop-Computer")))
