@@ -236,7 +236,9 @@
 ;; (define-key icomplete-minibuffer-map (kbd "<tab>") 'icomplete-force-complete)
 
 
-;; js-mode
+;; js-mode config
+
+(put 'js-indent-level 'safe-local-variable #'numberp)
 
 (defun jacob-js-config-hook-function ()
   "Configure `js-mode' when hook run."
@@ -280,6 +282,7 @@
       ("eq" "===")
       ("neq" "!==")
       ("fore" "" jacob-js-skeleton-for-each)
+      ("jwe" "console.log(\"jacobwozere\");" backward-delete-char)
       )))
 
 (add-hook 'js-mode-hook 'jacob-js-config-hook-function)
