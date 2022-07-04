@@ -131,6 +131,11 @@
 (setq split-height-threshold nil)
 
 
+;; bookmark config
+
+(setq bookmark-set-fringe-mark nil)
+
+
 ;; unicode
 
 (prefer-coding-system 'utf-8)
