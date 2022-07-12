@@ -132,6 +132,17 @@
 
 (setq parens-require-spaces nil)
 
+(defvar jacob-welcome-messages '("\"A journey of a thousand miles begins with a single step.\" - 老子"
+                                 "\"apex predator of grug is complexity\" - some grug"
+                                 "\"An idiot admires complexity, a genius admires simplicity.\" - Terry A. Davis")
+  "List of messages to display in scratch buffer.")
+
+(setq initial-scratch-message (concat ";; " (nth (random (length jacob-welcome-messages)) jacob-welcome-messages) "\n\n"))
+
+(setq display-time-default-load-average nil)
+(setq display-time-24hr-format t)
+(display-time-mode 1)
+
 
 ;; bookmark config
 
@@ -212,7 +223,7 @@
 
 ;; theme config
 
-(load-theme 'modus-vivendi t)
+(load-theme 'modus-operandi t)
 
 
 ;; abbrev and skeletons
@@ -318,6 +329,49 @@
   \n
   -4 "}")
 
+(define-skeleton jacob-java-for-each
+  "insert for each statement." nil
+  > "for (" - " : ) {" \n
+  \n
+  -4 "}")
+
+(define-skeleton jacob-java-while
+  "insert while statement." nil
+  > "while (" - ") {" \n
+  \n
+  -4 "}")
+
+(define-skeleton jacob-java-method
+  "insert method." nil
+  > "void " - "() {" \n
+  \n
+  "}")
+
+(define-skeleton jacob-java-class
+  "insert class." nil
+  > "class " - " {" \n
+  \n
+  "}")
+
+(define-skeleton jacob-java-var
+  "Insert var declaration."
+  > "var " - " = ")
+
+(define-skeleton jacob-java-list
+  "Insert var declaration."
+  > "List<" - ">")
+
+(define-skeleton jacob-java-switch
+  "Insert switch statement."
+  > "switch (" - ") {"
+  \n
+  \n "}")
+
+(define-skeleton jacob-java-case
+  "Insert case for switch statement."
+  nil "case " - ":"
+  \n "")
+
 (when (boundp 'java-mode-abbrev-table)
   (clear-abbrev-table java-mode-abbrev-table))
 
@@ -327,6 +381,30 @@
     ("psvm" "" jacob-java-main)
     ("if" "" jacob-java-if)
     ("for" "" jacob-java-for)
+    ("fore" "" jacob-java-for-each)
+    ("while" "" jacob-java-while)
+    ("string" "String")
+    ("pri" "private")
+    ("pub" "public")
+    ("fin" "final")
+    ("meth" "" jacob-java-method)
+    ("class" "" jacob-java-class)
+    ("var" "" jacob-java-var)
+    ("list" "" jacob-java-list)
+    ("switch" "" jacob-java-switch)
+    ("case" "" jacob-java-case)
+    ("lt" "<")
+    ("gt" ">")
+    ("lte" "<=")
+    ("gte" ">=")
+    ("eq" "=")
+    ("eeq" "==")
+    ("neq" "!=")
+    ("or" "||")
+    ("and" "&&")
+    ("ret" "return")
+    ("char" "Character")
+    ("inst" "instanceof")
     ))
 
 
@@ -453,7 +531,7 @@
 (with-eval-after-load 'org-mode
   (defun jacob-org-babel-tangle-delete-newline ()
     "Some code to get rid of the newline org babel likes to add
-in when it tangles into a file."
+  in when it tangles into a file."
     (goto-char (point-max))
     (delete-trailing-whitespace)
     (backward-delete-char 1)
@@ -561,7 +639,7 @@ in when it tangles into a file."
 
 (defun jacob-indent-with-major-mode ()
   "Indent buffer using current major mode.
-Designed for use in on-save hook in certain programming languages modes."
+  Designed for use in on-save hook in certain programming languages modes."
   (if (or (string= major-mode "emacs-lisp-mode")
           (string= major-mode "racket-mode")
           (string= major-mode "csharp-tree-sitter-mode")
@@ -622,15 +700,15 @@ Designed for use in on-save hook in certain programming languages modes."
 
 (defmacro jacob-is-installed (package &rest body)
   "If PACKAGE is installed, evaluate BODY.
-Used when attempting to lazy load PACKAGE."
+  Used when attempting to lazy load PACKAGE."
   (declare (indent 1))
   `(when (package-installed-p ,package)
      ,@body))
 
 (defmacro jacob-try-require (feature &rest body)
   "Attempt to require FEATURE.
-If successful, evaluate BODY.
-Used to eagerly load feature."
+  If successful, evaluate BODY.
+  Used to eagerly load feature."
   (declare (indent 1))
   `(when (require ,feature nil 'noerror)
      ,@body))
@@ -826,6 +904,24 @@ Used to eagerly load feature."
 ;; eglot config
 
 (jacob-is-installed 'eglot
+
+  (defun jacob-remove-ret-character-from-buffer (&rest _)
+    "Remove all occurances of ^M from the buffer.
+
+Useful for deleting ^M after `eglot-code-actions'."
+    (save-excursion
+      (goto-char (point-min))
+      (while (search-forward "" nil t)
+        (replace-match ""))))
+
+  (advice-add 'eglot-code-actions :after #'jacob-remove-ret-character-from-buffer)
+  (advice-add 'eglot-rename :after #'jacob-remove-ret-character-from-buffer)
+
+  (add-hook 'eglot-managed-mode-hook
+            '(lambda ()
+               (setq-local eldoc-documentation-strategy
+                           'eldoc-documentation-compose)))
+  
   (add-hook 'java-mode-hook 'eglot-ensure)
   ;; (add-hook 'csharp-tree-sitter-mode-hook 'eglot-ensure)
   (add-hook 'typescript-mode-hook 'eglot-ensure)
@@ -858,7 +954,7 @@ Used to eagerly load feature."
       "Contact with the jdt server input INTERACTIVE."
       (let ((cp (getenv "CLASSPATH"))
             (jdt-home jacob-eclipse-jdt-file-path))
-        (setenv "CLASSPATH" (concat cp ":" jdt-home))
+        (setenv "CLASSPATH" (concat cp path-separator jdt-home))
         (unwind-protect (eglot--eclipse-jdt-contact nil)
           (setenv "CLASSPATH" cp))))))
 
@@ -1162,6 +1258,20 @@ Used to eagerly load feature."
              alist
              "&"))
 
+(defun jacob-format-xml ()
+  "Format xml on current line."
+  (insert (let ((input (prog1
+                           (buffer-substring-no-properties (line-beginning-position) (line-end-position))
+                         (delete-region (line-beginning-position) (line-end-position)))))
+            (with-temp-buffer
+              (insert input)
+              (goto-char (point-min))
+              (while (search-forward-regexp "\>[ \\t]*\<" nil t)
+                (backward-char) (insert "\n"))
+              (nxml-mode)
+              (indent-region (point-min) (point-max))
+              (buffer-substring-no-properties (point-min) (point-max))))))
+
 (defun jacob-web-request-helper (method url &optional headers data data-format-function)
   "Helper function for making web requests.
 METHOD, HEADERS and DATA are for the corresponding url-request variables.
@@ -1181,6 +1291,9 @@ a string."
     (when (search-forward-regexp "Content-Type: application/[a-z+]*json" nil t)
       (search-forward "\n\n" nil t)
       (json-reformat-region (point) (point-max)))
+    (when (search-forward-regexp "Content-Type: text/xml" nil t)
+      (search-forward "\n\n" nil t)
+      (jacob-format-xml))
     (buffer-string)))
 
 (defun jacob-open-in-camunda-modeler ()
@@ -1691,6 +1804,11 @@ Search youtube for string and display in browser."
     (jacob-xah-define-key map "d" 'dired-do-delete) ; we skip the "flag, delete" process as files are sent to system bin on deletion
     (jacob-xah-define-key map "u" 'dired-up-directory)
     (jacob-xah-define-key map "j" 'dired-goto-file))
+
+  (let ((map occur-mode-map))
+    (jacob-xah-define-key map "q" 'quit-window)
+    (jacob-xah-define-key map "i" 'previous-error-no-select)
+    (jacob-xah-define-key map "k" 'next-error-no-select))
 
   (with-eval-after-load 'vc-dir
     (let ((map vc-dir-mode-map))
