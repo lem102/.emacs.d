@@ -345,8 +345,8 @@
   -4 "}")
 
 (define-skeleton jacob-java-method
-  "insert method." nil
-  > "void " - "() {" \n
+  "Insert method." nil
+  > - "() {" \n
   \n
   "}")
 
@@ -1585,6 +1585,20 @@ Search youtube for string and display in browser."
   "Open link stored in the filename property of BOOKMARK in browser."
   (browse-url (cdr (assoc 'filename (cdr bookmark)))))
 
+(defun jacob-swap-visible-buffers ()
+  "If two windows in current frame, swap their buffers.
+Otherwise, display error message."
+  (interactive)
+  (if (length= (window-list) 2)
+      (let* ((current-window (car (window-list)))
+             (other-window (cadr (window-list)))
+             (current-buffer (window-buffer current-window))
+             (other-buffer (window-buffer other-window)))
+        (set-window-buffer current-window other-buffer)
+        (set-window-buffer other-window current-buffer)
+        (other-window 1))
+    (message "More/less than 2 windows in frame.")))
+
 
 
 ;; voice commands
@@ -1717,6 +1731,7 @@ Search youtube for string and display in browser."
     (define-key map "4" 'other-window-prefix)
     (define-key map "1" 'winner-undo)
     (define-key map "2" 'winner-redo)
+    (define-key map "9" 'jacob-swap-visible-buffers)
     (define-key map "'" 'jacob-format-words-2)
     (jacob-is-installed 'expand-region
       (define-key map "8" 'er/expand-region)))
@@ -1763,6 +1778,13 @@ Search youtube for string and display in browser."
     (define-key map "e" 'jacob-insert-dollar-sign)
     (define-key map "r" 'jacob-insert-caret)
     (define-key map "o" 'jacob-insert-ampersand))
+
+  (defvar jacob-recenter-repeat-map
+    (let ((map (make-sparse-keymap)))
+      (define-key map "p" 'recenter-top-bottom)
+      map))
+
+  (put 'recenter-top-bottom 'repeat-map 'jacob-recenter-repeat-map)
 
   (let ((map xah-fly-leader-key-map))
     (jacob-is-installed 'consult
