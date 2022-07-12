@@ -911,7 +911,7 @@
 Useful for deleting ^M after `eglot-code-actions'."
     (save-excursion
       (goto-char (point-min))
-      (while (search-forward "" nil t)
+      (while (search-forward (char-to-string 13) nil t)
         (replace-match ""))))
 
   (advice-add 'eglot-code-actions :after #'jacob-remove-ret-character-from-buffer)
