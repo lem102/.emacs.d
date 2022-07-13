@@ -217,7 +217,6 @@
               tramp-file-name-regexp))
 
 ;; lots of problems. for now, disable it!
-(require 'tramp-archive)
 (setq tramp-archive-enabled nil)
 
 
@@ -387,6 +386,7 @@
     ("fore" "" jacob-java-for-each)
     ("while" "" jacob-java-while)
     ("string" "String")
+    ("double" "Double")
     ("pri" "private")
     ("pub" "public")
     ("fin" "final")
@@ -765,15 +765,11 @@
                                   docker-tramp
                                   ))
 
-(package-install 'xah-fly-keys)
-
-(unless (string= (package-install-selected-packages) "All your packages are already installed")
-  (package-refresh-contents)
-  (package-install-selected-packages))
 (package-autoremove)
 
-(setq warning-suppress-types '((package reinitialization)))
-(package-initialize)
+(when (seq-remove #'package-installed-p package-selected-packages)
+  (package-refresh-contents)
+  (package-install-selected-packages))
 
 
 
@@ -921,9 +917,9 @@ Useful for deleting ^M after `eglot-code-actions'."
   (advice-add 'eglot-rename :after #'jacob-remove-ret-character-from-buffer)
 
   (add-hook 'eglot-managed-mode-hook
-            '(lambda ()
-               (setq-local eldoc-documentation-strategy
-                           'eldoc-documentation-compose)))
+            #'(lambda ()
+                (setq-local eldoc-documentation-strategy
+                            'eldoc-documentation-compose)))
   
   (add-hook 'java-mode-hook 'eglot-ensure)
   ;; (add-hook 'csharp-tree-sitter-mode-hook 'eglot-ensure)
