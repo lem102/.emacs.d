@@ -225,7 +225,7 @@
 (load-theme 'modus-operandi t)
 
 
-;; abbrev and skeletons
+;; abbrev and skeletons config
 
 (setq skeleton-end-newline nil)
 (setq abbrev-suggest t)
@@ -245,6 +245,137 @@
     ))
 
 
+;; jacob-insert-config
+
+(defun jacob-insert-block-helper (template)
+  "Call `jacob-insert-helper' with a block appended to TEMPLATE."
+  (jacob-insert-helper (concat template " {\n●\n}")))
+
+(defun jacob-insert-assignment-helper (template)
+  "Call `jacob-insert-helper' with \" ■ = \" appended to TEMPLATE."
+  (jacob-insert-helper (concat template " ■ = ")))
+
+(defun jacob-insert-helper (template)
+  "Insert TEMPLATE in current buffer.
+If present, set mark at each ● so that going throught the mark ring
+will take the user from first instance to last and delete it.  If
+present, move point back to ■ and delete it."
+  (let* ((●-positions '())
+         (■-position)
+         (start (prog1
+                    (point)
+                  (insert template)))
+         (end (point)))
+    
+    (goto-char start)
+    (dotimes (_ (- (+ 1 (line-number-at-pos end)) (line-number-at-pos (point))))
+      (indent-according-to-mode)
+
+      (goto-char (line-beginning-position))
+      (when (search-forward "■" (line-end-position) t)
+        (backward-delete-char 1)
+        (setq ■-position (point)))
+
+      (goto-char (line-beginning-position))
+      (while (search-forward "●" (line-end-position) t)
+        (backward-delete-char 1)
+        (setq ●-positions (cons (point) ●-positions)))
+      
+      (forward-line 1))
+
+    (mapc (lambda (position)
+            (goto-char position)
+            (push-mark))
+          ●-positions)
+
+    (goto-char ■-position)
+
+    ;; return t to prevent self insert when calling from abbrev.
+    t))
+
+(defmacro define-jacob-insert (name insert)
+  "Define a jacob-insert command called NAME.
+Calls INSERT."
+  (declare (indent 1))
+  `(progn
+     ;; prevent abbrev from self-inserting
+     (put ',name 'no-self-insert t)
+     (defun ,name ()
+       ,insert)))
+
+(define-jacob-insert jacob-insert-c-if
+  (jacob-insert-block-helper "if (■)"))
+
+(define-jacob-insert jacob-insert-c-while
+  (jacob-insert-block-helper "while (■)"))
+
+(define-jacob-insert jacob-insert-c-for
+  (jacob-insert-block-helper "for (■;;)"))
+
+(define-jacob-insert jacob-insert-java-for-each
+  (jacob-insert-block-helper "for (■ : ●)"))
+
+(define-jacob-insert jacob-insert-java-method
+  (jacob-insert-block-helper "■(●)"))
+
+(define-jacob-insert jacob-insert-java-class
+  (jacob-insert-block-helper "●class ■(●)"))
+
+(define-jacob-insert jacob-insert-c-switch
+  (jacob-insert-block-helper "switch (■)"))
+
+(define-jacob-insert jacob-insert-c-case
+  (jacob-insert-helper "case ■: {\n●\nbreak;\n}"))
+
+(define-jacob-insert jacob-insert-java-main
+  (jacob-insert-block-helper "public static void main(String[] args)"))
+
+(define-jacob-insert jacob-insert-java-print
+  (jacob-insert-helper "System.out.println(■);"))
+
+(define-jacob-insert jacob-insert-java-var
+  (jacob-insert-assignment-helper "var"))
+
+(define-jacob-insert jacob-insert-elisp-goto-char
+  (jacob-insert-helper "(goto-char ■)"))
+
+(define-jacob-insert jacob-insert-lisp-let
+  (jacob-insert-helper "(let ((■))\n●)"))
+
+(define-jacob-insert jacob-insert-elisp-defun
+  (jacob-insert-helper "(defun ■ (●)\n●)"))
+
+(define-jacob-insert jacob-insert-lisp-cond
+  (jacob-insert-helper "(cond ((■))\n●)"))
+
+(define-jacob-insert jacob-insert-js-print
+  (jacob-insert-helper "console.log(■);"))
+
+(define-jacob-insert jacob-insert-js-const
+  (jacob-insert-assignment-helper "const"))
+
+(define-jacob-insert jacob-insert-js-let
+  (jacob-insert-assignment-helper "let"))
+
+(define-jacob-insert jacob-insert-js-function
+  (jacob-insert-helper "(■) => "))
+
+(define-jacob-insert jacob-insert-js-for-each
+  (jacob-insert-assignment-helper "forEach(■)"))
+
+(define-jacob-insert jacob-insert-go-println
+  (jacob-insert-helper "fmt.Println(■)"))
+
+(define-jacob-insert jacob-insert-go-printf
+  (jacob-insert-helper "fmt.Printf(■)"))
+
+(define-jacob-insert jacob-insert-csharp-print
+  (jacob-insert-helper "Console.WriteLine(■);"))
+
+(define-jacob-insert jacob-insert-csharp-property
+  (jacob-insert-helper "■ { get; set; }"))
+
+
 ;; icomplete config
 
 ;; (icomplete-mode 1)
@@ -260,46 +391,20 @@
 (defun jacob-js-config-hook-function ()
   "Configure `js-mode' when hook run."
 
-  (define-skeleton jacob-js-skeleton-console-log
-    "insert console.log"
-    > "console.log(" - ");")
-
-  (define-skeleton jacob-js-skeleton-if
-    "insert if statement"
-    > "if (" - ") {" \n
-    \n
-    "}")
-
-  (define-skeleton jacob-js-skeleton-const
-    "insert const binding"
-    > "const " - " = ")
-
-  (define-skeleton jacob-js-skeleton-let
-    "insert let binding" nil
-    > "let " - " = ")
-
-  (define-skeleton jacob-js-skeleton-arrow-function
-    "insert arrow function" nil
-    > "(" - ") => ")
-
-  (define-skeleton jacob-js-skeleton-for-each
-    "insert forEach"
-    > "forEach(" - ")")
-
   (when (boundp 'js-mode-abbrev-table)
     (clear-abbrev-table js-mode-abbrev-table))
 
   (define-abbrev-table 'js-mode-abbrev-table
     '(
-      ("cl" "" jacob-js-skeleton-console-log)
-      ("if" "" jacob-js-skeleton-if)
-      ("fun" "" jacob-js-skeleton-arrow-function)
-      ("con" "" jacob-js-skeleton-const)
-      ("let" "" jacob-js-skeleton-let)
+      ("cl" "" jacob-insert-js-print)
+      ("if" "" jacob-insert-c-if)
+      ("fun" "" jacob-insert-js-function)
+      ("con" "" jacob-insert-js-const)
+      ("let" "" jacob-insert-js-let)
       ("eq" "===")
       ("neq" "!==")
-      ("fore" "" jacob-js-skeleton-for-each)
-      ("jwe" "console.log(\"jacobwozere\");" backward-delete-char)
+      ("fore" "" jacob-insert-js-for-each)
+      ("jwe" "console.log(\"jacobwozere\");" t)
       )))
 
 (add-hook 'js-mode-hook 'jacob-js-config-hook-function)
@@ -309,93 +414,28 @@
 
 (setq-default c-basic-offset 4)
 
-(define-skeleton jacob-java-sout
-  "insert System.out.println()" nil
-  > "System.out.println(" - ")")
-
-(define-skeleton jacob-java-main
-  "insert main method." nil
-  > "public static void main(String[] args) {" \n
-  - \n
-  -4 "}")
-
-(define-skeleton jacob-java-if
-  "insert if statement." nil
-  > "if (" - ") {" \n
-  \n
-  -4 "}")
-
-(define-skeleton jacob-java-for
-  "insert for statement." nil
-  > "for (" - ") {" \n
-  \n
-  -4 "}")
-
-(define-skeleton jacob-java-for-each
-  "insert for each statement." nil
-  > "for (" - " : ) {" \n
-  \n
-  -4 "}")
-
-(define-skeleton jacob-java-while
-  "insert while statement." nil
-  > "while (" - ") {" \n
-  \n
-  -4 "}")
-
-(define-skeleton jacob-java-method
-  "Insert method." nil
-  > - "() {" \n
-  \n
-  "}")
-
-(define-skeleton jacob-java-class
-  "insert class." nil
-  > "class " - " {" \n
-  \n
-  "}")
-
-(define-skeleton jacob-java-var
-  "Insert var declaration."
-  > "var " - " = ")
-
-(define-skeleton jacob-java-list
-  "Insert var declaration."
-  > "List<" - ">")
-
-(define-skeleton jacob-java-switch
-  "Insert switch statement."
-  > "switch (" - ") {"
-  \n
-  \n "}")
-
-(define-skeleton jacob-java-case
-  "Insert case for switch statement."
-  nil "case " - ":"
-  \n "")
-
 (when (boundp 'java-mode-abbrev-table)
   (clear-abbrev-table java-mode-abbrev-table))
 
 (define-abbrev-table 'java-mode-abbrev-table
   '(
-    ("sout" "" jacob-java-sout)
-    ("psvm" "" jacob-java-main)
-    ("if" "" jacob-java-if)
-    ("for" "" jacob-java-for)
-    ("fore" "" jacob-java-for-each)
-    ("while" "" jacob-java-while)
+    ("sout" "" jacob-insert-java-print)
+    ("psvm" "" jacob-insert-java-main)
+    ("if" "" jacob-insert-c-if)
+    ("for" "" jacob-insert-c-for)
+    ("fore" "" jacob-insert-java-for-each)
+    ("while" "" jacob-insert-c-while)
     ("string" "String")
     ("double" "Double")
     ("pri" "private")
     ("pub" "public")
+    ("sta" "static")
     ("fin" "final")
-    ("meth" "" jacob-java-method)
-    ("class" "" jacob-java-class)
-    ("var" "" jacob-java-var)
-    ("list" "" jacob-java-list)
-    ("switch" "" jacob-java-switch)
-    ("case" "" jacob-java-case)
+    ("meth" "" jacob-insert-method)
+    ("class" "" jacob-insert-class)
+    ("var" "" jacob-insert-java-var)
+    ("switch" "" jacob-insert-switch)
+    ("case" "" jacob-insert-case)
     ("lt" "<")
     ("gt" ">")
     ("lte" "<=")
@@ -439,32 +479,16 @@
   "Configure `emacs-lisp-mode' when hook run."
   (flymake-mode 1)
   (eldoc-mode 1)
-  
-  (define-skeleton jacob-emacs-lisp-skeleton-let
-    "insert let" nil
-    > "(let ((" - "))" \n
-    ")")
-
-  (define-skeleton jacob-emacs-lisp-skeleton-defun
-    "insert defun" nil
-    > "(defun " - " ()" \n
-    -2 "\"\"" \n
-    ")")
-
-  (define-skeleton jacob-emacs-lisp-skeleton-cond
-    "insert cond" nil
-    > "(cond ((" - "))" \n
-    ")")
 
   (define-abbrev-table 'emacs-lisp-mode-abbrev-table
     '(
-      ("def" "defun" backward-delete-char)
-      ("defun" "" jacob-emacs-lisp-skeleton-defun)
-      ("let" "" jacob-emacs-lisp-skeleton-let)
-      ("int" "interactive" backward-delete-char)
-      ("interactive" "(interactive)" backward-delete-char)
-      ("cond" "" jacob-emacs-lisp-skeleton-cond)
-      )))
+      ("def" "" jacob-insert-elisp-defun)
+      ("let" "" jacob-insert-lisp-let)
+      ("int" "(interactive)" t)
+      ("cond" "" jacob-insert-lisp-cond)
+      ("gc" "" jacob-insert-elisp-goto-char)
+      ("pmi" "(point-min)" t)
+      ("pma" "(point-max)" t))))
 
 (add-hook 'emacs-lisp-mode-hook 'jacob-elisp-config-hook-function)
 
@@ -646,7 +670,8 @@
   (if (or (string= major-mode "emacs-lisp-mode")
           (string= major-mode "racket-mode")
           (string= major-mode "csharp-tree-sitter-mode")
-          (string= major-mode "sml-mode"))
+          (string= major-mode "sml-mode")
+          (string= major-mode "java-mode"))
       (indent-region (point-min) (point-max))))
 
 (add-hook 'before-save-hook 'jacob-indent-with-major-mode)
@@ -785,21 +810,11 @@
 ;; go-mode
 
 (jacob-is-installed 'go-mode
-  (define-skeleton jacob-go-fmt-println
-    "insert go print statement"
-    > "fmt.Println(" - ")")
 
-  (define-skeleton jacob-go-fmt-printf
-    "insert go print statement"
-    > "fmt.Printf(" - ")")
-  
-  (when (boundp 'go-mode-abbrev-table)
-    (clear-abbrev-table go-mode-abbrev-table))
-  
   (define-abbrev-table 'go-mode-abbrev-table
     '(
-      ("fpl" "" jacob-go-fmt-println)
-      ("fpf" "" jacob-go-fmt-printf)
+      ("fpl" "" jacob-insert-go-println)
+      ("fpf" "" jacob-insert-go-printf)
       )))
 
 
@@ -825,78 +840,35 @@
   (add-to-list 'auto-mode-alist '("\\.cs\\'" . csharp-tree-sitter-mode))
   (with-eval-after-load 'csharp-tree-sitter
 
-    (define-skeleton jacob-csharp-skeleton-console-writeline
-      "insert console.writeline" nil
-      > "Console.WriteLine(" - ")")
+    ;; possibly reintroduce if i ever do csharp again seriously
+    ;; (define-skeleton jacob-csharp-class
+    ;;   "insert class"
+    ;;   > "public "
+    ;;   (let ((case-fold-search nil)
+    ;;         (file-name (file-name-base (buffer-file-name))))
+    ;;     (concat (if (string-match "^I.+" file-name)
+    ;;                 "interface"
+    ;;               "class")
+    ;;             " "
+    ;;             file-name))
+    ;;   \n "{"
+    ;;   \n -
+    ;;   \n "}")
 
-    (define-skeleton jacob-csharp-skeleton-if
-      "insert if statement" nil
-      > "if (" - ") {" \n
-      \n
-      "}")
-
-    (define-skeleton jacob-csharp-skeleton-lock
-      "insert lock statement"
-      > "lock(" - ")"
-      \n "{"
-      \n
-      \n "}")
-
-    (define-skeleton jacob-csharp-method
-      "insert method"
-      > "private void " - "()"
-      \n "{"
-      \n
-      \n "}")
-
-    (define-skeleton jacob-csharp-var
-      "insert var declaration"
-      > "var " - " = ")
-
-    (define-skeleton jacob-csharp-class
-      "insert class"
-      > "public "
-      (let ((case-fold-search nil)
-            (file-name (file-name-base (buffer-file-name))))
-        (concat (if (string-match "^I.+" file-name)
-                    "interface"
-                  "class")
-                " "
-                file-name))
-      \n "{"
-      \n -
-      \n "}")
-
-    (define-skeleton jacob-csharp-property
-      "insert class property"
-      > "public string " - " { get; set; }")
-
-    (define-skeleton jacob-csharp-constructor
-      "insert constructor"
-      > "public " - "()"
-      \n "{"
-      \n
-      \n "}")
-    
-    (when (boundp 'csharp-tree-sitter-mode-abbrev-table)
-      (clear-abbrev-table csharp-tree-sitter-mode-abbrev-table))
-    
     (define-abbrev-table 'csharp-tree-sitter-mode-abbrev-table
       '(
-        ("cwl" "" jacob-csharp-skeleton-console-writeline)
-        ("if" "" jacob-csharp-skeleton-if)
-        ("lock" "" jacob-csharp-skeleton-lock)
+        ("cwl" "" jacob-insert-csharp-print)
+        ("if" "" jacob-insert-c-if)
         ("pu" "public")
         ("pr" "private")
         ("as" "async")
         ("st" "static")
         ("ns" "namespace")
-        ("meth" "" jacob-csharp-method)
+        ("meth" "" jacob-insert-java-method)
         ("guid" "Guid")
-        ("var" "" jacob-csharp-var)
+        ("var" "" jacob-insert-java-var)
         ("class" "" jacob-csharp-class)
-        ("prop" "" jacob-csharp-property)
-        ("ctor" "" jacob-csharp-constructor)
+        ("prop" "" jacob-insert-csharp-property)
         ))))
 
 

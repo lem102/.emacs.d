@@ -15,4 +15,5 @@
             (setq gc-cons-threshold 16777216) ; 16mb
             (setq gc-cons-percentage 0.1)))
 
-(setq package-enable-at-startup nil)
+;; (setq package-enable-at-startup nil)
+(setq package-quickstart t)
