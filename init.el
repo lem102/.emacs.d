@@ -1262,7 +1262,7 @@ a string."
     (when (search-forward-regexp "Content-Type: application/[a-z+]*json" nil t)
       (search-forward "\n\n" nil t)
       (json-reformat-region (point) (point-max)))
-    (when (search-forward-regexp "Content-Type: text/xml" nil t)
+    (when (search-forward-regexp "Content-Type:.*xml" nil t)
       (search-forward "\n\n" nil t)
       (jacob-format-xml))
     (buffer-string)))
@@ -1847,6 +1847,22 @@ Otherwise, display error message."
   (with-eval-after-load 'diff-mode
     (let ((map diff-mode-map)) 
       (jacob-xah-define-key map "q" 'quit-window))))
+
+
+(with-eval-after-load 'smerge
+  (defvar jacob-smerge-repeat-map
+    (let ((map (make-sparse-keymap)))
+      (define-key map (kbd "n") 'smerge-next)
+      (define-key map (kbd "p") 'smerge-prev)
+      (define-key map (kbd "u") 'smerge-keep-upper)
+      (define-key map (kbd "l") 'smerge-keep-lower)
+      map))
+  
+  (put 'smerge-next 'repeat-map 'jacob-smerge-repeat-map)
+  (put 'smerge-prev 'repeat-map 'jacob-smerge-repeat-map)
+  (put 'smerge-keep-upper 'repeat-map 'jacob-smerge-repeat-map)
+  (put 'smerge-keep-lower 'repeat-map 'jacob-smerge-repeat-map))
+
 
 
 
