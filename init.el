@@ -875,7 +875,7 @@ Calls INSERT."
 ;; eglot config
 
 (jacob-is-installed 'eglot
-
+  (load-file (expand-file-name "~/.emacs.d/myLisp/old-eglot-jdt.el"))
   (defun jacob-remove-ret-character-from-buffer (&rest _)
     "Remove all occurances of ^M from the buffer.
 
@@ -901,33 +901,24 @@ Useful for deleting ^M after `eglot-code-actions'."
                                   (require 'eglot-fsharp)
                                   (eglot-ensure))))
   (with-eval-after-load 'eglot
-    (setcdr (assq 'java-mode eglot-server-programs) #'jacob-eglot-eclipse-jdt-contact)
-
     (if (boundp 'jacob-omnisharp-language-server-path)
         (add-to-list 'eglot-server-programs `(csharp-tree-sitter-mode . (,jacob-omnisharp-language-server-path "-lsp"))))
     
-    (add-to-list 'eglot-server-programs '((web-mode js-mode typescript-mode) . ("typescript-language-server" "--stdio")))
+    ;; (add-to-list 'eglot-server-programs '((web-mode js-mode typescript-mode) . ("typescript-language-server" "--stdio")))
 
-    ;; (add-to-list 'eglot-server-programs '((js-mode typescript-mode) . (eglot-deno "deno" "lsp")))
+    (add-to-list 'eglot-server-programs '((js-mode typescript-mode) . (eglot-deno "deno" "lsp")))
 
-    ;; (defclass eglot-deno (eglot-lsp-server) ()
-    ;; :documentation "A custom class for deno lsp.")
+    (defclass eglot-deno (eglot-lsp-server) ()
+      :documentation "A custom class for deno lsp.")
 
-    ;; (cl-defmethod eglot-initialization-options ((server eglot-deno))
-    ;; "Passes through required deno initialization options"
-    ;; (list :enable t
-    ;; :lint t))
+    (cl-defmethod eglot-initialization-options ((server eglot-deno))
+      "Passes through required deno initialization options"
+      (list :enable t
+            :lint t))
     
     (add-to-list 'eglot-server-programs '(go-mode . ("/home/jacob/go/bin/gopls")))
 
-    (defun jacob-eglot-eclipse-jdt-contact
-        (interactive)
-      "Contact with the jdt server input INTERACTIVE."
-      (let ((cp (getenv "CLASSPATH"))
-            (jdt-home jacob-eclipse-jdt-file-path))
-        (setenv "CLASSPATH" (concat cp path-separator jdt-home))
-        (unwind-protect (eglot--eclipse-jdt-contact nil)
-          (setenv "CLASSPATH" cp))))))
+    ))
 
 
 ;; lsp mode config, for csharp only
@@ -1138,11 +1129,12 @@ Useful for deleting ^M after `eglot-code-actions'."
     
     (define-abbrev-table 'typescript-mode-abbrev-table
       '(
-        ("cl" "" jacob-js-skeleton-console-log)
-        ("if" "" jacob-js-skeleton-if)
-        ("fun" "" jacob-js-skeleton-arrow-function)
-        ("con" "" jacob-js-skeleton-const)
-        ("let" "" jacob-js-skeleton-let)
+        ("cl" "" jacob-insert-js-print)
+        ("if" "" jacob-insert-c-if)
+        ("fun" "" jacob-insert-js-function)
+        ("con" "" jacob-insert-js-const)
+        ("let" "" jacob-insert-js-let)
+        ("ret" "return")
         ))))
 
 
