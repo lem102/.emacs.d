@@ -140,7 +140,12 @@
 (setq initial-scratch-message (concat ";; " (nth (random (length jacob-welcome-messages)) jacob-welcome-messages) "\n\n"))
 
 (setq display-time-default-load-average nil)
-(setq display-time-24hr-format t)
+(setq display-time-day-and-date t)
+
+(setq tab-bar-format '(tab-bar-format-global))
+(tab-bar-mode 1)
+
+(setq display-time-format "%d/%m/%Y %H:%M")
 (display-time-mode 1)
 
 
@@ -222,7 +227,14 @@
 
 ;; theme config
 
-(load-theme 'modus-operandi t)
+(set-face-attribute 'default nil :background "honeydew3")
+(set-face-attribute 'fringe nil :background "honeydew3")
+(set-face-attribute 'tab-bar nil
+                    :background "honeydew3"
+                    :foreground "yellow"
+                    :height 1.5
+                    :underline t
+                    :bold t)
 
 
 ;; abbrev and skeletons config
@@ -269,7 +281,7 @@ present, move point back to ■ and delete it."
     
     (goto-char start)
     (dotimes (_ (- (+ 1 (line-number-at-pos end)) (line-number-at-pos (point))))
-      (indent-according-to-mode)
+      (ignore-errors (indent-according-to-mode))
 
       (goto-char (line-beginning-position))
       (while (search-forward-regexp (rx (or ?■ ?●)) (line-end-position) t)
@@ -913,9 +925,9 @@ Useful for deleting ^M after `eglot-code-actions'."
     (if (boundp 'jacob-omnisharp-language-server-path)
         (add-to-list 'eglot-server-programs `(csharp-tree-sitter-mode . (,jacob-omnisharp-language-server-path "-lsp"))))
     
-    ;; (add-to-list 'eglot-server-programs '((web-mode js-mode typescript-mode) . ("typescript-language-server" "--stdio")))
+    (add-to-list 'eglot-server-programs '((web-mode js-mode typescript-mode) . ("typescript-language-server" "--stdio")))
 
-    (add-to-list 'eglot-server-programs '((js-mode typescript-mode) . (eglot-deno "deno" "lsp")))
+    ;; (add-to-list 'eglot-server-programs '((js-mode typescript-mode) . (eglot-deno "deno" "lsp")))
 
     (defclass eglot-deno (eglot-lsp-server) ()
       :documentation "A custom class for deno lsp.")
@@ -1263,7 +1275,7 @@ a string."
     (when (search-forward-regexp "Content-Type: application/[a-z+]*json" nil t)
       (search-forward "\n\n" nil t)
       (json-reformat-region (point) (point-max)))
-    (when (search-forward-regexp "Content-Type: text/xml" nil t)
+    (when (search-forward-regexp "Content-Type:.*xml" nil t)
       (search-forward "\n\n" nil t)
       (jacob-format-xml))
     (buffer-string)))
@@ -1848,6 +1860,22 @@ Otherwise, display error message."
   (with-eval-after-load 'diff-mode
     (let ((map diff-mode-map)) 
       (jacob-xah-define-key map "q" 'quit-window))))
+
+
+(with-eval-after-load 'smerge
+  (defvar jacob-smerge-repeat-map
+    (let ((map (make-sparse-keymap)))
+      (define-key map (kbd "n") 'smerge-next)
+      (define-key map (kbd "p") 'smerge-prev)
+      (define-key map (kbd "u") 'smerge-keep-upper)
+      (define-key map (kbd "l") 'smerge-keep-lower)
+      map))
+  
+  (put 'smerge-next 'repeat-map 'jacob-smerge-repeat-map)
+  (put 'smerge-prev 'repeat-map 'jacob-smerge-repeat-map)
+  (put 'smerge-keep-upper 'repeat-map 'jacob-smerge-repeat-map)
+  (put 'smerge-keep-lower 'repeat-map 'jacob-smerge-repeat-map))
+
 
 
 
