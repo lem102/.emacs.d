@@ -140,7 +140,12 @@
 (setq initial-scratch-message (concat ";; " (nth (random (length jacob-welcome-messages)) jacob-welcome-messages) "\n\n"))
 
 (setq display-time-default-load-average nil)
-(setq display-time-24hr-format t)
+(setq display-time-day-and-date t)
+
+(setq tab-bar-format '(tab-bar-format-global))
+(tab-bar-mode 1)
+
+(setq display-time-format "%d/%m/%Y %H:%M")
 (display-time-mode 1)
 
 
@@ -222,7 +227,14 @@
 
 ;; theme config
 
-(load-theme 'modus-operandi t)
+(set-face-attribute 'default nil :background "honeydew3")
+(set-face-attribute 'fringe nil :background "honeydew3")
+(set-face-attribute 'tab-bar nil
+                    :background "honeydew3"
+                    :foreground "yellow"
+                    :height 1.5
+                    :underline t
+                    :bold t)
 
 
 ;; abbrev and skeletons config
@@ -269,7 +281,7 @@ present, move point back to ■ and delete it."
     
     (goto-char start)
     (dotimes (_ (- (+ 1 (line-number-at-pos end)) (line-number-at-pos (point))))
-      (indent-according-to-mode)
+      (ignore-errors (indent-according-to-mode))
 
       (goto-char (line-beginning-position))
       (when (search-forward "■" (line-end-position) t)
@@ -904,9 +916,9 @@ Useful for deleting ^M after `eglot-code-actions'."
     (if (boundp 'jacob-omnisharp-language-server-path)
         (add-to-list 'eglot-server-programs `(csharp-tree-sitter-mode . (,jacob-omnisharp-language-server-path "-lsp"))))
     
-    ;; (add-to-list 'eglot-server-programs '((web-mode js-mode typescript-mode) . ("typescript-language-server" "--stdio")))
+    (add-to-list 'eglot-server-programs '((web-mode js-mode typescript-mode) . ("typescript-language-server" "--stdio")))
 
-    (add-to-list 'eglot-server-programs '((js-mode typescript-mode) . (eglot-deno "deno" "lsp")))
+    ;; (add-to-list 'eglot-server-programs '((js-mode typescript-mode) . (eglot-deno "deno" "lsp")))
 
     (defclass eglot-deno (eglot-lsp-server) ()
       :documentation "A custom class for deno lsp.")
