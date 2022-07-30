@@ -286,15 +286,13 @@ present, move point back to ■ and delete it."
       (ignore-errors (indent-according-to-mode))
 
       (goto-char (line-beginning-position))
-      (when (search-forward "■" (line-end-position) t)
-        (backward-delete-char 1)
-        (setq ■-position (point)))
+      (while (search-forward-regexp (rx (or ?■ ?●)) (line-end-position) t)
+        (let ((match (match-string-no-properties 0)))
+          (backward-delete-char 1)
+          (if (string= match "■")
+              (setq ■-position (point))
+            (setq ●-positions (cons (point) ●-positions)))))
 
-      (goto-char (line-beginning-position))
-      (while (search-forward "●" (line-end-position) t)
-        (backward-delete-char 1)
-        (setq ●-positions (cons (point) ●-positions)))
-      
       (forward-line 1))
 
     (mapc (lambda (position)
@@ -329,11 +327,20 @@ Calls INSERT."
 (define-jacob-insert jacob-insert-java-for-each
   (jacob-insert-block-helper "for (■ : ●)"))
 
+(define-jacob-insert jacob-insert-java-class
+  (jacob-insert-block-helper "●class ■"))
+
 (define-jacob-insert jacob-insert-java-method
   (jacob-insert-block-helper "■(●)"))
 
-(define-jacob-insert jacob-insert-java-class
-  (jacob-insert-block-helper "●class ■(●)"))
+(define-jacob-insert jacob-insert-java-constructor
+  (jacob-insert-block-helper (concat (save-excursion
+                                       (when (search-backward-regexp (rx "class "
+                                                                         (group (one-or-more (any "a-zA-Z"))))
+                                                                     nil
+                                                                     t)
+                                         (match-string-no-properties 1)))
+                                     "■(●)")))
 
 (define-jacob-insert jacob-insert-c-switch
   (jacob-insert-block-helper "switch (■)"))
@@ -441,12 +448,14 @@ Calls INSERT."
     ("while" "" jacob-insert-c-while)
     ("string" "String")
     ("double" "Double")
+    ("object" "Object")
     ("pri" "private")
     ("pub" "public")
     ("sta" "static")
     ("fin" "final")
-    ("meth" "" jacob-insert-method)
-    ("class" "" jacob-insert-class)
+    ("meth" "" jacob-insert-java-method)
+    ("class" "" jacob-insert-java-class)
+    ("cons" "" jacob-insert-java-constructor)
     ("var" "" jacob-insert-java-var)
     ("switch" "" jacob-insert-switch)
     ("case" "" jacob-insert-case)
