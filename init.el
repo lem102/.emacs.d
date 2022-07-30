@@ -229,6 +229,8 @@
 
 (set-face-attribute 'default nil :background "honeydew3")
 (set-face-attribute 'fringe nil :background "honeydew3")
+(set-face-attribute 'mode-line nil :background "limegreen")
+(set-face-attribute 'mode-line-inactive nil :background "lightgreen")
 (set-face-attribute 'tab-bar nil
                     :background "honeydew3"
                     :foreground "yellow"
