@@ -145,7 +145,7 @@
 (setq tab-bar-format '(tab-bar-format-global))
 (tab-bar-mode 1)
 
-(setq display-time-format "%d/%m/%Y %H:%M")
+(setq display-time-format "%H:%M %d/%m/%Y")
 (display-time-mode 1)
 
 
@@ -322,10 +322,10 @@ Calls INSERT."
   (jacob-insert-block-helper "while (■)"))
 
 (define-jacob-insert jacob-insert-c-for
-  (jacob-insert-block-helper "for (■;;)"))
+  (jacob-insert-block-helper "for (■;●;●)"))
 
 (define-jacob-insert jacob-insert-java-for-each
-  (jacob-insert-block-helper "for (■ : ●)"))
+  (jacob-insert-block-helper "for (var ■ : ●)"))
 
 (define-jacob-insert jacob-insert-java-class
   (jacob-insert-block-helper "●class ■"))
@@ -608,8 +608,9 @@ Calls INSERT."
 
 (defun jacob-pulse-line (&rest _)
   "Pulse the current line."
-  (pulse-momentary-highlight-region (+ (line-beginning-position)
-                                       (current-indentation))
+  (pulse-momentary-highlight-region (save-excursion
+                                      (back-to-indentation)
+                                      (point))
                                     (line-end-position)))
 
 (dolist (command '(
@@ -630,7 +631,6 @@ Calls INSERT."
 ;; server config
 
 (when (equal jacob-emacs-mode 'master)
-  (load "server")
   (server-start))
 
 
@@ -749,6 +749,8 @@ Calls INSERT."
 
 ;; package installation
 
+(require 'package)
+
 (defmacro jacob-is-installed (package &rest body)
   "If PACKAGE is installed, evaluate BODY.
   Used when attempting to lazy load PACKAGE."
@@ -770,54 +772,64 @@ Calls INSERT."
                          ("melpa" . "https://melpa.org/packages/")
                          ))
 
-(setq package-selected-packages '(
-                                  ;; essential
-                                  xah-fly-keys
-                                  expand-region
-                                  ;; major modes
-                                  ahk-mode
-                                  csharp-mode
-                                  web-mode
-                                  go-mode
-                                  sml-mode
-                                  json-mode
-                                  csv-mode
-                                  powershell
-                                  yaml-mode
-                                  markdown-mode
-                                  typescript-mode
-                                  racket-mode
-                                  feature-mode
-                                  fsharp-mode
-                                  purescript-mode
-                                  dotenv-mode
-                                  restclient
-                                  dockerfile-mode
-                                  kotlin-mode
-                                  gdscript-mode
-                                  ;; completion enhancements
-                                  vertico
-                                  consult
-                                  orderless
-                                  marginalia
-                                  ;; tree sitter
-                                  tree-sitter-langs
-                                  tree-sitter-indent
-                                  ;; programming
-                                  eglot
-                                  eglot-fsharp
-                                  lsp-mode
-                                  inf-ruby
-                                  ;; misc
-                                  restart-emacs
-                                  docker-tramp
-                                  ))
+(defvar jacob-packages '(
+                         ;; essential
+                         xah-fly-keys
+                         expand-region
+                         ;; major modes
+                         ahk-mode
+                         csharp-mode
+                         web-mode
+                         go-mode
+                         sml-mode
+                         json-mode
+                         csv-mode
+                         powershell
+                         yaml-mode
+                         markdown-mode
+                         typescript-mode
+                         racket-mode
+                         feature-mode
+                         fsharp-mode
+                         purescript-mode
+                         dotenv-mode
+                         restclient
+                         dockerfile-mode
+                         kotlin-mode
+                         gdscript-mode
+                         ;; completion enhancements
+                         vertico
+                         consult
+                         orderless
+                         marginalia
+                         ;; tree sitter
+                         tree-sitter-langs
+                         tree-sitter-indent
+                         ;; programming
+                         eglot
+                         eglot-fsharp
+                         lsp-mode
+                         inf-ruby
+                         ;; misc
+                         restart-emacs
+                         docker-tramp)
+  "List of packages to install.")
 
-(package-autoremove)
+(let* ((desired jacob-packages)
+       (installed (mapcar #'car (package--alist)))
+       (missing-packages (cl-set-difference desired installed))
+       (unwanted-packages (cl-set-difference installed desired)))
 
-(when (seq-remove #'package-installed-p package-selected-packages)
-  (package-refresh-contents)
-  (package-install-selected-packages))
+  (when (not (null missing-packages))
+    (package-refresh-contents))
+
+  (mapc #'package-install
+        missing-packages)
+
+  (mapc (lambda (package-name)
+          (ignore-errors
+            (package-delete (package-get-descriptor package-name))))
+        unwanted-packages))
 
 
 
