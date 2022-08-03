@@ -246,9 +246,6 @@
 (set-default 'abbrev-mode t)
 (setq save-abbrevs nil)
 
-(when (boundp 'global-abbrev-table)
-  (clear-abbrev-table global-abbrev-table))
-
 (define-abbrev-table 'global-abbrev-table
   '(
     ("dal" "$")
@@ -412,9 +409,6 @@ Calls INSERT."
 (defun jacob-js-config-hook-function ()
   "Configure `js-mode' when hook run."
 
-  (when (boundp 'js-mode-abbrev-table)
-    (clear-abbrev-table js-mode-abbrev-table))
-
   (define-abbrev-table 'js-mode-abbrev-table
     '(
       ("cl" "" jacob-insert-js-print)
@@ -439,9 +433,6 @@ Calls INSERT."
 ;; cc-mode config
 
 (setq-default c-basic-offset 4)
-
-(when (boundp 'java-mode-abbrev-table)
-  (clear-abbrev-table java-mode-abbrev-table))
 
 (define-abbrev-table 'java-mode-abbrev-table
   '(
@@ -784,7 +775,6 @@ Calls INSERT."
                          ;; major modes
                          ahk-mode
                          csharp-mode
-                         web-mode
                          go-mode
                          sml-mode
                          json-mode
@@ -982,9 +972,6 @@ Useful for deleting ^M after `eglot-code-actions'."
 
 (jacob-is-installed 'purescript-mode
   (with-eval-after-load 'purescript-mode
-    (when (boundp 'purescript-mode-abbrev-table)
-      (clear-abbrev-table purescript-mode-abbrev-table))
-
     (define-abbrev-table 'purescript-mode-abbrev-table
       '(
         ("fa" "∀")
@@ -1128,9 +1115,6 @@ Useful for deleting ^M after `eglot-code-actions'."
       > "case " - " of" \n
       " => ")
 
-    (when (boundp 'sml-mode-abbrev-table)
-      (clear-abbrev-table sml-mode-abbrev-table))
-    
     (define-abbrev-table 'sml-mode-abbrev-table
       '(
         ("val" "" jacob-sml-skeleton-val)
@@ -1164,9 +1148,6 @@ Useful for deleting ^M after `eglot-code-actions'."
 
     (jacob-js-config-hook-function)
 
-    (when (boundp 'typescript-mode-abbrev-table)
-      (clear-abbrev-table typescript-mode-abbrev-table))
-    
     (define-abbrev-table 'typescript-mode-abbrev-table
       '(
         ("cl" "" jacob-insert-js-print)
@@ -1176,41 +1157,6 @@ Useful for deleting ^M after `eglot-code-actions'."
         ("con" "" jacob-insert-js-const)
         ("let" "" jacob-insert-js-let)
         ("ret" "return")
-        ))))
-
-
-
-(jacob-is-installed 'web-mode
-  (defun jacob-web-mode-config ()
-    
-    (if (string= (file-name-extension (buffer-name)) "tsx")
-        (eglot-ensure))
-    (setq-local electric-pair-pairs '((?\" . ?\") (?\< . ?\>))))
-
-  (add-hook 'web-mode-hook 'jacob-web-mode-config)
-
-  (add-to-list 'auto-mode-alist '("\\.cshtml\\'" . web-mode))
-  ;; (add-to-list 'auto-mode-alist '("\\.tsx\\'" . web-mode))
-  
-  (with-eval-after-load 'web-mode
-    (add-to-list 'web-mode-engines-alist '("razor" . "\\.cshtml\\'"))
-    (setq web-mode-markup-indent-offset 2)
-    (setq web-mode-css-indent-offset 2)
-    (setq web-mode-code-indent-offset 2)
-
-    (jacob-js-config-hook-function)
-
-    (when (boundp 'web-mode-abbrev-table)
-      (clear-abbrev-table web-mode-abbrev-table))
-
-    (define-abbrev-table 'web-mode-abbrev-table
-      '(
-        ("cl" "" jacob-js-skeleton-console-log)
-        ("if" "" jacob-js-skeleton-if)
-        ("arr" "" jacob-js-skeleton-arrow-function)
-        ("con" "" jacob-js-skeleton-const)
-        ("let" "" jacob-js-skeleton-let)
-        ("fun" "" jacob-js-skeleton-arrow-function)
         ))))
 
 
@@ -1793,7 +1739,6 @@ Otherwise, display error message."
     (define-key map "a" 'execute-extended-command)
     (define-key map "s" 'jacob-return-macro)
     (define-key map "DEL" nil)
-    ;; (define-key map "4" 'jacob-split-window-right-select-new)
     (define-key map "4" 'other-window-prefix)
     (define-key map "1" 'winner-undo)
     (define-key map "2" 'winner-redo)
@@ -1946,7 +1891,6 @@ Otherwise, display error message."
     (let ((map diff-mode-map)) 
       (jacob-xah-define-key map "q" 'quit-window))))
 
-
 (with-eval-after-load 'smerge
   (defvar jacob-smerge-repeat-map
     (let ((map (make-sparse-keymap)))
@@ -1960,7 +1904,6 @@ Otherwise, display error message."
   (put 'smerge-prev 'repeat-map 'jacob-smerge-repeat-map)
   (put 'smerge-keep-upper 'repeat-map 'jacob-smerge-repeat-map)
   (put 'smerge-keep-lower 'repeat-map 'jacob-smerge-repeat-map))
-
 
 
 
