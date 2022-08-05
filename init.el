@@ -419,11 +419,16 @@ Calls INSERT."
     '(
       ("cl" "" jacob-insert-js-print)
       ("if" "" jacob-insert-c-if)
+      ("for" "" jacob-insert-c-for)
+      ("while" "" jacob-insert-c-while)
+      ("switch" "" jacob-insert-c-switch)
+      ("case" "" jacob-insert-c-case)
       ("fun" "" jacob-insert-js-function)
       ("con" "" jacob-insert-js-const)
       ("let" "" jacob-insert-js-let)
       ("eq" "===")
       ("neq" "!==")
+      ("ret" "return")
       ("fore" "" jacob-insert-js-for-each)
       ("jwe" "console.log(\"jacobwozere\");" t)
       )))
@@ -1166,6 +1171,7 @@ Useful for deleting ^M after `eglot-code-actions'."
       '(
         ("cl" "" jacob-insert-js-print)
         ("if" "" jacob-insert-c-if)
+        ("while" "" jacob-insert-c-while)
         ("fun" "" jacob-insert-js-function)
         ("con" "" jacob-insert-js-const)
         ("let" "" jacob-insert-js-let)
@@ -1379,6 +1385,71 @@ in the selected style also from first use."
       (message (concat style-choice " selected"))
       (setq jacob-format-words-2-style-and-start (cons style-choice
                                                        (point))))))
+
+(defvar jacob-format-words-3-style-and-start nil
+  "Pair of currently selected style and starting point.
+If nil, means you havent used the command for the first time yet.")
+
+(defun jacob-format-words-3 ()
+  "Command for formating words into identifiers when writing code.
+
+On first use, ask for formatting style (e.g. kebab, camel,
+etc).  Format one word backwards in selected style and store the style
+and the position of point after formatting, return point to where it
+was when command called.
+
+On consecutive use, apply stored formatting to word before stored
+point."
+  (interactive)
+
+  (undo-boundary)
+  
+  (unless (eq last-command this-command)
+    (setq jacob-format-words-3-style-and-start (cons (read-char-from-minibuffer "select style: " '(?c ?p ?k ?s ?S))
+                                                     (point))))
+  
+  (save-excursion
+    (let* ((style (car jacob-format-words-3-style-and-start))
+           (format-position (cdr jacob-format-words-3-style-and-start))
+           (bounds (progn
+                     (goto-char format-position)
+                     (bounds-of-thing-at-point 'word)))
+           (start (car bounds))
+           (end (cdr bounds)))
+      (pcase style
+        (?c (progn
+              (backward-word)
+              (capitalize-word 1)
+              (backward-word)
+              (backward-delete-char 1)))
+        (?p (progn
+              (backward-word)
+              (capitalize-word 1)
+              (backward-word)
+              (backward-delete-char 1)
+              (backward-word)
+              (capitalize-word 1)))
+        (?k (progn
+              (backward-word)
+              (backward-delete-char 1)
+              (insert-char ?-)
+              (backward-char)))
+        (?s (progn
+              (backward-word)
+              (backward-delete-char 1)
+              (insert-char ?_)
+              (backward-char)))
+        (?S (progn
+              (backward-word)
+              (upcase-word 1)
+              (backward-word)
+              (backward-delete-char 1)
+              (insert-char ?_)
+              (backward-char)
+              (backward-word)
+              (upcase-word 1))))
+
+      (setq jacob-format-words-3-style-and-start (cons style (point))))))
 
 (defun jacob-count-words-region ()
   "If mark active count words in region, otherwise count words in whole buffer."
@@ -1727,7 +1798,7 @@ Otherwise, display error message."
     (define-key map "1" 'winner-undo)
     (define-key map "2" 'winner-redo)
     (define-key map "9" 'jacob-swap-visible-buffers)
-    (define-key map "'" 'jacob-format-words-2)
+    (define-key map "'" 'jacob-format-words-3)
     (jacob-is-installed 'expand-region
       (define-key map "8" 'er/expand-region)))
 
