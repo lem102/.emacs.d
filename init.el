@@ -695,12 +695,13 @@ Calls INSERT."
 (defun jacob-indent-with-major-mode ()
   "Indent buffer using current major mode.
   Designed for use in on-save hook in certain programming languages modes."
-  (if (or (string= major-mode "emacs-lisp-mode")
-          (string= major-mode "racket-mode")
-          (string= major-mode "csharp-tree-sitter-mode")
-          (string= major-mode "sml-mode")
-          (string= major-mode "java-mode"))
-      (indent-region (point-min) (point-max))))
+  (when (or (string= major-mode "csharp-tree-sitter-mode")
+            (string= major-mode "sml-mode")
+            (string= major-mode "java-mode"))
+    (indent-region (point-min) (point-max)))
+  (when (or (string= major-mode "emacs-lisp-mode")
+            (string= major-mode "racket-mode"))
+    (lisp-indent-region (point-min) (point-max))))
 
 (add-hook 'before-save-hook 'jacob-indent-with-major-mode)
 
@@ -820,21 +821,22 @@ Calls INSERT."
                          docker-tramp)
   "List of packages to install.")
 
-(let* ((desired jacob-packages)
-       (installed (mapcar #'car (package--alist)))
-       (missing-packages (cl-set-difference desired installed))
-       (unwanted-packages (cl-set-difference installed desired)))
+(defun jacob-wrangle-packages ()
+  (let* ((desired jacob-packages)
+         (installed (mapcar #'car (package--alist)))
+         (missing-packages (cl-set-difference desired installed))
+         (unwanted-packages (cl-set-difference installed desired)))
 
-  (when (not (null missing-packages))
-    (package-refresh-contents))
+    (when (not (null missing-packages))
+      (package-refresh-contents))
 
-  (mapc #'package-install
-        missing-packages)
+    (mapc #'package-install
+          missing-packages)
 
-  (mapc (lambda (package-name)
-          (ignore-errors
-            (package-delete (package-get-descriptor package-name))))
-        unwanted-packages))
+    (mapc (lambda (package-name)
+            (ignore-errors
+              (package-delete (package-get-descriptor package-name))))
+          unwanted-packages)))
 
 
 
@@ -1946,7 +1948,6 @@ Otherwise, display error message."
     (let ((map diff-mode-map)) 
       (jacob-xah-define-key map "q" 'quit-window))))
 
-
 (with-eval-after-load 'smerge
   (defvar jacob-smerge-repeat-map
     (let ((map (make-sparse-keymap)))
@@ -1960,7 +1961,6 @@ Otherwise, display error message."
   (put 'smerge-prev 'repeat-map 'jacob-smerge-repeat-map)
   (put 'smerge-keep-upper 'repeat-map 'jacob-smerge-repeat-map)
   (put 'smerge-keep-lower 'repeat-map 'jacob-smerge-repeat-map))
-
 
 
 
