@@ -246,15 +246,6 @@
 (set-default 'abbrev-mode t)
 (setq save-abbrevs nil)
 
-(define-abbrev-table 'global-abbrev-table
-  '(
-    ("dal" "$")
-    ;; ("eq" "=")
-    ("eeq" "==")
-    ("eeeq" "===")
-    ("sco" "_")
-    ))
-
 
 ;; jacob-insert-config
 
@@ -406,68 +397,10 @@ Calls INSERT."
 
 (put 'js-indent-level 'safe-local-variable #'numberp)
 
-(defun jacob-js-config-hook-function ()
-  "Configure `js-mode' when hook run."
-
-  (define-abbrev-table 'js-mode-abbrev-table
-    '(
-      ("cl" "" jacob-insert-js-print)
-      ("if" "" jacob-insert-c-if)
-      ("for" "" jacob-insert-c-for)
-      ("while" "" jacob-insert-c-while)
-      ("switch" "" jacob-insert-c-switch)
-      ("case" "" jacob-insert-c-case)
-      ("fun" "" jacob-insert-js-function)
-      ("con" "" jacob-insert-js-const)
-      ("let" "" jacob-insert-js-let)
-      ("eq" "===")
-      ("neq" "!==")
-      ("ret" "return")
-      ("fore" "" jacob-insert-js-for-each)
-      ("jwe" "console.log(\"jacobwozere\");" t)
-      )))
-
-(add-hook 'js-mode-hook 'jacob-js-config-hook-function)
-
 
 ;; cc-mode config
 
 (setq-default c-basic-offset 4)
-
-(define-abbrev-table 'java-mode-abbrev-table
-  '(
-    ("sout" "" jacob-insert-java-print)
-    ("psvm" "" jacob-insert-java-main)
-    ("if" "" jacob-insert-c-if)
-    ("for" "" jacob-insert-c-for)
-    ("fore" "" jacob-insert-java-for-each)
-    ("while" "" jacob-insert-c-while)
-    ("string" "String")
-    ("double" "Double")
-    ("object" "Object")
-    ("pri" "private")
-    ("pub" "public")
-    ("sta" "static")
-    ("fin" "final")
-    ("meth" "" jacob-insert-java-method)
-    ("class" "" jacob-insert-java-class)
-    ("cons" "" jacob-insert-java-constructor)
-    ("var" "" jacob-insert-java-var)
-    ("switch" "" jacob-insert-switch)
-    ("case" "" jacob-insert-case)
-    ("lt" "<")
-    ("gt" ">")
-    ("lte" "<=")
-    ("gte" ">=")
-    ("eq" "=")
-    ("eeq" "==")
-    ("neq" "!=")
-    ("or" "||")
-    ("and" "&&")
-    ("ret" "return")
-    ("char" "Character")
-    ("inst" "instanceof")
-    ))
 
 
 ;; dired-mode config
@@ -497,17 +430,7 @@ Calls INSERT."
 (defun jacob-elisp-config-hook-function ()
   "Configure `emacs-lisp-mode' when hook run."
   (flymake-mode 1)
-  (eldoc-mode 1)
-
-  (define-abbrev-table 'emacs-lisp-mode-abbrev-table
-    '(
-      ("def" "" jacob-insert-elisp-defun)
-      ("let" "" jacob-insert-lisp-let)
-      ("int" "(interactive)" t)
-      ("cond" "" jacob-insert-lisp-cond)
-      ("gc" "" jacob-insert-elisp-goto-char)
-      ("pmi" "(point-min)" t)
-      ("pma" "(point-max)" t))))
+  (eldoc-mode 1))
 
 (add-hook 'emacs-lisp-mode-hook 'jacob-elisp-config-hook-function)
 
@@ -812,6 +735,7 @@ Calls INSERT."
   "List of packages to install.")
 
 (defun jacob-wrangle-packages ()
+  (interactive)
   (let* ((desired jacob-packages)
          (installed (mapcar #'car (package--alist)))
          (missing-packages (cl-set-difference desired installed))
@@ -839,17 +763,6 @@ Calls INSERT."
   (add-hook 'racket-mode-hook 'racket-xp-mode))
 
 
-;; go-mode
-
-(jacob-is-installed 'go-mode
-
-  (define-abbrev-table 'go-mode-abbrev-table
-    '(
-      ("fpl" "" jacob-insert-go-println)
-      ("fpf" "" jacob-insert-go-printf)
-      )))
-
-
 ;; auctex
 
 (jacob-is-installed 'auctex
@@ -869,39 +782,7 @@ Calls INSERT."
 ;; csharp-mode
 
 (jacob-is-installed 'csharp-mode
-  (add-to-list 'auto-mode-alist '("\\.cs\\'" . csharp-tree-sitter-mode))
-  (with-eval-after-load 'csharp-tree-sitter
-
-    ;; possibly reintroduce if i ever do csharp again seriously
-    ;; (define-skeleton jacob-csharp-class
-    ;;   "insert class"
-    ;;   > "public "
-    ;;   (let ((case-fold-search nil)
-    ;;         (file-name (file-name-base (buffer-file-name))))
-    ;;     (concat (if (string-match "^I.+" file-name)
-    ;;                 "interface"
-    ;;               "class")
-    ;;             " "
-    ;;             file-name))
-    ;;   \n "{"
-    ;;   \n -
-    ;;   \n "}")
-
-    (define-abbrev-table 'csharp-tree-sitter-mode-abbrev-table
-      '(
-        ("cwl" "" jacob-insert-csharp-print)
-        ("if" "" jacob-insert-c-if)
-        ("pu" "public")
-        ("pr" "private")
-        ("as" "async")
-        ("st" "static")
-        ("ns" "namespace")
-        ("meth" "" jacob-insert-java-method)
-        ("guid" "Guid")
-        ("var" "" jacob-insert-java-var)
-        ("class" "" jacob-csharp-class)
-        ("prop" "" jacob-insert-csharp-property)
-        ))))
+  (add-to-list 'auto-mode-alist '("\\.cs\\'" . csharp-tree-sitter-mode)))
 
 
 ;; eglot config
@@ -936,7 +817,7 @@ Useful for deleting ^M after `eglot-code-actions'."
     (if (boundp 'jacob-omnisharp-language-server-path)
         (add-to-list 'eglot-server-programs `(csharp-tree-sitter-mode . (,jacob-omnisharp-language-server-path "-lsp"))))
     
-    (add-to-list 'eglot-server-programs '((web-mode js-mode typescript-mode) . ("typescript-language-server" "--stdio")))
+    (add-to-list 'eglot-server-programs '((js-mode typescript-mode) . ("typescript-language-server" "--stdio")))
 
     ;; (add-to-list 'eglot-server-programs '((js-mode typescript-mode) . (eglot-deno "deno" "lsp")))
 
@@ -974,22 +855,6 @@ Useful for deleting ^M after `eglot-code-actions'."
 
 (jacob-is-installed 'purescript-mode
   (with-eval-after-load 'purescript-mode
-    (define-abbrev-table 'purescript-mode-abbrev-table
-      '(
-        ("fa" "∀")
-        ("ar" "->")
-        ("nil" "Nil")
-        ("maybe" "Maybe")
-        ("unit" "Unit")
-        ("int" "Int")
-        ("boolean" "Boolean")
-        ("nothing" "Nothing")
-        ("just" "Just")
-        ("effect" "Effect")
-        ("list" "List")
-        ("tuple" "Tuple")
-        ))
-
     (add-hook 'purescript-mode-hook 'turn-on-purescript-indentation)))
 
 
@@ -1028,22 +893,7 @@ Useful for deleting ^M after `eglot-code-actions'."
 
     (define-skeleton jacob-kotlin-list
       "Insert kotlin list"
-      > "listOf(" - ")")
-    
-    (define-abbrev-table 'kotlin-mode-abbrev-table
-      '(
-        ("ar" "->")
-        ("int" "Int")
-        ("string" "String")
-        ("char" "Char")
-        ("list" "List")
-        ("neq" "!=")
-        ("fun" "" jacob-kotlin-function)
-        ("val" "" jacob-kotlin-val)
-        ("pl" "" jacob-kotlin-println)
-        ("when" "" jacob-kotlin-when)
-        ("listof" "" jacob-kotlin-list)
-        ("test" "" jacob-kotlin-test)))))
+      > "listOf(" - ")")))
 
 (jacob-try-require 'orderless
   (setq completion-styles '(orderless initials)))
@@ -1115,17 +965,7 @@ Useful for deleting ^M after `eglot-code-actions'."
     (define-skeleton jacob-sml-skeleton-case
       "insert case" nil
       > "case " - " of" \n
-      " => ")
-
-    (define-abbrev-table 'sml-mode-abbrev-table
-      '(
-        ("val" "" jacob-sml-skeleton-val)
-        ("if" "" jacob-sml-skeleton-if)
-        ("let" "" jacob-sml-skeleton-let)
-        ("fun" "" jacob-sml-skeleton-function)
-        ("fn" "" jacob-sml-skeleton-anonymous-function)
-        ("case" "" jacob-sml-skeleton-case)
-        ))))
+      " => ")))
 
 
 ;; typescript config
@@ -1144,22 +984,7 @@ Useful for deleting ^M after `eglot-code-actions'."
     (jacob-try-require 'tsi
       (jacob-try-require 'tsi-typescript
         (add-hook 'typescript-mode-hook (lambda () (tsi-typescript-mode 1)))
-        (add-hook 'typescript-react-mode-hook (lambda () (tsi-typescript-mode 1))))))
-
-  (with-eval-after-load 'typescript-mode
-
-    (jacob-js-config-hook-function)
-
-    (define-abbrev-table 'typescript-mode-abbrev-table
-      '(
-        ("cl" "" jacob-insert-js-print)
-        ("if" "" jacob-insert-c-if)
-        ("while" "" jacob-insert-c-while)
-        ("fun" "" jacob-insert-js-function)
-        ("con" "" jacob-insert-js-const)
-        ("let" "" jacob-insert-js-let)
-        ("ret" "return")
-        ))))
+        (add-hook 'typescript-react-mode-hook (lambda () (tsi-typescript-mode 1)))))))
 
 
 ;; tree sitter config
@@ -1654,6 +1479,147 @@ Otherwise, display error message."
 (defun jacob-xah-define-key (major-mode-keymap key command)
   "In MAJOR-MODE-KEYMAP bind KEY to COMMAND only when in xfk command mode."
   (define-key major-mode-keymap (vector 'remap (lookup-key xah-fly-command-map key)) command))
+
+
+
+;; abbrevs
+
+(define-abbrev-table 'global-abbrev-table
+  '(
+    ("dal" "$")
+    ;; ("eq" "=")
+    ("eeq" "==")
+    ("eeeq" "===")
+    ("sco" "_")
+    ))
+
+(define-abbrev-table 'c-mode-abbrev-table
+  '(
+    ("if" "" jacob-insert-c-if)
+    ("for" "" jacob-insert-c-for)
+    ("while" "" jacob-insert-c-while)
+    ("switch" "" jacob-insert-c-switch)
+    ("case" "" jacob-insert-c-case)
+    ("lt" "<")
+    ("gt" ">")
+    ("lte" "<=")
+    ("gte" ">=")
+    ("eq" "==")
+    ("neq" "!=")
+    ("or" "||")
+    ("and" "&&")
+    ("ret" "return")
+    ))
+
+(define-abbrev-table 'js-mode-abbrev-table
+  '(
+    ("cl" "" jacob-insert-js-print)
+    ("fun" "" jacob-insert-js-function)
+    ("con" "" jacob-insert-js-const)
+    ("let" "" jacob-insert-js-let)
+    ("eq" "===")
+    ("neq" "!==")
+    ("ret" "return")
+    ("fore" "" jacob-insert-js-for-each)
+    ("jwe" "console.log(\"jacobwozere\");" t)
+    )
+  nil
+  :parents (list c-mode-abbrev-table))
+
+(define-abbrev-table 'typescript-mode-abbrev-table
+  nil
+  nil
+  :parents (list js-mode-abbrev-table))
+
+(define-abbrev-table 'common-java-csharp-abbrev-table
+  '(("pri" "private")
+    ("pub" "public")
+    ("sta" "static")
+    ("class" "" jacob-insert-java-class)
+    ("cons" "" jacob-insert-java-constructor)
+    ("var" "" jacob-insert-java-var)
+    ("meth" "" jacob-insert-java-method))
+  nil
+  :parents (list c-mode-abbrev-table))
+
+(define-abbrev-table 'java-mode-abbrev-table
+  '(("sout" "" jacob-insert-java-print)
+    ("psvm" "" jacob-insert-java-main)
+    ("fore" "" jacob-insert-java-for-each)
+    ("string" "String")
+    ("double" "Double")
+    ("object" "Object")
+    ("fin" "final")
+    ("char" "Character")
+    ("inst" "instanceof"))
+  nil
+  :parents (list 'common-java-csharp-abbrev-table))
+
+(define-abbrev-table 'csharp-tree-sitter-mode-abbrev-table
+  '(("cwl" "" jacob-insert-csharp-print)
+    ("as" "async")
+    ("ns" "namespace")
+    ("guid" "Guid")
+    ("prop" "" jacob-insert-csharp-property))
+  nil
+  :parents (list 'common-java-csharp-abbrev-table))
+
+(define-abbrev-table 'emacs-lisp-mode-abbrev-table
+  '(
+    ("def" "" jacob-insert-elisp-defun)
+    ("let" "" jacob-insert-lisp-let)
+    ("int" "(interactive)" t)
+    ("cond" "" jacob-insert-lisp-cond)
+    ("gc" "" jacob-insert-elisp-goto-char)
+    ("pmi" "(point-min)" t)
+    ("pma" "(point-max)" t)))
+
+(define-abbrev-table 'go-mode-abbrev-table
+  '(
+    ("fpl" "" jacob-insert-go-println)
+    ("fpf" "" jacob-insert-go-printf)
+    ))
+
+(define-abbrev-table 'purescript-mode-abbrev-table
+  '(
+    ("fa" "∀")
+    ("ar" "->")
+    ("nil" "Nil")
+    ("maybe" "Maybe")
+    ("unit" "Unit")
+    ("int" "Int")
+    ("boolean" "Boolean")
+    ("nothing" "Nothing")
+    ("just" "Just")
+    ("effect" "Effect")
+    ("list" "List")
+    ("tuple" "Tuple")
+    ))
+
+(define-abbrev-table 'kotlin-mode-abbrev-table
+  '(
+    ("ar" "->")
+    ("int" "Int")
+    ("string" "String")
+    ("char" "Char")
+    ("list" "List")
+    ("neq" "!=")
+    ("fun" "" jacob-kotlin-function)
+    ("val" "" jacob-kotlin-val)
+    ("pl" "" jacob-kotlin-println)
+    ("when" "" jacob-kotlin-when)
+    ("listof" "" jacob-kotlin-list)
+    ("test" "" jacob-kotlin-test)))
+
+(define-abbrev-table 'sml-mode-abbrev-table
+  '(
+    ("val" "" jacob-sml-skeleton-val)
+    ("if" "" jacob-sml-skeleton-if)
+    ("let" "" jacob-sml-skeleton-let)
+    ("fun" "" jacob-sml-skeleton-function)
+    ("fn" "" jacob-sml-skeleton-anonymous-function)
+    ("case" "" jacob-sml-skeleton-case)
+    ))
 
 
 

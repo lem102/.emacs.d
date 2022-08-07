@@ -1,4 +1,4 @@
-;;; docker-tramp-autoloads.el --- automatically extracted autoloads
+;;; docker-tramp-autoloads.el --- automatically extracted autoloads  -*- lexical-binding: t -*-
 ;;
 ;;; Code:
 
@@ -28,7 +28,7 @@ Add docker tramp method." nil nil)
 
 (eval-after-load 'tramp '(progn (docker-tramp-add-method) (tramp-set-completion-function docker-tramp-method docker-tramp-completion-function-alist)))
 
-(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "docker-tramp" '("docker-tramp-")))
+(register-definition-prefixes "docker-tramp" '("docker-tramp-"))
 
 ;;;***
 

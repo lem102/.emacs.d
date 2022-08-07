@@ -1,7 +1,7 @@
-(define-package "docker-tramp" "20210729.508" "TRAMP integration for docker containers"
+(define-package "docker-tramp" "20220219.420" "TRAMP integration for docker containers"
   '((emacs "24")
     (cl-lib "0.5"))
-  :commit "7bfbb55417e7d2aac53adf92cb0e3fd329c495c1" :authors
+  :commit "930d7b46c180d8a13240a028c1b40af84f2a3219" :authors
   '(("Mario Rodas" . "marsam@users.noreply.github.com"))
   :maintainer
   '("Mario Rodas" . "marsam@users.noreply.github.com")
