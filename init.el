@@ -284,23 +284,14 @@
 ;; font config
 
 (defvar jacob-font-name
-  (cond ((string-equal system-type "windows-nt")
-         (when (member "Consolas" (font-family-list))
-           "Consolas-"))
-        ((string-equal system-type "darwin")
-         (when (member "Menlo" (font-family-list))
-           "Menlo-"))
-        ((string-equal system-type "gnu/linux")
-         (when (member "DejaVu Sans Mono" (font-family-list))
-           "DejaVu Sans Mono-"))))
+  (cdr (assoc-string system-type '(("windows-nt" . "Consolas")
+                                   ("darwin" . "Menlo")
+                                   ("gnu/linux" . "DejaVu Sans Mono")))))
 
 (defun jacob-set-font-size (size)
   "Set font to SIZE."
-  (if (>= size 0)
-      (let ((string-size (number-to-string size)))
-        (set-frame-font (concat jacob-font-name string-size) nil t)
-        (setq jacob-font-size size))
-    nil))
+  (set-frame-font (concat jacob-font-name "-" (number-to-string size)) nil t)
+  (setq jacob-font-size size))
 
 (defun jacob-font-size-increase ()
   "Increase font size by two steps."
@@ -324,15 +315,15 @@
 (put 'jacob-font-size-decrease 'repeat-map 'jacob-font-size-repeat-map)
 
 ;; enable emoji fonts
-(set-fontset-font
- t
- '(#x1f300 . #x1fad0)
- (cond
-  ((member "Apple Color Emoji" (font-family-list)) "Apple Color Emoji")
-  ((member "Noto Color Emoji" (font-family-list)) "Noto Color Emoji")
-  ((member "Noto Emoji" (font-family-list)) "Noto Emoji")
-  ((member "Segoe UI Emoji" (font-family-list)) "Segoe UI Emoji")
-  ((member "Symbola" (font-family-list)) "Symbola")))
+(set-fontset-font t
+                  '(#x1f300 . #x1fad0)
+                  (seq-find (lambda (font)
+                              (member font (font-family-list)))
+                            '("Symbola"
+                              "Segoe UI Emoji"
+                              "Noto Emoji"
+                              "Noto Color Emoji"
+                              "Apple Color Emoji")))
 
 
 ;; org config
@@ -457,7 +448,8 @@
   Designed for use in on-save hook in certain programming languages modes."
   (when (or (string= major-mode "csharp-tree-sitter-mode")
             (string= major-mode "sml-mode")
-            (string= major-mode "java-mode"))
+            (string= major-mode "java-mode")
+            (string= major-mode "typescript-react-mode"))
     (indent-region (point-min) (point-max)))
   (when (or (string= major-mode "emacs-lisp-mode")
             (string= major-mode "racket-mode"))
@@ -1283,6 +1275,11 @@ Otherwise, display error message."
         (set-window-buffer other-window current-buffer)
         (other-window 1))
     (message "More/less than 2 windows in frame.")))
+
+(defun jacob-clear-highlighted-regex ()
+  "Remove all highlighting."
+  (interactive)
+  (unhighlight-regexp t))
 
 
 
