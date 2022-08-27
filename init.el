@@ -357,6 +357,24 @@ Calls INSERT."
 (define-jacob-insert jacob-insert-lisp-cond
   (jacob-insert-helper "(cond ((■))\n●)"))
 
+(define-jacob-insert jacob-insert-lisp-if
+  (jacob-insert-helper "(if (■)\n●)"))
+
+(define-jacob-insert jacob-insert-clojure-defn
+  (jacob-insert-helper "(defn ■ [●]\n●)"))
+
+(define-jacob-insert jacob-insert-clojure-loop
+  (jacob-insert-helper "(loop [■]\n●)"))
+
+(define-jacob-insert jacob-insert-clojure-recur
+  (jacob-insert-helper "(recur ■)"))
+
+(define-jacob-insert jacob-insert-clojure-let
+  (jacob-insert-helper "(let [■]\n●)"))
+
+(define-jacob-insert jacob-insert-clojure-case
+  (jacob-insert-helper "(case ■\n●)"))
+
 (define-jacob-insert jacob-insert-js-print
   (jacob-insert-helper "console.log(■);"))
 
@@ -614,7 +632,8 @@ Calls INSERT."
             (string= major-mode "java-mode"))
     (indent-region (point-min) (point-max)))
   (when (or (string= major-mode "emacs-lisp-mode")
-            (string= major-mode "racket-mode"))
+            (string= major-mode "racket-mode")
+            (string= major-mode "clojure-mode"))
     (lisp-indent-region (point-min) (point-max))))
 
 (add-hook 'before-save-hook 'jacob-indent-with-major-mode)
@@ -716,6 +735,7 @@ Calls INSERT."
                          dockerfile-mode
                          kotlin-mode
                          gdscript-mode
+                         clojure-mode
                          ;; completion enhancements
                          vertico
                          consult
@@ -729,6 +749,7 @@ Calls INSERT."
                          eglot-fsharp
                          lsp-mode
                          inf-ruby
+                         cider
                          ;; misc
                          restart-emacs
                          docker-tramp)
@@ -1573,6 +1594,14 @@ Otherwise, display error message."
     ("gc" "" jacob-insert-elisp-goto-char)
     ("pmi" "(point-min)" t)
     ("pma" "(point-max)" t)))
+
+(define-abbrev-table 'clojure-mode-abbrev-table
+  '(("defn" "" jacob-insert-clojure-defn)
+    ("if" "" jacob-insert-lisp-if)
+    ("loop" "" jacob-insert-clojure-loop)
+    ("rec" "" jacob-insert-clojure-recur)
+    ("let" "" jacob-insert-clojure-let)
+    ("case" "" jacob-insert-clojure-case)))
 
 (define-abbrev-table 'go-mode-abbrev-table
   '(
