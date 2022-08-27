@@ -134,7 +134,8 @@
 
 (defvar jacob-welcome-messages '("\"A journey of a thousand miles begins with a single step.\" - 老子"
                                  "\"apex predator of grug is complexity\" - some grug"
-                                 "\"An idiot admires complexity, a genius admires simplicity.\" - Terry A. Davis")
+                                 "\"An idiot admires complexity, a genius admires simplicity.\" - Terry A. Davis"
+                                 "\"Perfection is achieved, not when there is nothing more to add, but when there is nothing left to take away.\" - Antoine de Saint-Exupéry")
   "List of messages to display in scratch buffer.")
 
 (setq initial-scratch-message (concat ";; " (nth (random (length jacob-welcome-messages)) jacob-welcome-messages) "\n\n"))
@@ -192,18 +193,20 @@
 (setq line-move-visual t)
 
 
-;; mode line
+;; mode line config
 
 (column-number-mode 1)
 (line-number-mode 1)
 
 (defvar jacob-mode-line-format
-  (list "%*" ; saved, readonly
-        "%m: " ; major mode
-        "%b " ; buffer name
-        mode-line-position
-        mode-line-misc-info ; for use with org timer
-        )
+  '("%*"
+    (:eval mode-name) ": "
+    (:eval (when-let (project (directory-file-name (cdr (project-current))))
+             (concat "<" (substring project (string-match "[^/]+\\'" project)) "> ")))
+    "%b "
+    mode-line-position
+    mode-line-misc-info ; for use with org timer
+    )
   "Custom mode line format.")
 
 (setq-default mode-line-format jacob-mode-line-format)
@@ -237,178 +240,6 @@
                     :height 1.5
                     :underline t
                     :bold t)
-
-
-;; abbrev and skeletons config
-
-(setq skeleton-end-newline nil)
-(setq abbrev-suggest t)
-(set-default 'abbrev-mode t)
-(setq save-abbrevs nil)
-
-
-;; jacob-insert-config
-
-(defun jacob-insert-block-helper (template)
-  "Call `jacob-insert-helper' with a block appended to TEMPLATE."
-  (jacob-insert-helper (concat template " {\n●\n}")))
-
-(defun jacob-insert-assignment-helper (template)
-  "Call `jacob-insert-helper' with \" ■ = \" appended to TEMPLATE."
-  (jacob-insert-helper (concat template " ■ = ")))
-
-(defun jacob-insert-helper (template)
-  "Insert TEMPLATE in current buffer.
-If present, set mark at each ● so that going throught the mark ring
-will take the user from first instance to last and delete it.  If
-present, move point back to ■ and delete it."
-  (let* ((●-positions '())
-         (■-position)
-         (start (prog1
-                    (point)
-                  (insert template)))
-         (end (point)))
-    
-    (goto-char start)
-    (dotimes (_ (- (+ 1 (line-number-at-pos end)) (line-number-at-pos (point))))
-      (ignore-errors (indent-according-to-mode))
-
-      (goto-char (line-beginning-position))
-      (while (search-forward-regexp (rx (or ?■ ?●)) (line-end-position) t)
-        (let ((match (match-string-no-properties 0)))
-          (backward-delete-char 1)
-          (if (string= match "■")
-              (setq ■-position (point))
-            (setq ●-positions (cons (point) ●-positions)))))
-
-      (forward-line 1))
-
-    (mapc (lambda (position)
-            (goto-char position)
-            (push-mark))
-          ●-positions)
-
-    (goto-char ■-position)
-
-    ;; return t to prevent self insert when calling from abbrev.
-    t))
-
-(defmacro define-jacob-insert (name insert)
-  "Define a jacob-insert command called NAME.
-Calls INSERT."
-  (declare (indent 1))
-  `(progn
-     ;; prevent abbrev from self-inserting
-     (put ',name 'no-self-insert t)
-     (defun ,name ()
-       ,insert)))
-
-(define-jacob-insert jacob-insert-c-if
-  (jacob-insert-block-helper "if (■)"))
-
-(define-jacob-insert jacob-insert-c-while
-  (jacob-insert-block-helper "while (■)"))
-
-(define-jacob-insert jacob-insert-c-for
-  (jacob-insert-block-helper "for (■;●;●)"))
-
-(define-jacob-insert jacob-insert-java-for-each
-  (jacob-insert-block-helper "for (var ■ : ●)"))
-
-(define-jacob-insert jacob-insert-java-class
-  (jacob-insert-block-helper "●class ■"))
-
-(define-jacob-insert jacob-insert-java-method
-  (jacob-insert-block-helper "■(●)"))
-
-(define-jacob-insert jacob-insert-java-constructor
-  (jacob-insert-block-helper (concat (save-excursion
-                                       (when (search-backward-regexp (rx "class "
-                                                                         (group (one-or-more (any "a-zA-Z"))))
-                                                                     nil
-                                                                     t)
-                                         (match-string-no-properties 1)))
-                                     "■(●)")))
-
-(define-jacob-insert jacob-insert-c-switch
-  (jacob-insert-block-helper "switch (■)"))
-
-(define-jacob-insert jacob-insert-c-case
-  (jacob-insert-helper "case ■: {\n●\nbreak;\n}"))
-
-(define-jacob-insert jacob-insert-java-main
-  (jacob-insert-block-helper "public static void main(String[] args)"))
-
-(define-jacob-insert jacob-insert-java-print
-  (jacob-insert-helper "System.out.println(■);"))
-
-(define-jacob-insert jacob-insert-java-var
-  (jacob-insert-assignment-helper "var"))
-
-(define-jacob-insert jacob-insert-elisp-goto-char
-  (jacob-insert-helper "(goto-char ■)"))
-
-(define-jacob-insert jacob-insert-lisp-let
-  (jacob-insert-helper "(let ((■))\n●)"))
-
-(define-jacob-insert jacob-insert-elisp-defun
-  (jacob-insert-helper "(defun ■ (●)\n●)"))
-
-(define-jacob-insert jacob-insert-lisp-cond
-  (jacob-insert-helper "(cond ((■))\n●)"))
-
-(define-jacob-insert jacob-insert-lisp-if
-  (jacob-insert-helper "(if (■)\n●)"))
-
-(define-jacob-insert jacob-insert-clojure-defn
-  (jacob-insert-helper "(defn ■ [●]\n●)"))
-
-(define-jacob-insert jacob-insert-clojure-loop
-  (jacob-insert-helper "(loop [■]\n●)"))
-
-(define-jacob-insert jacob-insert-clojure-recur
-  (jacob-insert-helper "(recur ■)"))
-
-(define-jacob-insert jacob-insert-clojure-let
-  (jacob-insert-helper "(let [■]\n●)"))
-
-(define-jacob-insert jacob-insert-clojure-case
-  (jacob-insert-helper "(case ■\n●)"))
-
-(define-jacob-insert jacob-insert-js-print
-  (jacob-insert-helper "console.log(■);"))
-
-(define-jacob-insert jacob-insert-js-const
-  (jacob-insert-assignment-helper "const"))
-
-(define-jacob-insert jacob-insert-js-let
-  (jacob-insert-assignment-helper "let"))
-
-(define-jacob-insert jacob-insert-js-function
-  (jacob-insert-helper "(■) => "))
-
-(define-jacob-insert jacob-insert-js-for-each
-  (jacob-insert-assignment-helper "forEach(■)"))
-
-(define-jacob-insert jacob-insert-go-println
-  (jacob-insert-helper "fmt.Println(■)"))
-
-(define-jacob-insert jacob-insert-go-printf
-  (jacob-insert-helper "fmt.Printf(■)"))
-
-(define-jacob-insert jacob-insert-csharp-print
-  (jacob-insert-helper "Console.WriteLine(■);"))
-
-(define-jacob-insert jacob-insert-csharp-property
-  (jacob-insert-helper "■ { get; set; }"))
-
-
-;; icomplete config
-
-;; (icomplete-mode 1)
-;; (icomplete-vertical-mode 1)
-;; (define-key icomplete-minibuffer-map (kbd "RET") 'icomplete-force-complete-and-exit)
-;; (define-key icomplete-minibuffer-map (kbd "<tab>") 'icomplete-force-complete)
 
 
 ;; js-mode config
@@ -456,23 +287,14 @@ Calls INSERT."
 ;; font config
 
 (defvar jacob-font-name
-  (cond ((string-equal system-type "windows-nt")
-         (when (member "Consolas" (font-family-list))
-           "Consolas-"))
-        ((string-equal system-type "darwin")
-         (when (member "Menlo" (font-family-list))
-           "Menlo-"))
-        ((string-equal system-type "gnu/linux")
-         (when (member "DejaVu Sans Mono" (font-family-list))
-           "DejaVu Sans Mono-"))))
+  (cdr (assoc-string system-type '(("windows-nt" . "Consolas")
+                                   ("darwin" . "Menlo")
+                                   ("gnu/linux" . "DejaVu Sans Mono")))))
 
 (defun jacob-set-font-size (size)
   "Set font to SIZE."
-  (if (>= size 0)
-      (let ((string-size (number-to-string size)))
-        (set-frame-font (concat jacob-font-name string-size) nil t)
-        (setq jacob-font-size size))
-    nil))
+  (set-frame-font (concat jacob-font-name "-" (number-to-string size)) nil t)
+  (setq jacob-font-size size))
 
 (defun jacob-font-size-increase ()
   "Increase font size by two steps."
@@ -496,15 +318,15 @@ Calls INSERT."
 (put 'jacob-font-size-decrease 'repeat-map 'jacob-font-size-repeat-map)
 
 ;; enable emoji fonts
-(set-fontset-font
- t
- '(#x1f300 . #x1fad0)
- (cond
-  ((member "Apple Color Emoji" (font-family-list)) "Apple Color Emoji")
-  ((member "Noto Color Emoji" (font-family-list)) "Noto Color Emoji")
-  ((member "Noto Emoji" (font-family-list)) "Noto Emoji")
-  ((member "Segoe UI Emoji" (font-family-list)) "Segoe UI Emoji")
-  ((member "Symbola" (font-family-list)) "Symbola")))
+(set-fontset-font t
+                  '(#x1f300 . #x1fad0)
+                  (seq-find (lambda (font)
+                              (member font (font-family-list)))
+                            '("Symbola"
+                              "Segoe UI Emoji"
+                              "Noto Emoji"
+                              "Noto Color Emoji"
+                              "Apple Color Emoji")))
 
 
 ;; org config
@@ -629,7 +451,8 @@ Calls INSERT."
   Designed for use in on-save hook in certain programming languages modes."
   (when (or (string= major-mode "csharp-tree-sitter-mode")
             (string= major-mode "sml-mode")
-            (string= major-mode "java-mode"))
+            (string= major-mode "java-mode")
+            (string= major-mode "typescript-react-mode"))
     (indent-region (point-min) (point-max)))
   (when (or (string= major-mode "emacs-lisp-mode")
             (string= major-mode "racket-mode")
@@ -1459,6 +1282,11 @@ Otherwise, display error message."
         (other-window 1))
     (message "More/less than 2 windows in frame.")))
 
+(defun jacob-clear-highlighted-regex ()
+  "Remove all highlighting."
+  (interactive)
+  (unhighlight-regexp t))
+
 
 
 ;; voice commands
@@ -1504,6 +1332,151 @@ Otherwise, display error message."
 
 
 ;; abbrevs
+
+
+;; abbrev config
+
+(setq abbrev-suggest t)
+(set-default 'abbrev-mode t)
+(setq save-abbrevs nil)
+
+
+;; jacob-insert-config
+
+(defun jacob-insert-block-helper (template)
+  "Call `jacob-insert-helper' with a block appended to TEMPLATE."
+  (jacob-insert-helper (concat template " {\n●\n}")))
+
+(defun jacob-insert-assignment-helper (template)
+  "Call `jacob-insert-helper' with \" ■ = \" appended to TEMPLATE."
+  (jacob-insert-helper (concat template " ■ = ●")))
+
+(defun jacob-insert-helper (template)
+  "Insert TEMPLATE in current buffer.
+If present, set mark at each ● so that going throught the mark ring
+will take the user from first instance to last and delete it.  If
+present, move point back to ■ and delete it."
+  (let* ((●-positions '())
+         (■-position)
+         (start (prog1
+                    (point)
+                  (insert template)))
+         (end (point)))
+    
+    (goto-char start)
+    (dotimes (_ (- (+ 1 (line-number-at-pos end)) (line-number-at-pos (point))))
+      (ignore-errors (indent-according-to-mode))
+
+      (goto-char (line-beginning-position))
+      (while (search-forward-regexp (rx (or ?■ ?●)) (line-end-position) t)
+        (let ((match (match-string-no-properties 0)))
+          (backward-delete-char 1)
+          (if (string= match "■")
+              (setq ■-position (point))
+            (setq ●-positions (cons (point) ●-positions)))))
+
+      (forward-line 1))
+
+    (mapc (lambda (position)
+            (goto-char position)
+            (push-mark))
+          ●-positions)
+
+    (goto-char ■-position)
+
+    ;; return t to prevent self insert when calling from abbrev.
+    t))
+
+(defmacro define-jacob-insert (name insert)
+  "Define a jacob-insert command called NAME.
+Calls INSERT."
+  (declare (indent 1))
+  `(progn
+     ;; prevent abbrev from self-inserting
+     (put ',name 'no-self-insert t)
+     (defun ,name ()
+       ,insert)))
+
+(define-jacob-insert jacob-insert-c-if
+  (jacob-insert-block-helper "if (■)"))
+
+(define-jacob-insert jacob-insert-c-while
+  (jacob-insert-block-helper "while (■)"))
+
+(define-jacob-insert jacob-insert-c-for
+  (jacob-insert-block-helper "for (■;●;●)"))
+
+(define-jacob-insert jacob-insert-java-for-each
+  (jacob-insert-block-helper "for (var ■ : ●)"))
+
+(define-jacob-insert jacob-insert-java-class
+  (jacob-insert-block-helper "●class ■"))
+
+(define-jacob-insert jacob-insert-java-method
+  (jacob-insert-block-helper "■(●)"))
+
+(define-jacob-insert jacob-insert-java-constructor
+  (jacob-insert-block-helper (concat (save-excursion
+                                       (when (search-backward-regexp (rx "class "
+                                                                         (group (one-or-more (any "a-zA-Z"))))
+                                                                     nil
+                                                                     t)
+                                         (match-string-no-properties 1)))
+                                     "■(●)")))
+
+(define-jacob-insert jacob-insert-c-switch
+  (jacob-insert-block-helper "switch (■)"))
+
+(define-jacob-insert jacob-insert-c-case
+  (jacob-insert-helper "case ■: {\n●\nbreak;\n}"))
+
+(define-jacob-insert jacob-insert-java-main
+  (jacob-insert-block-helper "public static void main(String[] args)"))
+
+(define-jacob-insert jacob-insert-java-print
+  (jacob-insert-helper "System.out.println(■);"))
+
+(define-jacob-insert jacob-insert-java-var
+  (jacob-insert-assignment-helper "var"))
+
+(define-jacob-insert jacob-insert-elisp-goto-char
+  (jacob-insert-helper "(goto-char ■)"))
+
+(define-jacob-insert jacob-insert-lisp-let
+  (jacob-insert-helper "(let ((■))\n●)"))
+
+(define-jacob-insert jacob-insert-elisp-defun
+  (jacob-insert-helper "(defun ■ (●)\n●)"))
+
+(define-jacob-insert jacob-insert-lisp-cond
+  (jacob-insert-helper "(cond ((■))\n●)"))
+
+(define-jacob-insert jacob-insert-js-print
+  (jacob-insert-helper "console.log(■);"))
+
+(define-jacob-insert jacob-insert-js-const
+  (jacob-insert-assignment-helper "const"))
+
+(define-jacob-insert jacob-insert-js-let
+  (jacob-insert-assignment-helper "let"))
+
+(define-jacob-insert jacob-insert-js-function
+  (jacob-insert-helper "(■) => ●"))
+
+(define-jacob-insert jacob-insert-js-for-each
+  (jacob-insert-assignment-helper "forEach(■)"))
+
+(define-jacob-insert jacob-insert-go-println
+  (jacob-insert-helper "fmt.Println(■)"))
+
+(define-jacob-insert jacob-insert-go-printf
+  (jacob-insert-helper "fmt.Printf(■)"))
+
+(define-jacob-insert jacob-insert-csharp-print
+  (jacob-insert-helper "Console.WriteLine(■);"))
+
+(define-jacob-insert jacob-insert-csharp-property
+  (jacob-insert-helper "■ { get; set; }"))
 
 (define-abbrev-table 'global-abbrev-table
   '(
