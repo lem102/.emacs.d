@@ -134,7 +134,8 @@
 
 (defvar jacob-welcome-messages '("\"A journey of a thousand miles begins with a single step.\" - 老子"
                                  "\"apex predator of grug is complexity\" - some grug"
-                                 "\"An idiot admires complexity, a genius admires simplicity.\" - Terry A. Davis")
+                                 "\"An idiot admires complexity, a genius admires simplicity.\" - Terry A. Davis"
+                                 "\"Perfection is achieved, not when there is nothing more to add, but when there is nothing left to take away.\" - Antoine de Saint-Exupéry")
   "List of messages to display in scratch buffer.")
 
 (setq initial-scratch-message (concat ";; " (nth (random (length jacob-welcome-messages)) jacob-welcome-messages) "\n\n"))
@@ -192,18 +193,20 @@
 (setq line-move-visual t)
 
 
-;; mode line
+;; mode line config
 
 (column-number-mode 1)
 (line-number-mode 1)
 
 (defvar jacob-mode-line-format
-  (list "%*" ; saved, readonly
-        "%m: " ; major mode
-        "%b " ; buffer name
-        mode-line-position
-        mode-line-misc-info ; for use with org timer
-        )
+  '("%*"
+    (:eval mode-name) ": "
+    (:eval (when-let (project (directory-file-name (cdr (project-current))))
+             (concat "<" (substring project (string-match "[^/]+\\'" project)) "> ")))
+    "%b "
+    mode-line-position
+    mode-line-misc-info ; for use with org timer
+    )
   "Custom mode line format.")
 
 (setq-default mode-line-format jacob-mode-line-format)
