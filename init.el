@@ -57,8 +57,8 @@
 (defvar jacob-camunda-modeler-executable
   nil "Full path to camunda modeler executable.")
 
-(if (file-exists-p "~/.emacs.d/environment.el")
-    (load-file "~/.emacs.d/environment.el"))
+(when (file-exists-p "~/.emacs.d/environment.el")
+  (load-file "~/.emacs.d/environment.el"))
 
 
 ;; mouse config
@@ -88,13 +88,9 @@
   "Minor mode for sharing screens."
   :global t
   :group 'jacob
-  (if jacob-screen-sharing-mode
-      (progn
-        (global-hl-line-mode 1)
-        (global-display-line-numbers-mode 1))
-    (progn
-      (global-hl-line-mode 0)
-      (global-display-line-numbers-mode 0))))
+  (let ((on (if jacob-screen-sharing-mode 1 0)))
+    (global-hl-line-mode on)
+    (global-display-line-numbers-mode on)))
 
 
 ;; backup/saving config
@@ -219,6 +215,7 @@
     (concat "/" tramp-default-method ":pi@" jacob-raspberry-pi-ip-address ":")
     "Raspberry Pi connection string for tramp."))
 
+;; tell vc to ignore tramp files
 (setq vc-ignore-dir-regexp
       (format "\\(%s\\)\\|\\(%s\\)"
               vc-ignore-dir-regexp
@@ -406,8 +403,10 @@
 
 ;; calendar + diary config
 
-(if (and (boundp 'jacob-raspberry-pi-ip-address) (boundp 'jacob-raspberry-pi-connection-string))
-    (setq diary-file (concat jacob-raspberry-pi-connection-string "/home/pi/org/jacobsDiary.diary")))
+(when (and (boundp 'jacob-raspberry-pi-ip-address)
+           (boundp 'jacob-raspberry-pi-connection-string))
+  (setq diary-file (concat jacob-raspberry-pi-connection-string
+                           "/home/pi/org/jacobsDiary.diary")))
 
 (with-eval-after-load 'calendar
   (setq diary-date-forms diary-european-date-forms)
@@ -455,7 +454,8 @@
             (string= major-mode "typescript-react-mode"))
     (indent-region (point-min) (point-max)))
   (when (or (string= major-mode "emacs-lisp-mode")
-            (string= major-mode "racket-mode"))
+            (string= major-mode "racket-mode")
+            (string= major-mode "clojure-mode"))
     (lisp-indent-region (point-min) (point-max))))
 
 (add-hook 'before-save-hook 'jacob-indent-with-major-mode)
