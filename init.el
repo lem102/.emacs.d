@@ -557,6 +557,7 @@
                          dockerfile-mode
                          kotlin-mode
                          gdscript-mode
+                         clojure-mode
                          ;; completion enhancements
                          vertico
                          consult
@@ -570,6 +571,7 @@
                          eglot-fsharp
                          lsp-mode
                          inf-ruby
+                         cider
                          ;; misc
                          restart-emacs
                          docker-tramp)
@@ -1564,6 +1566,14 @@ Calls INSERT."
     ("gc" "" jacob-insert-elisp-goto-char)
     ("pmi" "(point-min)" t)
     ("pma" "(point-max)" t)))
+
+(define-abbrev-table 'clojure-mode-abbrev-table
+  '(("defn" "" jacob-insert-clojure-defn)
+    ("if" "" jacob-insert-lisp-if)
+    ("loop" "" jacob-insert-clojure-loop)
+    ("rec" "" jacob-insert-clojure-recur)
+    ("let" "" jacob-insert-clojure-let)
+    ("case" "" jacob-insert-clojure-case)))
 
 (define-abbrev-table 'go-mode-abbrev-table
   '(
