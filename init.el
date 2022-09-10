@@ -25,7 +25,6 @@
 
 
 ;; built-in
-
 ;; garbage collection
 
 ;; tweak garbage collection when using the minibuffer
@@ -118,7 +117,7 @@
 
 (add-to-list 'load-path "~/.emacs.d/local-packages/")
 
-(setq read-process-output-max (* 1024 1024))
+;; (setq read-process-output-max (* 1024 1024))
 
 (setq custom-file (make-temp-file "emacs-custom-"))
 
@@ -380,6 +379,8 @@
                    jacob-recenter-top
                    jacob-recenter-centre
                    jacob-recenter-bottom
+                   xref-find-definitions
+                   xref-pop-marker-stack
                    ))
   (advice-add command :after #'jacob-pulse-line))
 
@@ -558,6 +559,7 @@
                          kotlin-mode
                          gdscript-mode
                          clojure-mode
+                         dart-mode
                          ;; completion enhancements
                          vertico
                          consult
@@ -818,7 +820,7 @@ Useful for deleting ^M after `eglot-code-actions'."
   (put 'tsi-typescript-indent-offset 'safe-local-variable #'numberp)
 
   (define-derived-mode typescript-react-mode typescript-mode
-    "Typescript TSX")
+    "TSX")
 
   (add-to-list 'auto-mode-alist '("\\.tsx?\\'" . typescript-react-mode))
   (with-eval-after-load 'tree-sitter
@@ -826,14 +828,16 @@ Useful for deleting ^M after `eglot-code-actions'."
 
     (jacob-try-require 'tsi
       (jacob-try-require 'tsi-typescript
-        (add-hook 'typescript-mode-hook (lambda () (tsi-typescript-mode 1)))
-        (add-hook 'typescript-react-mode-hook (lambda () (tsi-typescript-mode 1)))))))
+        (add-hook 'typescript-react-mode-hook (lambda ()
+                                                (tsi-typescript-mode 1)))))))
 
 
 ;; tree sitter config
 
 (jacob-is-installed 'tree-sitter
-  (add-hook 'typescript-react-mode-hook (lambda () (global-tree-sitter-mode 1))))
+  (add-hook 'typescript-react-mode-hook (lambda ()
+                                          (global-tree-sitter-mode 1)
+                                          (tree-sitter-hl-mode 1))))
 
 
 ;; xah-fly-keys config
@@ -1286,6 +1290,28 @@ Otherwise, display error message."
   (interactive)
   (unhighlight-regexp t))
 
+(defun jacob-format-buffer-shell-command (command)
+  (save-buffer)
+  (shell-command (format command
+                         (shell-quote-argument buffer-file-name)))
+  (revert-buffer t t t))
+
+(defun jacob-format-buffer ()
+  (interactive)
+  (pcase major-mode
+    ((or 'typescript-react-mode 'js-mode) (jacob-format-buffer-shell-command "deno fmt %s"))
+    (t (message "no formatting specified"))))
+
+;; FIXME: keys that are not already bound will not work for jacob-xfk-define-key
+(defun jacob-xfk-define-key (major-mode-keymap key command)
+  "In MAJOR-MODE-KEYMAP bind KEY to COMMAND only when in xfk command mode."
+  (define-key major-mode-keymap (vector 'remap (lookup-key xah-fly-command-map key)) command))
+
+(defun jacob-git-push-set-upstream ()
+  "Push current git branch to new upstream branch."
+  (interactive)
+  (shell-command "git push --set-upstream origin HEAD"))
+
 
 
 ;; voice commands
@@ -1323,10 +1349,6 @@ Otherwise, display error message."
 (defun jacob-switch-to-previous-buffer ()
   (interactive)
   (switch-to-buffer (other-buffer (current-buffer) 1)))
-
-(defun jacob-xah-define-key (major-mode-keymap key command)
-  "In MAJOR-MODE-KEYMAP bind KEY to COMMAND only when in xfk command mode."
-  (define-key major-mode-keymap (vector 'remap (lookup-key xah-fly-command-map key)) command))
 
 
 
@@ -1465,6 +1487,12 @@ Calls INSERT."
 (define-jacob-insert jacob-insert-js-for-each
   (jacob-insert-assignment-helper "forEach(■)"))
 
+(define-jacob-insert jacob-insert-js-describe
+  (jacob-insert-helper "describe(\"■\", () => {\n●\n});"))
+
+(define-jacob-insert jacob-insert-js-it
+  (jacob-insert-helper "it(\"■\", () => {\n●\n});"))
+
 (define-jacob-insert jacob-insert-go-println
   (jacob-insert-helper "fmt.Println(■)"))
 
@@ -1515,7 +1543,8 @@ Calls INSERT."
     ("ret" "return")
     ("fore" "" jacob-insert-js-for-each)
     ("jwe" "console.log(\"jacobwozere\");" t)
-    )
+    ("desc" "" jacob-insert-js-describe)
+    ("it" "" jacob-insert-js-it))
   nil
   :parents (list c-mode-abbrev-table))
 
@@ -1690,6 +1719,9 @@ Calls INSERT."
       (define-key map "a" 'eglot-code-actions)
       (define-key map "r" 'eglot-rename)))
 
+  (let ((map vc-prefix-map))
+    (define-key map "P" 'jacob-git-push-set-upstream))
+
   (let ((map xah-fly-dot-keymap))
     (define-key map "v" vc-prefix-map)
     (define-key map "t" tab-prefix-map)
@@ -1702,7 +1734,8 @@ Calls INSERT."
     (let ((map project-prefix-map))
       (define-key map "g" 'jacob-project-search))
     (define-key map "v" vc-prefix-map)
-    (define-key map "b" 'modus-themes-toggle))
+    (define-key map "b" 'modus-themes-toggle)
+    (define-key map "i" 'jacob-format-buffer))
 
   (let ((map xah-fly-command-map))
     (define-key map "a" 'execute-extended-command)
@@ -1798,67 +1831,68 @@ Calls INSERT."
     (define-key map "SPC" 'self-insert-command))
 
   (let ((map dired-mode-map))
-    (jacob-xah-define-key map "q" 'quit-window)
-    (jacob-xah-define-key map "i" 'dired-previous-line)
-    (jacob-xah-define-key map "k" 'dired-next-line)
-    (jacob-xah-define-key map "s" 'dired-find-file)
-    (jacob-xah-define-key map "e" 'dired-mark)
-    (jacob-xah-define-key map "r" 'dired-unmark)
-    (jacob-xah-define-key map "x" 'dired-do-rename)
-    (jacob-xah-define-key map "c" 'dired-do-copy)
-    (jacob-xah-define-key map "d" 'dired-do-delete) ; we skip the "flag, delete" process as files are sent to system bin on deletion
-    (jacob-xah-define-key map "u" 'dired-up-directory)
-    (jacob-xah-define-key map "j" 'dired-goto-file))
+    (jacob-xfk-define-key map "q" 'quit-window)
+    (jacob-xfk-define-key map "i" 'dired-previous-line)
+    (jacob-xfk-define-key map "k" 'dired-next-line)
+    (jacob-xfk-define-key map "s" 'dired-find-file)
+    (jacob-xfk-define-key map "e" 'dired-mark)
+    (jacob-xfk-define-key map "r" 'dired-unmark)
+    (jacob-xfk-define-key map "x" 'dired-do-rename)
+    (jacob-xfk-define-key map "c" 'dired-do-copy)
+    (jacob-xfk-define-key map "d" 'dired-do-delete) ; we skip the "flag, delete" process as files are sent to system bin on deletion
+    (jacob-xfk-define-key map "u" 'dired-up-directory)
+    (jacob-xfk-define-key map "j" 'dired-goto-file))
 
   (let ((map occur-mode-map))
-    (jacob-xah-define-key map "q" 'quit-window)
-    (jacob-xah-define-key map "i" 'previous-error-no-select)
-    (jacob-xah-define-key map "k" 'next-error-no-select))
+    (jacob-xfk-define-key map "q" 'quit-window)
+    (jacob-xfk-define-key map "i" 'previous-error-no-select)
+    (jacob-xfk-define-key map "k" 'next-error-no-select))
 
   (with-eval-after-load 'vc-dir
     (let ((map vc-dir-mode-map))
-      (jacob-xah-define-key map "q" 'quit-window)
-      (jacob-xah-define-key map "i" 'vc-dir-previous-line)
-      (jacob-xah-define-key map "k" 'vc-dir-next-line)
-      (jacob-xah-define-key map "o" 'vc-dir-next-directory)
-      (jacob-xah-define-key map "u" 'vc-dir-previous-directory)
-      (jacob-xah-define-key map "s" 'vc-dir-find-file)
-      (jacob-xah-define-key map "e" 'vc-dir-mark)
-      (jacob-xah-define-key map "r" 'vc-dir-unmark)
-      (jacob-xah-define-key map "v" 'vc-next-action)
-      (jacob-xah-define-key map "p" 'vc-push)))
+      (jacob-xfk-define-key map "q" 'quit-window)
+      (jacob-xfk-define-key map "i" 'vc-dir-previous-line)
+      (jacob-xfk-define-key map "k" 'vc-dir-next-line)
+      (jacob-xfk-define-key map "o" 'vc-dir-next-directory)
+      (jacob-xfk-define-key map "u" 'vc-dir-previous-directory)
+      (jacob-xfk-define-key map "s" 'vc-dir-find-file)
+      (jacob-xfk-define-key map "e" 'vc-dir-mark)
+      (jacob-xfk-define-key map "r" 'vc-dir-unmark)
+      (jacob-xfk-define-key map "v" 'vc-next-action)
+      (jacob-xfk-define-key map "p" 'vc-push)
+      (jacob-xfk-define-key map "P" 'jacob-git-push-set-upstream)))
 
   (with-eval-after-load 'info
     (let ((map Info-mode-map))
-      (jacob-xah-define-key map "q" 'quit-window)
-      (jacob-xah-define-key map "l" 'Info-scroll-up)
-      (jacob-xah-define-key map "j" 'Info-scroll-down)
-      (jacob-xah-define-key map "i" 'Info-up)
-      (jacob-xah-define-key map "k" 'Info-menu)))
+      (jacob-xfk-define-key map "q" 'quit-window)
+      (jacob-xfk-define-key map "l" 'Info-scroll-up)
+      (jacob-xfk-define-key map "j" 'Info-scroll-down)
+      (jacob-xfk-define-key map "i" 'Info-up)
+      (jacob-xfk-define-key map "k" 'Info-menu)))
 
   (with-eval-after-load 'calendar
     (let ((map calendar-mode-map))
-      (jacob-xah-define-key map "q" 'quit-window)
-      (jacob-xah-define-key map "i" 'calendar-backward-week)
-      (jacob-xah-define-key map "k" 'calendar-forward-week)
-      (jacob-xah-define-key map "j" 'calendar-backward-day)
-      (jacob-xah-define-key map "l" 'calendar-forward-day)
-      (jacob-xah-define-key map "u" 'calendar-backward-month)
-      (jacob-xah-define-key map "o" 'calendar-forward-month)
-      (jacob-xah-define-key map "d" 'diary-view-entries)
-      (jacob-xah-define-key map "s" 'diary-insert-entry)
-      (jacob-xah-define-key map "m" 'diary-mark-entries)
-      (jacob-xah-define-key map "." 'calendar-goto-today)
-      (jacob-xah-define-key map "t" 'calendar-set-mark)))
+      (jacob-xfk-define-key map "q" 'quit-window)
+      (jacob-xfk-define-key map "i" 'calendar-backward-week)
+      (jacob-xfk-define-key map "k" 'calendar-forward-week)
+      (jacob-xfk-define-key map "j" 'calendar-backward-day)
+      (jacob-xfk-define-key map "l" 'calendar-forward-day)
+      (jacob-xfk-define-key map "u" 'calendar-backward-month)
+      (jacob-xfk-define-key map "o" 'calendar-forward-month)
+      (jacob-xfk-define-key map "d" 'diary-view-entries)
+      (jacob-xfk-define-key map "s" 'diary-insert-entry)
+      (jacob-xfk-define-key map "m" 'diary-mark-entries)
+      (jacob-xfk-define-key map "." 'calendar-goto-today)
+      (jacob-xfk-define-key map "t" 'calendar-set-mark)))
 
   (with-eval-after-load 'doc-view
     (let ((map doc-view-mode-map)) 
-      (jacob-xah-define-key map "l" 'doc-view-next-page)
-      (jacob-xah-define-key map "j" 'doc-view-previous-page)))
+      (jacob-xfk-define-key map "l" 'doc-view-next-page)
+      (jacob-xfk-define-key map "j" 'doc-view-previous-page)))
 
   (with-eval-after-load 'diff-mode
     (let ((map diff-mode-map)) 
-      (jacob-xah-define-key map "q" 'quit-window))))
+      (jacob-xfk-define-key map "q" 'quit-window))))
 
 (with-eval-after-load 'smerge
   (defvar jacob-smerge-repeat-map
