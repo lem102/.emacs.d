@@ -25,7 +25,6 @@
 
 
 ;; built-in
-
 ;; garbage collection
 
 ;; tweak garbage collection when using the minibuffer
@@ -57,14 +56,20 @@
 (defvar jacob-camunda-modeler-executable
   nil "Full path to camunda modeler executable.")
 
-(if (file-exists-p "~/.emacs.d/environment.el")
-    (load-file "~/.emacs.d/environment.el"))
+(when (file-exists-p "~/.emacs.d/environment.el")
+  (load-file "~/.emacs.d/environment.el"))
 
 
 ;; mouse config
 
 (setq scroll-conservatively 100)
 (setq mouse-wheel-progressive-speed nil)
+(setq mouse-wheel-scroll-amount '(10
+                                  ((shift)
+                                   . hscroll)
+                                  ((meta))
+                                  ((control)
+                                   . text-scale)))
 
 
 ;; user interface config
@@ -88,13 +93,9 @@
   "Minor mode for sharing screens."
   :global t
   :group 'jacob
-  (if jacob-screen-sharing-mode
-      (progn
-        (global-hl-line-mode 1)
-        (global-display-line-numbers-mode 1))
-    (progn
-      (global-hl-line-mode 0)
-      (global-display-line-numbers-mode 0))))
+  (let ((on (if jacob-screen-sharing-mode 1 0)))
+    (global-hl-line-mode on)
+    (global-display-line-numbers-mode on)))
 
 
 ;; backup/saving config
@@ -122,7 +123,7 @@
 
 (add-to-list 'load-path "~/.emacs.d/local-packages/")
 
-(setq read-process-output-max (* 1024 1024))
+;; (setq read-process-output-max (* 1024 1024))
 
 (setq custom-file (make-temp-file "emacs-custom-"))
 
@@ -143,8 +144,8 @@
 (setq display-time-default-load-average nil)
 (setq display-time-day-and-date t)
 
-(setq tab-bar-format '(tab-bar-format-global))
-(tab-bar-mode 1)
+;; (setq tab-bar-format '(tab-bar-format-global))
+;; (tab-bar-mode 1)
 
 (setq display-time-format "%H:%M %d/%m/%Y")
 (display-time-mode 1)
@@ -201,8 +202,8 @@
 (defvar jacob-mode-line-format
   '("%*"
     (:eval mode-name) ": "
-    (:eval (when-let (project (directory-file-name (cdr (project-current))))
-             (concat "<" (substring project (string-match "[^/]+\\'" project)) "> ")))
+    ;; (:eval (when-let (project (directory-file-name (cdr (project-current))))
+    ;;          (concat "<" (substring project (string-match "[^/]+\\'" project)) "> ")))
     "%b "
     mode-line-position
     mode-line-misc-info ; for use with org timer
@@ -219,6 +220,7 @@
     (concat "/" tramp-default-method ":pi@" jacob-raspberry-pi-ip-address ":")
     "Raspberry Pi connection string for tramp."))
 
+;; tell vc to ignore tramp files
 (setq vc-ignore-dir-regexp
       (format "\\(%s\\)\\|\\(%s\\)"
               vc-ignore-dir-regexp
@@ -234,17 +236,18 @@
 (set-face-attribute 'fringe nil :background "honeydew3")
 (set-face-attribute 'mode-line nil :background "limegreen")
 (set-face-attribute 'mode-line-inactive nil :background "lightgreen")
-(set-face-attribute 'tab-bar nil
-                    :background "honeydew3"
-                    :foreground "yellow"
-                    :height 1.5
-                    :underline t
-                    :bold t)
+;; (set-face-attribute 'tab-bar nil
+;;                     :background "honeydew3"
+;;                     :foreground "yellow"
+;;                     :height 1.5
+;;                     :underline t
+;;                     :bold t)
 
 
 ;; js-mode config
 
 (put 'js-indent-level 'safe-local-variable #'numberp)
+(setq js-indent-level 2)
 
 
 ;; cc-mode config
@@ -298,12 +301,12 @@
 
 (defun jacob-font-size-increase ()
   "Increase font size by two steps."
-  (interactive) 
+  (interactive)
   (jacob-set-font-size (+ jacob-font-size 2)))
 
 (defun jacob-font-size-decrease ()
   "Decrease font size by two steps."
-  (interactive) 
+  (interactive)
   (jacob-set-font-size (- jacob-font-size 2)))
 
 (jacob-set-font-size jacob-font-size)
@@ -358,9 +361,8 @@
   (org-babel-do-load-languages
    'org-babel-load-languages
    '((octave . t)))
-  
-  (setq org-confirm-babel-evaluate nil))
 
+  (setq org-confirm-babel-evaluate nil))
 
 
 ;; pulse config
@@ -383,6 +385,8 @@
                    jacob-recenter-top
                    jacob-recenter-centre
                    jacob-recenter-bottom
+                   xref-find-definitions
+                   xref-pop-marker-stack
                    ))
   (advice-add command :after #'jacob-pulse-line))
 
@@ -406,8 +410,10 @@
 
 ;; calendar + diary config
 
-(if (and (boundp 'jacob-raspberry-pi-ip-address) (boundp 'jacob-raspberry-pi-connection-string))
-    (setq diary-file (concat jacob-raspberry-pi-connection-string "/home/pi/org/jacobsDiary.diary")))
+(when (and (boundp 'jacob-raspberry-pi-ip-address)
+           (boundp 'jacob-raspberry-pi-connection-string))
+  (setq diary-file (concat jacob-raspberry-pi-connection-string
+                           "/home/pi/org/jacobsDiary.diary")))
 
 (with-eval-after-load 'calendar
   (setq diary-date-forms diary-european-date-forms)
@@ -449,15 +455,19 @@
 (defun jacob-indent-with-major-mode ()
   "Indent buffer using current major mode.
   Designed for use in on-save hook in certain programming languages modes."
-  (when (or (string= major-mode "csharp-tree-sitter-mode")
-            (string= major-mode "sml-mode")
-            (string= major-mode "java-mode")
-            (string= major-mode "typescript-react-mode"))
-    (indent-region (point-min) (point-max)))
-  (when (or (string= major-mode "emacs-lisp-mode")
-            (string= major-mode "racket-mode")
-            (string= major-mode "clojure-mode"))
-    (lisp-indent-region (point-min) (point-max))))
+  (unless smerge-mode
+    (cond ((seq-contains-p '(csharp-tree-sitter-mode
+                             typescript-react-mode
+                             java-mode
+                             sml-mode)
+                           major-mode
+                           'string=)
+           (indent-region (point-min) (point-max)))
+          ((seq-contains-p '(emacs-lisp-mode
+                             racket-mode
+                             clojure-mode)
+                           major-mode)
+           (lisp-indent-region (point-min) (point-max))))))
 
 (add-hook 'before-save-hook 'jacob-indent-with-major-mode)
 
@@ -633,6 +643,7 @@
 ;; eglot config
 
 (jacob-is-installed 'eglot
+  (setq eglot-confirm-server-initiated-edits nil)
   (load-file (expand-file-name "~/.emacs.d/myLisp/old-eglot-jdt.el"))
   (defun jacob-remove-ret-character-from-buffer (&rest _)
     "Remove all occurances of ^M from the buffer.
@@ -650,7 +661,7 @@ Useful for deleting ^M after `eglot-code-actions'."
             #'(lambda ()
                 (setq-local eldoc-documentation-strategy
                             'eldoc-documentation-compose)))
-  
+
   (add-hook 'java-mode-hook 'eglot-ensure)
   ;; (add-hook 'csharp-tree-sitter-mode-hook 'eglot-ensure)
   (add-hook 'typescript-mode-hook 'eglot-ensure)
@@ -661,7 +672,7 @@ Useful for deleting ^M after `eglot-code-actions'."
   (with-eval-after-load 'eglot
     (if (boundp 'jacob-omnisharp-language-server-path)
         (add-to-list 'eglot-server-programs `(csharp-tree-sitter-mode . (,jacob-omnisharp-language-server-path "-lsp"))))
-    
+
     (add-to-list 'eglot-server-programs '((js-mode typescript-mode) . ("typescript-language-server" "--stdio")))
 
     ;; (add-to-list 'eglot-server-programs '((js-mode typescript-mode) . (eglot-deno "deno" "lsp")))
@@ -673,8 +684,11 @@ Useful for deleting ^M after `eglot-code-actions'."
       "Passes through required deno initialization options"
       (list :enable t
             :lint t))
-    
-    (add-to-list 'eglot-server-programs '(go-mode . ("/home/jacob/go/bin/gopls")))
+
+    ;; (add-to-list 'eglot-server-programs '(go-mode . ("/home/jacob/go/bin/gopls")))
+
+    (eglot--code-action eglot-code-action-organize-imports-ts "source.organizeImports.ts")
+    (eglot--code-action eglot-code-action-add-missing-imports-ts "source.addMissingImports.ts")
 
     ))
 
@@ -686,7 +700,7 @@ Useful for deleting ^M after `eglot-code-actions'."
   (setq lsp-headerline-breadcrumb-enable nil)
   (setq lsp-eldoc-render-all t)
   (setq lsp-eldoc-enable-hover t)
-  
+
   (add-hook 'csharp-tree-sitter-mode-hook 'lsp)
   )
 
@@ -820,7 +834,7 @@ Useful for deleting ^M after `eglot-code-actions'."
   (put 'tsi-typescript-indent-offset 'safe-local-variable #'numberp)
 
   (define-derived-mode typescript-react-mode typescript-mode
-    "Typescript TSX")
+    "TSX")
 
   (add-to-list 'auto-mode-alist '("\\.tsx?\\'" . typescript-react-mode))
   (with-eval-after-load 'tree-sitter
@@ -828,14 +842,16 @@ Useful for deleting ^M after `eglot-code-actions'."
 
     (jacob-try-require 'tsi
       (jacob-try-require 'tsi-typescript
-        (add-hook 'typescript-mode-hook (lambda () (tsi-typescript-mode 1)))
-        (add-hook 'typescript-react-mode-hook (lambda () (tsi-typescript-mode 1)))))))
+        (add-hook 'typescript-react-mode-hook (lambda ()
+                                                (tsi-typescript-mode 1)))))))
 
 
 ;; tree sitter config
 
 (jacob-is-installed 'tree-sitter
-  (add-hook 'typescript-react-mode-hook (lambda () (global-tree-sitter-mode 1))))
+  (add-hook 'typescript-react-mode-hook (lambda ()
+                                          (global-tree-sitter-mode 1)
+                                          (tree-sitter-hl-mode 1))))
 
 
 ;; xah-fly-keys config
@@ -894,29 +910,40 @@ Useful for deleting ^M after `eglot-code-actions'."
               (indent-region (point-min) (point-max))
               (buffer-substring-no-properties (point-min) (point-max))))))
 
-(defun jacob-web-request-helper (method url &optional headers data data-format-function)
+(defun jacob-web-request-helper (url &optional method headers data data-format-function data-parse)
   "Helper function for making web requests.
 METHOD, HEADERS and DATA are for the corresponding url-request variables.
 URL is the address to send the request to.
 Returns a string containing the response.
 
 DATA-FORMAT-FUNCTION is a function that takes one argument and returns
-a string."
+DATA in string form.
+
+DATA-PARSE is a symbol specifying the output of this function. If not
+given, it will return the http reponse in string form. If `json' it
+will return the json data as a lisp object."
   (require 'json)
-  (with-current-buffer (let ((url-request-method method)
+  (with-current-buffer (let ((url-request-method (if (null method)
+                                                     "GET"
+                                                   method))
                              (url-request-extra-headers headers)
                              (url-request-data (if (null data-format-function)
                                                    data
                                                  (funcall data-format-function data))))
                          (url-retrieve-synchronously url))
-    (beginning-of-buffer)
+    (goto-char (point-min))
     (when (search-forward-regexp "Content-Type: application/[a-z+]*json" nil t)
       (search-forward "\n\n" nil t)
       (json-reformat-region (point) (point-max)))
     (when (search-forward-regexp "Content-Type:.*xml" nil t)
       (search-forward "\n\n" nil t)
       (jacob-format-xml))
-    (buffer-string)))
+    (goto-char (point-min))
+    (pcase data-parse
+      ('json (progn
+               (search-forward "\n\n" nil t)
+               (json-read)))
+      (_ (buffer-string)))))
 
 (defun jacob-open-in-camunda-modeler ()
   "Attempt to open current file in camunda modeler."
@@ -1021,11 +1048,11 @@ point."
   (interactive)
 
   (undo-boundary)
-  
+
   (unless (eq last-command this-command)
     (setq jacob-format-words-3-style-and-start (cons (read-char-from-minibuffer "select style: " '(?c ?p ?k ?s ?S))
                                                      (point))))
-  
+
   (save-excursion
     (let* ((style (car jacob-format-words-3-style-and-start))
            (format-position (cdr jacob-format-words-3-style-and-start))
@@ -1212,7 +1239,7 @@ point."
         (goto-char (point-min))
         (while (search-forward-regexp "[[:space:]]+" nil t)
           (replace-match " ")))
-      
+
       (dolist (pair (list (quote ("[ " "["))
                           (quote ("[" "\\\\jbmat{"))
                           (quote (" ]" "]"))
@@ -1258,6 +1285,24 @@ Search youtube for string and display in browser."
   (let ((search-query (read-from-minibuffer "YouTube: ")))
     (browse-url (concat "https://www.youtube.com/results?search_query=" search-query))))
 
+(defun jacob-play-youtube ()
+  "Ask for a string to search.
+Use mpv and youtube-dl to play the first video found."
+  (interactive)
+  (start-process "youtube"
+                 nil
+                 "mpv"
+                 "--ytdl-format=worstvideo+bestaudio"
+                 (concat "https://www.youtube.com"
+                         (with-temp-buffer
+                           (insert (jacob-web-request-helper (concat "https://www.youtube.com/results?search_query="
+                                                                     (string-replace " "
+                                                                                     "+"
+                                                                                     (read-from-minibuffer "YouTube: ")))))
+                           (goto-char (point-min))
+                           (re-search-forward "/watch\\?v=.\\{0,11\\}")
+                           (match-string 0)))))
+
 (defun jacob-lookup-wikipedia ()
   "Ask for a string to search.
 Search youtube for string and display in browser."
@@ -1287,6 +1332,62 @@ Otherwise, display error message."
   "Remove all highlighting."
   (interactive)
   (unhighlight-regexp t))
+
+(defun jacob-format-buffer-shell-command (command)
+  (save-buffer)
+  (shell-command (format command
+                         (shell-quote-argument buffer-file-name)))
+  (revert-buffer t t t))
+
+(defun jacob-npm-project-p ()
+  (seq-find (lambda (x)
+              (string= x "package.json"))
+            (directory-files (project-root (project-current)))))
+
+(defun jacob-format-buffer ()
+  (interactive)
+  (pcase major-mode
+    ((or 'typescript-react-mode 'js-mode) (progn
+                                            (ignore-errors (eglot-code-action-add-missing-imports-ts (point-min) (point-max)))
+                                            (eglot-code-action-organize-imports-ts (point-min) (point-max))
+                                            (jacob-format-buffer-shell-command (if (jacob-npm-project-p)
+                                                                                   "prettier %s -w"
+                                                                                 "deno fmt %s"))))
+    ('go-mode (jacob-format-buffer-shell-command "gofmt -w %s"))
+    (t (message "no formatting specified"))))
+
+;; FIXME: keys that are not already bound will not work for jacob-xfk-define-key
+(defun jacob-xfk-define-key (major-mode-keymap key command)
+  "In MAJOR-MODE-KEYMAP bind KEY to COMMAND only when in xfk command mode."
+  (define-key major-mode-keymap (vector 'remap (lookup-key xah-fly-command-map key)) command))
+
+(defun jacob-git-push-set-upstream ()
+  "Push current git branch to new upstream branch."
+  (interactive)
+  (shell-command "git push --set-upstream origin HEAD"))
+
+(defun jacob-git-pull-master-new-branch ()
+  "Push current git branch to new upstream branch."
+  (interactive)
+  (when (zerop (shell-command "git checkout master"))
+    (when (zerop (shell-command "git pull"))
+      (shell-command (concat "git checkout -b " (read-from-minibuffer "branch name: "))))))
+
+(defun jacob-npm-fix-linting ()
+  "Fix linting for npm then commit and push."
+  (interactive)
+  (when (zerop (shell-command "npm run lint:fix"))
+    (shell-command "git commit -m \"chore: fix linting\" -na")
+    (shell-command "git push")))
+
+(defun jacob-open-in-vscode ()
+  "Open current file in vscode."
+  (interactive)
+  (let ((default-directory (project-root (project-current)))
+        (file (buffer-file-name))
+        (line (number-to-string (+ (current-line) 1)))
+        (column (number-to-string (+ (current-column) 1))))
+    (shell-command (concat "code . --reuse-window --goto " file ":" line ":" column))))
 
 
 
@@ -1326,10 +1427,6 @@ Otherwise, display error message."
   (interactive)
   (switch-to-buffer (other-buffer (current-buffer) 1)))
 
-(defun jacob-xah-define-key (major-mode-keymap key command)
-  "In MAJOR-MODE-KEYMAP bind KEY to COMMAND only when in xfk command mode."
-  (define-key major-mode-keymap (vector 'remap (lookup-key xah-fly-command-map key)) command))
-
 
 
 ;; abbrevs
@@ -1363,7 +1460,7 @@ present, move point back to ■ and delete it."
                     (point)
                   (insert template)))
          (end (point)))
-    
+
     (goto-char start)
     (dotimes (_ (- (+ 1 (line-number-at-pos end)) (line-number-at-pos (point))))
       (ignore-errors (indent-according-to-mode))
@@ -1405,7 +1502,7 @@ Calls INSERT."
   (jacob-insert-block-helper "while (■)"))
 
 (define-jacob-insert jacob-insert-c-for
-  (jacob-insert-block-helper "for (■;●;●)"))
+  (jacob-insert-block-helper "for (■)"))
 
 (define-jacob-insert jacob-insert-java-for-each
   (jacob-insert-block-helper "for (var ■ : ●)"))
@@ -1429,7 +1526,7 @@ Calls INSERT."
   (jacob-insert-block-helper "switch (■)"))
 
 (define-jacob-insert jacob-insert-c-case
-  (jacob-insert-helper "case ■: {\n●\nbreak;\n}"))
+  (jacob-insert-helper "case ■: \n●\nbreak;"))
 
 (define-jacob-insert jacob-insert-java-main
   (jacob-insert-block-helper "public static void main(String[] args)"))
@@ -1467,11 +1564,32 @@ Calls INSERT."
 (define-jacob-insert jacob-insert-js-for-each
   (jacob-insert-assignment-helper "forEach(■)"))
 
+(define-jacob-insert jacob-insert-js-describe
+  (jacob-insert-helper "describe(\"■\", () => {\n●\n});"))
+
+(define-jacob-insert jacob-insert-js-it
+  (jacob-insert-helper "it(\"■\", () => {\n●\n});"))
+
 (define-jacob-insert jacob-insert-go-println
   (jacob-insert-helper "fmt.Println(■)"))
 
 (define-jacob-insert jacob-insert-go-printf
   (jacob-insert-helper "fmt.Printf(■)"))
+
+(define-jacob-insert jacob-insert-go-func
+  (jacob-insert-block-helper "func ■()"))
+
+(define-jacob-insert jacob-insert-go-for
+  (jacob-insert-block-helper "for ■"))
+
+(define-jacob-insert jacob-insert-go-for-range
+  (jacob-insert-block-helper "for i, v := range ■"))
+
+(define-jacob-insert jacob-insert-go-if
+  (jacob-insert-block-helper "if ■"))
+
+(define-jacob-insert jacob-insert-go-struct
+  (jacob-insert-block-helper "struct"))
 
 (define-jacob-insert jacob-insert-csharp-print
   (jacob-insert-helper "Console.WriteLine(■);"))
@@ -1506,13 +1624,11 @@ Calls INSERT."
     ("sco" "_")
     ))
 
-(define-abbrev-table 'c-mode-abbrev-table
+(define-abbrev-table 'org-mode-abbrev-table
+  '(("i" "I")))
+
+(define-abbrev-table 'common-operators-abbrev-table
   '(
-    ("if" "" jacob-insert-c-if)
-    ("for" "" jacob-insert-c-for)
-    ("while" "" jacob-insert-c-while)
-    ("switch" "" jacob-insert-c-switch)
-    ("case" "" jacob-insert-c-case)
     ("lt" "<")
     ("gt" ">")
     ("lte" "<=")
@@ -1521,8 +1637,17 @@ Calls INSERT."
     ("neq" "!=")
     ("or" "||")
     ("and" "&&")
-    ("ret" "return")
-    ))
+    ("ret" "return")))
+
+(define-abbrev-table 'c-mode-abbrev-table
+  '(
+    ("if" "" jacob-insert-c-if)
+    ("for" "" jacob-insert-c-for)
+    ("while" "" jacob-insert-c-while)
+    ("switch" "" jacob-insert-c-switch)
+    ("case" "" jacob-insert-c-case))
+  nil
+  :parents (list common-operators-abbrev-table))
 
 (define-abbrev-table 'js-mode-abbrev-table
   '(
@@ -1535,7 +1660,8 @@ Calls INSERT."
     ("ret" "return")
     ("fore" "" jacob-insert-js-for-each)
     ("jwe" "console.log(\"jacobwozere\");" t)
-    )
+    ("desc" "" jacob-insert-js-describe)
+    ("it" "" jacob-insert-js-it))
   nil
   :parents (list c-mode-abbrev-table))
 
@@ -1597,9 +1723,17 @@ Calls INSERT."
 
 (define-abbrev-table 'go-mode-abbrev-table
   '(
-    ("fpl" "" jacob-insert-go-println)
-    ("fpf" "" jacob-insert-go-printf)
-    ))
+    ("pl" "" jacob-insert-go-println)
+    ("pf" "" jacob-insert-go-printf)
+    ("fun" "" jacob-insert-go-func)
+    ("for" "" jacob-insert-go-for)
+    ("forr" "" jacob-insert-go-for-range)
+    ("if" "" jacob-insert-go-if)
+    ("struct" "" jacob-insert-go-struct)
+    ("ass" ":=")
+    )
+  nil
+  :parents (list common-operators-abbrev-table))
 
 (define-abbrev-table 'purescript-mode-abbrev-table
   '(
@@ -1710,6 +1844,10 @@ Calls INSERT."
       (define-key map "a" 'eglot-code-actions)
       (define-key map "r" 'eglot-rename)))
 
+  (let ((map vc-prefix-map))
+    (define-key map "P" 'jacob-git-push-set-upstream)
+    (define-key map "c" 'jacob-git-pull-master-new-branch))
+
   (let ((map xah-fly-dot-keymap))
     (define-key map "v" vc-prefix-map)
     (define-key map "t" tab-prefix-map)
@@ -1722,7 +1860,8 @@ Calls INSERT."
     (let ((map project-prefix-map))
       (define-key map "g" 'jacob-project-search))
     (define-key map "v" vc-prefix-map)
-    (define-key map "b" 'modus-themes-toggle))
+    (define-key map "b" 'modus-themes-toggle)
+    (define-key map "i" 'jacob-format-buffer))
 
   (let ((map xah-fly-command-map))
     (define-key map "a" 'execute-extended-command)
@@ -1794,17 +1933,17 @@ Calls INSERT."
   (let ((map xah-fly-w-keymap))
     (define-key map "n" 'jacob-eval-and-replace))
 
-  (let ((map xah-fly-t-keymap)) 
+  (let ((map xah-fly-t-keymap))
     (define-key map "j" 'xah-close-current-buffer))
 
   (let ((map xah-fly-c-keymap))
     (define-key map "j" 'consult-recent-file)
     (define-key map "e" 'find-file))
 
-  (let ((map xah-fly-t-keymap)) 
+  (let ((map xah-fly-t-keymap))
     (define-key map "j" 'kill-current-buffer))
 
-  (let ((map xah-fly-r-keymap)) 
+  (let ((map xah-fly-r-keymap))
     (define-key map "c" 'kmacro-set-counter))
 
   (let ((map xah-fly-n-keymap))
@@ -1814,73 +1953,74 @@ Calls INSERT."
   (let ((map vc-prefix-map))
     (define-key map "p" 'vc-push))
 
-  (let ((map minibuffer-local-completion-map)) 
+  (let ((map minibuffer-local-completion-map))
     (define-key map "SPC" 'self-insert-command))
 
   (let ((map dired-mode-map))
-    (jacob-xah-define-key map "q" 'quit-window)
-    (jacob-xah-define-key map "i" 'dired-previous-line)
-    (jacob-xah-define-key map "k" 'dired-next-line)
-    (jacob-xah-define-key map "s" 'dired-find-file)
-    (jacob-xah-define-key map "e" 'dired-mark)
-    (jacob-xah-define-key map "r" 'dired-unmark)
-    (jacob-xah-define-key map "x" 'dired-do-rename)
-    (jacob-xah-define-key map "c" 'dired-do-copy)
-    (jacob-xah-define-key map "d" 'dired-do-delete) ; we skip the "flag, delete" process as files are sent to system bin on deletion
-    (jacob-xah-define-key map "u" 'dired-up-directory)
-    (jacob-xah-define-key map "j" 'dired-goto-file))
+    (jacob-xfk-define-key map "q" 'quit-window)
+    (jacob-xfk-define-key map "i" 'dired-previous-line)
+    (jacob-xfk-define-key map "k" 'dired-next-line)
+    (jacob-xfk-define-key map "s" 'dired-find-file)
+    (jacob-xfk-define-key map "e" 'dired-mark)
+    (jacob-xfk-define-key map "r" 'dired-unmark)
+    (jacob-xfk-define-key map "x" 'dired-do-rename)
+    (jacob-xfk-define-key map "c" 'dired-do-copy)
+    (jacob-xfk-define-key map "d" 'dired-do-delete) ; we skip the "flag, delete" process as files are sent to system bin on deletion
+    (jacob-xfk-define-key map "u" 'dired-up-directory)
+    (jacob-xfk-define-key map "j" 'dired-goto-file))
 
   (let ((map occur-mode-map))
-    (jacob-xah-define-key map "q" 'quit-window)
-    (jacob-xah-define-key map "i" 'previous-error-no-select)
-    (jacob-xah-define-key map "k" 'next-error-no-select))
+    (jacob-xfk-define-key map "q" 'quit-window)
+    (jacob-xfk-define-key map "i" 'previous-error-no-select)
+    (jacob-xfk-define-key map "k" 'next-error-no-select))
 
   (with-eval-after-load 'vc-dir
     (let ((map vc-dir-mode-map))
-      (jacob-xah-define-key map "q" 'quit-window)
-      (jacob-xah-define-key map "i" 'vc-dir-previous-line)
-      (jacob-xah-define-key map "k" 'vc-dir-next-line)
-      (jacob-xah-define-key map "o" 'vc-dir-next-directory)
-      (jacob-xah-define-key map "u" 'vc-dir-previous-directory)
-      (jacob-xah-define-key map "s" 'vc-dir-find-file)
-      (jacob-xah-define-key map "e" 'vc-dir-mark)
-      (jacob-xah-define-key map "r" 'vc-dir-unmark)
-      (jacob-xah-define-key map "v" 'vc-next-action)
-      (jacob-xah-define-key map "p" 'vc-push)))
+      (jacob-xfk-define-key map "q" 'quit-window)
+      (jacob-xfk-define-key map "i" 'vc-dir-previous-line)
+      (jacob-xfk-define-key map "k" 'vc-dir-next-line)
+      (jacob-xfk-define-key map "o" 'vc-dir-next-directory)
+      (jacob-xfk-define-key map "u" 'vc-dir-previous-directory)
+      (jacob-xfk-define-key map "s" 'vc-dir-find-file)
+      (jacob-xfk-define-key map "e" 'vc-dir-mark)
+      (jacob-xfk-define-key map "r" 'vc-dir-unmark)
+      (jacob-xfk-define-key map "v" 'vc-next-action)
+      (jacob-xfk-define-key map "p" 'vc-push)
+      (jacob-xfk-define-key map "P" 'jacob-git-push-set-upstream)))
 
   (with-eval-after-load 'info
     (let ((map Info-mode-map))
-      (jacob-xah-define-key map "q" 'quit-window)
-      (jacob-xah-define-key map "l" 'Info-scroll-up)
-      (jacob-xah-define-key map "j" 'Info-scroll-down)
-      (jacob-xah-define-key map "i" 'Info-up)
-      (jacob-xah-define-key map "k" 'Info-menu)))
+      (jacob-xfk-define-key map "q" 'quit-window)
+      (jacob-xfk-define-key map "l" 'Info-scroll-up)
+      (jacob-xfk-define-key map "j" 'Info-scroll-down)
+      (jacob-xfk-define-key map "i" 'Info-up)
+      (jacob-xfk-define-key map "k" 'Info-menu)))
 
   (with-eval-after-load 'calendar
     (let ((map calendar-mode-map))
-      (jacob-xah-define-key map "q" 'quit-window)
-      (jacob-xah-define-key map "i" 'calendar-backward-week)
-      (jacob-xah-define-key map "k" 'calendar-forward-week)
-      (jacob-xah-define-key map "j" 'calendar-backward-day)
-      (jacob-xah-define-key map "l" 'calendar-forward-day)
-      (jacob-xah-define-key map "u" 'calendar-backward-month)
-      (jacob-xah-define-key map "o" 'calendar-forward-month)
-      (jacob-xah-define-key map "d" 'diary-view-entries)
-      (jacob-xah-define-key map "s" 'diary-insert-entry)
-      (jacob-xah-define-key map "m" 'diary-mark-entries)
-      (jacob-xah-define-key map "." 'calendar-goto-today)
-      (jacob-xah-define-key map "t" 'calendar-set-mark)))
+      (jacob-xfk-define-key map "q" 'quit-window)
+      (jacob-xfk-define-key map "i" 'calendar-backward-week)
+      (jacob-xfk-define-key map "k" 'calendar-forward-week)
+      (jacob-xfk-define-key map "j" 'calendar-backward-day)
+      (jacob-xfk-define-key map "l" 'calendar-forward-day)
+      (jacob-xfk-define-key map "u" 'calendar-backward-month)
+      (jacob-xfk-define-key map "o" 'calendar-forward-month)
+      (jacob-xfk-define-key map "d" 'diary-view-entries)
+      (jacob-xfk-define-key map "s" 'diary-insert-entry)
+      (jacob-xfk-define-key map "m" 'diary-mark-entries)
+      (jacob-xfk-define-key map "." 'calendar-goto-today)
+      (jacob-xfk-define-key map "t" 'calendar-set-mark)))
 
   (with-eval-after-load 'doc-view
-    (let ((map doc-view-mode-map)) 
-      (jacob-xah-define-key map "l" 'doc-view-next-page)
-      (jacob-xah-define-key map "j" 'doc-view-previous-page)))
+    (let ((map doc-view-mode-map))
+      (jacob-xfk-define-key map "l" 'doc-view-next-page)
+      (jacob-xfk-define-key map "j" 'doc-view-previous-page)))
 
   (with-eval-after-load 'diff-mode
-    (let ((map diff-mode-map)) 
-      (jacob-xah-define-key map "q" 'quit-window))))
+    (let ((map diff-mode-map))
+      (jacob-xfk-define-key map "q" 'quit-window))))
 
-(with-eval-after-load 'smerge
+(with-eval-after-load 'smerge-mode
   (defvar jacob-smerge-repeat-map
     (let ((map (make-sparse-keymap)))
       (define-key map (kbd "n") 'smerge-next)
@@ -1888,7 +2028,7 @@ Calls INSERT."
       (define-key map (kbd "u") 'smerge-keep-upper)
       (define-key map (kbd "l") 'smerge-keep-lower)
       map))
-  
+
   (put 'smerge-next 'repeat-map 'jacob-smerge-repeat-map)
   (put 'smerge-prev 'repeat-map 'jacob-smerge-repeat-map)
   (put 'smerge-keep-upper 'repeat-map 'jacob-smerge-repeat-map)
