@@ -241,6 +241,7 @@
 ;; js-mode config
 
 (put 'js-indent-level 'safe-local-variable #'numberp)
+(setq js-indent-level 2)
 
 
 ;; cc-mode config
@@ -633,6 +634,7 @@
 ;; eglot config
 
 (jacob-is-installed 'eglot
+  (setq eglot-confirm-server-initiated-edits nil)
   (load-file (expand-file-name "~/.emacs.d/myLisp/old-eglot-jdt.el"))
   (defun jacob-remove-ret-character-from-buffer (&rest _)
     "Remove all occurances of ^M from the buffer.
@@ -1260,6 +1262,23 @@ Search youtube for string and display in browser."
   (let ((search-query (read-from-minibuffer "YouTube: ")))
     (browse-url (concat "https://www.youtube.com/results?search_query=" search-query))))
 
+(defun jacob-play-youtube ()
+  "Ask for a string to search.
+Use mpv and youtube-dl to play the first video found."
+  (interactive)
+  (let* ((youtube-search-url "https://www.youtube.com/results?search_query=")
+         (youtube-video-base-url "https://www.youtube.com")
+         (input (read-from-minibuffer "YouTube: "))
+         (search-query (string-replace " " "+" input))
+         (response (jacob-web-request-helper "GET" (concat youtube-search-url search-query)))
+         (video-id (with-temp-buffer
+                     (insert response)
+                     (goto-char (point-min))
+                     (re-search-forward "/watch\\?v=.\\{0,11\\}")
+                     (match-string 0)))
+         (youtube-video-url (concat youtube-video-base-url video-id)))
+    (async-shell-command (concat "mpv " youtube-video-url))))
+
 (defun jacob-lookup-wikipedia ()
   "Ask for a string to search.
 Search youtube for string and display in browser."
@@ -1300,6 +1319,7 @@ Otherwise, display error message."
   (interactive)
   (pcase major-mode
     ((or 'typescript-react-mode 'js-mode) (jacob-format-buffer-shell-command "deno fmt %s"))
+    ('go-mode (jacob-format-buffer-shell-command "gofmt -w %s"))
     (t (message "no formatting specified"))))
 
 ;; FIXME: keys that are not already bound will not work for jacob-xfk-define-key
@@ -1311,6 +1331,20 @@ Otherwise, display error message."
   "Push current git branch to new upstream branch."
   (interactive)
   (shell-command "git push --set-upstream origin HEAD"))
+
+(defun jacob-git-pull-master-new-branch ()
+  "Push current git branch to new upstream branch."
+  (interactive)
+  (when (zerop (shell-command "git checkout master"))
+    (when (zerop (shell-command "git pull"))
+      (shell-command (concat "git checkout -b " (read-from-minibuffer "branch name: "))))))
+
+(defun jacob-npm-fix-linting ()
+  "Fix linting for npm then commit and push."
+  (interactive)
+  (when (zerop (shell-command "npm run lint:fix"))
+    (shell-command "git commit -m \"chore: fix linting\" -na")
+    (shell-command "git push")))
 
 
 
@@ -1449,7 +1483,7 @@ Calls INSERT."
   (jacob-insert-block-helper "switch (■)"))
 
 (define-jacob-insert jacob-insert-c-case
-  (jacob-insert-helper "case ■: {\n●\nbreak;\n}"))
+  (jacob-insert-helper "case ■: \n●\nbreak;"))
 
 (define-jacob-insert jacob-insert-java-main
   (jacob-insert-block-helper "public static void main(String[] args)"))
@@ -1513,6 +1547,9 @@ Calls INSERT."
     ("eeeq" "===")
     ("sco" "_")
     ))
+
+(define-abbrev-table 'org-mode-abbrev-table
+  '(("i" "I")))
 
 (define-abbrev-table 'c-mode-abbrev-table
   '(
