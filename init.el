@@ -64,6 +64,12 @@
 
 (setq scroll-conservatively 100)
 (setq mouse-wheel-progressive-speed nil)
+(setq mouse-wheel-scroll-amount '(10
+                                  ((shift)
+                                   . hscroll)
+                                  ((meta))
+                                  ((control)
+                                   . text-scale)))
 
 
 ;; user interface config
@@ -138,8 +144,8 @@
 (setq display-time-default-load-average nil)
 (setq display-time-day-and-date t)
 
-(setq tab-bar-format '(tab-bar-format-global))
-(tab-bar-mode 1)
+;; (setq tab-bar-format '(tab-bar-format-global))
+;; (tab-bar-mode 1)
 
 (setq display-time-format "%H:%M %d/%m/%Y")
 (display-time-mode 1)
@@ -196,8 +202,8 @@
 (defvar jacob-mode-line-format
   '("%*"
     (:eval mode-name) ": "
-    (:eval (when-let (project (directory-file-name (cdr (project-current))))
-             (concat "<" (substring project (string-match "[^/]+\\'" project)) "> ")))
+    ;; (:eval (when-let (project (directory-file-name (cdr (project-current))))
+    ;;          (concat "<" (substring project (string-match "[^/]+\\'" project)) "> ")))
     "%b "
     mode-line-position
     mode-line-misc-info ; for use with org timer
@@ -230,12 +236,12 @@
 (set-face-attribute 'fringe nil :background "honeydew3")
 (set-face-attribute 'mode-line nil :background "limegreen")
 (set-face-attribute 'mode-line-inactive nil :background "lightgreen")
-(set-face-attribute 'tab-bar nil
-                    :background "honeydew3"
-                    :foreground "yellow"
-                    :height 1.5
-                    :underline t
-                    :bold t)
+;; (set-face-attribute 'tab-bar nil
+;;                     :background "honeydew3"
+;;                     :foreground "yellow"
+;;                     :height 1.5
+;;                     :underline t
+;;                     :bold t)
 
 
 ;; js-mode config
@@ -295,12 +301,12 @@
 
 (defun jacob-font-size-increase ()
   "Increase font size by two steps."
-  (interactive) 
+  (interactive)
   (jacob-set-font-size (+ jacob-font-size 2)))
 
 (defun jacob-font-size-decrease ()
   "Decrease font size by two steps."
-  (interactive) 
+  (interactive)
   (jacob-set-font-size (- jacob-font-size 2)))
 
 (jacob-set-font-size jacob-font-size)
@@ -355,9 +361,8 @@
   (org-babel-do-load-languages
    'org-babel-load-languages
    '((octave . t)))
-  
-  (setq org-confirm-babel-evaluate nil))
 
+  (setq org-confirm-babel-evaluate nil))
 
 
 ;; pulse config
@@ -450,15 +455,19 @@
 (defun jacob-indent-with-major-mode ()
   "Indent buffer using current major mode.
   Designed for use in on-save hook in certain programming languages modes."
-  (when (or (string= major-mode "csharp-tree-sitter-mode")
-            (string= major-mode "sml-mode")
-            (string= major-mode "java-mode")
-            (string= major-mode "typescript-react-mode"))
-    (indent-region (point-min) (point-max)))
-  (when (or (string= major-mode "emacs-lisp-mode")
-            (string= major-mode "racket-mode")
-            (string= major-mode "clojure-mode"))
-    (lisp-indent-region (point-min) (point-max))))
+  (unless smerge-mode
+    (cond ((seq-contains-p '(csharp-tree-sitter-mode
+                             typescript-react-mode
+                             java-mode
+                             sml-mode)
+                           major-mode
+                           'string=)
+           (indent-region (point-min) (point-max)))
+          ((seq-contains-p '(emacs-lisp-mode
+                             racket-mode
+                             clojure-mode)
+                           major-mode)
+           (lisp-indent-region (point-min) (point-max))))))
 
 (add-hook 'before-save-hook 'jacob-indent-with-major-mode)
 
@@ -652,7 +661,7 @@ Useful for deleting ^M after `eglot-code-actions'."
             #'(lambda ()
                 (setq-local eldoc-documentation-strategy
                             'eldoc-documentation-compose)))
-  
+
   (add-hook 'java-mode-hook 'eglot-ensure)
   ;; (add-hook 'csharp-tree-sitter-mode-hook 'eglot-ensure)
   (add-hook 'typescript-mode-hook 'eglot-ensure)
@@ -663,7 +672,7 @@ Useful for deleting ^M after `eglot-code-actions'."
   (with-eval-after-load 'eglot
     (if (boundp 'jacob-omnisharp-language-server-path)
         (add-to-list 'eglot-server-programs `(csharp-tree-sitter-mode . (,jacob-omnisharp-language-server-path "-lsp"))))
-    
+
     (add-to-list 'eglot-server-programs '((js-mode typescript-mode) . ("typescript-language-server" "--stdio")))
 
     ;; (add-to-list 'eglot-server-programs '((js-mode typescript-mode) . (eglot-deno "deno" "lsp")))
@@ -675,8 +684,11 @@ Useful for deleting ^M after `eglot-code-actions'."
       "Passes through required deno initialization options"
       (list :enable t
             :lint t))
-    
-    (add-to-list 'eglot-server-programs '(go-mode . ("/home/jacob/go/bin/gopls")))
+
+    ;; (add-to-list 'eglot-server-programs '(go-mode . ("/home/jacob/go/bin/gopls")))
+
+    (eglot--code-action eglot-code-action-organize-imports-ts "source.organizeImports.ts")
+    (eglot--code-action eglot-code-action-add-missing-imports-ts "source.addMissingImports.ts")
 
     ))
 
@@ -688,7 +700,7 @@ Useful for deleting ^M after `eglot-code-actions'."
   (setq lsp-headerline-breadcrumb-enable nil)
   (setq lsp-eldoc-render-all t)
   (setq lsp-eldoc-enable-hover t)
-  
+
   (add-hook 'csharp-tree-sitter-mode-hook 'lsp)
   )
 
@@ -898,29 +910,40 @@ Useful for deleting ^M after `eglot-code-actions'."
               (indent-region (point-min) (point-max))
               (buffer-substring-no-properties (point-min) (point-max))))))
 
-(defun jacob-web-request-helper (method url &optional headers data data-format-function)
+(defun jacob-web-request-helper (url &optional method headers data data-format-function data-parse)
   "Helper function for making web requests.
 METHOD, HEADERS and DATA are for the corresponding url-request variables.
 URL is the address to send the request to.
 Returns a string containing the response.
 
 DATA-FORMAT-FUNCTION is a function that takes one argument and returns
-a string."
+DATA in string form.
+
+DATA-PARSE is a symbol specifying the output of this function. If not
+given, it will return the http reponse in string form. If `json' it
+will return the json data as a lisp object."
   (require 'json)
-  (with-current-buffer (let ((url-request-method method)
+  (with-current-buffer (let ((url-request-method (if (null method)
+                                                     "GET"
+                                                   method))
                              (url-request-extra-headers headers)
                              (url-request-data (if (null data-format-function)
                                                    data
                                                  (funcall data-format-function data))))
                          (url-retrieve-synchronously url))
-    (beginning-of-buffer)
+    (goto-char (point-min))
     (when (search-forward-regexp "Content-Type: application/[a-z+]*json" nil t)
       (search-forward "\n\n" nil t)
       (json-reformat-region (point) (point-max)))
     (when (search-forward-regexp "Content-Type:.*xml" nil t)
       (search-forward "\n\n" nil t)
       (jacob-format-xml))
-    (buffer-string)))
+    (goto-char (point-min))
+    (pcase data-parse
+      ('json (progn
+               (search-forward "\n\n" nil t)
+               (json-read)))
+      (_ (buffer-string)))))
 
 (defun jacob-open-in-camunda-modeler ()
   "Attempt to open current file in camunda modeler."
@@ -1025,11 +1048,11 @@ point."
   (interactive)
 
   (undo-boundary)
-  
+
   (unless (eq last-command this-command)
     (setq jacob-format-words-3-style-and-start (cons (read-char-from-minibuffer "select style: " '(?c ?p ?k ?s ?S))
                                                      (point))))
-  
+
   (save-excursion
     (let* ((style (car jacob-format-words-3-style-and-start))
            (format-position (cdr jacob-format-words-3-style-and-start))
@@ -1216,7 +1239,7 @@ point."
         (goto-char (point-min))
         (while (search-forward-regexp "[[:space:]]+" nil t)
           (replace-match " ")))
-      
+
       (dolist (pair (list (quote ("[ " "["))
                           (quote ("[" "\\\\jbmat{"))
                           (quote (" ]" "]"))
@@ -1266,18 +1289,19 @@ Search youtube for string and display in browser."
   "Ask for a string to search.
 Use mpv and youtube-dl to play the first video found."
   (interactive)
-  (let* ((youtube-search-url "https://www.youtube.com/results?search_query=")
-         (youtube-video-base-url "https://www.youtube.com")
-         (input (read-from-minibuffer "YouTube: "))
-         (search-query (string-replace " " "+" input))
-         (response (jacob-web-request-helper "GET" (concat youtube-search-url search-query)))
-         (video-id (with-temp-buffer
-                     (insert response)
-                     (goto-char (point-min))
-                     (re-search-forward "/watch\\?v=.\\{0,11\\}")
-                     (match-string 0)))
-         (youtube-video-url (concat youtube-video-base-url video-id)))
-    (async-shell-command (concat "mpv " youtube-video-url))))
+  (start-process "youtube"
+                 nil
+                 "mpv"
+                 "--ytdl-format=worstvideo+bestaudio"
+                 (concat "https://www.youtube.com"
+                         (with-temp-buffer
+                           (insert (jacob-web-request-helper (concat "https://www.youtube.com/results?search_query="
+                                                                     (string-replace " "
+                                                                                     "+"
+                                                                                     (read-from-minibuffer "YouTube: ")))))
+                           (goto-char (point-min))
+                           (re-search-forward "/watch\\?v=.\\{0,11\\}")
+                           (match-string 0)))))
 
 (defun jacob-lookup-wikipedia ()
   "Ask for a string to search.
@@ -1315,10 +1339,20 @@ Otherwise, display error message."
                          (shell-quote-argument buffer-file-name)))
   (revert-buffer t t t))
 
+(defun jacob-npm-project-p ()
+  (seq-find (lambda (x)
+              (string= x "package.json"))
+            (directory-files (project-root (project-current)))))
+
 (defun jacob-format-buffer ()
   (interactive)
   (pcase major-mode
-    ((or 'typescript-react-mode 'js-mode) (jacob-format-buffer-shell-command "deno fmt %s"))
+    ((or 'typescript-react-mode 'js-mode) (progn
+                                            (ignore-errors (eglot-code-action-add-missing-imports-ts (point-min) (point-max)))
+                                            (eglot-code-action-organize-imports-ts (point-min) (point-max))
+                                            (jacob-format-buffer-shell-command (if (jacob-npm-project-p)
+                                                                                   "prettier %s -w"
+                                                                                 "deno fmt %s"))))
     ('go-mode (jacob-format-buffer-shell-command "gofmt -w %s"))
     (t (message "no formatting specified"))))
 
@@ -1417,7 +1451,7 @@ present, move point back to ■ and delete it."
                     (point)
                   (insert template)))
          (end (point)))
-    
+
     (goto-char start)
     (dotimes (_ (- (+ 1 (line-number-at-pos end)) (line-number-at-pos (point))))
       (ignore-errors (indent-according-to-mode))
@@ -1459,7 +1493,7 @@ Calls INSERT."
   (jacob-insert-block-helper "while (■)"))
 
 (define-jacob-insert jacob-insert-c-for
-  (jacob-insert-block-helper "for (■;●;●)"))
+  (jacob-insert-block-helper "for (■)"))
 
 (define-jacob-insert jacob-insert-java-for-each
   (jacob-insert-block-helper "for (var ■ : ●)"))
@@ -1533,6 +1567,21 @@ Calls INSERT."
 (define-jacob-insert jacob-insert-go-printf
   (jacob-insert-helper "fmt.Printf(■)"))
 
+(define-jacob-insert jacob-insert-go-func
+  (jacob-insert-block-helper "func ■()"))
+
+(define-jacob-insert jacob-insert-go-for
+  (jacob-insert-block-helper "for ■"))
+
+(define-jacob-insert jacob-insert-go-for-range
+  (jacob-insert-block-helper "for i, v := range ■"))
+
+(define-jacob-insert jacob-insert-go-if
+  (jacob-insert-block-helper "if ■"))
+
+(define-jacob-insert jacob-insert-go-struct
+  (jacob-insert-block-helper "struct"))
+
 (define-jacob-insert jacob-insert-csharp-print
   (jacob-insert-helper "Console.WriteLine(■);"))
 
@@ -1551,13 +1600,8 @@ Calls INSERT."
 (define-abbrev-table 'org-mode-abbrev-table
   '(("i" "I")))
 
-(define-abbrev-table 'c-mode-abbrev-table
+(define-abbrev-table 'common-operators-abbrev-table
   '(
-    ("if" "" jacob-insert-c-if)
-    ("for" "" jacob-insert-c-for)
-    ("while" "" jacob-insert-c-while)
-    ("switch" "" jacob-insert-c-switch)
-    ("case" "" jacob-insert-c-case)
     ("lt" "<")
     ("gt" ">")
     ("lte" "<=")
@@ -1566,8 +1610,17 @@ Calls INSERT."
     ("neq" "!=")
     ("or" "||")
     ("and" "&&")
-    ("ret" "return")
-    ))
+    ("ret" "return")))
+
+(define-abbrev-table 'c-mode-abbrev-table
+  '(
+    ("if" "" jacob-insert-c-if)
+    ("for" "" jacob-insert-c-for)
+    ("while" "" jacob-insert-c-while)
+    ("switch" "" jacob-insert-c-switch)
+    ("case" "" jacob-insert-c-case))
+  nil
+  :parents (list common-operators-abbrev-table))
 
 (define-abbrev-table 'js-mode-abbrev-table
   '(
@@ -1643,9 +1696,17 @@ Calls INSERT."
 
 (define-abbrev-table 'go-mode-abbrev-table
   '(
-    ("fpl" "" jacob-insert-go-println)
-    ("fpf" "" jacob-insert-go-printf)
-    ))
+    ("pl" "" jacob-insert-go-println)
+    ("pf" "" jacob-insert-go-printf)
+    ("fun" "" jacob-insert-go-func)
+    ("for" "" jacob-insert-go-for)
+    ("forr" "" jacob-insert-go-for-range)
+    ("if" "" jacob-insert-go-if)
+    ("struct" "" jacob-insert-go-struct)
+    ("ass" ":=")
+    )
+  nil
+  :parents (list common-operators-abbrev-table))
 
 (define-abbrev-table 'purescript-mode-abbrev-table
   '(
@@ -1757,7 +1818,8 @@ Calls INSERT."
       (define-key map "r" 'eglot-rename)))
 
   (let ((map vc-prefix-map))
-    (define-key map "P" 'jacob-git-push-set-upstream))
+    (define-key map "P" 'jacob-git-push-set-upstream)
+    (define-key map "c" 'jacob-git-pull-master-new-branch))
 
   (let ((map xah-fly-dot-keymap))
     (define-key map "v" vc-prefix-map)
@@ -1844,17 +1906,17 @@ Calls INSERT."
   (let ((map xah-fly-w-keymap))
     (define-key map "n" 'jacob-eval-and-replace))
 
-  (let ((map xah-fly-t-keymap)) 
+  (let ((map xah-fly-t-keymap))
     (define-key map "j" 'xah-close-current-buffer))
 
   (let ((map xah-fly-c-keymap))
     (define-key map "j" 'consult-recent-file)
     (define-key map "e" 'find-file))
 
-  (let ((map xah-fly-t-keymap)) 
+  (let ((map xah-fly-t-keymap))
     (define-key map "j" 'kill-current-buffer))
 
-  (let ((map xah-fly-r-keymap)) 
+  (let ((map xah-fly-r-keymap))
     (define-key map "c" 'kmacro-set-counter))
 
   (let ((map xah-fly-n-keymap))
@@ -1864,7 +1926,7 @@ Calls INSERT."
   (let ((map vc-prefix-map))
     (define-key map "p" 'vc-push))
 
-  (let ((map minibuffer-local-completion-map)) 
+  (let ((map minibuffer-local-completion-map))
     (define-key map "SPC" 'self-insert-command))
 
   (let ((map dired-mode-map))
@@ -1923,15 +1985,15 @@ Calls INSERT."
       (jacob-xfk-define-key map "t" 'calendar-set-mark)))
 
   (with-eval-after-load 'doc-view
-    (let ((map doc-view-mode-map)) 
+    (let ((map doc-view-mode-map))
       (jacob-xfk-define-key map "l" 'doc-view-next-page)
       (jacob-xfk-define-key map "j" 'doc-view-previous-page)))
 
   (with-eval-after-load 'diff-mode
-    (let ((map diff-mode-map)) 
+    (let ((map diff-mode-map))
       (jacob-xfk-define-key map "q" 'quit-window))))
 
-(with-eval-after-load 'smerge
+(with-eval-after-load 'smerge-mode
   (defvar jacob-smerge-repeat-map
     (let ((map (make-sparse-keymap)))
       (define-key map (kbd "n") 'smerge-next)
@@ -1939,7 +2001,7 @@ Calls INSERT."
       (define-key map (kbd "u") 'smerge-keep-upper)
       (define-key map (kbd "l") 'smerge-keep-lower)
       map))
-  
+
   (put 'smerge-next 'repeat-map 'jacob-smerge-repeat-map)
   (put 'smerge-prev 'repeat-map 'jacob-smerge-repeat-map)
   (put 'smerge-keep-upper 'repeat-map 'jacob-smerge-repeat-map)
