@@ -1380,6 +1380,15 @@ Otherwise, display error message."
     (shell-command "git commit -m \"chore: fix linting\" -na")
     (shell-command "git push")))
 
+(defun jacob-open-in-vscode ()
+  "Open current file in vscode."
+  (interactive)
+  (let ((default-directory (project-root (project-current)))
+        (file (buffer-file-name))
+        (line (number-to-string (+ (current-line) 1)))
+        (column (number-to-string (+ (current-column) 1))))
+    (shell-command (concat "code . --reuse-window --goto " file ":" line ":" column))))
+
 
 
 ;; voice commands
