@@ -200,7 +200,9 @@
 (line-number-mode 1)
 
 (defvar jacob-mode-line-format
-  '("%*"
+  '("%e"
+    mode-line-front-space
+    "%*"
     (:eval mode-name)
     ": "
     "%b "
