@@ -1597,6 +1597,24 @@ Calls INSERT."
 (define-jacob-insert jacob-insert-csharp-property
   (jacob-insert-helper "■ { get; set; }"))
 
+(define-jacob-insert jacob-insert-clojure-defn
+  (jacob-insert-helper "(defn ■ [●]\n●)"))
+
+(define-jacob-insert jacob-insert-clojure-loop
+  (jacob-insert-helper "(loop [■]\n●)"))
+
+(define-jacob-insert jacob-insert-clojure-recur
+  (jacob-insert-helper "(recur ■)"))
+
+(define-jacob-insert jacob-insert-clojure-let
+  (jacob-insert-helper "(let [■]\n●)"))
+
+(define-jacob-insert jacob-insert-clojure-if
+  (jacob-insert-helper "(if ■)"))
+
+(define-jacob-insert jacob-insert-clojure-case
+  (jacob-insert-helper "(case ■\n●)"))
+
 (define-abbrev-table 'global-abbrev-table
   '(
     ("dal" "$")
@@ -1697,7 +1715,7 @@ Calls INSERT."
 
 (define-abbrev-table 'clojure-mode-abbrev-table
   '(("defn" "" jacob-insert-clojure-defn)
-    ("if" "" jacob-insert-lisp-if)
+    ("if" "" jacob-insert-clojure-if)
     ("loop" "" jacob-insert-clojure-loop)
     ("rec" "" jacob-insert-clojure-recur)
     ("let" "" jacob-insert-clojure-let)
