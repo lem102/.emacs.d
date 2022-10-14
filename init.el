@@ -232,16 +232,11 @@
 
 ;; theme config
 
-(set-face-attribute 'default nil :background "honeydew3")
-(set-face-attribute 'fringe nil :background "honeydew3")
-(set-face-attribute 'mode-line nil :background "limegreen")
-(set-face-attribute 'mode-line-inactive nil :background "lightgreen")
-;; (set-face-attribute 'tab-bar nil
-;;                     :background "honeydew3"
-;;                     :foreground "yellow"
-;;                     :height 1.5
-;;                     :underline t
-;;                     :bold t)
+(when (display-graphic-p)
+  (set-face-attribute 'default nil :background "honeydew3")
+  (set-face-attribute 'fringe nil :background "honeydew3")
+  (set-face-attribute 'mode-line nil :background "limegreen")
+  (set-face-attribute 'mode-line-inactive nil :background "lightgreen"))
 
 
 ;; js-mode config
