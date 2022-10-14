@@ -200,15 +200,21 @@
 (line-number-mode 1)
 
 (defvar jacob-mode-line-format
-  '("%e"
+  '(" %e"
     mode-line-front-space
     "%*"
-    (:eval mode-name)
+    (:eval (pcase major-mode
+             ('lisp-interaction-mode "ELi")
+             ('emacs-lisp-mode "EL")
+             ('typescript-react-mode "TSX")
+             (_ mode-name)))
     ": "
     "%b "
     (vc-mode vc-mode)
     mode-line-position
-    mode-line-modes
+    (xah-fly-keys " ∑")
+    (flymake-mode flymake-mode-line-format)
+    " "
     mode-line-misc-info)
   "Custom mode line format.")
 
@@ -1537,6 +1543,9 @@ Calls INSERT."
 (define-jacob-insert jacob-insert-elisp-goto-char
   (jacob-insert-helper "(goto-char ■)"))
 
+(define-jacob-insert jacob-insert-elisp-with-eval-after-load
+  (jacob-insert-helper "(with-eval-after-load ■)"))
+
 (define-jacob-insert jacob-insert-lisp-let
   (jacob-insert-helper "(let ((■))\n●)"))
 
@@ -1701,14 +1710,14 @@ Calls INSERT."
   :parents (list 'common-java-csharp-abbrev-table))
 
 (define-abbrev-table 'emacs-lisp-mode-abbrev-table
-  '(
-    ("def" "" jacob-insert-elisp-defun)
+  '(("def" "" jacob-insert-elisp-defun)
     ("let" "" jacob-insert-lisp-let)
     ("int" "(interactive)" t)
     ("cond" "" jacob-insert-lisp-cond)
     ("gc" "" jacob-insert-elisp-goto-char)
     ("pmi" "(point-min)" t)
-    ("pma" "(point-max)" t)))
+    ("pma" "(point-max)" t)
+    ("weal" "" jacob-insert-elisp-with-eval-after-load)))
 
 (define-abbrev-table 'clojure-mode-abbrev-table
   '(("defn" "" jacob-insert-clojure-defn)
