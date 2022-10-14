@@ -201,13 +201,13 @@
 
 (defvar jacob-mode-line-format
   '("%*"
-    (:eval mode-name) ": "
-    ;; (:eval (when-let (project (directory-file-name (cdr (project-current))))
-    ;;          (concat "<" (substring project (string-match "[^/]+\\'" project)) "> ")))
+    (:eval mode-name)
+    ": "
     "%b "
+    (vc-mode vc-mode)
     mode-line-position
-    mode-line-misc-info ; for use with org timer
-    )
+    mode-line-modes
+    mode-line-misc-info)
   "Custom mode line format.")
 
 (setq-default mode-line-format jacob-mode-line-format)
