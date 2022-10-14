@@ -207,15 +207,20 @@
              ('lisp-interaction-mode "ELi")
              ('emacs-lisp-mode "EL")
              ('typescript-react-mode "TSX")
+             ('nxml-mode "XML")
              (_ mode-name)))
     ": "
     "%b "
     (vc-mode vc-mode)
+    " "
     mode-line-position
     (xah-fly-keys " ∑")
     (flymake-mode flymake-mode-line-format)
     " "
-    mode-line-misc-info)
+    (eglot--managed-mode
+     (" " eglot--mode-line-format " "))
+    (global-mode-string
+     ("" global-mode-string)))
   "Custom mode line format.")
 
 (setq-default mode-line-format jacob-mode-line-format)
@@ -1288,23 +1293,27 @@ Search youtube for string and display in browser."
   (let ((search-query (read-from-minibuffer "YouTube: ")))
     (browse-url (concat "https://www.youtube.com/results?search_query=" search-query))))
 
+(defvar jacob-play-youtube-history nil)
+
 (defun jacob-play-youtube ()
   "Ask for a string to search.
 Use mpv and youtube-dl to play the first video found."
   (interactive)
-  (start-process "youtube"
-                 nil
-                 "mpv"
-                 "--ytdl-format=worstvideo+bestaudio"
-                 (concat "https://www.youtube.com"
-                         (with-temp-buffer
-                           (insert (jacob-web-request-helper (concat "https://www.youtube.com/results?search_query="
-                                                                     (string-replace " "
-                                                                                     "+"
-                                                                                     (read-from-minibuffer "YouTube: ")))))
-                           (goto-char (point-min))
-                           (re-search-forward "/watch\\?v=.\\{0,11\\}")
-                           (match-string 0)))))
+  (let ((input (completing-read "YouTube: " jacob-play-youtube-history)))
+    (add-to-history 'jacob-play-youtube-history input)
+    (start-process "youtube"
+                   nil
+                   "mpv"
+                   "--ytdl-format=worstvideo+bestaudio"
+                   (concat "https://www.youtube.com"
+                           (with-temp-buffer
+                             (insert (jacob-web-request-helper (concat "https://www.youtube.com/results?search_query="
+                                                                       (string-replace " "
+                                                                                       "+"
+                                                                                       input))))
+                             (goto-char (point-min))
+                             (re-search-forward "/watch\\?v=.\\{0,11\\}")
+                             (match-string 0))))))
 
 (defun jacob-lookup-wikipedia ()
   "Ask for a string to search.
