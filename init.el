@@ -450,7 +450,7 @@
 (defun jacob-indent-with-major-mode ()
   "Indent buffer using current major mode.
   Designed for use in on-save hook in certain programming languages modes."
-  (unless smerge-mode
+  (unless (ignore-errors smerge-mode)
     (cond ((seq-contains-p '(csharp-tree-sitter-mode
                              typescript-react-mode
                              java-mode
