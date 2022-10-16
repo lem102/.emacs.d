@@ -287,6 +287,22 @@
 
 ;; eshell config
 
+(setq eshell-scroll-to-bottom-on-output t)
+
+(defun jacob-async-eshell-command ()
+  "Run an async command through eshell."
+  (interactive)
+  (let* ((command (read-from-minibuffer "Emacs shell command: "))
+         (dir (if (project-current)
+                  (project-root (project-current))
+                default-directory))
+         (buffer-name (concat "*" dir ":" command "*")))
+    (kill-buffer buffer-name)
+    (eshell-command (concat command " &"))
+    (save-excursion
+      (set-buffer (get-buffer "*Eshell Async Command Output*"))
+      (rename-buffer buffer-name))))
+
 (defun pcomplete/gco ()
   (pcomplete-here* (jacob-git-get-branches t)))
 
@@ -295,7 +311,6 @@
 
 (defun jacob-git-get-branches (&optional display-origin)
   (with-temp-buffer
-    (switch-to-buffer (current-buffer))
     (insert (shell-command-to-string "git branch -a"))
     (backward-delete-char 1)            ; delete rouge newline at end
     (goto-char (point-min))
@@ -2008,7 +2023,7 @@ Calls INSERT."
 
   (let ((map xah-fly-n-keymap))
     (define-key map "a" 'jacob-font-size-increase)
-    (define-key map "3" 'jacob-async-shell-command))
+    (define-key map "3" 'jacob-async-eshell-command))
 
   (let ((map vc-prefix-map))
     (define-key map "p" 'vc-push))
