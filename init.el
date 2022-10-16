@@ -304,10 +304,10 @@
       (rename-buffer buffer-name))))
 
 (defun pcomplete/gco ()
-  (pcomplete-here* (jacob-git-get-branches t)))
+  (pcomplete-here* (jacob-git-get-branches)))
 
 (defun pcomplete/grh ()
-  (pcomplete-here* (jacob-git-get-branches)))
+  (pcomplete-here* (jacob-git-get-branches t)))
 
 (defun jacob-git-get-branches (&optional display-origin)
   "Get git branches for current repo.
@@ -915,29 +915,7 @@ Useful for deleting ^M after `eglot-code-actions'."
 
 (jacob-try-require 'xah-fly-keys
   (xah-fly-keys-set-layout "qwerty")
-  (xah-fly-keys 1)
-
-  (defun xah-jacob-kill-word (repetitions)
-    (interactive "p")
-    (when (use-region-p)
-      (delete-region (region-beginning) (region-end)))
-    (kill-word repetitions))
-
-  (defun xah-jacob-backward-kill-word (repetitions)
-    (interactive "p")
-    (when (use-region-p)
-      (delete-region (region-beginning) (region-end)))
-    (backward-kill-word repetitions))
-
-  (defun xah-jacob-beginning-of-line-or-block (repetitions)
-    (interactive "p")
-    (dotimes (i repetitions)
-      (xah-beginning-of-line-or-block)))
-
-  (defun xah-jacob-end-of-line-or-block (repetitions)
-    (interactive "p")
-    (dotimes (i repetitions)
-      (xah-end-of-line-or-block))))
+  (xah-fly-keys 1))
 
 
 
@@ -1016,18 +994,6 @@ will return the json data as a lisp object."
                              jacob-mode-line-format
                            nil)))
 
-(defun jacob-start-timer ()
-  "Run a 25 min timer."
-  (interactive)
-  (require 'org-timer)
-  (org-timer-set-timer "25"))
-
-(defun jacob-new-tab ()
-  "Make a new tab and give it a name."
-  (interactive)
-  (tab-bar-new-tab)
-  (call-interactively 'tab-rename))
-
 (jacob-is-installed 'consult
   (defun jacob-project-search ()
     "If current project is a git project, use consult git grep, otherwise use consult grep."
@@ -1055,41 +1021,11 @@ will return the json data as a lisp object."
   (async-shell-command command
                        (concat "* " default-directory " " command " *")))
 
-(defvar jacob-format-words-2-style-and-start nil
+(defvar jacob-format-words-style-and-start nil
   "Pair of currently selected style and starting point.
 If nil, means you havent used the command for the first time yet.")
 
-(defun jacob-format-words-2 ()
-  "Command for formating words into identifiers when writing code.
-
-On first use, ask for formatting style (e.g. kebab, camel, etc).
-Store current point, and selected style.
-
-On second use, format from current point to point saved from first use
-in the selected style also from first use."
-  (interactive)
-  (if jacob-format-words-2-style-and-start
-      (let* ((style (car jacob-format-words-2-style-and-start))
-             (start-point (cdr jacob-format-words-2-style-and-start))
-             (words (split-string (delete-and-extract-region start-point (point)) " ")))
-        (insert (pcase style
-                  ("camelCase" (concat (car words)
-                                       (mapconcat 'capitalize (cdr words) "")))
-                  ("PascalCase" (mapconcat 'capitalize words ""))
-                  ("kebab-case" (string-join words "-"))
-                  ("snake_case" (string-join words "_"))
-                  ("SCREAMING_SNAKE_CASE" (mapconcat 'upcase words "_"))))
-        (setq jacob-format-words-2-style-and-start nil))
-    (let ((style-choice (completing-read "choose: " '("camelCase" "PascalCase" "kebab-case" "snake_case" "SCREAMING_SNAKE_CASE"))))
-      (message (concat style-choice " selected"))
-      (setq jacob-format-words-2-style-and-start (cons style-choice
-                                                       (point))))))
-
-(defvar jacob-format-words-3-style-and-start nil
-  "Pair of currently selected style and starting point.
-If nil, means you havent used the command for the first time yet.")
-
-(defun jacob-format-words-3 ()
+(defun jacob-format-words ()
   "Command for formating words into identifiers when writing code.
 
 On first use, ask for formatting style (e.g. kebab, camel,
@@ -1180,30 +1116,6 @@ point."
   (interactive)
   (load-file (expand-file-name "~/.emacs.d/init.el")))
 
-(defun jacob-config-update ()
-  "Download latest version of config from git."
-  (interactive)
-  (shell-command "git -C ~/.emacs.d pull"))
-
-(jacob-is-installed 'restart-emacs
-  (defun jacob-config-update-then-restart ()
-    "Update config then restart."
-    (interactive)
-    (jacob-config-update)
-    (restart-emacs)))
-
-(defun jacob-split-window-below-select-new ()
-  "Splits current window vertically, then switch to new window."
-  (interactive)
-  (split-window-below)
-  (other-window 1))
-
-(defun jacob-split-window-right-select-new ()
-  "Splits current window horizontally, then switch to new window."
-  (interactive)
-  (split-window-right)
-  (other-window 1))
-
 (load-file (expand-file-name "~/.emacs.d/myLisp/jacob-long-time.el"))
 
 (defun jacob-display-time ()
@@ -1275,69 +1187,10 @@ point."
 (fset 'jacob-backspace-kmacro
       [?f backspace home])
 
-(defun jacob-matlab-matrix-to-latex (matrix-start matrix-end)
-  (interactive (if (use-region-p)
-                   (list (region-beginning) (region-end))
-                 (let (region-start
-                       region-end)
-                   (search-backward "[")
-                   (setq region-start (point))
-                   (search-forward "]")
-                   (setq region-end (point))
-                   (list region-start region-end))))
-  (save-excursion
-    (save-restriction
-      (narrow-to-region matrix-start matrix-end)
-
-      (progn
-        (goto-char (point-min))
-        (while (search-forward-regexp "[[:space:]]+" nil t)
-          (replace-match " ")))
-
-      (dolist (pair (list (quote ("[ " "["))
-                          (quote ("[" "\\\\jbmat{"))
-                          (quote (" ]" "]"))
-                          (quote ("]" "}"))
-                          (quote ("; " ";"))
-                          (quote (" " " & "))
-                          (quote (";" " \\\\\\\\ "))))
-        (progn
-          (goto-char (point-min))
-          (while (search-forward (car pair) nil t)
-            (replace-match (car (last pair)))))))))
-
-(defun jacob-system-shutdown ()
-  "Prompts for yes/no input.
-
-If user inputs yes, system is shutdown.  Otherwise, nothing happens."
-  (interactive)
-  (if (yes-or-no-p "Shutdown system?")
-      (shell-command "pwsh -Command Stop-Computer")))
-
-(defun jacob-eshell-dwim ()
-  "Call different eshell commands depending on the context.
-
-If the current buffer is an eshell buffer, call the `eshell'
-command with universal argument.  If the current buffer is under
-version control, call `project-eshell' instead."
-  (interactive)
-  (let ((current-prefix-arg (eq major-mode 'eshell-mode))
-        (eshell-command (if (eq 'Git (vc-backend (buffer-file-name)))
-                            'project-eshell
-                          'eshell)))
-    (call-interactively eshell-command)))
-
 (defun josh-kill-process-on-port ()
   "Ask for a port, kill process on that port.  For powershell."
   (interactive)
   (shell-command (concat "powershell.exe -File %home%\\Downloads\\Jacob.ps1 -localPort " (read-from-minibuffer "port: "))))
-
-(defun jacob-lookup-youtube ()
-  "Ask for a string to search.
-Search youtube for string and display in browser."
-  (interactive)
-  (let ((search-query (read-from-minibuffer "YouTube: ")))
-    (browse-url (concat "https://www.youtube.com/results?search_query=" search-query))))
 
 (defvar jacob-play-youtube-history nil)
 
@@ -1391,16 +1244,16 @@ Otherwise, display error message."
   (interactive)
   (unhighlight-regexp t))
 
+(defun jacob-npm-project-p ()
+  (seq-find (lambda (x)
+              (string= x "package.json"))
+            (directory-files (project-root (project-current)))))
+
 (defun jacob-format-buffer-shell-command (command)
   (save-buffer)
   (shell-command (format command
                          (shell-quote-argument buffer-file-name)))
   (revert-buffer t t t))
-
-(defun jacob-npm-project-p ()
-  (seq-find (lambda (x)
-              (string= x "package.json"))
-            (directory-files (project-root (project-current)))))
 
 (defun jacob-format-buffer ()
   (interactive)
@@ -1464,44 +1317,6 @@ should ask user to confirm all of above
 
 "
   (error "not implemented"))
-
-
-
-;; voice commands
-
-(defun jacob-recenter-top ()
-  (interactive)
-  (recenter 5))
-
-(defun jacob-recenter-centre ()
-  (interactive)
-  (recenter))
-
-(defun jacob-recenter-bottom ()
-  (interactive)
-  (recenter -5))
-
-(defun jacob-move-to-window-line-top ()
-  (interactive)
-  (move-to-window-line 5))
-
-(defun jacob-move-to-window-line-centre ()
-  (interactive)
-  (move-to-window-line nil))
-
-(defun jacob-move-to-window-line-bottom ()
-  (interactive)
-  (move-to-window-line -5))
-
-(defun jacob-voice-mark-command ()
-  (interactive)
-  (if (region-active-p)
-      (er/expand-region 1)
-    (set-mark (point))))
-
-(defun jacob-switch-to-previous-buffer ()
-  (interactive)
-  (switch-to-buffer (other-buffer (current-buffer) 1)))
 
 
 
@@ -1865,53 +1680,6 @@ Calls INSERT."
 (fset 'jacob-return-macro [return])
 
 
-;; voice command keybindings
-
-(global-unset-key (kbd "C-z"))
-
-(let ((map global-map))
-  (define-key map (kbd "C-z r") 'xah-jacob-kill-word)
-  (define-key map (kbd "C-z e") 'xah-jacob-backward-kill-word)
-  (define-key map (kbd "C-z h") 'xah-jacob-beginning-of-line-or-block)
-  (define-key map (kbd "C-z ;") 'xah-jacob-end-of-line-or-block)
-  (jacob-is-installed 'xah-fly-keys
-    (define-key map (kbd "C-z c") 'xah-copy-line-or-region)
-    (define-key map (kbd "C-z x") 'xah-cut-line-or-region)
-    (define-key map (kbd "C-z .") 'xah-forward-right-bracket)
-    (define-key map (kbd "C-z m") 'xah-backward-left-bracket)
-    (define-key map (kbd "C-z /") 'xah-goto-matching-bracket)
-    (define-key map (kbd "C-z d") 'xah-delete-backward-char-or-bracket-text)
-    (define-key map (kbd "C-z 0") 'xah-pop-local-mark-ring)
-    (define-key map (kbd "C-z v") 'xah-paste-or-paste-previous)
-    (define-key map (kbd "C-z w") 'xah-shrink-whitespaces))
-  (define-key map (kbd "C-z p p") 'jacob-xah-insert-paren)
-  (define-key map (kbd "C-z p b") 'jacob-xah-insert-square-bracket)
-  (define-key map (kbd "C-z p c") 'jacob-xah-insert-brace)
-  (define-key map (kbd "C-z p a") 'jacob-xah-insert-angled-bracket)
-  (define-key map (kbd "C-z p q") 'jacob-xah-insert-ascii-double-quote)
-  (define-key map (kbd "C-z p s") 'jacob-xah-insert-ascii-single-quote)
-  (define-key map (kbd "M-=") 'jacob-count-words-region)
-  (define-key map (kbd "C-z C-l t") 'jacob-recenter-top)
-  (define-key map (kbd "C-z C-l c") 'jacob-recenter-centre)
-  (define-key map (kbd "C-z C-l b") 'jacob-recenter-bottom)
-  (define-key map (kbd "C-z M-r t") 'jacob-move-to-window-line-top)
-  (define-key map (kbd "C-z M-r c") 'jacob-move-to-window-line-centre)
-  (define-key map (kbd "C-z M-r b") 'jacob-move-to-window-line-bottom)
-  (jacob-is-installed 'consult
-    (define-key map (kbd "C-z SPC v") 'consult-yank-from-kill-ring)
-    (define-key map (kbd "C-z SPC i j") 'consult-recent-file)
-    (define-key map (kbd "C-z SPC e c f") 'consult-buffer)
-    (define-key map (kbd "C-z SPC e c n") 'consult-line))
-  (define-key map (kbd "C-z t") 'jacob-voice-mark-command)
-  (define-key map (kbd "C-x 2") 'jacob-split-window-below-select-new)
-  (define-key map (kbd "C-x 3") 'jacob-split-window-right-select-new)
-  (define-key map (kbd "C-z f") 'jacob-switch-to-previous-buffer)
-  (define-key map (kbd "C-z F") 'ibuffer)
-  (jacob-is-installed 'goto-last-change
-    (define-key map (kbd "C-z j") 'goto-last-change)
-    (define-key map (kbd "C-z l") 'goto-last-change-reverse)))
-
-
 ;; xah-fly-keys keybindings
 
 (jacob-is-installed 'xah-fly-keys
@@ -1950,7 +1718,7 @@ Calls INSERT."
     (define-key map "1" 'winner-undo)
     (define-key map "2" 'winner-redo)
     (define-key map "9" 'jacob-swap-visible-buffers)
-    (define-key map "'" 'jacob-format-words-3)
+    (define-key map "'" 'jacob-format-words)
     (jacob-is-installed 'expand-region
       (define-key map "8" 'er/expand-region)))
 
