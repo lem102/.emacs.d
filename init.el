@@ -285,6 +285,33 @@
   (add-hook 'dired-mode-hook 'jacob-dired-mode-setup))
 
 
+;; eshell config
+
+(defun pcomplete/gco ()
+  (pcomplete-here* (jacob-git-get-branches t)))
+
+(defun pcomplete/grh ()
+  (pcomplete-here* (jacob-git-get-branches)))
+
+(defun jacob-git-get-branches (&optional display-origin)
+  (with-temp-buffer
+    (switch-to-buffer (current-buffer))
+    (insert (shell-command-to-string "git branch -a"))
+    (backward-delete-char 1)            ; delete rouge newline at end
+    (goto-char (point-min))
+    (flush-lines "->")
+    (while (re-search-forward (if display-origin
+                                  "remotes/"
+                                "remotes/origin/")
+                              nil
+                              t)
+      (replace-match ""))
+    (delete-rectangle (point-min) (progn
+                                    (goto-char (point-max))
+                                    (+ 2 (line-beginning-position))))
+    (split-string (buffer-substring-no-properties (point-min) (point-max)) "\n")))
+
+
 ;; emacs-lisp-mode config
 
 (defun jacob-elisp-config-hook-function ()
@@ -1400,6 +1427,24 @@ Otherwise, display error message."
         (line (number-to-string (+ (current-line) 1)))
         (column (number-to-string (+ (current-column) 1))))
     (shell-command (concat "code . --reuse-window --goto " file ":" line ":" column))))
+
+(defun jacob-covea-create-merge-request ()
+  "this command will do a lot.
+
+first, push the current git branch to origin.
+use the arguments described here (https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html#when-you-use-git-commands-locally)
+to automate MR creation and setup.
+
+second, use the slack api to send a message to relavant channels containing the MR link.
+
+bonus: grab the jira ticket automagically and insert it in the slack message and the MR description
+
+bonus bonus: move ticket to code review if it isn't already
+
+should ask user to confirm all of above
+
+"
+  (error "not implemented"))
 
 
 

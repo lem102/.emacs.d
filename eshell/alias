@@ -1,15 +1,11 @@
+alias ll ls -la
 alias gf git fetch
 alias grh git reset --hard $*
-alias ll ls -la
-alias pk eshell-up-peek $1
-alias up eshell-up $1
-alias ff find-file $1
-alias d dired $1
 alias ga git add $*
 alias gc git commit -m $*
 alias gs git status $*
 alias gp git push $*
+alias gpf git push -f
 alias gP git pull $*
 alias gpsu git push --set-upstream origin HEAD
 alias gco git checkout $*
-alias ffo find-file-other-window $1
