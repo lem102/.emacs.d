@@ -310,6 +310,10 @@
   (pcomplete-here* (jacob-git-get-branches)))
 
 (defun jacob-git-get-branches (&optional display-origin)
+  "Get git branches for current repo.
+
+Non-nil DISPLAY-ORIGIN displays whether a branch is from origin, nil
+hides this information."
   (with-temp-buffer
     (insert (shell-command-to-string "git branch -a"))
     (backward-delete-char 1)            ; delete rouge newline at end
