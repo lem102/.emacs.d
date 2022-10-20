@@ -122,6 +122,7 @@
 ;; misc config
 
 (add-to-list 'load-path "~/.emacs.d/local-packages/")
+(add-to-list 'load-path "~/.emacs.d/my-packages/")
 
 ;; (setq read-process-output-max (* 1024 1024))
 
@@ -287,48 +288,70 @@
 
 ;; eshell config
 
-(setq eshell-scroll-to-bottom-on-output t)
+(with-eval-after-load 'eshell
+  (setq eshell-scroll-to-bottom-on-output t)
 
-(defun jacob-async-eshell-command ()
-  "Run an async command through eshell."
-  (interactive)
-  (let* ((command (read-from-minibuffer "Emacs shell command: "))
-         (dir (if (project-current)
-                  (project-root (project-current))
-                default-directory))
-         (buffer-name (concat "*" dir ":" command "*")))
-    (kill-buffer buffer-name)
-    (eshell-command (concat command " &"))
-    (save-excursion
-      (set-buffer (get-buffer "*Eshell Async Command Output*"))
-      (rename-buffer buffer-name))))
+  (defun jacob-async-eshell-command ()
+    "Run an async command through eshell."
+    (interactive)
+    (let* ((command (read-from-minibuffer "Emacs shell command: "))
+           (dir (if (project-current)
+                    (project-root (project-current))
+                  default-directory))
+           (buffer-name (concat "*" dir ":" command "*")))
+      (kill-buffer buffer-name)
+      (eshell-command (concat command " &"))
+      (save-excursion
+        (set-buffer (get-buffer "*Eshell Async Command Output*"))
+        (rename-buffer buffer-name))))
 
-(defun pcomplete/gco ()
-  (pcomplete-here* (jacob-git-get-branches)))
+  (defun pcomplete/gco ()
+    (pcomplete-here* (jacob-git-get-branches)))
 
-(defun pcomplete/grh ()
-  (pcomplete-here* (jacob-git-get-branches t)))
+  (defun pcomplete/grh ()
+    (pcomplete-here* (jacob-git-get-branches t)))
 
-(defun jacob-git-get-branches (&optional display-origin)
-  "Get git branches for current repo.
+  (defun eshell/gpsu ()
+    (let* ((create-mr (y-or-n-p "Create MR on GitLab?"))
+           (command (concat "git push --set-upstream origin HEAD "
+                            (when create-mr (let* ((branch-name (with-temp-buffer
+                                                                  (eshell-command "git symbolic-ref HEAD --short" t)
+                                                                  (buffer-substring-no-properties (point-min) (- (point-max) 1))))
+                                                   (mr-key (progn
+                                                             (string-match (rx "mer"  "-" (+ digit))
+                                                                           branch-name)
+                                                             (match-string 0 branch-name))))
+                                              (concat "-o merge_request.create "
+                                                      "-o merge_request.remove_source_branch "
+                                                      (concat "-o merge_request.description=\""
+                                                              "[" mr-key "](" "https://coveaprodcloud.atlassian.net/browse/" mr-key ")"
+                                                              "\"")))))))
+      (with-temp-buffer
+        (eshell-command command t)
+        (goto-char (point-min))
+        (search-forward "https")
+        (browse-url-at-point))))
+
+  (defun jacob-git-get-branches (&optional display-origin)
+    "Get git branches for current repo.
 
 Non-nil DISPLAY-ORIGIN displays whether a branch is from origin, nil
 hides this information."
-  (with-temp-buffer
-    (insert (shell-command-to-string "git branch -a"))
-    (backward-delete-char 1)            ; delete rouge newline at end
-    (goto-char (point-min))
-    (flush-lines "->")
-    (while (re-search-forward (if display-origin
-                                  "remotes/"
-                                "remotes/origin/")
-                              nil
-                              t)
-      (replace-match ""))
-    (delete-rectangle (point-min) (progn
-                                    (goto-char (point-max))
-                                    (+ 2 (line-beginning-position))))
-    (split-string (buffer-substring-no-properties (point-min) (point-max)) "\n")))
+    (with-temp-buffer
+      (insert (shell-command-to-string "git branch -a"))
+      (backward-delete-char 1)            ; delete rouge newline at end
+      (goto-char (point-min))
+      (flush-lines "->")
+      (while (re-search-forward (if display-origin
+                                    "remotes/"
+                                  "remotes/origin/")
+                                nil
+                                t)
+        (replace-match ""))
+      (delete-rectangle (point-min) (progn
+                                      (goto-char (point-max))
+                                      (+ 2 (line-beginning-position))))
+      (split-string (buffer-substring-no-properties (point-min) (point-max)) "\n"))))
 
 
 ;; emacs-lisp-mode config
@@ -433,12 +456,6 @@ hides this information."
                    scroll-up-command
                    scroll-down-command
                    other-window
-                   jacob-move-to-window-line-top
-                   jacob-move-to-window-line-centre
-                   jacob-move-to-window-line-bottom
-                   jacob-recenter-top
-                   jacob-recenter-centre
-                   jacob-recenter-bottom
                    xref-find-definitions
                    xref-pop-marker-stack
                    ))
@@ -921,6 +938,16 @@ Useful for deleting ^M after `eglot-code-actions'."
 
 ;; personal functions
 
+(defun jacob-eval-print-last-sexp ()
+  (interactive)
+  (save-excursion
+    (eval-print-last-sexp 0))
+  (save-excursion
+    (forward-line)
+    (indent-pp-sexp t)))
+
+(global-set-key (kbd "C-j") 'jacob-eval-print-last-sexp)
+
 (defun jacob-alist-to-form-data (alist)
   "Convert ALIST to form-data for http request."
   (mapconcat (lambda (x)
@@ -958,7 +985,9 @@ will return the json data as a lisp object."
   (with-current-buffer (let ((url-request-method (if (null method)
                                                      "GET"
                                                    method))
-                             (url-request-extra-headers headers)
+                             (url-request-extra-headers (if (equal data-format-function 'json-encode)
+                                                            (cons '("content-type" . "application/json") headers)
+                                                          headers))
                              (url-request-data (if (null data-format-function)
                                                    data
                                                  (funcall data-format-function data))))
@@ -1181,38 +1210,12 @@ point."
   (interactive)
   (insert "*"))
 
-(fset 'jacob-enter-kmacro
-      [return])
-
-(fset 'jacob-backspace-kmacro
-      [?f backspace home])
-
 (defun josh-kill-process-on-port ()
   "Ask for a port, kill process on that port.  For powershell."
   (interactive)
   (shell-command (concat "powershell.exe -File %home%\\Downloads\\Jacob.ps1 -localPort " (read-from-minibuffer "port: "))))
 
-(defvar jacob-play-youtube-history nil)
-
-(defun jacob-play-youtube ()
-  "Ask for a string to search.
-Use mpv and youtube-dl to play the first video found."
-  (interactive)
-  (let ((input (completing-read "YouTube: " jacob-play-youtube-history)))
-    (add-to-history 'jacob-play-youtube-history input)
-    (start-process "youtube"
-                   nil
-                   "mpv"
-                   "--ytdl-format=worstvideo+bestaudio"
-                   (concat "https://www.youtube.com"
-                           (with-temp-buffer
-                             (insert (jacob-web-request-helper (concat "https://www.youtube.com/results?search_query="
-                                                                       (string-replace " "
-                                                                                       "+"
-                                                                                       input))))
-                             (goto-char (point-min))
-                             (re-search-forward "/watch\\?v=.\\{0,11\\}")
-                             (match-string 0))))))
+(require 'jacob-play-youtube-autoloads)
 
 (defun jacob-lookup-wikipedia ()
   "Ask for a string to search.
@@ -1299,24 +1302,6 @@ Otherwise, display error message."
         (line (number-to-string (+ (current-line) 1)))
         (column (number-to-string (+ (current-column) 1))))
     (shell-command (concat "code . --reuse-window --goto " file ":" line ":" column))))
-
-(defun jacob-covea-create-merge-request ()
-  "this command will do a lot.
-
-first, push the current git branch to origin.
-use the arguments described here (https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html#when-you-use-git-commands-locally)
-to automate MR creation and setup.
-
-second, use the slack api to send a message to relavant channels containing the MR link.
-
-bonus: grab the jira ticket automagically and insert it in the slack message and the MR description
-
-bonus bonus: move ticket to code review if it isn't already
-
-should ask user to confirm all of above
-
-"
-  (error "not implemented"))
 
 
 
@@ -1795,7 +1780,7 @@ Calls INSERT."
 
   (let ((map xah-fly-n-keymap))
     (define-key map "a" 'jacob-font-size-increase)
-    (define-key map "3" 'jacob-async-eshell-command))
+    (define-key map "3" 'jacob-async-shell-command))
 
   (let ((map vc-prefix-map))
     (define-key map "p" 'vc-push))
