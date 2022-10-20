@@ -948,6 +948,13 @@ Useful for deleting ^M after `eglot-code-actions'."
 
 (global-set-key (kbd "C-j") 'jacob-eval-print-last-sexp)
 
+(defun jacob-system-free-space ()
+  "Display free space on system storage.
+Should work cross platform."
+  (interactive)
+  (shell-command (pcase system-type
+                   ('gnu/linux "df -h"))))
+
 (defun jacob-alist-to-form-data (alist)
   "Convert ALIST to form-data for http request."
   (mapconcat (lambda (x)
