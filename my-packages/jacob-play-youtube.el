@@ -5,20 +5,9 @@
 
 ;;; Code:
 
-(defvar jacob-play-youtube-history-file "~/.emacs.d/jacob-play-youtube")
+(defvar jacob-play-youtube-history nil)
 
-(defvar jacob-play-youtube-history (when (file-exists-p jacob-play-youtube-history-file)
-                                     (with-temp-buffer
-                                       (insert-file-contents-literally jacob-play-youtube-history-file)
-                                       (split-string (substring-no-properties (buffer-string)) "\n"))))
-
-(defun jacob-play-youtube-write-history ()
-  "Write current `jacob-play-youtube-history' to file."
-  (with-temp-buffer
-    (insert (string-join jacob-play-youtube-history "\n"))
-    (append-to-file (point-min) (point-max) jacob-play-youtube-history-file)))
-
-(add-hook 'kill-emacs-hook #'jacob-play-youtube-write-history)
+(add-to-list 'savehist-additional-variables 'jacob-play-youtube-history)
 
 ;;;###autoload
 (defun jacob-play-youtube ()
@@ -38,7 +27,7 @@ Use mpv and youtube-dl to play the first video found."
                                                                                        "+"
                                                                                        input))))
                              (goto-char (point-min))
-                             (re-search-forward "/watch\\?v=.\\{0,11\\}")
+                             (re-search-forward (rx "/watch?v=" (repeat 0 11 anything)))
                              (match-string 0))))))
 
 (provide 'jacob-play-youtube)

@@ -938,6 +938,41 @@ Useful for deleting ^M after `eglot-code-actions'."
 
 ;; personal functions
 
+(defun jacob-send-mr-message ()
+  (interactive)
+  (let* ((gitlab-url (read-from-minibuffer "gitlab-url: "))
+         (ticket-details (let* ((gitlab-mr-api "https://gitlab.tools.digital.coveahosted.co.uk/api/v4/merge_requests")
+                                (mrs (jacob-web-request-helper gitlab-mr-api
+                                                               "GET"
+                                                               '(("PRIVATE-TOKEN" . ""))
+                                                               nil
+                                                               nil
+                                                               'json))
+                                (target-mr (seq-find (lambda (mr)
+                                                       (let-alist mr
+                                                         (string= gitlab-url
+                                                                  .web_url)))
+                                                     mrs))
+                                (mr-description (let-alist target-mr
+                                                  .description)))
+                           (string-match (rx "[" (group-n 1 (+ any)) "]"
+                                             "(" (group-n 2 (+ any)) ")")
+                                         mr-description)
+                           (cons (match-string 1 mr-description)
+                                 (match-string 2 mr-description))))
+         (jira-ticket-name (car ticket-details))
+         (jira-url (cdr ticket-details))
+         (message (concat "Jacob Leeming: "
+                          "<" gitlab-url "|MR> "
+                          "for "
+                          "<" jira-url "|" jira-ticket-name "> "
+                          "ready for review.")))
+    (jacob-web-request-helper ""
+                              "POST"
+                              nil
+                              `((text . ,message))
+                              'json-encode)))
+
 (defun jacob-eval-print-last-sexp ()
   (interactive)
   (save-excursion
@@ -953,7 +988,8 @@ Useful for deleting ^M after `eglot-code-actions'."
 Should work cross platform."
   (interactive)
   (shell-command (pcase system-type
-                   ('gnu/linux "df -h"))))
+                   ('gnu/linux "df -h")
+                   ('windows-nt "powershell -Command Get-Volume"))))
 
 (defun jacob-alist-to-form-data (alist)
   "Convert ALIST to form-data for http request."
