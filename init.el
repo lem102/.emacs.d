@@ -715,7 +715,7 @@ hides this information."
 
 (jacob-is-installed 'eglot
   (setq eglot-confirm-server-initiated-edits nil)
-  (load-file (expand-file-name "~/.emacs.d/myLisp/old-eglot-jdt.el"))
+  ;; (load-file (expand-file-name "~/.emacs.d/myLisp/old-eglot-jdt.el"))
   (defun jacob-remove-ret-character-from-buffer (&rest _)
     "Remove all occurances of ^M from the buffer.
 
@@ -1614,7 +1614,7 @@ Calls INSERT."
     ("char" "Character")
     ("inst" "instanceof"))
   nil
-  :parents (list 'common-java-csharp-abbrev-table))
+  :parents (list common-java-csharp-abbrev-table))
 
 (define-abbrev-table 'csharp-tree-sitter-mode-abbrev-table
   '(("cwl" "" jacob-insert-csharp-print)
