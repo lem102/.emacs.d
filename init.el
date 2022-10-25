@@ -371,6 +371,8 @@ hides this information."
                                    ("darwin" . "Menlo")
                                    ("gnu/linux" . "DejaVu Sans Mono")))))
 
+(defconst jacob-default-font-size jacob-font-size)
+
 (defun jacob-set-font-size (size)
   "Set font to SIZE."
   (set-frame-font (concat jacob-font-name "-" (number-to-string size)) nil t)
@@ -386,16 +388,23 @@ hides this information."
   (interactive)
   (jacob-set-font-size (- jacob-font-size 2)))
 
+(defun jacob-font-size-reset ()
+  "Increase font size by two steps."
+  (interactive)
+  (jacob-set-font-size jacob-default-font-size))
+
 (jacob-set-font-size jacob-font-size)
 
 (defvar jacob-font-size-repeat-map
   (let ((map (make-sparse-keymap)))
     (define-key map "a" 'jacob-font-size-increase)
     (define-key map "s" 'jacob-font-size-decrease)
+    (define-key map "d" 'jacob-font-size-reset)
     map))
 
 (put 'jacob-font-size-increase 'repeat-map 'jacob-font-size-repeat-map)
 (put 'jacob-font-size-decrease 'repeat-map 'jacob-font-size-repeat-map)
+(put 'jacob-font-size-reset 'repeat-map 'jacob-font-size-repeat-map)
 
 ;; enable emoji fonts
 (set-fontset-font t
@@ -1368,6 +1377,10 @@ Otherwise, display error message."
   "Call `jacob-insert-helper' with \" ■ = \" appended to TEMPLATE."
   (jacob-insert-helper (concat template " ■ = ●")))
 
+(defun jacob-insert-js-function-helper (template)
+  "Call `jacob-insert-helper' and insert js anonymous function inside of TEMPLATE."
+  (jacob-insert-helper (concat template "((■) => ●)")))
+
 (defun jacob-insert-helper (template)
   "Insert TEMPLATE in current buffer.
 If present, set mark at each ● so that going throught the mark ring
@@ -1492,6 +1505,12 @@ Calls INSERT."
 (define-jacob-insert jacob-insert-js-it
   (jacob-insert-helper "it(\"■\", () => {\n●\n});"))
 
+(define-jacob-insert jacob-insert-js-map-function
+  (jacob-insert-js-function-helper "map"))
+
+(define-jacob-insert jacob-insert-js-filter-function
+  (jacob-insert-js-function-helper "filter"))
+
 (define-jacob-insert jacob-insert-go-println
   (jacob-insert-helper "fmt.Println(■)"))
 
@@ -1583,7 +1602,9 @@ Calls INSERT."
     ("fore" "" jacob-insert-js-for-each)
     ("jwe" "console.log(\"jacobwozere\");" t)
     ("desc" "" jacob-insert-js-describe)
-    ("it" "" jacob-insert-js-it))
+    ("it" "" jacob-insert-js-it)
+    ("map" "" jacob-insert-js-map-function)
+    ("filter" "" jacob-insert-js-filter-function))
   nil
   :parents (list c-mode-abbrev-table))
 
