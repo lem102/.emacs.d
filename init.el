@@ -1197,18 +1197,7 @@ point."
   (interactive)
   (load-file (expand-file-name "~/.emacs.d/init.el")))
 
-(load-file (expand-file-name "~/.emacs.d/myLisp/jacob-long-time.el"))
-
-(defun jacob-display-time ()
-  "Display the current date and time in the echo area."
-  (interactive)
-  (message (concat (format-time-string "%A the %e")
-                   (jacob-day-suffix (string-to-number (format-time-string "%e")))
-                   (format-time-string " of %B, the year of our Lord %Y, ")
-                   "at "
-                   (jacob-long-time (string-to-number (format-time-string "%H"))
-                                    (string-to-number (format-time-string "%M")))
-                   ".")))
+(require 'jacob-long-time-autoloads)
 
 (defun jacob-insert-plus ()
   (interactive)
