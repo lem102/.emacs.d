@@ -481,11 +481,9 @@ hides this information."
 
 (add-hook 'emacs-startup-hook
           (lambda ()
-            (message "Emacs ready in %s with %d garbage collections."
-                     (format "%.2f seconds"
-                             (float-time
-                              (time-subtract after-init-time before-init-time)))
-                     gcs-done)))
+            (message (emacs-init-time (concat "Emacs ready in %.2f seconds "
+                                              (format "with %d garbage collections"
+                                                      gcs-done))))))
 
 
 ;; calendar + diary config
@@ -990,7 +988,8 @@ Useful for deleting ^M after `eglot-code-actions'."
     (forward-line)
     (indent-pp-sexp t)))
 
-(global-set-key (kbd "C-j") 'jacob-eval-print-last-sexp)
+(define-key emacs-lisp-mode-map (kbd "C-j") 'jacob-eval-print-last-sexp)
+(define-key lisp-interaction-mode-map (kbd "C-j") 'jacob-eval-print-last-sexp)
 
 (defun jacob-system-free-space ()
   "Display free space on system storage.
