@@ -246,11 +246,7 @@
 
 ;; theme config
 
-(when (display-graphic-p)
-  (set-face-attribute 'default nil :background "honeydew3")
-  (set-face-attribute 'fringe nil :background "honeydew3")
-  (set-face-attribute 'mode-line nil :background "limegreen")
-  (set-face-attribute 'mode-line-inactive nil :background "lightgreen"))
+(load-theme 'ef-deuteranopia-dark t)
 
 
 ;; js-mode config
@@ -301,8 +297,7 @@
            (buffer-name (concat "*" dir ":" command "*")))
       (kill-buffer buffer-name)
       (eshell-command (concat command " &"))
-      (save-excursion
-        (set-buffer (get-buffer "*Eshell Async Command Output*"))
+      (with-current-buffer (get-buffer "*Eshell Async Command Output*")
         (rename-buffer buffer-name))))
 
   (defun pcomplete/gco ()
@@ -761,7 +756,8 @@ Useful for deleting ^M after `eglot-code-actions'."
     (cl-defmethod eglot-initialization-options ((server eglot-deno))
       "Passes through required deno initialization options"
       (list :enable t
-            :lint t))
+            :lint t
+            :suggest.names t))
 
     ;; (add-to-list 'eglot-server-programs '(go-mode . ("/home/jacob/go/bin/gopls")))
 
@@ -944,6 +940,11 @@ Useful for deleting ^M after `eglot-code-actions'."
 
 
 ;; personal functions
+
+(defun jacob-insert-elisp-colour ()
+  "Ask user for a colour, insert colour name at point."
+  (interactive)
+  (insert (concat "\"" (read-color) "\"")))
 
 (defun jacob-send-mr-message ()
   (interactive)
