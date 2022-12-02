@@ -1,11 +1,12 @@
-alias dcu docker compose up
-alias gco git checkout $*
-alias gP git pull $*
-alias gpf git push -f
-alias gp git push $*
-alias gs git status $*
-alias gc git commit -m $*
-alias ga git add $*
-alias grh git reset --hard $*
-alias gf git fetch
+alias gcob gco -b $*
 alias ll ls -la
+alias gf git fetch
+alias grh git reset --hard $*
+alias ga git add $*
+alias gc git commit -m $*
+alias gs git status $*
+alias gp git push $*
+alias gpf git push -f
+alias gP git pull $*
+alias gco git checkout $*
+alias dcu docker compose up

@@ -246,7 +246,8 @@
 
 ;; theme config
 
-(load-theme 'ef-deuteranopia-dark t)
+(load-theme 'ef-deuteranopia-dark "NO-CONFIRM")
+(setq ef-themes-to-toggle '(ef-deuteranopia-light ef-deuteranopia-dark))
 
 
 ;; js-mode config
@@ -1745,7 +1746,7 @@ Calls INSERT."
     (let ((map project-prefix-map))
       (define-key map "g" 'jacob-project-search))
     (define-key map "v" vc-prefix-map)
-    (define-key map "b" 'modus-themes-toggle)
+    (define-key map "b" 'ef-themes-toggle)
     (define-key map "i" 'jacob-format-buffer))
 
   (let ((map xah-fly-command-map))
