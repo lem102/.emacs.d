@@ -243,11 +243,8 @@
 
 ;; theme config
 
-(when (display-graphic-p)
-  (set-face-attribute 'default nil :background "honeydew3")
-  (set-face-attribute 'fringe nil :background "honeydew3")
-  (set-face-attribute 'mode-line nil :background "limegreen")
-  (set-face-attribute 'mode-line-inactive nil :background "lightgreen"))
+(load-theme 'ef-deuteranopia-dark "NO-CONFIRM")
+(setq ef-themes-to-toggle '(ef-deuteranopia-light ef-deuteranopia-dark))
 
 
 ;; js-mode config
@@ -298,8 +295,7 @@
            (buffer-name (concat "*" dir ":" command "*")))
       (kill-buffer buffer-name)
       (eshell-command (concat command " &"))
-      (save-excursion
-        (set-buffer (get-buffer "*Eshell Async Command Output*"))
+      (with-current-buffer (get-buffer "*Eshell Async Command Output*")
         (rename-buffer buffer-name))))
 
   (defun pcomplete/gco ()
@@ -779,7 +775,8 @@ Useful for deleting ^M after `eglot-code-actions'."
     (cl-defmethod eglot-initialization-options ((server eglot-deno))
       "Passes through required deno initialization options"
       (list :enable t
-            :lint t))
+            :lint t
+            :suggest.names t))
 
     ;; (add-to-list 'eglot-server-programs '(go-mode . ("/home/jacob/go/bin/gopls")))
 
@@ -962,6 +959,11 @@ Useful for deleting ^M after `eglot-code-actions'."
 
 
 ;; personal functions
+
+(defun jacob-insert-elisp-colour ()
+  "Ask user for a colour, insert colour name at point."
+  (interactive)
+  (insert (concat "\"" (read-color) "\"")))
 
 (defun jacob-send-mr-message ()
   (interactive)
@@ -1214,18 +1216,7 @@ point."
   (interactive)
   (load-file (expand-file-name "~/.emacs.d/init.el")))
 
-(load-file (expand-file-name "~/.emacs.d/myLisp/jacob-long-time.el"))
-
-(defun jacob-display-time ()
-  "Display the current date and time in the echo area."
-  (interactive)
-  (message (concat (format-time-string "%A the %e")
-                   (jacob-day-suffix (string-to-number (format-time-string "%e")))
-                   (format-time-string " of %B, the year of our Lord %Y, ")
-                   "at "
-                   (jacob-long-time (string-to-number (format-time-string "%H"))
-                                    (string-to-number (format-time-string "%M")))
-                   ".")))
+(require 'jacob-long-time-autoloads)
 
 (defun jacob-insert-plus ()
   (interactive)
@@ -1773,7 +1764,7 @@ Calls INSERT."
     (let ((map project-prefix-map))
       (define-key map "g" 'jacob-project-search))
     (define-key map "v" vc-prefix-map)
-    (define-key map "b" 'modus-themes-toggle)
+    (define-key map "b" 'ef-themes-toggle)
     (define-key map "i" 'jacob-format-buffer))
 
   (let ((map xah-fly-command-map))

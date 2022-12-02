@@ -83,4 +83,17 @@
           (jacob-long-time-past-or-to minute)
           (jacob-long-time-hour hour minute)))
 
+;;;###autoload
+(defun jacob-display-time ()
+  "Display the current date and time in the echo area."
+  (interactive)
+  (message (concat (format-time-string "%A the %e")
+                   (jacob-day-suffix (string-to-number (format-time-string "%e")))
+                   (format-time-string " of %B, the year of our Lord %Y, ")
+                   "at "
+                   (jacob-long-time (string-to-number (format-time-string "%H"))
+                                    (string-to-number (format-time-string "%M")))
+                   ".")))
+
+(provide 'jacob-long-time)
 ;;; jacob-long-time.el ends here

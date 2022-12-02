@@ -3110,6 +3110,75 @@ Ensure FsAutoComplete is installed (when called INTERACTIVE).
 
 
 )
+(let ((load-true-file-name "c:/Users/Jacob Leeming/.emacs.d/elpa/ef-themes-0.9.0/ef-themes-autoloads.el")(load-file-name "c:/Users/Jacob Leeming/.emacs.d/elpa/ef-themes-0.9.0/ef-themes-autoloads.el"))
+
+(add-to-list 'load-path (directory-file-name
+                         (or (file-name-directory "c:/Users/Jacob Leeming/.emacs.d/elpa/ef-themes-0.9.0/ef-themes-autoloads.el") (car load-path))))
+
+
+
+(autoload 'ef-themes-select "ef-themes" "\
+Load an Ef THEME using minibuffer completion.
+
+With optional VARIANT as a prefix argument, prompt to limit the
+set of themes to either dark or light variants.
+
+Run `ef-themes-post-load-hook' after loading the theme.
+
+When called from Lisp, THEME is the symbol of a theme.  VARIANT
+is ignored in this scenario.
+
+\(fn THEME &optional VARIANT)" t nil)
+
+(autoload 'ef-themes-toggle "ef-themes" "\
+Toggle between the two `ef-themes-to-toggle'.
+If `ef-themes-to-toggle' does not specify two Ef themes, inform
+the user about it while prompting with completion for a theme
+among our collection (this is practically the same as the
+`ef-themes-select' command).
+
+Run `ef-themes-post-load-hook' after loading the theme." t nil)
+
+(autoload 'ef-themes-load-random "ef-themes" "\
+Load an Ef theme at random, excluding the current one.
+
+With optional VARIANT as a prefix argument, prompt to limit the
+set of themes to either dark or light variants.
+
+Run `ef-themes-post-load-hook' after loading the theme.
+
+When called from Lisp, VARIANT is either the `dark' or `light'
+symbol.
+
+\(fn &optional VARIANT)" t nil)
+
+(autoload 'ef-themes-preview-colors "ef-themes" "\
+Preview palette of the Ef THEME of choice.
+
+\(fn THEME)" t nil)
+
+(autoload 'ef-themes-preview-colors-current "ef-themes" "\
+Call `ef-themes-preview-colors' for the current Ef theme." t nil)
+
+(autoload 'ef-themes-theme "ef-themes" "\
+Bind NAME's color PALETTE around face specs and variables.
+Face specifications are passed to `custom-theme-set-faces'.
+While variables are handled by `custom-theme-set-variables'.
+Those are stored in `ef-themes-faces' and
+`ef-themes-custom-variables' respectively.
+
+\(fn NAME PALETTE)" nil t)
+
+(function-put 'ef-themes-theme 'lisp-indent-function '0)
+
+(when load-file-name (let ((dir (file-name-directory load-file-name))) (unless (file-equal-p dir (expand-file-name "themes/" data-directory)) (add-to-list 'custom-theme-load-path dir))))
+
+(register-definition-prefixes "ef-themes" '("ef-themes-"))
+
+
+
+
+)
 (let ((load-true-file-name "c:/Users/Jacob Leeming/.emacs.d/elpa/dotenv-mode-20191027.2129/dotenv-mode-autoloads.el")(load-file-name "c:/Users/Jacob Leeming/.emacs.d/elpa/dotenv-mode-20191027.2129/dotenv-mode-autoloads.el"))
 
 (add-to-list 'load-path (directory-file-name
@@ -4572,14 +4641,14 @@ Key Bindings
 )
 (setq package-activated-list
       (append
-       '(yaml-mode xah-fly-keys vertico typescript-mode tsc tree-sitter tree-sitter-langs tree-sitter-indent spinner sml-mode sesman s restclient restart-emacs pos-tip racket-mode queue purescript-mode powershell parseclj parseedn orderless markdown-mode marginalia lv kotlin-mode json-snatcher json-reformat json-mode inf-ruby dash ht go-mode gdscript-mode fsharp-mode feature-mode f expand-region eglot eglot-fsharp dotenv-mode dockerfile-mode docker-tramp dart-mode csv-mode csharp-mode consult clojure-mode cider ahk-mode)
+       '(yaml-mode xah-fly-keys vertico typescript-mode tsc tree-sitter tree-sitter-langs tree-sitter-indent spinner sml-mode sesman s restclient restart-emacs pos-tip racket-mode queue purescript-mode powershell parseclj parseedn orderless markdown-mode marginalia lv kotlin-mode json-snatcher json-reformat json-mode inf-ruby dash ht go-mode gdscript-mode fsharp-mode feature-mode f expand-region eglot eglot-fsharp ef-themes dotenv-mode dockerfile-mode docker-tramp dart-mode csv-mode csharp-mode consult clojure-mode cider ahk-mode)
        package-activated-list))
 (progn
   (require 'info)
   (info-initialize)
   (setq Info-directory-list
         (append
-         '("c:/Users/Jacob Leeming/.emacs.d/elpa/consult-0.12" "c:/Users/Jacob Leeming/.emacs.d/elpa/dash-20210826.1149" "c:/Users/Jacob Leeming/.emacs.d/elpa/orderless-20210603.1335" "c:/Users/Jacob Leeming/.emacs.d/elpa/purescript-mode-20210109.244" "c:/Users/Jacob Leeming/.emacs.d/elpa/racket-mode-20210831.2045" "c:/Users/Jacob Leeming/.emacs.d/elpa/vertico-0.21")
+         '("c:/Users/Jacob Leeming/.emacs.d/elpa/consult-0.12" "c:/Users/Jacob Leeming/.emacs.d/elpa/ef-themes-0.9.0" "c:/Users/Jacob Leeming/.emacs.d/elpa/dash-20210826.1149" "c:/Users/Jacob Leeming/.emacs.d/elpa/orderless-20210603.1335" "c:/Users/Jacob Leeming/.emacs.d/elpa/purescript-mode-20210109.244" "c:/Users/Jacob Leeming/.emacs.d/elpa/racket-mode-20210831.2045" "c:/Users/Jacob Leeming/.emacs.d/elpa/vertico-0.21")
          Info-directory-list)))
 
 ;; Local Variables:
