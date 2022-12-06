@@ -245,6 +245,8 @@
 
 (load-theme 'ef-deuteranopia-dark "NO-CONFIRM")
 (setq ef-themes-to-toggle '(ef-deuteranopia-light ef-deuteranopia-dark))
+(with-eval-after-load 'pulse
+  (modify-face 'pulse-highlight-start-face nil "yellow"))
 
 
 ;; js-mode config
@@ -725,27 +727,6 @@ Useful for deleting ^M after `eglot-code-actions'."
       (while (search-forward (char-to-string 13) nil t)
         (replace-match ""))))
 
-  (defun eglot--format-markup (markup)
-    "Format MARKUP according to LSP's spec."
-    (pcase-let ((is-csharp (equal 'csharp-tree-sitter-mode major-mode))
-                (`(,string ,mode)
-                 (if (stringp markup) (list markup 'gfm-view-mode)
-                   (list (plist-get markup :value)
-                         (pcase (plist-get markup :kind)
-                           ;; changed this line, before was gfm-view-mode instead of markdown-view-mode
-                           ("markdown" 'markdown-view-mode)
-                           ("plaintext" 'text-mode)
-                           (_ major-mode))))))
-      (with-temp-buffer
-        (switch-to-buffer (current-buffer))
-        (setq-local markdown-fontify-code-blocks-natively t)
-        (insert string)
-        (let ((inhibit-message t)
-	          (message-log-max nil))
-          (ignore-errors (delay-mode-hooks (funcall mode))))
-        (font-lock-ensure)
-        (string-trim (buffer-string)))))
-
   (advice-add 'eglot-code-actions :after #'jacob-remove-ret-character-from-buffer)
   (advice-add 'eglot-rename :after #'jacob-remove-ret-character-from-buffer)
 
@@ -783,7 +764,26 @@ Useful for deleting ^M after `eglot-code-actions'."
     (eglot--code-action eglot-code-action-organize-imports-ts "source.organizeImports.ts")
     (eglot--code-action eglot-code-action-add-missing-imports-ts "source.addMissingImports.ts")
 
-    ))
+    (defun eglot--format-markup (markup)
+      "Format MARKUP according to LSP's spec."
+      (pcase-let ((is-csharp (equal 'csharp-tree-sitter-mode major-mode))
+                  (`(,string ,mode)
+                   (if (stringp markup) (list markup 'gfm-view-mode)
+                     (list (plist-get markup :value)
+                           (pcase (plist-get markup :kind)
+                             ;; changed this line, before was gfm-view-mode instead of markdown-view-mode
+                             ("markdown" 'markdown-view-mode)
+                             ("plaintext" 'text-mode)
+                             (_ major-mode))))))
+        (with-temp-buffer
+          (switch-to-buffer (current-buffer))
+          (setq-local markdown-fontify-code-blocks-natively t)
+          (insert string)
+          (let ((inhibit-message t)
+	            (message-log-max nil))
+            (ignore-errors (delay-mode-hooks (funcall mode))))
+          (font-lock-ensure)
+          (string-trim (buffer-string)))))))
 
 
 ;; lsp mode config, for csharp only
