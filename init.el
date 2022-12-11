@@ -1895,10 +1895,10 @@ Calls INSERT."
   (with-eval-after-load 'info
     (let ((map Info-mode-map))
       (jacob-xfk-define-key map "q" 'quit-window)
-      (jacob-xfk-define-key map "l" 'Info-scroll-up)
-      (jacob-xfk-define-key map "j" 'Info-scroll-down)
-      (jacob-xfk-define-key map "i" 'Info-up)
-      (jacob-xfk-define-key map "k" 'Info-menu)))
+      (jacob-xfk-define-key map "r" 'Info-scroll-up)
+      (jacob-xfk-define-key map "e" 'Info-scroll-down)
+      (jacob-xfk-define-key map "w" 'Info-up)
+      (jacob-xfk-define-key map "g" 'Info-menu)))
 
   (with-eval-after-load 'calendar
     (let ((map calendar-mode-map))
