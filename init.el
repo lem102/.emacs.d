@@ -47,9 +47,6 @@
 (defvar jacob-raspberry-pi-ip-address
   nil "IP address of rasperry pi.")
 
-(defvar jacob-omnisharp-language-server-path
-  nil "Location of the omnisharp executable/start script.")
-
 (defvar jacob-font-size
   12 "Font size to use.")
 
@@ -739,15 +736,15 @@ Useful for deleting ^M after `eglot-code-actions'."
                             'eldoc-documentation-compose)))
 
   (add-hook 'java-mode-hook 'eglot-ensure)
-  ;; (add-hook 'csharp-tree-sitter-mode-hook 'eglot-ensure)
+  (add-hook 'csharp-tree-sitter-mode-hook 'eglot-ensure)
   (add-hook 'typescript-mode-hook 'eglot-ensure)
   (add-hook 'fsharp-mode-hook (lambda ()
                                 (when (eq system-type 'gnu/linux)
                                   (require 'eglot-fsharp)
                                   (eglot-ensure))))
   (with-eval-after-load 'eglot
-    (if (boundp 'jacob-omnisharp-language-server-path)
-        (add-to-list 'eglot-server-programs `(csharp-tree-sitter-mode . (,jacob-omnisharp-language-server-path "-lsp"))))
+    
+    (add-to-list 'eglot-server-programs `(csharp-tree-sitter-mode . ("d:/programming/tools/omnisharp-win-x64-net6.0/OmniSharp.exe" "-lsp")))
 
     (add-to-list 'eglot-server-programs '((js-mode typescript-mode) . ("typescript-language-server" "--stdio")))
 
@@ -767,19 +764,38 @@ Useful for deleting ^M after `eglot-code-actions'."
     (eglot--code-action eglot-code-action-organize-imports-ts "source.organizeImports.ts")
     (eglot--code-action eglot-code-action-add-missing-imports-ts "source.addMissingImports.ts")
 
-    ))
+    (defun eglot--format-markup (markup)
+      "Format MARKUP according to LSP's spec."
+      (pcase-let ((is-csharp (equal 'csharp-tree-sitter-mode major-mode))
+                  (`(,string ,mode)
+                   (if (stringp markup) (list markup 'gfm-view-mode)
+                     (list (plist-get markup :value)
+                           (pcase (plist-get markup :kind)
+                             ;; changed this line, before was gfm-view-mode instead of markdown-view-mode
+                             ("markdown" 'markdown-view-mode)
+                             ("plaintext" 'text-mode)
+                             (_ major-mode))))))
+        (with-temp-buffer
+          (switch-to-buffer (current-buffer))
+          (setq-local markdown-fontify-code-blocks-natively t)
+          (insert string)
+          (let ((inhibit-message t)
+	            (message-log-max nil))
+            (ignore-errors (delay-mode-hooks (funcall mode))))
+          (font-lock-ensure)
+          (string-trim (buffer-string)))))))
 
 
 ;; lsp mode config, for csharp only
 
-(jacob-is-installed 'lsp-mode
-  (setq lsp-lens-enable nil)
-  (setq lsp-headerline-breadcrumb-enable nil)
-  (setq lsp-eldoc-render-all t)
-  (setq lsp-eldoc-enable-hover t)
+;; (jacob-is-installed 'lsp-mode
+;;   (setq lsp-lens-enable nil)
+;;   (setq lsp-headerline-breadcrumb-enable nil)
+;;   (setq lsp-eldoc-render-all t)
+;;   (setq lsp-eldoc-enable-hover t)
 
-  (add-hook 'csharp-tree-sitter-mode-hook 'lsp)
-  )
+;;   (add-hook 'csharp-tree-sitter-mode-hook 'lsp)
+;;   )
 
 
 
@@ -1636,7 +1652,7 @@ Calls INSERT."
     ("guid" "Guid")
     ("prop" "" jacob-insert-csharp-property))
   nil
-  :parents (list 'common-java-csharp-abbrev-table))
+  :parents (list common-java-csharp-abbrev-table))
 
 (define-abbrev-table 'emacs-lisp-mode-abbrev-table
   '(("def" "" jacob-insert-elisp-defun)
@@ -1879,10 +1895,10 @@ Calls INSERT."
   (with-eval-after-load 'info
     (let ((map Info-mode-map))
       (jacob-xfk-define-key map "q" 'quit-window)
-      (jacob-xfk-define-key map "l" 'Info-scroll-up)
-      (jacob-xfk-define-key map "j" 'Info-scroll-down)
-      (jacob-xfk-define-key map "i" 'Info-up)
-      (jacob-xfk-define-key map "k" 'Info-menu)))
+      (jacob-xfk-define-key map "r" 'Info-scroll-up)
+      (jacob-xfk-define-key map "e" 'Info-scroll-down)
+      (jacob-xfk-define-key map "w" 'Info-up)
+      (jacob-xfk-define-key map "g" 'Info-menu)))
 
   (with-eval-after-load 'calendar
     (let ((map calendar-mode-map))
