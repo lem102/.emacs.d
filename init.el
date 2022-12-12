@@ -248,6 +248,8 @@
 
 (load-theme 'ef-deuteranopia-dark "NO-CONFIRM")
 (setq ef-themes-to-toggle '(ef-deuteranopia-light ef-deuteranopia-dark))
+(with-eval-after-load 'pulse
+  (modify-face 'pulse-highlight-start-face nil "yellow"))
 
 
 ;; js-mode config
@@ -307,21 +309,21 @@
   (defun pcomplete/grh ()
     (pcomplete-here* (jacob-git-get-branches t)))
 
-  (defun eshell/gpsu ()
-    (let* ((create-mr (y-or-n-p "Create MR on GitLab?"))
+  (defun eshell/gpsugl ()
+    (let* (
            (command (concat "git push --set-upstream origin HEAD "
-                            (when create-mr (let* ((branch-name (with-temp-buffer
-                                                                  (eshell-command "git symbolic-ref HEAD --short" t)
-                                                                  (buffer-substring-no-properties (point-min) (- (point-max) 1))))
-                                                   (mr-key (progn
-                                                             (string-match (rx "mer"  "-" (+ digit))
-                                                                           branch-name)
-                                                             (match-string 0 branch-name))))
-                                              (concat "-o merge_request.create "
-                                                      "-o merge_request.remove_source_branch "
-                                                      (concat "-o merge_request.description=\""
-                                                              "[" mr-key "](" "https://coveaprodcloud.atlassian.net/browse/" mr-key ")"
-                                                              "\"")))))))
+                            (let* ((branch-name (with-temp-buffer
+                                                  (eshell-command "git symbolic-ref HEAD --short" t)
+                                                  (buffer-substring-no-properties (point-min) (- (point-max) 1))))
+                                   (mr-key (progn
+                                             (string-match (rx "mer"  "-" (+ digit))
+                                                           branch-name)
+                                             (match-string 0 branch-name))))
+                              (concat "-o merge_request.create "
+                                      "-o merge_request.remove_source_branch "
+                                      (concat "-o merge_request.description=\""
+                                              "[" mr-key "](" "https://coveaprodcloud.atlassian.net/browse/" mr-key ")"
+                                              "\""))))))
       (with-temp-buffer
         (eshell-command command t)
         (goto-char (point-min))
