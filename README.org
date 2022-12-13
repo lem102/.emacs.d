@@ -1,0 +1,18 @@
+* TODO fix typescript indenting freezes
+Possibly wait until emacs 29 tree sitter is available, switch to that
+and use that instead.
+It turns out that there will be a typescript mode in emacs core from
+29, so I should remove all ts packages when upgrading to emacs 29.
+* TODO instant messaging
+** TODO slack
+** TODO discord
+** TODO whatsapp
+* TODO investigate lsp-bridge
+Eglot is being moved into emacs core. while this is great, I have
+noticed that emacs is definitely slowed by all the processing required
+to do lsp stuff. lsp-bridge is a possible solution to that, however it
+introduces a dependency on python and some python packages. this is
+undesireable as it reduces emacs' cross platform nature, but could be
+worth it.
+
+tl;dr: investigation required
