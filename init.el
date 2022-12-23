@@ -1947,5 +1947,16 @@ Calls INSERT."
 
 
 
+;; eaf (emacs application framework) config
+
+(defvar jacob-eaf-directory "d:/programming/tools/emacs-application-framework")
+
+(add-to-list 'load-path jacob-eaf-directory)
+(require 'eaf)
+(require 'eaf-browser)
+
+(eaf-bind-key xah-fly-command-mode-activate "<home>" eaf-browser-keybinding)
+(eaf-bind-key xah-fly-command-mode-activate "<home>" eaf-browser-caret-mode-keybinding)
+
 (provide 'init)
 ;;; init.el ends here
