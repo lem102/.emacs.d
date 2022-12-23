@@ -306,7 +306,7 @@
   (defun pcomplete/grh ()
     (pcomplete-here* (jacob-git-get-branches t)))
 
-  (defun eshell/gpsu ()
+  (defun eshell/gpsugl ()
     (let* ((create-mr (y-or-n-p "Create MR on GitLab?"))
            (command (concat "git push --set-upstream origin HEAD "
                             (when create-mr (let* ((branch-name (with-temp-buffer
@@ -574,6 +574,13 @@ hides this information."
 ;; docview config
 
 (with-eval-after-load 'doc-view-mode
+
+  (defun jacob-doc-view-hook ()
+    "hook function for doc view mode"
+    (auto-revert-mode 1))
+
+  (add-hook 'doc-view-mode-hook 'jacob-doc-view-hook)
+
   (when (eq system-type 'windows-nt)
     ;; To get these, install miktex.
     (setq doc-view-ghostscript-program "mgs.exe")
