@@ -4,9 +4,12 @@ and use that instead.
 It turns out that there will be a typescript mode in emacs core from
 29, so I should remove all ts packages when upgrading to emacs 29.
 * TODO instant messaging
+bitl-bee
 ** TODO slack
 ** TODO discord
 ** TODO whatsapp
+* TODO email client
+no idea, setup IM first
 * TODO investigate lsp-bridge
 Eglot is being moved into emacs core. while this is great, I have
 noticed that emacs is definitely slowed by all the processing required

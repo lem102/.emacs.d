@@ -245,8 +245,14 @@
 
 (load-theme 'ef-deuteranopia-dark "NO-CONFIRM")
 (setq ef-themes-to-toggle '(ef-deuteranopia-light ef-deuteranopia-dark))
-(with-eval-after-load 'pulse
-  (modify-face 'pulse-highlight-start-face nil "yellow"))
+
+(defun jacob-ef-theme ()
+  "For use in `ef-themes-post-load-hook'."
+  (with-eval-after-load 'pulse
+    (modify-face 'pulse-highlight-start-face nil "yellow")))
+
+(add-hook 'ef-themes-post-load-hook 'jacob-ef-theme)
+(jacob-ef-theme)
 
 
 ;; js-mode config
@@ -530,7 +536,7 @@ hides this information."
   Designed for use in on-save hook in certain programming languages modes."
   (unless (ignore-errors smerge-mode)
     (cond ((seq-contains-p '(csharp-tree-sitter-mode
-                             typescript-react-mode
+                             ;; typescript-react-mode
                              java-mode
                              sml-mode)
                            major-mode
@@ -1362,6 +1368,20 @@ Otherwise, display error message."
         (line (number-to-string (+ (current-line) 1)))
         (column (number-to-string (+ (current-column) 1))))
     (shell-command (concat "code . --reuse-window --goto " file ":" line ":" column))))
+
+(defun jacob-toggle-mocha-only ()
+  "Toggle the presence of .only after it/describe mocha tests."
+  (interactive)
+  (save-excursion
+    (backward-up-list)
+    (re-search-backward (rx (or (one-or-more blank)
+                                line-start)
+                            (or "it"
+                                "describe")))
+    (forward-word)
+    (if (string-match "\\.only" (thing-at-point 'line t))
+        (kill-word 1)
+      (insert ".only"))))
 
 
 
