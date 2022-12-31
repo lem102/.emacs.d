@@ -313,7 +313,7 @@
     (pcomplete-here* (jacob-git-get-branches t)))
 
   (defun eshell/gpsugl ()
-    (let* (
+    (let* ((create-mr (y-or-n-p "Create MR on GitLab?"))
            (command (concat "git push --set-upstream origin HEAD "
                             (let* ((branch-name (with-temp-buffer
                                                   (eshell-command "git symbolic-ref HEAD --short" t)
@@ -580,6 +580,13 @@ hides this information."
 ;; docview config
 
 (with-eval-after-load 'doc-view-mode
+
+  (defun jacob-doc-view-hook ()
+    "hook function for doc view mode"
+    (auto-revert-mode 1))
+
+  (add-hook 'doc-view-mode-hook 'jacob-doc-view-hook)
+
   (when (eq system-type 'windows-nt)
     ;; To get these, install miktex.
     (setq doc-view-ghostscript-program "mgs.exe")
@@ -1957,8 +1964,6 @@ Calls INSERT."
   (put 'smerge-prev 'repeat-map 'jacob-smerge-repeat-map)
   (put 'smerge-keep-upper 'repeat-map 'jacob-smerge-repeat-map)
   (put 'smerge-keep-lower 'repeat-map 'jacob-smerge-repeat-map))
-
-
 
 (provide 'init)
 ;;; init.el ends here
