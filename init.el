@@ -313,8 +313,7 @@
     (pcomplete-here* (jacob-git-get-branches t)))
 
   (defun eshell/gpsugl ()
-    (let* ((create-mr (y-or-n-p "Create MR on GitLab?"))
-           (command (concat "git push --set-upstream origin HEAD "
+    (let* ((command (concat "git push --set-upstream origin HEAD "
                             (let* ((branch-name (with-temp-buffer
                                                   (eshell-command "git symbolic-ref HEAD --short" t)
                                                   (buffer-substring-no-properties (point-min) (- (point-max) 1))))
