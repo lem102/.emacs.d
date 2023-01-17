@@ -1599,8 +1599,10 @@ Calls INSERT."
     ("sco" "_")
     ))
 
-(define-abbrev-table 'org-mode-abbrev-table
-  '(("i" "I")))
+(define-abbrev-table 'text-mode-abbrev-table
+  '(("i" "I")
+    ("im" "I'm")
+    ("id" "I'd")))
 
 (define-abbrev-table 'common-operators-abbrev-table
   '(
@@ -1756,6 +1758,9 @@ Calls INSERT."
 
 
 ;; key bindings
+
+(global-set-key (kbd "C-<next>") 'next-buffer)
+(global-set-key (kbd "C-<prior>") 'previous-buffer)
 
 
 ;; macros
@@ -1966,3 +1971,4 @@ Calls INSERT."
 
 (provide 'init)
 ;;; init.el ends here
+
