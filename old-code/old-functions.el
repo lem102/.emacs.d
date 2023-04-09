@@ -123,6 +123,8 @@ Search youtube for string and display in browser."
   (let ((search-query (read-from-minibuffer "YouTube: ")))
     (browse-url (concat "https://www.youtube.com/results?search_query=" search-query))))
 
+;; covea specific
+
 (defun eshell/gpsugl ()
   (let* ((command (concat "git push --set-upstream origin HEAD "
                           (let* ((branch-name (with-temp-buffer
@@ -142,3 +144,46 @@ Search youtube for string and display in browser."
       (goto-char (point-min))
       (search-forward "https")
       (browse-url-at-point))))
+
+(defun jacob-send-mr-message ()
+  (interactive)
+  (let* ((gitlab-url (read-from-minibuffer "gitlab-url: "))
+         (ticket-details (let* ((gitlab-mr-api "https://gitlab.tools.digital.coveahosted.co.uk/api/v4/merge_requests")
+                                (mrs (jacob-web-request-helper gitlab-mr-api
+                                                               "GET"
+                                                               '(("PRIVATE-TOKEN" . ""))
+                                                               nil
+                                                               nil
+                                                               'json))
+                                (target-mr (seq-find (lambda (mr)
+                                                       (let-alist mr
+                                                         (string= gitlab-url
+                                                                  .web_url)))
+                                                     mrs))
+                                (mr-description (let-alist target-mr
+                                                  .description)))
+                           (string-match (rx "[" (group-n 1 (+ any)) "]"
+                                             "(" (group-n 2 (+ any)) ")")
+                                         mr-description)
+                           (cons (match-string 1 mr-description)
+                                 (match-string 2 mr-description))))
+         (jira-ticket-name (car ticket-details))
+         (jira-url (cdr ticket-details))
+         (message (concat "Jacob Leeming: "
+                          "<" gitlab-url "|MR> "
+                          "for "
+                          "<" jira-url "|" jira-ticket-name "> "
+                          "ready for review.")))
+    (jacob-web-request-helper ""
+                              "POST"
+                              nil
+                              `((text . ,message))
+                              'json-encode)))
+
+(defvar jacob-camunda-modeler-executable
+  nil "Full path to camunda modeler executable.")
+
+(defun jacob-open-in-camunda-modeler ()
+  "Attempt to open current file in camunda modeler."
+  (interactive)
+  (start-process "camunda-modeler" nil jacob-camunda-modeler-executable buffer-file-name))

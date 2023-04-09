@@ -50,9 +50,6 @@
 (defvar jacob-font-size
   12 "Font size to use.")
 
-(defvar jacob-camunda-modeler-executable
-  nil "Full path to camunda modeler executable.")
-
 (when (file-exists-p "~/.emacs.d/environment.el")
   (load-file "~/.emacs.d/environment.el"))
 
@@ -365,17 +362,17 @@ hides this information."
   (setq jacob-font-size size))
 
 (defun jacob-font-size-increase ()
-  "Increase font size by two steps."
+  "Increase font size by two."
   (interactive)
   (jacob-set-font-size (+ jacob-font-size 2)))
 
 (defun jacob-font-size-decrease ()
-  "Decrease font size by two steps."
+  "Decrease font size by two."
   (interactive)
   (jacob-set-font-size (- jacob-font-size 2)))
 
 (defun jacob-font-size-reset ()
-  "Increase font size by two steps."
+  "Reset font size to default."
   (interactive)
   (jacob-set-font-size jacob-default-font-size))
 
@@ -522,7 +519,7 @@ hides this information."
 
 (defun jacob-indent-with-major-mode ()
   "Indent buffer using current major mode.
-  Designed for use in on-save hook in certain programming languages modes."
+Designed for use in on-save hook in certain programming languages modes."
   (unless (ignore-errors smerge-mode)
     (cond ((seq-contains-p '(csharp-tree-sitter-mode
                              ;; typescript-react-mode
@@ -600,15 +597,15 @@ hides this information."
 
 (defmacro jacob-is-installed (package &rest body)
   "If PACKAGE is installed, evaluate BODY.
-  Used when attempting to lazy load PACKAGE."
+Used when attempting to lazy load PACKAGE."
   (declare (indent 1))
   `(when (package-installed-p ,package)
      ,@body))
 
 (defmacro jacob-try-require (feature &rest body)
   "Attempt to require FEATURE.
-  If successful, evaluate BODY.
-  Used to eagerly load feature."
+
+If successful, evaluate BODY.  Used to eagerly load feature."
   (declare (indent 1))
   `(when (require ,feature nil 'noerror)
      ,@body))
@@ -665,6 +662,10 @@ hides this information."
   "List of packages to install.")
 
 (defun jacob-wrangle-packages ()
+  "Look at `jacob-packages'.
+
+Install packages missing from that list.  Delete packages that aren't
+in that list."
   (interactive)
   (let* ((desired jacob-packages)
          (installed (mapcar #'car (package--alist)))
@@ -967,42 +968,8 @@ Useful for deleting ^M after `eglot-code-actions'."
   (interactive)
   (insert (concat "\"" (read-color) "\"")))
 
-(defun jacob-send-mr-message ()
-  (interactive)
-  (let* ((gitlab-url (read-from-minibuffer "gitlab-url: "))
-         (ticket-details (let* ((gitlab-mr-api "https://gitlab.tools.digital.coveahosted.co.uk/api/v4/merge_requests")
-                                (mrs (jacob-web-request-helper gitlab-mr-api
-                                                               "GET"
-                                                               '(("PRIVATE-TOKEN" . ""))
-                                                               nil
-                                                               nil
-                                                               'json))
-                                (target-mr (seq-find (lambda (mr)
-                                                       (let-alist mr
-                                                         (string= gitlab-url
-                                                                  .web_url)))
-                                                     mrs))
-                                (mr-description (let-alist target-mr
-                                                  .description)))
-                           (string-match (rx "[" (group-n 1 (+ any)) "]"
-                                             "(" (group-n 2 (+ any)) ")")
-                                         mr-description)
-                           (cons (match-string 1 mr-description)
-                                 (match-string 2 mr-description))))
-         (jira-ticket-name (car ticket-details))
-         (jira-url (cdr ticket-details))
-         (message (concat "Jacob Leeming: "
-                          "<" gitlab-url "|MR> "
-                          "for "
-                          "<" jira-url "|" jira-ticket-name "> "
-                          "ready for review.")))
-    (jacob-web-request-helper ""
-                              "POST"
-                              nil
-                              `((text . ,message))
-                              'json-encode)))
-
 (defun jacob-eval-print-last-sexp ()
+  "Run `eval-print-last-sexp', indent the result."
   (interactive)
   (save-excursion
     (eval-print-last-sexp 0))
@@ -1051,9 +1018,9 @@ Returns a string containing the response.
 DATA-FORMAT-FUNCTION is a function that takes one argument and returns
 DATA in string form.
 
-DATA-PARSE is a symbol specifying the output of this function. If not
-given, it will return the http reponse in string form. If `json' it
-will return the json data as a lisp object."
+DATA-PARSE is a symbol specifying the output of this function.  If not
+given, it will return the http reponse in string form.  If `json' it
+will return the json data as a Lisp object."
   (require 'json)
   (with-current-buffer (let ((url-request-method (if (null method)
                                                      "GET"
@@ -1079,11 +1046,6 @@ will return the json data as a lisp object."
                (json-read)))
       (_ (buffer-string)))))
 
-(defun jacob-open-in-camunda-modeler ()
-  "Attempt to open current file in camunda modeler."
-  (interactive)
-  (start-process "camunda-modeler" nil jacob-camunda-modeler-executable buffer-file-name))
-
 (defun jacob-goto-pi ()
   "Connect to raspberry pi."
   (interactive)
@@ -1105,7 +1067,7 @@ will return the json data as a lisp object."
       (consult-grep))))
 
 (defun jacob-async-shell-command (command)
-  "Wrapper command for `async-shell-command'."
+  "Wrapper command for (`async-shell-command' COMMAND)."
   (interactive
    (list
     (read-shell-command (if shell-command-prompt-show-cwd
@@ -1221,54 +1183,67 @@ point."
 (require 'jacob-long-time-autoloads)
 
 (defun jacob-insert-plus ()
+  "Insert +."
   (interactive)
   (insert "+"))
 
 (defun jacob-insert-equals ()
+  "Insert =."
   (interactive)
   (insert "="))
 
 (defun jacob-insert-apostrophe ()
+  "Insert '."
   (interactive)
   (insert "'"))
 
 (defun jacob-insert-at ()
+  "Insert @."
   (interactive)
   (insert "@"))
 
 (defun jacob-insert-tilde ()
+  "Insert ~."
   (interactive)
   (insert "~"))
 
 (defun jacob-insert-hash ()
+  "Insert #."
   (interactive)
   (insert "#"))
 
 (defun jacob-insert-exclamation-mark ()
+  "Insert !."
   (interactive)
   (insert "!"))
 
 (defun jacob-insert-pound-sign ()
+  "Insert £."
   (interactive)
   (insert "£"))
 
 (defun jacob-insert-dollar-sign ()
+  "Insert $."
   (interactive)
   (insert "$"))
 
 (defun jacob-insert-percentage-sign ()
+  "Insert %."
   (interactive)
   (insert "%"))
 
 (defun jacob-insert-caret ()
+  "Insert ^."
   (interactive)
   (insert "^"))
 
 (defun jacob-insert-ampersand ()
+  "Insert &."
   (interactive)
   (insert "&"))
 
 (defun jacob-insert-asterisk ()
+  "Insert *."
   (interactive)
   (insert "*"))
 
@@ -1310,17 +1285,20 @@ Otherwise, display error message."
   (unhighlight-regexp t))
 
 (defun jacob-npm-project-p ()
+  "Return non-nil if current project is an npm project."
   (seq-find (lambda (x)
               (string= x "package.json"))
             (directory-files (project-root (project-current)))))
 
 (defun jacob-format-buffer-shell-command (command)
+  "Run shell command COMMAND to format the current file, then revert the buffer."
   (save-buffer)
   (shell-command (format command
                          (shell-quote-argument buffer-file-name)))
   (revert-buffer t t t))
 
 (defun jacob-format-buffer ()
+  "Format the current buffer."
   (interactive)
   (pcase major-mode
     ((or 'typescript-react-mode 'js-mode) (progn
@@ -1366,7 +1344,7 @@ Otherwise, display error message."
     (shell-command (concat "code . --reuse-window --goto " file ":" line ":" column))))
 
 (defun jacob-toggle-mocha-only ()
-  "Toggle the presence of .only after it/describe mocha tests."
+  "Toggle the presence of .only after an it/describe mocha test."
   (interactive)
   (save-excursion
     (backward-up-list)
@@ -1837,7 +1815,7 @@ Calls INSERT."
     (define-key map "z" 'jacob-insert-apostrophe)
     (define-key map "x" 'jacob-insert-at)
     (define-key map "c" 'jacob-insert-hash)
-    (define-key map (kbd "d") 'backward-delete-char)
+    (define-key map "d" 'backward-delete-char)
     (define-key map "v" 'jacob-insert-tilde)
     (define-key map "e" 'jacob-insert-dollar-sign)
     (define-key map "r" 'jacob-insert-caret)
