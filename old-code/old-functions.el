@@ -123,3 +123,22 @@ Search youtube for string and display in browser."
   (let ((search-query (read-from-minibuffer "YouTube: ")))
     (browse-url (concat "https://www.youtube.com/results?search_query=" search-query))))
 
+(defun eshell/gpsugl ()
+  (let* ((command (concat "git push --set-upstream origin HEAD "
+                          (let* ((branch-name (with-temp-buffer
+                                                (eshell-command "git symbolic-ref HEAD --short" t)
+                                                (buffer-substring-no-properties (point-min) (- (point-max) 1))))
+                                 (mr-key (progn
+                                           (string-match (rx "mer"  "-" (+ digit))
+                                                         branch-name)
+                                           (match-string 0 branch-name))))
+                            (concat "-o merge_request.create "
+                                    "-o merge_request.remove_source_branch "
+                                    (concat "-o merge_request.description=\""
+                                            "[" mr-key "](" "https://coveaprodcloud.atlassian.net/browse/" mr-key ")"
+                                            "\""))))))
+    (with-temp-buffer
+      (eshell-command command t)
+      (goto-char (point-min))
+      (search-forward "https")
+      (browse-url-at-point))))

@@ -145,7 +145,7 @@
 ;; (setq tab-bar-format '(tab-bar-format-global))
 ;; (tab-bar-mode 1)
 
-(setq display-time-format "%H:%M %d/%m/%Y")
+(setq display-time-format "%R %d/%m/%Y")
 (display-time-mode 1)
 
 
@@ -197,10 +197,16 @@
 (column-number-mode 1)
 (line-number-mode 1)
 
+(defun jacob-mode-line-saved-status ()
+  "Display symbol to show saved status of buffer."
+  (cond ((buffer-modified-p (current-buffer)) "❌")
+        (buffer-read-only "📚")
+        (t "✓")))
+
 (defvar jacob-mode-line-format
   '(" %e"
     mode-line-front-space
-    "%*"
+    (:eval (jacob-mode-line-saved-status))
     (:eval (pcase major-mode
              ('lisp-interaction-mode "ELi")
              ('emacs-lisp-mode "EL")
@@ -312,26 +318,6 @@
   (defun pcomplete/grh ()
     (pcomplete-here* (jacob-git-get-branches t)))
 
-  (defun eshell/gpsugl ()
-    (let* ((command (concat "git push --set-upstream origin HEAD "
-                            (let* ((branch-name (with-temp-buffer
-                                                  (eshell-command "git symbolic-ref HEAD --short" t)
-                                                  (buffer-substring-no-properties (point-min) (- (point-max) 1))))
-                                   (mr-key (progn
-                                             (string-match (rx "mer"  "-" (+ digit))
-                                                           branch-name)
-                                             (match-string 0 branch-name))))
-                              (concat "-o merge_request.create "
-                                      "-o merge_request.remove_source_branch "
-                                      (concat "-o merge_request.description=\""
-                                              "[" mr-key "](" "https://coveaprodcloud.atlassian.net/browse/" mr-key ")"
-                                              "\""))))))
-      (with-temp-buffer
-        (eshell-command command t)
-        (goto-char (point-min))
-        (search-forward "https")
-        (browse-url-at-point))))
-
   (defun jacob-git-get-branches (&optional display-origin)
     "Get git branches for current repo.
 
@@ -408,7 +394,7 @@ hides this information."
 
 ;; enable emoji fonts
 (set-fontset-font t
-                  '(#x1f300 . #x1fad0)
+                  'emoji
                   (seq-find (lambda (font)
                               (member font (font-family-list)))
                             '("Symbola"
@@ -756,7 +742,7 @@ Useful for deleting ^M after `eglot-code-actions'."
                                   (eglot-ensure))))
   (with-eval-after-load 'eglot
     
-    (add-to-list 'eglot-server-programs `(csharp-tree-sitter-mode . ("d:/programming/tools/omnisharp-win-x64-net6.0/OmniSharp.exe" "-lsp")))
+    (add-to-list 'eglot-server-programs `(csharp-tree-sitter-mode . ("OmniSharp.exe" "-lsp")))
 
     (add-to-list 'eglot-server-programs '((js-mode typescript-mode) . ("typescript-language-server" "--stdio")))
 
