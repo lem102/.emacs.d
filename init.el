@@ -448,7 +448,11 @@ hides this information."
    'org-babel-load-languages
    '((octave . t)))
 
-  (setq org-confirm-babel-evaluate nil))
+  (setq org-confirm-babel-evaluate nil)
+  
+  (set-face-attribute 'org-headline-done
+                      nil
+                      :strike-through t))
 
 
 ;; pulse config
