@@ -434,7 +434,11 @@ hides this information."
    'org-babel-load-languages
    '((octave . t)))
 
-  (setq org-confirm-babel-evaluate nil))
+  (setq org-confirm-babel-evaluate nil)
+  
+  (set-face-attribute 'org-headline-done
+                      nil
+                      :strike-through t))
 
 
 ;; pulse config
@@ -1585,8 +1589,10 @@ Calls INSERT."
     ("sco" "_")
     ))
 
-(define-abbrev-table 'org-mode-abbrev-table
-  '(("i" "I")))
+(define-abbrev-table 'text-mode-abbrev-table
+  '(("i" "I")
+    ("im" "I'm")
+    ("id" "I'd")))
 
 (define-abbrev-table 'common-operators-abbrev-table
   '(
@@ -1742,6 +1748,9 @@ Calls INSERT."
 
 
 ;; key bindings
+
+(global-set-key (kbd "C-<next>") 'next-buffer)
+(global-set-key (kbd "C-<prior>") 'previous-buffer)
 
 
 ;; macros
@@ -1952,3 +1961,4 @@ Calls INSERT."
 
 (provide 'init)
 ;;; init.el ends here
+
