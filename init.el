@@ -657,7 +657,9 @@ If successful, evaluate BODY.  Used to eagerly load feature."
                          cider
                          ;; misc
                          restart-emacs
-                         docker-tramp)
+                         docker-tramp
+                         auctex
+                         ef-themes)
   "List of packages to install.")
 
 (defun jacob-wrangle-packages ()
@@ -671,8 +673,8 @@ in that list."
          (missing-packages (cl-set-difference desired installed))
          (unwanted-packages (cl-set-difference installed desired)))
 
-    (when (not (or (null missing-packages)
-                   (null unwanted-packages)))
+    (when (and (null missing-packages)
+               (null unwanted-packages))
       (package-refresh-contents))
 
     (mapc #'package-install
