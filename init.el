@@ -943,7 +943,7 @@ Useful for deleting ^M after `eglot-code-actions'."
 ;; xah-fly-keys config
 
 (setq xah-fly-use-control-key nil)
-(setq xah-fly-use-meta-key t)
+(setq xah-fly-use-meta-key nil)
 
 (jacob-try-require 'xah-fly-keys
   (xah-fly-keys-set-layout "qwerty")
@@ -1733,49 +1733,49 @@ Calls INSERT."
   (define-prefix-command 'jacob-eglot-keymap)
 
   (jacob-is-installed 'eglot
-    (let ((map jacob-eglot-keymap))
-      (define-key map "a" 'eglot-code-actions)
-      (define-key map "r" 'eglot-rename)))
+    (define-key xah-fly-leader-key-map "ee" jacob-eglot-keymap)
+    (define-key xah-fly-leader-key-map "eea" 'eglot-code-actions)
+    (define-key xah-fly-leader-key-map "eer" 'eglot-rename))
+
+  (jacob-is-installed 'consult
+    (define-key xah-fly-leader-key-map "es" 'consult-line))
 
   (let ((map vc-prefix-map))
     (define-key map "P" 'jacob-git-push-set-upstream)
     (define-key map "c" 'jacob-git-pull-master-new-branch))
 
-  (let ((map xah-fly-dot-keymap))
-    (define-key map "v" vc-prefix-map)
-    (define-key map "t" tab-prefix-map)
-    (define-key map "c" jacob-config-keymap)
-    (define-key map "p" project-prefix-map)
-    (jacob-is-installed 'eglot
-      (define-key map "e" jacob-eglot-keymap))
-    (jacob-is-installed 'consult
-      (define-key map "s" 'consult-line))
-    (let ((map project-prefix-map))
-      (define-key map "g" 'jacob-project-search))
-    (define-key map "v" vc-prefix-map)
-    (define-key map "b" 'ef-themes-toggle)
-    (define-key map "i" 'jacob-format-buffer))
+  (let ((map project-prefix-map))
+    (define-key map "g" 'jacob-project-search))
 
-  (let ((map xah-fly-command-map))
-    (define-key map "a" 'execute-extended-command)
-    (define-key map "s" 'jacob-return-macro)
-    (define-key map "DEL" nil)
-    (define-key map "4" 'other-window-prefix)
-    (define-key map "1" 'winner-undo)
-    (define-key map "2" 'winner-redo)
-    (define-key map "9" 'jacob-swap-visible-buffers)
-    (define-key map "'" 'jacob-format-words)
-    (jacob-is-installed 'expand-region
-      (define-key map "8" 'er/expand-region)))
+  (define-key xah-fly-leader-key-map "ev" vc-prefix-map)
+  (define-key xah-fly-leader-key-map "et" tab-prefix-map)
+  (define-key xah-fly-leader-key-map "ec" jacob-config-keymap)
+  (define-key xah-fly-leader-key-map "ep" project-prefix-map)
+  (define-key xah-fly-leader-key-map "ev" vc-prefix-map)
+  (define-key xah-fly-leader-key-map "eb" 'ef-themes-toggle)
+  (define-key xah-fly-leader-key-map "ei" 'jacob-format-buffer)
 
-  (let ((map jacob-config-keymap))
-    (define-key map "r" 'jacob-config-reload)
-    (define-key map "e" 'jacob-config-visit)
-    (define-key map "c" 'jacob-org-src-block)
-    (define-key map "p" 'jacob-recompile-packages)
-    (define-key map "t" 'jacob-display-time)
-    (jacob-is-installed 'restart-emacs
-      (define-key map "R" 'restart-emacs)))
+  (define-key xah-fly-command-map "a" 'execute-extended-command)
+  (define-key xah-fly-command-map "s" 'jacob-return-macro)
+  (define-key xah-fly-command-map "DEL" nil)
+  (define-key xah-fly-command-map "4" 'other-window-prefix)
+  (define-key xah-fly-command-map "1" 'winner-undo)
+  (define-key xah-fly-command-map "2" 'winner-redo)
+  (define-key xah-fly-command-map "9" 'jacob-swap-visible-buffers)
+  (define-key xah-fly-command-map "'" 'jacob-format-words)
+  (jacob-is-installed 'expand-region
+    (define-key xah-fly-command-map "8" 'er/expand-region))
+  (jacob-is-installed 'consult
+    (define-key xah-fly-leader-key-map "v" 'consult-yank-from-kill-ring)
+    (define-key xah-fly-leader-key-map "f" 'consult-buffer))
+
+  (define-key xah-fly-leader-key-map "ecr" 'jacob-config-reload)
+  (define-key xah-fly-leader-key-map "ece" 'jacob-config-visit)
+  (define-key xah-fly-leader-key-map "ecc" 'jacob-org-src-block)
+  (define-key xah-fly-leader-key-map "ecp" 'jacob-recompile-packages)
+  (define-key xah-fly-leader-key-map "ect" 'jacob-display-time)
+  (jacob-is-installed 'restart-emacs
+    (define-key xah-fly-leader-key-map "ecR" 'restart-emacs))
 
   (defvar jacob-insert-parentheses-character ?k)
   (defvar jacob-insert-square-bracket-character ?l)
@@ -1791,25 +1791,24 @@ Calls INSERT."
                             (,jacob-insert-single-quote-character ?\' ?\')
                             (,jacob-insert-angle-bracket-character ?\< ?\>)))
 
-  (let ((map xah-fly-e-keymap))
-    (define-key map (char-to-string jacob-insert-parentheses-character) 'insert-pair)
-    (define-key map (char-to-string jacob-insert-square-bracket-character) 'insert-pair)
-    (define-key map (char-to-string jacob-insert-curly-brace-character) 'insert-pair)
-    (define-key map (char-to-string jacob-insert-double-quote-character) 'insert-pair)
-    (define-key map (char-to-string jacob-insert-single-quote-character) 'insert-pair)
-    (define-key map (char-to-string jacob-insert-angle-bracket-character) 'insert-pair)
-    (define-key map "m" 'xah-insert-hyphen)
-    (define-key map "," 'xah-insert-low-line)
-    (define-key map "." 'jacob-insert-equals)
-    (define-key map "/" 'jacob-insert-plus)
-    (define-key map "z" 'jacob-insert-apostrophe)
-    (define-key map "x" 'jacob-insert-at)
-    (define-key map "c" 'jacob-insert-hash)
-    (define-key map "d" 'backward-delete-char)
-    (define-key map "v" 'jacob-insert-tilde)
-    (define-key map "e" 'jacob-insert-dollar-sign)
-    (define-key map "r" 'jacob-insert-caret)
-    (define-key map "o" 'jacob-insert-ampersand))
+  (define-key xah-fly-leader-key-map (concat "d" (char-to-string jacob-insert-parentheses-character)) 'insert-pair)
+  (define-key xah-fly-leader-key-map (concat "d" (char-to-string jacob-insert-square-bracket-character)) 'insert-pair)
+  (define-key xah-fly-leader-key-map (concat "d" (char-to-string jacob-insert-curly-brace-character)) 'insert-pair)
+  (define-key xah-fly-leader-key-map (concat "d" (char-to-string jacob-insert-double-quote-character)) 'insert-pair)
+  (define-key xah-fly-leader-key-map (concat "d" (char-to-string jacob-insert-single-quote-character)) 'insert-pair)
+  (define-key xah-fly-leader-key-map (concat "d" (char-to-string jacob-insert-angle-bracket-character)) 'insert-pair)
+  (define-key xah-fly-leader-key-map "dm" 'xah-insert-hyphen)
+  (define-key xah-fly-leader-key-map "d," 'xah-insert-low-line)
+  (define-key xah-fly-leader-key-map "d." 'jacob-insert-equals)
+  (define-key xah-fly-leader-key-map "d/" 'jacob-insert-plus)
+  (define-key xah-fly-leader-key-map "dz" 'jacob-insert-apostrophe)
+  (define-key xah-fly-leader-key-map "dx" 'jacob-insert-at)
+  (define-key xah-fly-leader-key-map "dc" 'jacob-insert-hash)
+  (define-key xah-fly-leader-key-map "dd" 'backward-delete-char)
+  (define-key xah-fly-leader-key-map "dv" 'jacob-insert-tilde)
+  (define-key xah-fly-leader-key-map "de" 'jacob-insert-dollar-sign)
+  (define-key xah-fly-leader-key-map "dr" 'jacob-insert-caret)
+  (define-key xah-fly-leader-key-map "do" 'jacob-insert-ampersand)
 
   (defvar jacob-recenter-repeat-map
     (let ((map (make-sparse-keymap)))
@@ -1817,31 +1816,13 @@ Calls INSERT."
       map))
 
   (put 'recenter-top-bottom 'repeat-map 'jacob-recenter-repeat-map)
+  (define-key xah-fly-leader-key-map ",n" 'jacob-eval-and-replace)
 
-  (let ((map xah-fly-leader-key-map))
-    (jacob-is-installed 'consult
-      (define-key map "v" 'consult-yank-from-kill-ring)
-      (define-key map "f" 'consult-buffer)))
+  (define-key xah-fly-leader-key-map "ij" 'consult-recent-file)
+  (define-key xah-fly-leader-key-map "ie" 'find-file)
 
-  (let ((map xah-fly-w-keymap))
-    (define-key map "n" 'jacob-eval-and-replace))
-
-  (let ((map xah-fly-t-keymap))
-    (define-key map "j" 'xah-close-current-buffer))
-
-  (let ((map xah-fly-c-keymap))
-    (define-key map "j" 'consult-recent-file)
-    (define-key map "e" 'find-file))
-
-  (let ((map xah-fly-t-keymap))
-    (define-key map "j" 'kill-current-buffer))
-
-  (let ((map xah-fly-r-keymap))
-    (define-key map "c" 'kmacro-set-counter))
-
-  (let ((map xah-fly-n-keymap))
-    (define-key map "a" 'jacob-font-size-increase)
-    (define-key map "3" 'jacob-async-shell-command))
+  (define-key xah-fly-leader-key-map "la" 'jacob-font-size-increase)
+  (define-key xah-fly-leader-key-map "l3" 'jacob-async-shell-command)
 
   (let ((map vc-prefix-map))
     (define-key map "p" 'vc-push))

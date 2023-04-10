@@ -1,2 +1,0 @@
-;;; Generated package description from c:/Users/lem/.emacs.d/elpa/xah-fly-keys-20210216.2215/xah-fly-keys.el  -*- no-byte-compile: t -*-
-(define-package "xah-fly-keys" "20210216.2215" "ergonomic modal keybinding minor mode." '((emacs "24.1")) :commit "916f1b29cdb9af3ff4b5135222526723fcd84eec" :authors '(("Xah Lee ( http://xahlee.info/ )")) :maintainer '("Xah Lee ( http://xahlee.info/ )") :keywords '("convenience" "emulations" "vim" "ergoemacs") :url "http://ergoemacs.org/misc/ergoemacs_vi_mode.html")
