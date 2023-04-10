@@ -653,7 +653,6 @@ If successful, evaluate BODY.  Used to eagerly load feature."
                          ;; programming
                          eglot
                          eglot-fsharp
-                         lsp-mode
                          inf-ruby
                          cider
                          ;; misc
@@ -672,7 +671,8 @@ in that list."
          (missing-packages (cl-set-difference desired installed))
          (unwanted-packages (cl-set-difference installed desired)))
 
-    (when (not (null missing-packages))
+    (when (not (or (null missing-packages)
+                   (null unwanted-packages)))
       (package-refresh-contents))
 
     (mapc #'package-install
@@ -787,18 +787,6 @@ Useful for deleting ^M after `eglot-code-actions'."
             (ignore-errors (delay-mode-hooks (funcall mode))))
           (font-lock-ensure)
           (string-trim (buffer-string)))))))
-
-
-;; lsp mode config, for csharp only
-
-;; (jacob-is-installed 'lsp-mode
-;;   (setq lsp-lens-enable nil)
-;;   (setq lsp-headerline-breadcrumb-enable nil)
-;;   (setq lsp-eldoc-render-all t)
-;;   (setq lsp-eldoc-enable-hover t)
-
-;;   (add-hook 'csharp-tree-sitter-mode-hook 'lsp)
-;;   )
 
 
 
