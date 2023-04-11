@@ -2,28 +2,6 @@
 ;;; Commentary:
 ;;; Code:
 
-(defvar jacob-emacs-mode (cond ((member "--planner" command-line-args)
-                                (setq command-line-args (delete "--planner" command-line-args))
-                                (setq frame-title-format "Emacs Planner")
-                                'planner)
-                               (t
-                                'master))
-  "The mode of this Emacs.")
-
-(defmacro jacob-is-emacs-mode (mode &rest body)
-  "If MODE is the current Emacs mode, evaluate BODY."
-  (declare (indent 1))
-  `(when (eq jacob-emacs-mode ,mode)
-     ,@body))
-
-(jacob-is-emacs-mode 'master
-  (defun jacob-open-planner ()
-    "Start a new emacs process configured to be a planner."
-    (interactive)
-    (start-process "Emacs Planner" nil "emacs" "--planner")))
-
-
-
 ;; built-in
 ;; garbage collection
 
@@ -58,12 +36,9 @@
 
 (setq scroll-conservatively 100)
 (setq mouse-wheel-progressive-speed nil)
-(setq mouse-wheel-scroll-amount '(10
-                                  ((shift)
-                                   . hscroll)
-                                  ((meta))
-                                  ((control)
-                                   . text-scale)))
+(setq mouse-wheel-scroll-amount '(10 ((shift) . hscroll)
+                                     ((meta))
+                                     ((control) . text-scale)))
 
 
 ;; user interface config
@@ -138,9 +113,6 @@
 
 (setq display-time-default-load-average nil)
 (setq display-time-day-and-date t)
-
-;; (setq tab-bar-format '(tab-bar-format-global))
-;; (tab-bar-mode 1)
 
 (setq display-time-format "%R %d/%m/%Y")
 (display-time-mode 1)
@@ -255,8 +227,8 @@
     (modify-face 'pulse-highlight-start-face nil "yellow"))
   (with-eval-after-load 'org
     (set-face-attribute 'org-headline-done
-                      nil
-                      :strike-through t)))
+                        nil
+                        :strike-through t)))
 
 (add-hook 'ef-themes-post-load-hook 'jacob-ef-theme)
 (jacob-ef-theme)
@@ -460,8 +432,7 @@ hides this information."
 
 ;; server config
 
-(when (equal jacob-emacs-mode 'master)
-  (server-start))
+(server-start)
 
 
 ;; time emacs startup
@@ -488,18 +459,6 @@ hides this information."
   (setq calendar-mark-diary-entries-flag t)
   (setq calendar-mark-holidays-flag t)
   (add-hook 'calendar-today-visible-hook 'calendar-mark-today))
-
-(jacob-is-emacs-mode 'planner
-  (defun jacob-launch-dashboard-when-idle ()
-    "Launch informative dashboard after idle time."
-    (run-with-idle-timer 1 nil (lambda ()
-                                 (calendar)
-                                 (diary-view-entries)
-                                 (other-window 1)
-                                 (split-window-horizontally)
-                                 (other-window 1)
-                                 (find-file (concat jacob-raspberry-pi-connection-string "/home/pi/org/todo.org")))))
-  (add-hook 'after-init-hook 'jacob-launch-dashboard-when-idle))
 
 
 ;; remember config
@@ -544,10 +503,9 @@ Designed for use in on-save hook in certain programming languages modes."
   (setq w32-rwindow-modifier 'super)
   (setq w32-apps-modifier 'hyper)
 
-  (jacob-is-emacs-mode 'master
-    (add-hook 'after-init-hook (lambda ()
-                                 ;; maximize window
-                                 (w32-send-sys-command 61488))))
+  (add-hook 'after-init-hook (lambda ()
+                               ;; maximize window
+                               (w32-send-sys-command 61488)))
 
   (defun jacob-confirm-terminate-batch-job ()
     "Type y and enter to terminate batch job after sending ^C."
