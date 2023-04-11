@@ -925,9 +925,6 @@ Useful for deleting ^M after `eglot-code-actions'."
     (forward-line)
     (indent-pp-sexp t)))
 
-(define-key emacs-lisp-mode-map (kbd "C-j") 'jacob-eval-print-last-sexp)
-(define-key lisp-interaction-mode-map (kbd "C-j") 'jacob-eval-print-last-sexp)
-
 (defun jacob-system-free-space ()
   "Display free space on system storage.
 Should work cross platform."
@@ -956,6 +953,8 @@ Should work cross platform."
               (nxml-mode)
               (indent-region (point-min) (point-max))
               (buffer-substring-no-properties (point-min) (point-max))))))
+
+;; TODO: remove web request helper code, replace with either request.el, or pls.el packages.
 
 (defun jacob-web-request-helper (url &optional method headers data data-format-function data-parse)
   "Helper function for making web requests.
@@ -1863,6 +1862,9 @@ Calls INSERT."
   (put 'smerge-prev 'repeat-map 'jacob-smerge-repeat-map)
   (put 'smerge-keep-upper 'repeat-map 'jacob-smerge-repeat-map)
   (put 'smerge-keep-lower 'repeat-map 'jacob-smerge-repeat-map))
+
+(define-key emacs-lisp-mode-map (kbd "C-j") 'jacob-eval-print-last-sexp)
+(define-key lisp-interaction-mode-map (kbd "C-j") 'jacob-eval-print-last-sexp)
 
 (provide 'init)
 ;;; init.el ends here
