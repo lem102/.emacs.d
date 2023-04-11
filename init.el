@@ -252,7 +252,11 @@
 (defun jacob-ef-theme ()
   "For use in `ef-themes-post-load-hook'."
   (with-eval-after-load 'pulse
-    (modify-face 'pulse-highlight-start-face nil "yellow")))
+    (modify-face 'pulse-highlight-start-face nil "yellow"))
+  (with-eval-after-load 'org
+    (set-face-attribute 'org-headline-done
+                      nil
+                      :strike-through t)))
 
 (add-hook 'ef-themes-post-load-hook 'jacob-ef-theme)
 (jacob-ef-theme)
@@ -431,11 +435,7 @@ hides this information."
    'org-babel-load-languages
    '((octave . t)))
 
-  (setq org-confirm-babel-evaluate nil)
-  
-  (set-face-attribute 'org-headline-done
-                      nil
-                      :strike-through t))
+  (setq org-confirm-babel-evaluate nil))
 
 
 ;; pulse config
