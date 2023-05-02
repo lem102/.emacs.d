@@ -618,7 +618,9 @@ If successful, evaluate BODY.  Used to eagerly load feature."
                          restart-emacs
                          docker-tramp
                          auctex
-                         ef-themes)
+                         ef-themes
+                         exec-path-from-shell
+                         )
   "List of packages to install.")
 
 (defun jacob-wrangle-packages ()
@@ -907,6 +909,13 @@ Useful for deleting ^M after `eglot-code-actions'."
 (jacob-try-require 'xah-fly-keys
   (xah-fly-keys-set-layout "qwerty")
   (xah-fly-keys 1))
+
+
+;; exec-path-from-shell config
+
+(jacob-is-installed 'exec-path-from-shell
+  (unless (equal 'windows-nt system-type)
+    (exec-path-from-shell-initialize)))
 
 
 
