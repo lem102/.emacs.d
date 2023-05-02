@@ -405,7 +405,8 @@ hides this information."
 
   (org-babel-do-load-languages
    'org-babel-load-languages
-   '((octave . t)))
+   '((octave . t)
+     (mermaid . t)))
 
   (setq org-confirm-babel-evaluate nil))
 
@@ -673,7 +674,7 @@ in that list."
 ;; csharp-mode
 
 (jacob-is-installed 'csharp-mode
-  (add-to-list 'auto-mode-alist '("\\.cs\\'" . csharp-tree-sitter-mode)))
+  (add-to-list 'auto-mode-alist '("\\.cs\\'" . csharp-mode)))
 
 
 ;; eglot config
@@ -699,7 +700,7 @@ Useful for deleting ^M after `eglot-code-actions'."
                             'eldoc-documentation-compose)))
 
   (add-hook 'java-mode-hook 'eglot-ensure)
-  (add-hook 'csharp-tree-sitter-mode-hook 'eglot-ensure)
+  (add-hook 'csharp-mode-hook 'eglot-ensure)
   (add-hook 'typescript-mode-hook 'eglot-ensure)
   (add-hook 'fsharp-mode-hook (lambda ()
                                 (when (eq system-type 'gnu/linux)
@@ -707,7 +708,7 @@ Useful for deleting ^M after `eglot-code-actions'."
                                   (eglot-ensure))))
   (with-eval-after-load 'eglot
     
-    (add-to-list 'eglot-server-programs `(csharp-tree-sitter-mode . ("OmniSharp.exe" "-lsp")))
+    (add-to-list 'eglot-server-programs `(csharp-mode-hook . ("OmniSharp.exe" "-lsp")))
 
     (add-to-list 'eglot-server-programs '((js-mode typescript-mode) . ("typescript-language-server" "--stdio")))
 
@@ -729,7 +730,7 @@ Useful for deleting ^M after `eglot-code-actions'."
 
     (defun eglot--format-markup (markup)
       "Format MARKUP according to LSP's spec."
-      (pcase-let ((is-csharp (equal 'csharp-tree-sitter-mode major-mode))
+      (pcase-let ((is-csharp (equal 'csharp-mode-hook major-mode))
                   (`(,string ,mode)
                    (if (stringp markup) (list markup 'gfm-view-mode)
                      (list (plist-get markup :value)
@@ -1588,7 +1589,7 @@ Calls INSERT."
   nil
   :parents (list common-java-csharp-abbrev-table))
 
-(define-abbrev-table 'csharp-tree-sitter-mode-abbrev-table
+(define-abbrev-table 'csharp-mode-hook-abbrev-table
   '(("cwl" "" jacob-insert-csharp-print)
     ("as" "async")
     ("ns" "namespace")
