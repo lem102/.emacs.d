@@ -709,8 +709,7 @@ Useful for deleting ^M after `eglot-code-actions'."
                                   (require 'eglot-fsharp)
                                   (eglot-ensure))))
   (with-eval-after-load 'eglot
-    
-    (add-to-list 'eglot-server-programs `(csharp-mode-hook . ("OmniSharp.exe" "-lsp")))
+    (add-to-list 'eglot-server-programs '(csharp-mode . ("csharp-ls")))
 
     (add-to-list 'eglot-server-programs '((js-mode typescript-mode) . ("typescript-language-server" "--stdio")))
 
