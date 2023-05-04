@@ -620,6 +620,8 @@ If successful, evaluate BODY.  Used to eagerly load feature."
                          auctex
                          ef-themes
                          exec-path-from-shell
+                         uuid
+                         plz
                          )
   "List of packages to install.")
 
