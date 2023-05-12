@@ -675,10 +675,12 @@ in that list."
   (add-to-list 'auto-mode-alist '("\\.http\\'" . restclient-mode)))
 
 
-;; csharp-mode
+;; csharp-mode config
 
 (jacob-is-installed 'csharp-mode
-  (add-to-list 'auto-mode-alist '("\\.cs\\'" . csharp-mode)))
+  (add-to-list 'auto-mode-alist '("\\.cs\\'" . csharp-mode))
+  (add-hook 'csharp-mode-hook (lambda ()
+                                (local-set-key (kbd "TAB") 'indent-for-tab-command))))
 
 
 ;; eglot config
@@ -1599,7 +1601,7 @@ Calls INSERT."
   nil
   :parents (list common-java-csharp-abbrev-table))
 
-(define-abbrev-table 'csharp-mode-hook-abbrev-table
+(define-abbrev-table 'csharp-mode-abbrev-table
   '(("cwl" "" jacob-insert-csharp-print)
     ("as" "async")
     ("ns" "namespace")
