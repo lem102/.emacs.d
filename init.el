@@ -1317,6 +1317,42 @@ Otherwise, display error message."
         (kill-word 1)
       (insert ".only"))))
 
+(defvar jacob-git-lab-push-set-upstream-jira-url ""
+  "URL for current employer's jira board.")
+
+(defun jacob-git-lab-push-set-upstream ()
+  "Push the current branch and create an upstream branch.
+Use GitLab push options to create a merge request and set all
+necessary values.
+
+For use with GitLab only."
+  ;; TODO: auto-update jira ticket with MR link
+  ;; TODO: create buffer with message ready to go into slack containing MR and ticket URLs
+  (interactive)
+  (let* ((branch-name (with-temp-buffer
+                        (eshell-command "git symbolic-ref HEAD --short" t)
+                        (buffer-substring-no-properties (point-min) (- (point-max) 1))))
+         (mr-key (progn
+                   (string-match (rx string-start (+ alpha) "-" (+ digit))
+                                 branch-name)
+                   (match-string 0 branch-name)))
+         (jira-link (concat jacob-git-lab-push-set-upstream-jira-url mr-key))
+         (command (concat "git push --set-upstream origin HEAD "
+                          (concat "-o merge_request.create "
+                                  "-o merge_request.remove_source_branch "
+                                  (concat "-o merge_request.description=\""
+                                          "[" mr-key "](" jira-link ")"
+                                          "\""))))
+         (mr-link (with-temp-buffer
+                    (eshell-command command t)
+                    (goto-char (point-min))
+                    (search-forward "https")
+                    (thing-at-point 'url))))
+    (kill-new (concat mr-key "\n"
+                      mr-link "\n"
+                      jira-link))
+    (browse-url mr-link)))
+
 
 
 ;; abbrevs
