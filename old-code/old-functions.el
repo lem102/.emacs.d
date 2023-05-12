@@ -151,7 +151,7 @@ Search youtube for string and display in browser."
          (ticket-details (let* ((gitlab-mr-api "https://gitlab.tools.digital.coveahosted.co.uk/api/v4/merge_requests")
                                 (mrs (jacob-web-request-helper gitlab-mr-api
                                                                "GET"
-                                                               '(("PRIVATE-TOKEN" . ""))
+                                                               '(("PRIVATE-TOKEN" . "")) ; note to future self, never put api keys in a pulic repo :))))))
                                                                nil
                                                                nil
                                                                'json))
