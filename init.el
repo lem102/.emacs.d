@@ -1301,7 +1301,7 @@ Otherwise, display error message."
         (file (buffer-file-name))
         (line (number-to-string (+ (current-line) 1)))
         (column (number-to-string (+ (current-column) 1))))
-    (shell-command (concat "code . --reuse-window --goto " file ":" line ":" column))))
+    (shell-command (concat "code . --reuse-window --goto \"" file "\":" line ":" column))))
 
 (defun jacob-toggle-mocha-only ()
   "Toggle the presence of .only after an it/describe mocha test."
