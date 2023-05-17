@@ -1744,6 +1744,7 @@ Calls INSERT."
   (define-key xah-fly-command-map "2" 'winner-redo)
   (define-key xah-fly-command-map "9" 'jacob-swap-visible-buffers)
   (define-key xah-fly-command-map "'" 'jacob-format-words)
+  (define-key xah-fly-command-map (kbd "M-SPC") 'xah-fly-command-mode-activate)
   (jacob-is-installed 'expand-region
     (define-key xah-fly-command-map "8" 'er/expand-region))
 
