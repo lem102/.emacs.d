@@ -1,13 +1,13 @@
-This is orderless.info, produced by makeinfo version 6.7 from
+This is docUmSKu2.info, produced by makeinfo version 6.7 from
 orderless.texi.
 
-INFO-DIR-SECTION Emacs
+INFO-DIR-SECTION Emacs misc features
 START-INFO-DIR-ENTRY
 * Orderless: (orderless). Completion style for matching regexps in any order.
 END-INFO-DIR-ENTRY
 
 
-File: orderless.info,  Node: Top,  Next: Overview,  Up: (dir)
+File: docUmSKu2.info,  Node: Top,  Next: Overview,  Up: (dir)
 
 Orderless
 *********
@@ -37,6 +37,7 @@ Component matching styles
 Integration with other completion UIs
 
 * Ivy::
+* Helm::
 * Selectrum::
 * Company::
 
@@ -48,7 +49,7 @@ Related packages
 
 
 
-File: orderless.info,  Node: Overview,  Next: Customization,  Prev: Top,  Up: Top
+File: docUmSKu2.info,  Node: Overview,  Next: Customization,  Prev: Top,  Up: Top
 
 1 Overview
 **********
@@ -64,39 +65,71 @@ literal matches are enabled.
 front-end that provides a completion UI.  Any completion style can be
 used with the default Emacs completion UI (sometimes called minibuffer
 tab completion), with the built-in Icomplete package (which is similar
-to the more well-known Ido Mode), or with some third party completion
-frameworks such as Selectrum (https://github.com/raxod502/selectrum) or
-icomplete-vertical (https://github.com/oantolin/icomplete-vertical).  To
-use a completion style in this fashion simply add it as an entry in the
-variables ‘completion-styles’ and ‘completion-category-overrides’ (see
-their documentation).  You may also want to modify the
-‘completion-category-defaults’ variable, which serves as a default value
-for ‘completion-category-overrides’: if you want to use ‘orderless’
-exclusively, set both variables to ‘nil’.
+to the more well-known Ido Mode), the icomplete-vertical variant from
+Emacs 28 (see the external icomplete-vertical
+(https://github.com/oantolin/icomplete-vertical) package to get that
+functionality on earlier versions of Emacs), or with some third party
+minibuffer completion frameworks such as Mct
+(https://gitlab.com/protesilaos/mct), Vertico
+(https://github.com/minad/vertico), or Selectrum
+(https://github.com/raxod502/selectrum) (in its default configuration).
+
+   All the completion UIs just mentioned are for minibuffer completion,
+used when Emacs commands prompt the user in the minibuffer for some
+input, but there is also completion at point in normal buffers,
+typically used for identifiers in programming languages.  Completion
+styles can also be used for that purpose by completion at point UIs such
+as Corfu (https://github.com/minad/corfu), Company
+(https://company-mode.github.io/) or the function
+‘consult-completion-in-region’ from Consult
+(https://github.com/minad/consult).
+
+   To use a completion style with any of the above mentioned completion
+UIs simply add it as an entry in the variables ‘completion-styles’ and
+‘completion-category-overrides’ (see their documentation).  You may also
+want to modify the ‘completion-category-defaults’ variable, which serves
+as a default value for ‘completion-category-overrides’: if you want to
+use ‘orderless’ exclusively, set both variables to ‘nil’.
 
    With a bit of effort, it might still be possible to use ‘orderless’
 with other completion UIs, even if those UIs don’t support the standard
 Emacs completion styles.  Currently there is support for Ivy
-(https://github.com/abo-abo/swiper) (see below).
+(https://github.com/abo-abo/swiper) (see below).  Also, while Company
+does support completion styles directly, pressing ‘SPC’ takes you out of
+completion, so comfortably using ‘orderless’ with it takes a bit of
+configuration (see below).
 
-   If you use MELPA, the easiest way to install ‘orderless’ is via
-‘package-install’.  If you use both MELPA and ‘use-package’, you can
-use:
+   If you use ELPA or MELPA, the easiest way to install ‘orderless’ is
+via ‘package-install’.  If you use ‘use-package’, you can use:
 
      (use-package orderless
        :ensure t
-       :custom (completion-styles '(orderless)))
+       :custom
+       (completion-styles '(orderless basic))
+       (completion-category-overrides '((file (styles basic partial-completion)))))
 
    Alternatively, put ‘orderless.el’ somewhere on your ‘load-path’, and
 use the following configuration:
 
      (require 'orderless)
-     (setq completion-styles '(orderless))
+     (setq completion-styles '(orderless basic)
+           completion-category-overrides '((file (styles basic partial-completion))))
+
+   The ‘basic’ completion style is specified as fallback in addition to
+‘orderless’ in order to ensure that completion commands which rely on
+dynamic completion tables, e.g., ‘completion-table-dynamic’ or
+‘completion-table-in-turn’, work correctly.  Furthermore the ‘basic’
+completion style needs to be tried _first_ (not as a fallback) for TRAMP
+hostname completion to work.  In order to achieve that, we add an entry
+for the ‘file’ completion category in the
+‘completion-category-overrides’ variable.  In addition, the
+‘partial-completion’ style allows you to use wildcards for file
+completion and partial paths, e.g., ‘/u/s/l’ for ‘/usr/share/local’.
 
    Bug reports are highly welcome and appreciated!
 
 
-File: orderless.info,  Node: Customization,  Next: Integration with other completion UIs,  Prev: Overview,  Up: Top
+File: docUmSKu2.info,  Node: Customization,  Next: Integration with other completion UIs,  Prev: Overview,  Up: Top
 
 2 Customization
 ***************
@@ -111,7 +144,7 @@ File: orderless.info,  Node: Customization,  Next: Integration with other comple
 * Interactively changing the configuration::
 
 
-File: orderless.info,  Node: Component matching styles,  Next: Component separator regexp,  Up: Customization
+File: docUmSKu2.info,  Node: Component matching styles,  Next: Component separator regexp,  Up: Customization
 
 2.1 Component matching styles
 =============================
@@ -157,26 +190,6 @@ orderless-initialism
 
      This maps ‘abc’ to ‘\<a.*\<b.*\c’.
 
-orderless-strict-initialism
-     like initialism but only allow non-letters in between the matched
-     words.
-
-     For example ‘fb’ would match ‘foo-bar’ but not ‘foo-qux-bar’.
-
-orderless-strict-leading-initialism
-     like strict-initialism but require the first initial to match the
-     candidate’s first word.
-
-     For example ‘bb’ would match ‘bar-baz’ but not ‘foo-bar-baz’.
-
-orderless-strict-full-initialism
-     like strict-initialism but require the first initial to match the
-     candidate’s first word and the last initial to be at the final
-     word.
-
-     For example ‘fbb’ would match ‘foo-bar-baz’ but not
-     ‘foo-bar-baz-qux’.
-
 orderless-flex
      the characters of the component should appear in that order in the
      candidate, but not necessarily consecutively.
@@ -192,7 +205,7 @@ regexp styles.
 * Style dispatchers::
 
 
-File: orderless.info,  Node: Style dispatchers,  Up: Component matching styles
+File: docUmSKu2.info,  Node: Style dispatchers,  Up: Component matching styles
 
 2.1.1 Style dispatchers
 -----------------------
@@ -246,7 +259,7 @@ details.
                                          without-if-bang))
 
 
-File: orderless.info,  Node: Component separator regexp,  Next: Defining custom orderless styles,  Prev: Component matching styles,  Up: Customization
+File: docUmSKu2.info,  Node: Component separator regexp,  Next: Defining custom orderless styles,  Prev: Component matching styles,  Up: Customization
 
 2.2 Component separator regexp
 ==============================
@@ -271,7 +284,7 @@ different separator for the components, bind
 ‘orderless-component-separator’ in a ‘let’ form.
 
 
-File: orderless.info,  Node: Defining custom orderless styles,  Next: Faces for component matches,  Prev: Component separator regexp,  Up: Customization
+File: docUmSKu2.info,  Node: Defining custom orderless styles,  Next: Faces for component matches,  Prev: Component separator regexp,  Up: Customization
 
 2.3 Defining custom orderless styles
 ====================================
@@ -308,7 +321,7 @@ the above example configuration, or other similarly fine-grained control
 of completion styles according to completion category.
 
 
-File: orderless.info,  Node: Faces for component matches,  Next: Pattern compiler,  Prev: Defining custom orderless styles,  Up: Customization
+File: docUmSKu2.info,  Node: Faces for component matches,  Next: Pattern compiler,  Prev: Defining custom orderless styles,  Up: Customization
 
 2.4 Faces for component matches
 ===============================
@@ -325,7 +338,7 @@ matches.  You will only see these particular faces when the ‘orderless’
 completion is the one that ends up being used, of course.
 
 
-File: orderless.info,  Node: Pattern compiler,  Next: Interactively changing the configuration,  Prev: Faces for component matches,  Up: Customization
+File: docUmSKu2.info,  Node: Pattern compiler,  Next: Interactively changing the configuration,  Prev: Faces for component matches,  Up: Customization
 
 2.5 Pattern compiler
 ====================
@@ -338,7 +351,7 @@ circumstances it may be useful to implement a custom pattern compiler by
 advising the ‘orderless-pattern-compiler’.
 
 
-File: orderless.info,  Node: Interactively changing the configuration,  Prev: Pattern compiler,  Up: Customization
+File: docUmSKu2.info,  Node: Interactively changing the configuration,  Prev: Pattern compiler,  Up: Customization
 
 2.6 Interactively changing the configuration
 ============================================
@@ -370,7 +383,7 @@ components match literally.  You could use the following code:
 the values are only used for that minibuffer completion session.
 
 
-File: orderless.info,  Node: Integration with other completion UIs,  Next: Related packages,  Prev: Customization,  Up: Top
+File: docUmSKu2.info,  Node: Integration with other completion UIs,  Next: Related packages,  Prev: Customization,  Up: Top
 
 3 Integration with other completion UIs
 ***************************************
@@ -388,11 +401,12 @@ from your effort.  The functions ‘orderless-filter’,
 * Menu:
 
 * Ivy::
+* Helm::
 * Selectrum::
 * Company::
 
 
-File: orderless.info,  Node: Ivy,  Next: Selectrum,  Up: Integration with other completion UIs
+File: docUmSKu2.info,  Node: Ivy,  Next: Helm,  Up: Integration with other completion UIs
 
 3.1 Ivy
 =======
@@ -400,16 +414,30 @@ File: orderless.info,  Node: Ivy,  Next: Selectrum,  Up: Integration with other 
 To use ‘orderless’ from Ivy add this to your Ivy configuration:
 
      (setq ivy-re-builders-alist '((t . orderless-ivy-re-builder)))
+     (add-to-list 'ivy-highlight-functions-alist '(orderless-ivy-re-builder . orderless-ivy-highlight))
 
 
-File: orderless.info,  Node: Selectrum,  Next: Company,  Prev: Ivy,  Up: Integration with other completion UIs
+File: docUmSKu2.info,  Node: Helm,  Next: Selectrum,  Prev: Ivy,  Up: Integration with other completion UIs
 
-3.2 Selectrum
+3.2 Helm
+========
+
+To use ‘orderless’ from Helm, simply configure ‘orderless’ as you would
+for completion UIs that use Emacs completion stlyes and add this to your
+Helm configuration:
+
+     (setq helm-completion-style 'emacs)
+
+
+File: docUmSKu2.info,  Node: Selectrum,  Next: Company,  Prev: Helm,  Up: Integration with other completion UIs
+
+3.3 Selectrum
 =============
 
 Recent versions of Selectrum default to using whatever completion styles
-you have configured.  You can use ‘orderless’ that way, or you can use
-this configuration:
+you have configured.  If you stick with that default configuration you
+can use ‘orderless’ just by adding it to ‘completion-styles’.
+Alternatively, you can use this configuration:
 
      (setq selectrum-refine-candidates-function #'orderless-filter)
      (setq selectrum-highlight-candidates-function #'orderless-highlight-matches)
@@ -417,10 +445,12 @@ this configuration:
    If you use the above configuration, only the visible candidates are
 highlighted, which is a litte more efficient.
 
-
-File: orderless.info,  Node: Company,  Prev: Selectrum,  Up: Integration with other completion UIs
+   Note that Selectrum has been deprecated in favor of Vertico.
 
-3.3 Company
+
+File: docUmSKu2.info,  Node: Company,  Prev: Selectrum,  Up: Integration with other completion UIs
+
+3.4 Company
 ===========
 
 Company comes with a ‘company-capf’ backend that uses the
@@ -435,9 +465,9 @@ This means that the ‘company-capf’ backend will automatically use
      fix this add a separator that is allowed to occur in identifiers,
      for example, for Emacs Lisp code you could use an ampersand:
 
-          (setq orderless-component-separator "[ &]")
+     (setq orderless-component-separator "[ &]")
 
-  2. The matching portions of candidates aren’t highlighted.  That’s
+  1. The matching portions of candidates aren’t highlighted.  That’s
      because ‘company-capf’ is hard-coded to look for the
      ‘completions-common-part’ face, and it only use one face,
      ‘company-echo-common’ to highlight candidates.
@@ -446,16 +476,27 @@ This means that the ‘company-capf’ backend will automatically use
      you can at least get the matches highlighted in the sole available
      face with this configuration:
 
-          (defun just-one-face (fn &rest args)
-            (let ((orderless-match-faces [completions-common-part]))
-              (apply fn args)))
+     (defun just-one-face (fn &rest args)
+       (let ((orderless-match-faces [completions-common-part]))
+         (apply fn args)))
 
-          (advice-add 'company-capf--candidates :around #'just-one-face)
+     (advice-add 'company-capf--candidates :around #'just-one-face)
 
-     (Aren’t dynamically scoped variables and the advice system nifty?)
+   (Aren’t dynamically scoped variables and the advice system nifty?)
+
+   If you would like to use different ‘completion-styles’ with
+‘company-capf’ instead, you can add this to your config:
+
+     ;; We follow a suggestion by company maintainer u/hvis:
+     ;; https://www.reddit.com/r/emacs/comments/nichkl/comment/gz1jr3s/
+     (defun company-completion-styles (capf-fn &rest args)
+       (let ((completion-styles '(basic partial-completion)))
+         (apply capf-fn args))
+
+     (advice-add 'company-capf :around #'company-completion-styles)
 
 
-File: orderless.info,  Node: Related packages,  Prev: Integration with other completion UIs,  Up: Top
+File: docUmSKu2.info,  Node: Related packages,  Prev: Integration with other completion UIs,  Up: Top
 
 4 Related packages
 ******************
@@ -467,7 +508,7 @@ File: orderless.info,  Node: Related packages,  Prev: Integration with other com
 * Restricting to current matches in Icicles, Ido and Ivy: Restricting to current matches in Icicles Ido and Ivy.
 
 
-File: orderless.info,  Node: Ivy and Helm,  Next: Prescient,  Up: Related packages
+File: docUmSKu2.info,  Node: Ivy and Helm,  Next: Prescient,  Up: Related packages
 
 4.1 Ivy and Helm
 ================
@@ -477,7 +518,7 @@ The well-known and hugely powerful completion frameworks Ivy
 (https://github.com/emacs-helm/helm) also provide for matching
 space-separated component regexps in any order.  In Ivy, this is done
 with the ‘ivy--regex-ignore-order’ matcher.  In Helm, it is the default,
-called "multi pattern matching".
+called “multi pattern matching”.
 
    This package is significantly smaller than either of those because it
 solely defines a completion style, meant to be used with any completion
@@ -492,32 +533,31 @@ for example, Icomplete users could, instead of using this package,
 install Helm and configure Icomplete to use it as follows:
 
      (require 'helm)
-     (setq completion-styles '(helm))
+     (setq completion-styles '(helm basic))
      (icomplete-mode)
 
    (Of course, if you install Helm, you might as well use the Helm UI in
 ‘helm-mode’ rather than Icomplete.)
 
 
-File: orderless.info,  Node: Prescient,  Next: Restricting to current matches in Icicles Ido and Ivy,  Prev: Ivy and Helm,  Up: Related packages
+File: docUmSKu2.info,  Node: Prescient,  Next: Restricting to current matches in Icicles Ido and Ivy,  Prev: Ivy and Helm,  Up: Related packages
 
 4.2 Prescient
 =============
 
 The prescient.el (https://github.com/raxod502/prescient.el) library also
-provides matching of space-separated components in any order and it can
-be used with either the Selectrum
-(https://github.com/raxod502/selectrum) or Ivy
-(https://github.com/abo-abo/swiper) completion UIs (it does not offer a
-completion-style that could be used with Emacs’ default completion UI or
-with Icomplete).  The components can be matched literally, as regexps,
-as initialisms or in the flex style (called "fuzzy" in prescient).  In
-addition to matching, ‘prescient.el’ also supports sorting of candidates
-(‘orderless’ leaves that up to the candidate source and the completion
-UI).
+provides matching of space-separated components in any order.  It offers
+a completion-style that can be used with Emacs’ default completion UI,
+Mct, Vertico or with Icomplete.  Furthermore Selectrum and Ivy are
+supported.  The components can be matched literally, as regexps, as
+initialisms or in the flex style (called “fuzzy” in prescient).
+Prescient does not offer the same flexibility as Orderless with its
+style dispatchers.  However in addition to matching, Prescient supports
+sorting of candidates, while Orderless leaves that up to the candidate
+source and the completion UI.
 
 
-File: orderless.info,  Node: Restricting to current matches in Icicles Ido and Ivy,  Prev: Prescient,  Up: Related packages
+File: docUmSKu2.info,  Node: Restricting to current matches in Icicles Ido and Ivy,  Prev: Prescient,  Up: Related packages
 
 4.3 Restricting to current matches in Icicles, Ido and Ivy
 ==========================================================
@@ -542,24 +582,25 @@ out of order matching!
 
 
 Tag Table:
-Node: Top221
-Node: Overview946
-Node: Customization3089
-Node: Component matching styles3447
-Node: Style dispatchers6248
-Node: Component separator regexp8499
-Node: Defining custom orderless styles9736
-Node: Faces for component matches11628
-Node: Pattern compiler12432
-Node: Interactively changing the configuration13034
-Node: Integration with other completion UIs14497
-Node: Ivy15288
-Node: Selectrum15541
-Node: Company16122
-Node: Related packages17615
-Node: Ivy and Helm17913
-Node: Prescient19248
-Node: Restricting to current matches in Icicles Ido and Ivy20098
+Node: Top235
+Node: Overview969
+Node: Customization5006
+Node: Component matching styles5364
+Node: Style dispatchers7474
+Node: Component separator regexp9725
+Node: Defining custom orderless styles10962
+Node: Faces for component matches12854
+Node: Pattern compiler13658
+Node: Interactively changing the configuration14260
+Node: Integration with other completion UIs15723
+Node: Ivy16523
+Node: Helm16875
+Node: Selectrum17221
+Node: Company17961
+Node: Related packages19911
+Node: Ivy and Helm20209
+Node: Prescient21554
+Node: Restricting to current matches in Icicles Ido and Ivy22395
 
 End Tag Table
 

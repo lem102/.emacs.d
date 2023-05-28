@@ -14,6 +14,6 @@ File: dir,	Node: Top	This is the top of the INFO tree
 
 * Menu:
 
-Emacs
+Emacs misc features
 * Orderless: (orderless).       Completion style for matching regexps in any 
                                   order.

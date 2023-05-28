@@ -1,12 +1,15 @@
 ;;; orderless.el --- Completion style for matching regexps in any order  -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2020  Omar Antolín Camarena
+;; Copyright (C) 2021  Free Software Foundation, Inc.
 
 ;; Author: Omar Antolín Camarena <omar@matem.unam.mx>
+;; Maintainer: Omar Antolín Camarena <omar@matem.unam.mx>
 ;; Keywords: extensions
-;; Version: 0.6
+;; Version: 1.0
 ;; Homepage: https://github.com/oantolin/orderless
 ;; Package-Requires: ((emacs "26.1"))
+
+;; This file is part of GNU Emacs.
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -56,7 +59,7 @@
 
 (defgroup orderless nil
   "Completion method that matches space-separated regexps in any order."
-  :group 'completion)
+  :group 'minibuffer)
 
 (defface orderless-match-face-0
   '((default :weight bold)
@@ -128,9 +131,6 @@ a list of them."
   :options '(orderless-regexp
              orderless-literal
              orderless-initialism
-             orderless-strict-initialism
-             orderless-strict-leading-initialism
-             orderless-strict-full-initialism
              orderless-prefixes
              orderless-flex))
 
@@ -186,6 +186,7 @@ This is simply `regexp-quote'.")
 If BEFORE is specified, add it to the beginning of the rx
 sequence.  If AFTER is specified, add it to the end of the rx
 sequence."
+  (declare (indent 1))
   (rx-to-string
    `(seq
      ,(or before "")
@@ -198,54 +199,17 @@ sequence."
   "Match a component in flex style.
 This means the characters in COMPONENT must occur in the
 candidate in that order, but not necessarily consecutively."
-  (orderless--separated-by '(zero-or-more nonl)
-   (cl-loop for char across component collect char)))
+  (rx-to-string
+   `(seq
+     ,@(cdr (cl-loop for char across component
+                     append `((zero-or-more (not ,char)) (group ,char)))))))
 
 (defun orderless-initialism (component)
   "Match a component as an initialism.
 This means the characters in COMPONENT must occur in the
 candidate, in that order, at the beginning of words."
   (orderless--separated-by '(zero-or-more nonl)
-   (cl-loop for char across component collect `(seq word-start ,char))))
-
-(defun orderless--strict-*-initialism (component &optional anchored)
-  "Match a COMPONENT as a strict initialism, optionally ANCHORED.
-The characters in COMPONENT must occur in the candidate in that
-order at the beginning of subsequent words comprised of letters.
-Only non-letters can be in between the words that start with the
-initials.
-
-If ANCHORED is `start' require that the first initial appear in
-the first word of the candidate.  If ANCHORED is `both' require
-that the first and last initials appear in the first and last
-words of the candidate, respectively."
-  (orderless--separated-by
-   '(seq (zero-or-more word) word-end (zero-or-more (not alpha)))
-   (cl-loop for char across component collect `(seq word-start ,char))
-   (when anchored '(seq (group buffer-start) (zero-or-more (not alpha))))
-   (when (eq anchored 'both)
-     '(seq (zero-or-more word) word-end (zero-or-more (not alpha)) eol))))
-
-(defun orderless-strict-initialism (component)
-  "Match a COMPONENT as a strict initialism.
-This means the characters in COMPONENT must occur in the
-candidate in that order at the beginning of subsequent words
-comprised of letters.  Only non-letters can be in between the
-words that start with the initials."
-  (orderless--strict-*-initialism component))
-
-(defun orderless-strict-leading-initialism (component)
-  "Match a COMPONENT as a strict initialism, anchored at start.
-See `orderless-strict-initialism'.  Additionally require that the
-first initial appear in the first word of the candidate."
-  (orderless--strict-*-initialism component 'start))
-
-(defun orderless-strict-full-initialism (component)
-  "Match a COMPONENT as a strict initialism, anchored at both ends.
-See `orderless-strict-initialism'.  Additionally require that the
-first and last initials appear in the first and last words of the
-candidate, respectively."
-  (orderless--strict-*-initialism component 'both))
+    (cl-loop for char across component collect `(seq word-start ,char))))
 
 (defun orderless-prefixes (component)
   "Match a component as multiple word prefixes.
@@ -253,8 +217,8 @@ The COMPONENT is split at word endings, and each piece must match
 at a word boundary in the candidate.  This is similar to the
 `partial-completion' completion style."
   (orderless--separated-by '(zero-or-more nonl)
-   (cl-loop for prefix in (split-string component "\\>")
-            collect `(seq word-boundary ,prefix))))
+    (cl-loop for prefix in (split-string component "\\>")
+             collect `(seq word-boundary ,prefix))))
 
 (defun orderless-without-literal (component)
   "Match strings that do *not* contain COMPONENT as a literal match."
@@ -276,7 +240,7 @@ at a word boundary in the candidate.  This is similar to the
            for regexp in regexps and i from 0
            when (string-match regexp string) do
            (cl-loop
-            for (x y) on (or (cddr (match-data)) (match-data)) by #'cddr
+            for (x y) on (let ((m (match-data))) (or (cddr m) m)) by #'cddr
             when x do
             (add-face-text-property
              x y
@@ -285,16 +249,21 @@ at a word boundary in the candidate.  This is similar to the
   string)
 
 (defun orderless-highlight-matches (regexps strings)
-    "Highlight a match of each of the REGEXPS in each of the STRINGS.
+  "Highlight a match of each of the REGEXPS in each of the STRINGS.
 Warning: only use this if you know all REGEXPs match all STRINGS!
 For the user's convenience, if REGEXPS is a string, it is
 converted to a list of regexps according to the value of
 `orderless-matching-styles'."
-    (when (stringp regexps)
-      (setq regexps (orderless-pattern-compiler regexps)))
+  (when (stringp regexps)
+    (setq regexps (orderless-pattern-compiler regexps)))
+  (let ((case-fold-search
+         (if orderless-smart-case
+             (cl-loop for regexp in regexps
+                      always (isearch-no-upper-case-p regexp t))
+           completion-ignore-case)))
     (cl-loop for original in strings
              for string = (copy-sequence original)
-             collect (orderless--highlight regexps string)))
+             collect (orderless--highlight regexps string))))
 
 ;;; Compiling patterns to lists of regexps
 
@@ -302,7 +271,11 @@ converted to a list of regexps according to the value of
   "Split STRING on spaces, which can be escaped with backslash."
   (mapcar
    (lambda (piece) (replace-regexp-in-string (string 0) " " piece))
-   (split-string (replace-regexp-in-string "\\\\ " (string 0) string) " ")))
+   (split-string (replace-regexp-in-string
+                  "\\\\\\\\\\|\\\\ "
+                  (lambda (x) (if (equal x "\\ ") (string 0) x))
+                  string 'fixedcase 'literal)
+                 " +" t)))
 
 (defun orderless-dispatch (dispatchers default string &rest args)
   "Run DISPATCHERS to compute matching styles for STRING.
@@ -360,7 +333,7 @@ dispatchers.
 
 The STYLES default to `orderless-matching-styles', and the
 DISPATCHERS default to `orderless-dipatchers'.  Since nil gets you
-the default, if want to no dispatchers to be run, use '(ignore)
+the default, if want to no dispatchers to be run, use \\='(ignore)
 as the value of DISPATCHERS."
   (unless styles (setq styles orderless-matching-styles))
   (unless dispatchers (setq dispatchers orderless-style-dispatchers))
@@ -376,7 +349,7 @@ as the value of DISPATCHERS."
    for regexps = (cl-loop for style in newstyles
                           for result = (funcall style newcomp)
                           when result collect `(regexp ,result))
-   when regexps collect (rx-to-string `(or ,@regexps))))
+   when regexps collect (rx-to-string `(or ,@(delete-dups regexps)))))
 
 ;;; Completion style implementation
 
@@ -385,6 +358,22 @@ as the value of DISPATCHERS."
 The predicate PRED is used to constrain the entries in TABLE."
   (let ((limit (car (completion-boundaries string table pred ""))))
     (cons (substring string 0 limit) (substring string limit))))
+
+;; Thanks to @jakanakaevangeli for writing a version of this function:
+;; https://github.com/oantolin/orderless/issues/79#issuecomment-916073526
+(defun orderless--anchored-quoted-regexp (regexp)
+  "Determine if REGEXP is a quoted regexp anchored at the beginning.
+If REGEXP is of the form \"\\(?:^q\\)\" for q = (regexp-quote u),
+then return (cons REGEXP u); else return nil."
+  (when (and (string-prefix-p "\\(?:^" regexp) (string-suffix-p "\\)" regexp))
+    (let ((trimmed (substring regexp 5 -2)))
+      (unless (string-match-p "[$*+.?[\\^]"
+                              (replace-regexp-in-string
+                               "\\\\[$*+.?[\\^]" "" trimmed
+                               'fixedcase 'literal))
+        (cons regexp
+              (replace-regexp-in-string "\\\\\\([$*+.?[\\^]\\)" "\\1"
+                                        trimmed 'fixedcase))))))
 
 ;;;###autoload
 (defun orderless-filter (string table &optional pred)
@@ -400,6 +389,13 @@ The predicate PRED is used to constrain the entries in TABLE."
                       (cl-loop for regexp in completion-regexp-list
                                always (isearch-no-upper-case-p regexp t))
                     completion-ignore-case)))
+      ;; If there is a regexp of the form \(?:^quoted-regexp\) then
+      ;; remove the first such and add the unquoted form to the prefix.
+      (pcase (cl-some #'orderless--anchored-quoted-regexp
+                      completion-regexp-list)
+        (`(,regexp . ,literal)
+         (setq prefix (concat prefix literal)
+               completion-regexp-list (delete regexp completion-regexp-list))))
       (all-completions prefix table pred))))
 
 ;;;###autoload
@@ -431,15 +427,29 @@ match, it completes to that match.  If there are no matches, it
 returns nil.  In any other case it \"completes\" STRING to
 itself, without moving POINT.
 This function is part of the `orderless' completion style."
-  (let ((all (orderless-filter string table pred)))
-    (cond
-     ((null all) nil)
-     ((null (cdr all))
-      (let ((full (concat
-                   (car (orderless--prefix+pattern string table pred))
-                   (car all))))
-        (cons full (length full))))
-     (t (cons string point)))))
+  (catch 'orderless--many
+    (let (one)
+      ;; Abuse all-completions/orderless-filter as a fast search loop.
+      ;; Should be almost allocation-free since our "predicate" is not
+      ;; called more than two times.
+      (orderless-filter
+       string table
+       ;; key/value for hash tables
+       (lambda (&rest args)
+         (when (or (not pred) (apply pred args))
+           (setq args (car args) ;; first argument is key
+                 args (if (consp args) (car args) args) ;; alist
+                 args (if (symbolp args) (symbol-name args) args))
+           (when (and one (not (equal one args)))
+             (throw 'orderless--many (cons string point)))
+           (setq one args)
+           t)))
+      (when one
+        (if (equal string one)
+            t ;; unique exact match
+          (setq one (concat (car (orderless--prefix+pattern string table pred))
+                            one))
+          (cons one (length one)))))))
 
 ;;;###autoload
 (add-to-list 'completion-styles-alist
@@ -469,10 +479,11 @@ string for the completion style."
   (let* ((fn-name (lambda (string) (intern (concat (symbol-name name) string))))
          (try-completion  (funcall fn-name "-try-completion"))
          (all-completions (funcall fn-name "-all-completions"))
-         (doc-fmt "`%s' function for the %s completion style.
-This configures orderless according to the %s completion style and
-delegates to `orderless-%s'.")
-         (fn-doc (lambda (fn) (format doc-fmt fn name name fn))))
+         (doc-fmt "`%s' function for the %s style.
+This function delegates to `orderless-%s'.
+The orderless configuration is locally modified
+specifically for the %s style.")
+         (fn-doc (lambda (fn) (format doc-fmt fn name fn name name))))
   `(progn
      (defun ,try-completion (string table pred point)
        ,(funcall fn-doc "try-completion")
@@ -487,9 +498,6 @@ delegates to `orderless-%s'.")
 
 ;;; Ivy integration
 
-(defvar ivy-regex)
-(defvar ivy-highlight-functions-alist)
-
 ;;;###autoload
 (defun orderless-ivy-re-builder (str)
   "Convert STR into regexps for use with ivy.
@@ -499,15 +507,11 @@ a value in `ivy-re-builders-alist'."
               (orderless-pattern-compiler str))
       ""))
 
+(defvar ivy-regex)
 (defun orderless-ivy-highlight (str)
   "Highlight a match in STR of each regexp in `ivy-regex'.
 This function is for integration of orderless with ivy."
   (orderless--highlight (mapcar #'car ivy-regex) str) str)
-
-;;;###autoload
-(with-eval-after-load 'ivy
-  (add-to-list 'ivy-highlight-functions-alist
-               '(orderless-ivy-re-builder . orderless-ivy-highlight)))
 
 (provide 'orderless)
 ;;; orderless.el ends here
