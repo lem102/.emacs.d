@@ -989,11 +989,11 @@ URL `http://xahlee.info/emacs/emacs/emacs_shrink_whitespace.html'
 Version: 2018-04-02"
   (interactive)
   (let (xp3 xp4)
-          (skip-chars-backward "\n")
-          (setq xp3 (point))
-          (skip-chars-forward "\n")
-          (setq xp4 (point))
-          (delete-region xp3 xp4)))
+    (skip-chars-backward "\n")
+    (setq xp3 (point))
+    (skip-chars-forward "\n")
+    (setq xp4 (point))
+    (delete-region xp3 xp4)))
 
 (defun xah-fly-delete-spaces ()
   "Delete space, tab, IDEOGRAPHIC SPACE (U+3000) around cursor.
@@ -1139,14 +1139,14 @@ URL `http://xahlee.info/emacs/emacs/emacs_reformat_lines.html'
 Version: 2017-01-11 2022-01-08"
   (interactive "r")
   (save-restriction
-      (narrow-to-region Begin End)
-      (goto-char (point-min))
-      (while (search-forward "\n" nil 1) (replace-match " "))
-      (goto-char (point-min))
-      (while (search-forward "\t" nil 1) (replace-match " "))
-      (goto-char (point-min))
-      (while (re-search-forward " +" nil 1) (replace-match " "))
-      (goto-char (point-max))))
+    (narrow-to-region Begin End)
+    (goto-char (point-min))
+    (while (search-forward "\n" nil 1) (replace-match " "))
+    (goto-char (point-min))
+    (while (search-forward "\t" nil 1) (replace-match " "))
+    (goto-char (point-min))
+    (while (re-search-forward " +" nil 1) (replace-match " "))
+    (goto-char (point-max))))
 
 (defun xah-reformat-to-multi-lines ( &optional Begin End MinLength)
   "Replace spaces by a newline at ~70 chars, on current block or selection.
@@ -1454,11 +1454,11 @@ Version: 2017-01-11"
        (list (region-beginning) (region-end))
      (list (line-beginning-position) (line-end-position))))
   (save-excursion
-      (save-restriction
-        (narrow-to-region Begin End)
-        (goto-char (point-min))
-        (while (search-forward "\"" nil t)
-          (replace-match "\\\"" t t)))))
+    (save-restriction
+      (narrow-to-region Begin End)
+      (goto-char (point-min))
+      (while (search-forward "\"" nil t)
+        (replace-match "\\\"" t t)))))
 
 (defun xah-unescape-quotes (Begin End)
   "Replace  「\\\"」 by 「\"」 in current line or selection.
@@ -1589,7 +1589,7 @@ Version: 2012-07-17 2022-10-03"
   (interactive)
   (let (xp1 xp2)
     (if (region-active-p)
-         (setq xp1 (region-beginning) xp2 (region-end))
+        (setq xp1 (region-beginning) xp2 (region-end))
       (setq xp1 (line-beginning-position) xp2 (line-end-position)))
     (copy-to-register ?1 xp1 xp2)
     (message "Copied to register 1: [%s]." (buffer-substring-no-properties xp1 xp2))))
@@ -1604,7 +1604,7 @@ Version: 2015-12-08 2020-09-08"
   (interactive)
   (let (xp1 xp2)
     (if (region-active-p)
-         (setq xp1 (region-beginning) xp2 (region-end))
+        (setq xp1 (region-beginning) xp2 (region-end))
       (setq xp1 (line-beginning-position) xp2 (line-end-position)))
     (append-to-register ?1 xp1 xp2)
     (with-temp-buffer (insert "\n")
@@ -1940,9 +1940,9 @@ Version: 2017-11-01 2021-03-19"
   (if (region-active-p)
       (if visual-line-mode
           (let ((xp1 (point)))
-                (end-of-visual-line 1)
-                (when (eq xp1 (point))
-                  (end-of-visual-line 2)))
+            (end-of-visual-line 1)
+            (when (eq xp1 (point))
+              (end-of-visual-line 2)))
         (progn
           (forward-line 1)
           (end-of-line)))
@@ -3402,12 +3402,12 @@ Version 2022-10-31"
   ;;    )
   ;;  :direct)
 
- ;; define control combo in xah-fly-shared-map may be a problem.
-;; by setting them in xah-fly-shared-map, it becomes unchangeable, that is, if a major mode set a key for C-t, it will have no effect.
-;; Current solution is just to use global-set-key.
-;; The disadvantage is that these changes leak, that is, xah-fly-keys is turned off, these ctrl keys are still changed. Still, this is better, because xah fly keys is not really meant to be turned off temporarily.
-;; Removing the tons of default emacs control and meta keys is desirable.
-;; because there are hundres of them, confusing, and mostly useless.
+  ;; define control combo in xah-fly-shared-map may be a problem.
+  ;; by setting them in xah-fly-shared-map, it becomes unchangeable, that is, if a major mode set a key for C-t, it will have no effect.
+  ;; Current solution is just to use global-set-key.
+  ;; The disadvantage is that these changes leak, that is, xah-fly-keys is turned off, these ctrl keys are still changed. Still, this is better, because xah fly keys is not really meant to be turned off temporarily.
+  ;; Removing the tons of default emacs control and meta keys is desirable.
+  ;; because there are hundres of them, confusing, and mostly useless.
 
   (global-set-key (kbd "<C-S-prior>") #'xah-previous-emacs-buffer)
   (global-set-key (kbd "<C-S-next>") #'xah-next-emacs-buffer)
