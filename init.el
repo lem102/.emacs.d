@@ -804,12 +804,15 @@ Useful for deleting ^M after `eglot-code-actions'."
       "Insert kotlin list"
       > "listOf(" - ")")))
 
+
+
 (jacob-try-require 'orderless
   (setq completion-styles '(orderless initials)))
 
 
 
 (jacob-try-require 'vertico
+  (setq vertico-count 25)
   (vertico-mode 1))
 
 
