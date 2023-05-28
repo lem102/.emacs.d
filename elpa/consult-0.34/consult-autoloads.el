@@ -1,4 +1,4 @@
-;;; consult-autoloads.el --- automatically extracted autoloads
+;;; consult-autoloads.el --- automatically extracted autoloads  -*- lexical-binding: t -*-
 ;;
 ;;; Code:
 
@@ -14,7 +14,7 @@ Use minibuffer completion as the UI for `completion-at-point'.
 
 The function is called with 4 arguments: START END COLLECTION PREDICATE.
 The arguments and expected return value are as specified for
-`completion-in-region'. Use as a value for `completion-in-region-function'.
+`completion-in-region'.  Use as a value for `completion-in-region-function'.
 
 The function can be configured via `consult-customize'.
 
@@ -30,19 +30,6 @@ These configuration options are supported:
     * :prompt - The prompt string shown in the minibuffer
 
 \(fn START END COLLECTION &optional PREDICATE)" nil nil)
-
-(autoload 'consult-completing-read-multiple "consult" "\
-Enhanced replacement for `completing-read-multiple'.
-See `completing-read-multiple' for the documentation of the arguments.
-
-\(fn PROMPT TABLE &optional PRED REQUIRE-MATCH INITIAL-INPUT HIST DEF INHERIT-INPUT-METHOD)" nil nil)
-
-(autoload 'consult-multi-occur "consult" "\
-Improved version of `multi-occur' based on `completing-read-multiple'.
-
-See `multi-occur' for the meaning of the arguments BUFS, REGEXP and NLINES.
-
-\(fn BUFS REGEXP &optional NLINES)" t nil)
 
 (autoload 'consult-outline "consult" "\
 Jump to an outline heading, obtained by matching against `outline-regexp'.
@@ -69,32 +56,35 @@ The symbol at point is added to the future history.
 (autoload 'consult-line "consult" "\
 Search for a matching line.
 
-Depending on the setting `consult-line-point-placement' the command jumps to
-the beginning or the end of the first match on the line or the line beginning.
-The default candidate is the non-empty line next to point. This command obeys
-narrowing. Optional INITIAL input can be provided. The search starting point is
-changed if the START prefix argument is set. The symbol at point and the last
-`isearch-string' is added to the future history.
+Depending on the setting `consult-point-placement' the command
+jumps to the beginning or the end of the first match on the line
+or the line beginning.  The default candidate is the non-empty
+line next to point.  This command obeys narrowing.  Optional
+INITIAL input can be provided.  The search starting point is
+changed if the START prefix argument is set.  The symbol at point
+and the last `isearch-string' is added to the future history.
 
 \(fn &optional INITIAL START)" t nil)
 
 (autoload 'consult-line-multi "consult" "\
 Search for a matching line in multiple buffers.
 
-By default search across all project buffers. If the prefix argument QUERY is
-non-nil, all buffers are searched. Optional INITIAL input can be provided. See
-`consult-line' for more information. In order to search a subset of buffers,
-QUERY can be set to a plist according to `consult--buffer-query'.
+By default search across all project buffers.  If the prefix
+argument QUERY is non-nil, all buffers are searched.  Optional
+INITIAL input can be provided.  The symbol at point and the last
+`isearch-string' is added to the future history.In order to
+search a subset of buffers, QUERY can be set to a plist according
+to `consult--buffer-query'.
 
 \(fn QUERY &optional INITIAL)" t nil)
 
 (autoload 'consult-keep-lines "consult" "\
 Select a subset of the lines in the current buffer with live preview.
 
-The selected lines are kept and the other lines are deleted. When called
-interactively, the lines selected are those that match the minibuffer input. In
-order to match the inverse of the input, prefix the input with `! '. When
-called from elisp, the filtering is performed by a FILTER function. This
+The selected lines are kept and the other lines are deleted.  When called
+interactively, the lines selected are those that match the minibuffer input.  In
+order to match the inverse of the input, prefix the input with `! '.  When
+called from Elisp, the filtering is performed by a FILTER function.  This
 command obeys narrowing.
 
 FILTER is the filter function.
@@ -105,12 +95,12 @@ INITIAL is the initial input.
 (autoload 'consult-focus-lines "consult" "\
 Hide or show lines using overlays.
 
-The selected lines are shown and the other lines hidden. When called
-interactively, the lines selected are those that match the minibuffer input. In
-order to match the inverse of the input, prefix the input with `! '. With
-optional prefix argument SHOW reveal the hidden lines. Alternatively the
-command can be restarted to reveal the lines. When called from elisp, the
-filtering is performed by a FILTER function. This command obeys narrowing.
+The selected lines are shown and the other lines hidden.  When called
+interactively, the lines selected are those that match the minibuffer input.  In
+order to match the inverse of the input, prefix the input with `! '.  With
+optional prefix argument SHOW reveal the hidden lines.  Alternatively the
+command can be restarted to reveal the lines.  When called from Elisp, the
+filtering is performed by a FILTER function.  This command obeys narrowing.
 
 FILTER is the filter function.
 INITIAL is the initial input.
@@ -120,7 +110,7 @@ INITIAL is the initial input.
 (autoload 'consult-goto-line "consult" "\
 Read line number and jump to the line with preview.
 
-Jump directly if a line number is given as prefix ARG. The command respects
+Jump directly if a line number is given as prefix ARG.  The command respects
 narrowing and the settings `consult-goto-line-numbers' and
 `consult-line-numbers-widen'.
 
@@ -128,11 +118,6 @@ narrowing and the settings `consult-goto-line-numbers' and
 
 (autoload 'consult-recent-file "consult" "\
 Find recent file using `completing-read'." t nil)
-
-(autoload 'consult-file-externally "consult" "\
-Open FILE externally using the default application of the system.
-
-\(fn FILE)" t nil)
 
 (autoload 'consult-mode-command "consult" "\
 Run a command from any of the given MODES.
@@ -146,7 +131,7 @@ Select STRING from the kill ring and insert it.
 With prefix ARG, put point at beginning, and mark at end, like `yank' does.
 
 This command behaves like `yank-from-kill-ring' in Emacs 28, which also offers
-a `completing-read' interface to the `kill-ring'. Additionally the Consult
+a `completing-read' interface to the `kill-ring'.  Additionally the Consult
 version supports preview of the selected string.
 
 \(fn STRING &optional ARG)" t nil)
@@ -158,7 +143,7 @@ Otherwise select string from the kill ring and insert it.
 See `yank-pop' for the meaning of ARG.
 
 This command behaves like `yank-pop' in Emacs 28, which also offers a
-`completing-read' interface to the `kill-ring'. Additionally the Consult
+`completing-read' interface to the `kill-ring'.  Additionally the Consult
 version supports preview of the selected string.
 
 \(fn &optional ARG)" t nil)
@@ -176,15 +161,10 @@ There exists no equivalent of this command in Emacs 28.
 (autoload 'consult-bookmark "consult" "\
 If bookmark NAME exists, open it, otherwise create a new bookmark with NAME.
 
-The command supports preview of file bookmarks and narrowing. See the
+The command supports preview of file bookmarks and narrowing.  See the
 variable `consult-bookmark-narrow' for the narrowing configuration.
 
 \(fn NAME)" t nil)
-
-(autoload 'consult-apropos "consult" "\
-Select pattern and call `apropos'.
-
-The default value of the completion is the symbol at point." t nil)
 
 (autoload 'consult-complex-command "consult" "\
 Select and evaluate command from the command history.
@@ -193,13 +173,15 @@ This command can act as a drop-in replacement for `repeat-complex-command'." t n
 
 (autoload 'consult-history "consult" "\
 Insert string from HISTORY of current buffer.
+In order to select from a specific HISTORY, pass the history
+variable as argument.  INDEX is the name of the index variable to
+update, if any.  BOL is the function which jumps to the beginning
+of the prompt.  See also `cape-history' from the Cape package.
 
-In order to select from a specific HISTORY, pass the history variable as argument.
+\(fn &optional HISTORY INDEX BOL)" t nil)
 
-\(fn &optional HISTORY)" t nil)
-
-(autoload 'consult-isearch "consult" "\
-Read a search string with completion from history.
+(autoload 'consult-isearch-history "consult" "\
+Read a search string with completion from the Isearch history.
 
 This replaces the current search string if Isearch is active, and
 starts a new Isearch session otherwise." t nil)
@@ -219,12 +201,20 @@ The command supports previewing the currently selected theme.
 (autoload 'consult-buffer "consult" "\
 Enhanced `switch-to-buffer' command with support for virtual buffers.
 
-The command supports recent files, bookmarks, views and project files as virtual
-buffers. Buffers are previewed. Furthermore narrowing to buffers (b), files (f),
-bookmarks (m) and project files (p) is supported via the corresponding keys. In
-order to determine the project-specific files and buffers, the
-`consult-project-root-function' is used. See `consult-buffer-sources' and
-`consult--multi' for the configuration of the virtual buffer sources." t nil)
+The command supports recent files, bookmarks, views and project files as
+virtual buffers.  Buffers are previewed.  Narrowing to buffers (b), files (f),
+bookmarks (m) and project files (p) is supported via the corresponding
+keys.  In order to determine the project-specific files and buffers, the
+`consult-project-function' is used.  The virtual buffer SOURCES
+default to `consult-buffer-sources'.  See `consult--multi' for the
+configuration of the virtual buffer sources.
+
+\(fn &optional SOURCES)" t nil)
+
+(autoload 'consult-project-buffer "consult" "\
+Enhanced `project-switch-to-buffer' command with support for virtual buffers.
+The command may prompt you for a project directory if it is invoked from
+outside a project.  See `consult-buffer' for more details." t nil)
 
 (autoload 'consult-buffer-other-window "consult" "\
 Variant of `consult-buffer' which opens in other window." t nil)
@@ -232,74 +222,93 @@ Variant of `consult-buffer' which opens in other window." t nil)
 (autoload 'consult-buffer-other-frame "consult" "\
 Variant of `consult-buffer' which opens in other frame." t nil)
 
-(autoload 'consult-kmacro "consult" "\
-Run a chosen keyboard macro.
-
-With prefix ARG, run the macro that many times.
-Macros containing mouse clicks are omitted.
-
-\(fn ARG)" t nil)
-
 (autoload 'consult-grep "consult" "\
-Search for regexp with grep in DIR with INITIAL input.
+Search with `grep' for files in DIR where the content matches a regexp.
 
-The input string is split, the first part of the string is passed to
-the asynchronous grep process and the second part of the string is
-passed to the completion-style filtering. The input string is split at
-a punctuation character, which is given as the first character of the
-input string. The format is similar to Perl-style regular expressions,
-e.g., /regexp/. Furthermore command line options can be passed to
-grep, specified behind --.
-
-Example: #async-regexp -- grep-opts#filter-string
-
-The symbol at point is added to the future history. If `consult-grep'
-is called interactively with a prefix argument, the user can specify
-the directory to search in. By default the project directory is used
-if `consult-project-root-function' is defined and returns non-nil.
+The initial input is given by the INITIAL argument.  DIR can be
+nil, a directory string or a list of file/directory paths.  If
+`consult-grep' is called interactively with a prefix argument,
+the user can specify the directories or files to search in.
+Multiple directories must be separated by comma in the
+minibuffer, since they are read via `completing-read-multiple'.
+By default the project directory is used if
+`consult-project-function' is defined and returns non-nil.
 Otherwise the `default-directory' is searched.
+
+The input string is split, the first part of the string (grep
+input) is passed to the asynchronous grep process and the second
+part of the string is passed to the completion-style filtering.
+
+The input string is split at a punctuation character, which is
+given as the first character of the input string.  The format is
+similar to Perl-style regular expressions, e.g., /regexp/.
+Furthermore command line options can be passed to grep, specified
+behind --.  The overall prompt input has the form
+`#async-input -- grep-opts#filter-string'.
+
+Note that the grep input string is transformed from Emacs regular
+expressions to Posix regular expressions.  Always enter Emacs
+regular expressions at the prompt.  `consult-grep' behaves like
+builtin Emacs search commands, e.g., Isearch, which take Emacs
+regular expressions.  Furthermore the asynchronous input split
+into words, each word must match separately and in any order.
+See `consult--regexp-compiler' for the inner workings.  In order
+to disable transformations of the grep input, adjust
+`consult--regexp-compiler' accordingly.
+
+Here we give a few example inputs:
+
+#alpha beta         : Search for alpha and beta in any order.
+#alpha.*beta        : Search for alpha before beta.
+#\\(alpha\\|beta\\) : Search for alpha or beta (Note Emacs syntax!)
+#word -- -C3        : Search for word, include 3 lines as context
+#first#second       : Search for first, quick filter for second.
+
+The symbol at point is added to the future history.
 
 \(fn &optional DIR INITIAL)" t nil)
 
 (autoload 'consult-git-grep "consult" "\
-Search for regexp with grep in DIR with INITIAL input.
-
-See `consult-grep' for more details.
+Search with `git grep' for files in DIR with INITIAL input.
+See `consult-grep' for details.
 
 \(fn &optional DIR INITIAL)" t nil)
 
 (autoload 'consult-ripgrep "consult" "\
-Search for regexp with rg in DIR with INITIAL input.
-
-See `consult-grep' for more details.
+Search with `rg' for files in DIR with INITIAL input.
+See `consult-grep' for details.
 
 \(fn &optional DIR INITIAL)" t nil)
 
 (autoload 'consult-find "consult" "\
-Search for regexp with find in DIR with INITIAL input.
-
-The find process is started asynchronously, similar to `consult-grep'.
-See `consult-grep' for more details regarding the asynchronous search.
+Search for files in DIR matching input regexp given INITIAL input.
+See `consult-grep' for details regarding the asynchronous search
+and the arguments.
 
 \(fn &optional DIR INITIAL)" t nil)
 
 (autoload 'consult-locate "consult" "\
-Search for regexp with locate with INITIAL input.
+Search with `locate' for files which match input given INITIAL input.
 
-The locate process is started asynchronously, similar to `consult-grep'.
-See `consult-grep' for more details regarding the asynchronous search.
+The input is treated literally such that locate can take advantage of
+the locate database index.  Regular expressions would often force a slow
+linear search through the entire database.  The locate process is started
+asynchronously, similar to `consult-grep'.  See `consult-grep' for more
+details regarding the asynchronous search.
 
 \(fn &optional INITIAL)" t nil)
 
 (autoload 'consult-man "consult" "\
-Search for regexp with man with INITIAL input.
+Search for man page given INITIAL input.
 
-The man process is started asynchronously, similar to `consult-grep'.
-See `consult-grep' for more details regarding the asynchronous search.
+The input string is not preprocessed and passed literally to the
+underlying man commands.  The man process is started asynchronously,
+similar to `consult-grep'.  See `consult-grep' for more details regarding
+the asynchronous search.
 
 \(fn &optional INITIAL)" t nil)
 
-(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "consult" '("consult-")))
+(register-definition-prefixes "consult" '("consult-"))
 
 ;;;***
 
@@ -314,7 +323,7 @@ This command collects entries from compilation buffers and grep
 buffers related to the current buffer.  The command supports
 preview of the currently selected error." t nil)
 
-(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "consult-compile" '("consult-compile--")))
+(register-definition-prefixes "consult-compile" '("consult-compile--"))
 
 ;;;***
 
@@ -323,17 +332,13 @@ preview of the currently selected error." t nil)
 ;;; Generated autoloads from consult-flymake.el
 
 (autoload 'consult-flymake "consult-flymake" "\
-Jump to Flymake diagnostic." t nil)
+Jump to Flymake diagnostic.
+When PROJECT is non-nil then prompt with diagnostics from all
+buffers in the current project instead of just the current buffer.
 
-(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "consult-flymake" '("consult-flymake--")))
+\(fn &optional PROJECT)" t nil)
 
-;;;***
-
-;;;### (autoloads nil "consult-icomplete" "consult-icomplete.el"
-;;;;;;  (0 0 0 0))
-;;; Generated autoloads from consult-icomplete.el
-
-(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "consult-icomplete" '("consult-icomplete--refresh")))
+(register-definition-prefixes "consult-flymake" '("consult-flymake--"))
 
 ;;;***
 
@@ -343,7 +348,7 @@ Jump to Flymake diagnostic." t nil)
 (autoload 'consult-imenu "consult-imenu" "\
 Select item from flattened `imenu' using `completing-read' with preview.
 
-The command supports preview and narrowing. See the variable
+The command supports preview and narrowing.  See the variable
 `consult-imenu-config', which configures the narrowing.
 The symbol at point is added to the future history.
 
@@ -353,14 +358,42 @@ See also `consult-imenu-multi'." t nil)
 Select item from the imenus of all buffers from the same project.
 
 In order to determine the buffers belonging to the same project, the
-`consult-project-root-function' is used. Only the buffers with the
-same major mode as the current buffer are used. See also
-`consult-imenu' for more details. In order to search a subset of buffers,
+`consult-project-function' is used.  Only the buffers with the
+same major mode as the current buffer are used.  See also
+`consult-imenu' for more details.  In order to search a subset of buffers,
 QUERY can be set to a plist according to `consult--buffer-query'.
 
 \(fn &optional QUERY)" t nil)
 
-(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "consult-imenu" '("consult-imenu-")))
+(register-definition-prefixes "consult-imenu" '("consult-imenu-"))
+
+;;;***
+
+;;;### (autoloads nil "consult-info" "consult-info.el" (0 0 0 0))
+;;; Generated autoloads from consult-info.el
+
+(autoload 'consult-info "consult-info" "\
+Full text search through info MANUALS.
+
+\(fn &rest MANUALS)" t nil)
+
+(register-definition-prefixes "consult-info" '("consult-info--"))
+
+;;;***
+
+;;;### (autoloads nil "consult-kmacro" "consult-kmacro.el" (0 0 0
+;;;;;;  0))
+;;; Generated autoloads from consult-kmacro.el
+
+(autoload 'consult-kmacro "consult-kmacro" "\
+Run a chosen keyboard macro.
+
+With prefix ARG, run the macro that many times.
+Macros containing mouse clicks are omitted.
+
+\(fn ARG)" t nil)
+
+(register-definition-prefixes "consult-kmacro" '("consult-kmacro--"))
 
 ;;;***
 
@@ -379,12 +412,12 @@ buffer are offered.
 (autoload 'consult-org-agenda "consult-org" "\
 Jump to an Org agenda heading.
 
-By default, all agenda entries are offered. MATCH is as in
+By default, all agenda entries are offered.  MATCH is as in
 `org-map-entries' and can used to refine this.
 
 \(fn &optional MATCH)" t nil)
 
-(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "consult-org" '("consult-org--")))
+(register-definition-prefixes "consult-org" '("consult-org--"))
 
 ;;;***
 
@@ -402,19 +435,19 @@ SHOW-EMPTY must be t if the window should be shown for an empty register list.
 
 (autoload 'consult-register-format "consult-register" "\
 Enhanced preview of register REG.
-
 This function can be used as `register-preview-function'.
+If COMPLETION is non-nil format the register for completion.
 
-\(fn REG)" nil nil)
+\(fn REG &optional COMPLETION)" nil nil)
 
 (autoload 'consult-register "consult-register" "\
 Load register and either jump to location or insert the stored text.
 
-This command is useful to search the register contents. For quick access to
-registers it is still recommended to use the register functions
-`consult-register-load' and `consult-register-store' or the built-in built-in
-register access functions. The command supports narrowing, see
-`consult-register-narrow'. Marker positions are previewed. See
+This command is useful to search the register contents.  For quick access
+to registers it is still recommended to use the register functions
+`consult-register-load' and `consult-register-store' or the built-in
+built-in register access functions.  The command supports narrowing, see
+`consult-register--narrow'.  Marker positions are previewed.  See
 `jump-to-register' and `insert-register' for the meaning of prefix ARG.
 
 \(fn &optional ARG)" t nil)
@@ -422,38 +455,23 @@ register access functions. The command supports narrowing, see
 (autoload 'consult-register-load "consult-register" "\
 Do what I mean with a REG.
 
-For a window configuration, restore it. For a number or text, insert it. For a
-location, jump to it. See `jump-to-register' and `insert-register' for the
-meaning of prefix ARG.
+For a window configuration, restore it.  For a number or text, insert it.
+For a location, jump to it.  See `jump-to-register' and `insert-register'
+for the meaning of prefix ARG.
 
 \(fn REG &optional ARG)" t nil)
 
 (autoload 'consult-register-store "consult-register" "\
 Store register dependent on current context, showing an action menu.
 
-With an active region, store/append/prepend the contents, optionally deleting
-the region when a prefix ARG is given. With a numeric prefix ARG, store/add the
-number. Otherwise store point, frameset, window or kmacro.
+With an active region, store/append/prepend the contents, optionally
+deleting the region when a prefix ARG is given.  With a numeric prefix
+ARG, store or add the number.  Otherwise store point, frameset, window or
+kmacro.
 
 \(fn ARG)" t nil)
 
-(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "consult-register" '("consult-register-")))
-
-;;;***
-
-;;;### (autoloads nil "consult-selectrum" "consult-selectrum.el"
-;;;;;;  (0 0 0 0))
-;;; Generated autoloads from consult-selectrum.el
-
-(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "consult-selectrum" '("consult-selectrum--")))
-
-;;;***
-
-;;;### (autoloads nil "consult-vertico" "consult-vertico.el" (0 0
-;;;;;;  0 0))
-;;; Generated autoloads from consult-vertico.el
-
-(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "consult-vertico" '("consult-vertico--")))
+(register-definition-prefixes "consult-register" '("consult-register-"))
 
 ;;;***
 
@@ -469,7 +487,7 @@ FETCHER and ALIST arguments.
 
 \(fn FETCHER &optional ALIST)" nil nil)
 
-(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "consult-xref" '("consult-xref--")))
+(register-definition-prefixes "consult-xref" '("consult-xref--"))
 
 ;;;***
 
