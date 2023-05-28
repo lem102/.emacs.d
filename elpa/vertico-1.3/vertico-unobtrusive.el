@@ -1,12 +1,12 @@
 ;;; vertico-unobtrusive.el --- Unobtrusive display for Vertico -*- lexical-binding: t -*-
 
-;; Copyright (C) 2021, 2022  Free Software Foundation, Inc.
+;; Copyright (C) 2021-2023 Free Software Foundation, Inc.
 
 ;; Author: Daniel Mendler <mail@daniel-mendler.de>
 ;; Maintainer: Daniel Mendler <mail@daniel-mendler.de>
 ;; Created: 2021
 ;; Version: 0.1
-;; Package-Requires: ((emacs "27.1") (vertico "0.21"))
+;; Package-Requires: ((emacs "27.1") (vertico "1.3"))
 ;; Homepage: https://github.com/minad/vertico
 
 ;; This file is part of GNU Emacs.
@@ -22,19 +22,18 @@
 ;; GNU General Public License for more details.
 
 ;; You should have received a copy of the GNU General Public License
-;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
+;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 ;;; Commentary:
 
-;; This package is a Vertico extension providing a unobtrusive display.
-;; The unobtrusive display only shows the topmost candidate and nothing
-;; else, it is a simple derivative of `vertico-flat-mode'.
+;; This package is a Vertico extension providing a unobtrusive
+;; display.  The unobtrusive display only shows the topmost candidate
+;; and nothing else, it is a simple derivative of `vertico-flat-mode'.
 ;;
-;; The mode can be enabled globally or via `vertico-multiform-mode' per
-;; command or completion category. Alternatively the unobtrusive display
-;; can be toggled temporarily if `vertico-multiform-mode' is enabled:
-;;
-;; (define-key vertico-map "\M-U" #'vertico-multiform-unobtrusive)
+;; The mode can be enabled globally or via `vertico-multiform-mode'
+;; per command or completion category.  Alternatively the unobtrusive
+;; display can be toggled temporarily with M-U if
+;; `vertico-multiform-mode' is enabled.
 
 ;;; Code:
 
@@ -55,9 +54,7 @@
             vertico-unobtrusive--orig-count-format vertico-count-format
             vertico-count 1
             vertico-count-format nil
-            vertico-flat-format `(:separator nil :ellipsis nil ,@vertico-flat-format)))
-    (advice-add #'vertico--setup :before #'redisplay)
-    (vertico-flat-mode 1))
+            vertico-flat-format `(:separator nil :ellipsis nil ,@vertico-flat-format))))
    (t
     (when vertico-unobtrusive--orig-count
       (setq-default face-remapping-alist
@@ -66,10 +63,11 @@
       (setq vertico-count vertico-unobtrusive--orig-count
             vertico-count-format vertico-unobtrusive--orig-count-format
             vertico-flat-format (nthcdr 4 vertico-flat-format)
-            vertico-unobtrusive--orig-count nil))
-    (advice-remove #'vertico--setup #'redisplay)
-    (vertico-flat-mode -1)))
-  (setq vertico-flat-mode nil))
+            vertico-unobtrusive--orig-count nil))))
+  (vertico-flat-mode (if vertico-unobtrusive-mode 1 -1)))
+
+(cl-defmethod vertico--setup :before (&context (vertico-unobtrusive-mode (eql t)))
+  (redisplay))
 
 (provide 'vertico-unobtrusive)
 ;;; vertico-unobtrusive.el ends here

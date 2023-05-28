@@ -1,12 +1,12 @@
 ;;; vertico-multiform.el --- Configure Vertico in different forms per command -*- lexical-binding: t -*-
 
-;; Copyright (C) 2021, 2022  Free Software Foundation, Inc.
+;; Copyright (C) 2021-2023 Free Software Foundation, Inc.
 
 ;; Author: Daniel Mendler <mail@daniel-mendler.de>
 ;; Maintainer: Daniel Mendler <mail@daniel-mendler.de>
 ;; Created: 2021
 ;; Version: 0.1
-;; Package-Requires: ((emacs "27.1") (vertico "0.21"))
+;; Package-Requires: ((emacs "27.1") (vertico "1.3"))
 ;; Homepage: https://github.com/minad/vertico
 
 ;; This file is part of GNU Emacs.
@@ -22,15 +22,15 @@
 ;; GNU General Public License for more details.
 
 ;; You should have received a copy of the GNU General Public License
-;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
+;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 ;;; Commentary:
 
 ;; This package is a Vertico extension for fine tuning the Vertico
 ;; display and other minibuffer modes per command or completion
-;; category. For some commands you may want to use the `vertico-buffer'
-;; display and for completion categories like file you prefer the
-;; `vertico-grid-mode'.
+;; category.  For some commands you may want to use the
+;; `vertico-buffer' display and for completion categories like file
+;; you prefer the `vertico-grid-mode'.
 ;;
 ;; Example:
 ;;
@@ -46,33 +46,33 @@
 ;;
 ;;    (vertico-multiform-mode)
 ;;
-;; Temporary toggling between the different display modes is
-;; possible. Bind the following commands:
+;; Temporary toggling between the different display modes is possible.
+;; The following keys are bound in the `vertico-multiform-map'.
 ;;
-;; (define-key vertico-map "\M-V" #'vertico-multiform-vertical)
-;; (define-key vertico-map "\M-G" #'vertico-multiform-grid)
-;; (define-key vertico-map "\M-F" #'vertico-multiform-flat)
-;; (define-key vertico-map "\M-R" #'vertico-multiform-reverse)
-;; (define-key vertico-map "\M-U" #'vertico-multiform-unobtrusive)
+;;   M-V -> `vertico-multiform-vertical'
+;;   M-G -> `vertico-multiform-grid'
+;;   M-F -> `vertico-multiform-flat'
+;;   M-R -> `vertico-multiform-reverse'
+;;   M-U -> `vertico-multiform-unobtrusive'
 ;;
 ;;; Code:
 
 (require 'vertico)
-(eval-when-compile
-  (require 'cl-lib))
+(eval-when-compile (require 'cl-lib))
 
 (defcustom vertico-multiform-commands nil
   "Alist of commands/regexps and list of settings to turn on per command.
-Takes precedence over `vertico-multiform-categories'. A setting can
-either be a mode symbol, a function, an inverted mode symbol or
-function, or a cons cell of variable name and value. The key t can be
-used to specify catch all/default settings."
+Takes precedence over `vertico-multiform-categories'.  A setting
+can either be a mode symbol, a function, an inverted mode symbol
+or function, or a cons cell of variable name and value.  The key
+t can be used to specify catch all/default settings.  The value
+of `this-command' is used as key for the lookup."
   :group 'vertico
   :type '(alist :key-type (choice symbol regexp (const t)) :value-type (repeat sexp)))
 
 (defcustom vertico-multiform-categories nil
   "Alist of categories/regexps and list of settings to turn on per category.
-See `vertico-multiform-commands' on details about the settings. The
+See `vertico-multiform-commands' on details about the settings.  The
 category settings have lower precedence than
 `vertico-multiform-commands'."
   :group 'vertico
@@ -136,15 +136,13 @@ The keys in LIST can be symbols or regexps."
     (vertico-multiform--toggle 1)
     (vertico--setup)))
 
-(defun vertico-multiform--advice (&rest app)
-  "Override advice for `vertico--advice' switching modes on and off.
-APP is the original function call."
-  (unwind-protect
-      (progn
-        (vertico-multiform--toggle -1)
-        (minibuffer-with-setup-hook #'vertico-multiform--setup
-          (apply app)))
-    (vertico-multiform--toggle 1)))
+(defvar-keymap vertico-multiform-map
+  :doc "Additional keymap activated in multiform mode."
+  "M-V" #'vertico-multiform-vertical
+  "M-G" #'vertico-multiform-grid
+  "M-F" #'vertico-multiform-flat
+  "M-R" #'vertico-multiform-reverse
+  "M-U" #'vertico-multiform-unobtrusive)
 
 ;;;###autoload
 (define-minor-mode vertico-multiform-mode
@@ -156,15 +154,16 @@ APP is the original function call."
     (warn "vertico-multiform state is inconsistent")
     (setq vertico-multiform--stack nil))
   (if vertico-multiform-mode
-      (advice-add #'vertico--advice :override #'vertico-multiform--advice)
-    (advice-remove #'vertico--advice #'vertico-multiform--advice)))
+      (add-to-list 'minor-mode-map-alist `(vertico--input . ,vertico-multiform-map))
+    (setq minor-mode-map-alist (delete `(vertico--input . ,vertico-multiform-map) minor-mode-map-alist))))
 
-(defun vertico-multiform--ensure ()
-  "Ensure that multiform mode is enabled."
-  (unless (minibufferp)
-    (user-error "`%s' must be called inside the minibuffer" this-command))
-  (unless vertico-multiform-mode
-    (user-error "`vertico-multiform-mode' is not enabled")))
+(cl-defmethod vertico--advice (&context (vertico-multiform-mode (eql t)) &rest app)
+  (unwind-protect
+      (progn
+        (vertico-multiform--toggle -1)
+        (minibuffer-with-setup-hook #'vertico-multiform--setup
+          (apply app)))
+    (vertico-multiform--toggle 1)))
 
 (defun vertico-multiform--temporary-mode (mode arg)
   "Enable or disable MODE temporarily in minibuffer given ARG.
@@ -187,6 +186,9 @@ ARG can be nil, t, -1, 1 or toggle."
           (setcar vertico-multiform--stack (remove mode modes))
         (push not-mode (car vertico-multiform--stack))))))
 
+(defvar vertico-multiform--display-modes
+  '(vertico-unobtrusive-mode vertico-flat-mode
+    vertico-grid-mode vertico-reverse-mode))
 (defvar-local vertico-multiform--display-last nil)
 
 (defun vertico-multiform-vertical (&optional mode)
@@ -194,8 +196,7 @@ ARG can be nil, t, -1, 1 or toggle."
 MODE defaults to the vertical display."
   (interactive)
   (let (last)
-    (dolist (m '(vertico-unobtrusive-mode vertico-flat-mode
-                 vertico-grid-mode vertico-reverse-mode))
+    (dolist (m vertico-multiform--display-modes)
       (when (and (boundp m) (symbol-value m))
         (setq last m)
         (vertico-multiform--temporary-mode m -1)))
@@ -207,18 +208,19 @@ MODE defaults to the vertical display."
 
 (defmacro vertico-multiform--define-display-toggle (name)
   "Define toggle for display mode NAME."
-  (let ((sym (intern (format "vertico-multiform-%s" name))))
-    `(progn
-       (defun ,sym ()
-         ,(format "Toggle the %s display." name)
-         (interactive)
-         (vertico-multiform-vertical ',(intern (format "vertico-%s-mode" name))))
-       (put ',sym 'completion-predicate #'vertico--command-p))))
+  `(defun ,(intern (format "vertico-multiform-%s" name)) ()
+     ,(format "Toggle the %s display." name)
+     (interactive)
+     (vertico-multiform-vertical ',(intern (format "vertico-%s-mode" name)))))
 
 (vertico-multiform--define-display-toggle grid)
 (vertico-multiform--define-display-toggle flat)
 (vertico-multiform--define-display-toggle reverse)
 (vertico-multiform--define-display-toggle unobtrusive)
+
+;; Emacs 28: Do not show display toggles in M-X
+(map-keymap (lambda (_ x) (put x 'completion-predicate #'vertico--command-p))
+            (keymap-lookup vertico-multiform-map "ESC"))
 
 (provide 'vertico-multiform)
 ;;; vertico-multiform.el ends here

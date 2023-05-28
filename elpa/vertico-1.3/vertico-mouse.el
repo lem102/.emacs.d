@@ -1,12 +1,12 @@
 ;;; vertico-mouse.el --- Mouse support for Vertico -*- lexical-binding: t -*-
 
-;; Copyright (C) 2021, 2022  Free Software Foundation, Inc.
+;; Copyright (C) 2021-2023 Free Software Foundation, Inc.
 
 ;; Author: Daniel Mendler <mail@daniel-mendler.de>
 ;; Maintainer: Daniel Mendler <mail@daniel-mendler.de>
 ;; Created: 2021
 ;; Version: 0.1
-;; Package-Requires: ((emacs "27.1") (vertico "0.21"))
+;; Package-Requires: ((emacs "27.1") (vertico "1.3"))
 ;; Homepage: https://github.com/minad/vertico
 
 ;; This file is part of GNU Emacs.
@@ -22,7 +22,7 @@
 ;; GNU General Public License for more details.
 
 ;; You should have received a copy of the GNU General Public License
-;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
+;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 ;;; Commentary:
 
@@ -37,24 +37,40 @@
   "Face used for mouse highlighting."
   :group 'vertico-faces)
 
+(defun vertico-mouse--candidate-click (index key)
+  "Return command handling click on candidate with INDEX.
+The command will behave like KEY."
+  (when-let ((cmd (keymap-lookup vertico-map key)))
+    (lambda ()
+      (interactive)
+      ;; Ensure that the command is always executed in the minibuffer.
+      ;; Mouse clicks can also happen if another window is selected.
+      (with-selected-window (active-minibuffer-window)
+        (let ((vertico--index index))
+          (funcall cmd))))))
+
 (defun vertico-mouse--candidate-map (index)
   "Return keymap for candidate with INDEX."
-  (let ((map (make-sparse-keymap)))
-    (define-key map [mouse-1] (lambda ()
-                                (interactive)
-                                (with-selected-window (active-minibuffer-window)
-                                  (let ((vertico--index index))
-                                    (vertico-exit)))))
-    (define-key map [mouse-3] (lambda ()
-                                (interactive)
-                                (with-selected-window (active-minibuffer-window)
-                                  (let ((vertico--index index))
-                                    (vertico-insert)))))
-    map))
+  (define-keymap
+    "<mouse-1>" (vertico-mouse--candidate-click index "RET")
+    "<mouse-3>" (vertico-mouse--candidate-click index "TAB")))
 
-(defun vertico-mouse--format-candidate (orig cand prefix suffix index start)
-  "Format candidate, see `vertico--format-candidate' for arguments."
-  (setq cand (funcall orig cand prefix suffix index start))
+(defun vertico-mouse--scroll-up (n)
+  "Scroll up by N lines."
+  (vertico--goto (max 0 (+ vertico--index n))))
+
+(defun vertico-mouse--scroll-down (n)
+  "Scroll down by N lines."
+  (vertico-mouse--scroll-up (- n)))
+
+;;;###autoload
+(define-minor-mode vertico-mouse-mode
+  "Mouse support for Vertico."
+  :global t :group 'vertico)
+
+(cl-defmethod vertico--format-candidate
+  :around (cand prefix suffix index start &context (vertico-mouse-mode (eql t)))
+  (setq cand (cl-call-next-method cand prefix suffix index start))
   (when (equal suffix "")
     (setq cand (concat (substring cand 0 -1)
                        (propertize " " 'display '(space :align-to right))
@@ -66,30 +82,9 @@
                        cand)
   cand)
 
-(defun vertico-mouse--scroll-up (n)
-  "Scroll up by N lines."
-  (vertico--goto (max 0 (+ vertico--index n))))
-
-(defun vertico-mouse--scroll-down (n)
-  "Scroll down by N lines."
-  (vertico-mouse--scroll-up (- n)))
-
-(defun vertico-mouse--setup ()
-  "Setup mouse scrolling."
+(cl-defmethod vertico--setup :after (&context (vertico-mouse-mode (eql t)))
   (setq-local mwheel-scroll-up-function #'vertico-mouse--scroll-up
               mwheel-scroll-down-function #'vertico-mouse--scroll-down))
-
-;;;###autoload
-(define-minor-mode vertico-mouse-mode
-  "Mouse support for Vertico."
-  :global t :group 'vertico
-  (cond
-   (vertico-mouse-mode
-    (advice-add #'vertico--format-candidate :around #'vertico-mouse--format-candidate)
-    (advice-add #'vertico--setup :after #'vertico-mouse--setup))
-   (t
-    (advice-remove #'vertico--format-candidate #'vertico-mouse--format-candidate)
-    (advice-remove #'vertico--setup #'vertico-mouse--setup))))
 
 (provide 'vertico-mouse)
 ;;; vertico-mouse.el ends here

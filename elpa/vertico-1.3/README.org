@@ -2,26 +2,26 @@
 #+author: Daniel Mendler
 #+language: en
 #+export_file_name: vertico.texi
-#+texinfo_dir_category: Emacs
+#+texinfo_dir_category: Emacs misc features
 #+texinfo_dir_title: Vertico: (vertico).
 #+texinfo_dir_desc: VERTical Interactive COmpletion.
 
 #+html: <a href="https://www.gnu.org/software/emacs/"><img alt="GNU Emacs" src="https://github.com/minad/corfu/blob/screenshots/emacs.svg?raw=true"/></a>
-#+html: <a href="http://elpa.gnu.org/packages/vertico.html"><img alt="GNU ELPA" src="https://elpa.gnu.org/packages/vertico.svg"/></a>
-#+html: <a href="http://elpa.gnu.org/devel/vertico.html"><img alt="GNU-devel ELPA" src="https://elpa.gnu.org/devel/vertico.svg"/></a>
+#+html: <a href="https://elpa.gnu.org/packages/vertico.html"><img alt="GNU ELPA" src="https://elpa.gnu.org/packages/vertico.svg"/></a>
+#+html: <a href="https://elpa.gnu.org/devel/vertico.html"><img alt="GNU-devel ELPA" src="https://elpa.gnu.org/devel/vertico.svg"/></a>
 #+html: <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/75/Vertigomovie_restoration.jpg/800px-Vertigomovie_restoration.jpg" align="right" width="30%">
 
-* Introduction
-
 Vertico provides a performant and minimalistic vertical completion UI based on
-the default completion system. The main focus of Vertico is to provide a UI
-which behaves /correctly/ under all circumstances. By reusing the built-in
-facilities system, Vertico achieves /full compatibility/ with built-in Emacs
-completion commands and completion tables. Vertico only provides the completion
-UI but aims to be highly flexible, extensible and modular. Additional
-enhancements are available as [[#extensions][extensions]] or [[#complementary-packages][complementary packages]]. The code
-base is small and maintainable. The main ~vertico.el~ package is only about 600
-lines of code without white space and comments.
+the default completion system. The focus of Vertico is to provide a UI which
+behaves /correctly/ under all circumstances. By reusing the built-in facilities
+system, Vertico achieves /full compatibility/ with built-in Emacs completion
+commands and completion tables. Vertico only provides the completion UI but aims
+to be highly flexible, extendable and modular. Additional enhancements are
+available as [[#extensions][extensions]] or [[#complementary-packages][complementary packages]]. The code base is small and
+maintainable. The main ~vertico.el~ package is only about 600 lines of code
+without white space and comments.
+
+#+toc: headlines 8
 
 * Features
 
@@ -59,12 +59,10 @@ binding of =TAB= to ~vertico-insert~ and the bindings of ~vertico-exit/exit-inpu
 
 * Configuration
 
-Vertico is available from [[http://elpa.gnu.org/packages/vertico.html][GNU ELPA]]. You can install it directly via
+Vertico is available from [[https://elpa.gnu.org/packages/vertico.html][GNU ELPA]]. You can install it directly via
 ~package-install~. After installation, you can activate the global minor mode with
 =M-x vertico-mode=. In order to configure Vertico and other packages in your
-init.el, you may want to take advantage of ~use-package~. I recommend to give
-Orderless completion a try, which is different from the prefix TAB completion
-used by the basic default completion system or in shells. Here is an example
+init.el, you may want to take advantage of ~use-package~. Here is an example
 configuration:
 
 #+begin_src emacs-lisp
@@ -86,21 +84,6 @@ configuration:
     ;; (setq vertico-cycle t)
     )
 
-  ;; Optionally use the `orderless' completion style. See
-  ;; `+orderless-dispatch' in the Consult wiki for an advanced Orderless style
-  ;; dispatcher. Additionally enable `partial-completion' for file path
-  ;; expansion. `partial-completion' is important for wildcard support.
-  ;; Multiple files can be opened at once with `find-file' if you enter a
-  ;; wildcard. You may also give the `initials' completion style a try.
-  (use-package orderless
-    :init
-    ;; Configure a custom style dispatcher (see the Consult wiki)
-    ;; (setq orderless-style-dispatchers '(+orderless-dispatch)
-    ;;       orderless-component-separator #'orderless-escapable-split-on-space)
-    (setq completion-styles '(orderless)
-          completion-category-defaults nil
-          completion-category-overrides '((file (styles partial-completion)))))
-
   ;; Persist history over Emacs restarts. Vertico sorts by history position.
   (use-package savehist
     :init
@@ -110,9 +93,14 @@ configuration:
   (use-package emacs
     :init
     ;; Add prompt indicator to `completing-read-multiple'.
-    ;; Alternatively try `consult-completing-read-multiple'.
+    ;; We display [CRM<separator>], e.g., [CRM,] if the separator is a comma.
     (defun crm-indicator (args)
-      (cons (concat "[CRM] " (car args)) (cdr args)))
+      (cons (format "[CRM%s] %s"
+                    (replace-regexp-in-string
+                     "\\`\\[.*?]\\*\\|\\[.*?]\\*\\'" ""
+                     crm-separator)
+                    (car args))
+            (cdr args)))
     (advice-add #'completing-read-multiple :filter-args #'crm-indicator)
 
     ;; Do not allow the cursor in the minibuffer prompt
@@ -128,6 +116,30 @@ configuration:
     ;; Enable recursive minibuffers
     (setq enable-recursive-minibuffers t))
 #+end_src
+
+I recommend to give Orderless completion a try, which is different from the
+prefix TAB completion used by the basic default completion system or in shells.
+
+#+begin_src emacs-lisp
+    ;; Optionally use the `orderless' completion style.
+    (use-package orderless
+      :init
+      ;; Configure a custom style dispatcher (see the Consult wiki)
+      ;; (setq orderless-style-dispatchers '(+orderless-consult-dispatch orderless-affix-dispatch)
+      ;;       orderless-component-separator #'orderless-escapable-split-on-space)
+      (setq completion-styles '(orderless basic)
+            completion-category-defaults nil
+            completion-category-overrides '((file (styles partial-completion)))))
+#+end_src
+
+The =basic= completion style is specified as fallback in addition to =orderless= in
+order to ensure that completion commands which rely on dynamic completion
+tables, e.g., ~completion-table-dynamic~ or ~completion-table-in-turn~, work
+correctly. See the [[https://github.com/minad/consult/wiki#minads-orderless-configuration][Consult wiki]] for my advanced Orderless configuration with
+style dispatchers. Additionally enable =partial-completion= for file path
+expansion. =partial-completion= is important for file wildcard support. Multiple
+files can be opened at once with =find-file= if you enter a wildcard. You may also
+give the =initials= completion style a try.
 
 See also the [[https://github.com/minad/vertico/wiki][Vertico Wiki]] for additional configuration tips. For more general
 documentation read the chapter about completion in the [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Completion.html][Emacs manual]]. If you want
@@ -146,9 +158,9 @@ completion commands behave as usual. For example you can use =M-TAB= to cycle
 between candidates if you have set ~completion-cycle-threshold~.
 
 #+begin_src emacs-lisp
-  (define-key vertico-map "?" #'minibuffer-completion-help)
-  (define-key vertico-map (kbd "M-RET") #'minibuffer-force-complete-and-exit)
-  (define-key vertico-map (kbd "M-TAB") #'minibuffer-complete)
+  (keymap-set vertico-map "?" #'minibuffer-completion-help)
+  (keymap-set vertico-map "M-RET" #'minibuffer-force-complete-and-exit)
+  (keymap-set vertico-map "M-TAB" #'minibuffer-complete)
 #+end_src
 
 The ~orderless~ completion style does not support completion of a common prefix
@@ -158,7 +170,7 @@ a prefix. In order to support completing prefixes you may want to combine
 ~orderless~ with ~substring~ in your =completion-styles= configuration.
 
 #+begin_src emacs-lisp
-  (setq completion-styles '(substring orderless))
+  (setq completion-styles '(substring orderless basic))
 #+end_src
 
 Alternatively you can experiment with the built-in completion-styles, e.g.,
@@ -185,9 +197,11 @@ are used instead of ~orderless~:
 
 ** Completion-at-point and completion-in-region
 
-The =completion-at-point= command is usually bound to =M-TAB= or =TAB=. In case you
-want to use Vertico for completion-at-point/completion-in-region, you can use
-the function ~consult-completion-in-region~ provided by the Consult package.
+The tab completion command =completion-at-point= command is usually bound to =M-TAB=
+or =TAB=. Tab completion is also used in the minibuffer by =M-:= (~eval-expression~).
+In case you want to use Vertico to show the completion candidates of
+=completion-at-point= and =completion-in-region=, you can use the function
+~consult-completion-in-region~ provided by the Consult package.
 
 #+begin_src emacs-lisp
   ;; Use `consult-completion-in-region' if Vertico is enabled.
@@ -200,27 +214,15 @@ the function ~consult-completion-in-region~ provided by the Consult package.
                  args)))
 #+end_src
 
-The =completion-in-region-function= setting also affects TAB completion in the
-minibuffer when =M-:= (~eval-expression~) is used.
-
 You may also want to look into my [[https://github.com/minad/corfu][Corfu]] package, which provides a minimal
-completion system for =completion-in-region= in a child frame popup. Corfu is also
-a narrowly focused package and developed in the same spirit as Vertico.
-
-** Completing-read-multiple (CRM)
-
-Consult offers an enhanced =completing-read-multiple= implementation which you can
-use with Vertico.
-
-#+begin_src emacs-lisp
-  (advice-add #'completing-read-multiple
-              :override #'consult-completing-read-multiple)
-#+end_src
+completion system for =completion-in-region= in a child frame popup. Corfu is a
+narrowly focused package and developed in the same spirit as Vertico. You can
+even use Corfu in the minibuffer.
 
 * Extensions
-  :properties:
-  :custom_id: extensions
-  :end:
+:properties:
+:custom_id: extensions
+:end:
 
 We maintain small extension packages to Vertico in this repository in the
 subdirectory [[https://github.com/minad/vertico/tree/main/extensions][extensions/]]. The extensions are installed together with Vertico if
@@ -241,13 +243,14 @@ following extensions come with the Vertico ELPA package:
 - [[https://github.com/minad/vertico/blob/main/extensions/vertico-reverse.el][vertico-reverse]]: =vertico-reverse-mode= to reverse the display.
 - [[https://github.com/minad/vertico/blob/main/extensions/vertico-unobtrusive.el][vertico-unobtrusive]]: =vertico-unobtrusive-mode= displays only the topmost candidate.
 
-With these extensions it is possible to adapt Vertico such that it matches your
-preference or behaves similar to other familiar UIs. For example, the
-combination =vertico-flat= plus =vertico-directory= resembles Ido in look and feel.
-For an interface similar to Helm, the extension =vertico-buffer= allows you to
-configure freely where the completion buffer opens, instead of growing the
-minibuffer. Furthermore =vertico-buffer= will adjust the number of displayed
-candidates according to the buffer height.
+See the Commentary of those files for configuration details. With these
+extensions it is possible to adapt Vertico such that it matches your preference
+or behaves similar to other familiar UIs. For example, the combination
+=vertico-flat= plus =vertico-directory= resembles Ido in look and feel. For an
+interface similar to Helm, the extension =vertico-buffer= allows you to configure
+freely where the completion buffer opens, instead of growing the minibuffer.
+Furthermore =vertico-buffer= will adjust the number of displayed candidates
+according to the buffer height.
 
 Configuration example for =vertico-directory=:
 
@@ -276,7 +279,7 @@ candidates. This verbose display mode is useful for commands like ~consult-imenu
 or ~consult-outline~ since the buffer display allows you to get a better overview
 over the entire current buffer. But for other commands you want to keep using
 the default Vertico display. ~vertico-multiform-mode~ solves this configuration
-problem!
+problem.
 
 #+begin_src emacs-lisp
   ;; Enable vertico-multiform
@@ -297,21 +300,20 @@ problem!
           (consult-grep buffer)))
 #+end_src
 
-Temporary toggling between the different display modes is possible. Bind the
-following commands:
+Temporary toggling between the different display modes is possible. The
+following commands are bound by default in the =vertico-multiform-map=. You can of
+course change these bindings if you like.
 
-#+begin_src emacs-lisp
-  (define-key vertico-map "\M-V" #'vertico-multiform-vertical)
-  (define-key vertico-map "\M-G" #'vertico-multiform-grid)
-  (define-key vertico-map "\M-F" #'vertico-multiform-flat)
-  (define-key vertico-map "\M-R" #'vertico-multiform-reverse)
-  (define-key vertico-map "\M-U" #'vertico-multiform-unobtrusive)
-#+end_src
+- =M-V= -> ~vertico-multiform-vertical~
+- =M-G= -> ~vertico-multiform-grid~
+- =M-F= -> ~vertico-multiform-flat~
+- =M-R= -> ~vertico-multiform-reverse~
+- =M-U= -> ~vertico-multiform-unobtrusive~
 
-You can use your own functions or even lambdas to configure the completion
-behavior per command or per completion category. The function must have the
-calling convention of a mode, i.e., it takes a single argument, which is either
-1 to turn on the mode and -1 to turn off the mode.
+For special configuration you can use your own functions or even lambdas to
+configure the completion behavior per command or per completion category.
+Functions must have the calling convention of a mode, i.e., take a single
+argument, which is either 1 to turn on the mode and -1 to turn off the mode.
 
 #+begin_src emacs-lisp
   ;; Configure `consult-outline' as a scaled down TOC in a separate buffer
@@ -322,7 +324,8 @@ calling convention of a mode, i.e., it takes a single argument, which is either
 Furthermore you can tune buffer-local settings per command or category.
 
 #+begin_src emacs-lisp
-  ;; Change the default sorting function
+  ;; Change the default sorting function.
+  ;; See `vertico-sort-function' and `vertico-sort-override-function'.
   (setq vertico-multiform-commands
         '((describe-symbol (vertico-sort-function . vertico-sort-alpha))))
 
@@ -367,9 +370,9 @@ candidates from disappearing when they scroll off-screen to the left.
 #+end_src
 
 * Complementary packages
-  :properties:
-  :custom_id: complementary-packages
-  :end:
+:properties:
+:custom_id: complementary-packages
+:end:
 
 Vertico integrates well with complementary packages, which enrich the completion
 UI. These packages are fully supported:
@@ -379,7 +382,7 @@ UI. These packages are fully supported:
 - [[https://github.com/oantolin/embark][Embark]]: Minibuffer actions and context menu
 - [[https://github.com/oantolin/orderless][Orderless]]: Advanced completion style
 
-In order to get accustomed with the package ecosystem, I recommed the following
+In order to get accustomed with the package ecosystem, I recommend the following
 quick start approach:
 
 1. Start with plain Emacs (~emacs -Q~).
@@ -433,52 +436,46 @@ a minimal code base, relying purely on ~completing-read~ while avoiding to inven
 its own APIs. Inventing a custom API as Helm or Ivy is explicitly avoided in
 order to increase flexibility and package reuse. Due to its small code base and
 reuse of the Emacs built-in facilities, bugs and compatibility issues are less
-likely to occur in comparison to completion UIs or full completion systems,
-which reimplement a lot of functionality.
+likely to occur in comparison to completion UIs or monolithic completion systems.
 
 Since Vertico only provides the UI, you may want to combine it with some of the
 complementary packages, to give a full-featured completion experience similar to
-Helm or Ivy. Overall the packages in the spirit of Vertico have a different
-style than Helm or Ivy. The idea is to have smaller independent components,
-which one can add and understand step by step. Each component focuses on its
-niche and tries to be as non-intrusive as possible. Vertico targets users
-interested in crafting their Emacs precisely to their liking - completion plays
-an integral part in how the users interacts with Emacs.
+Helm or Ivy. The idea is to have smaller independent components, which one can
+add and understand step by step. Each component focuses on its niche and tries
+to be as non-intrusive as possible. Vertico targets users interested in crafting
+their Emacs precisely to their liking - completion plays an integral part in how
+the users interacts with Emacs.
 
 There are other interactive completion UIs, which follow a similar philosophy:
 
-- [[https://gitlab.com/protesilaos/mct][Mct]]: Minibuffer and Completions in Tandem. Mct reuses the default ~*Completions*~
-  buffer and enhances it with automatic updates and additional keybindings, to
-  select a candidate and move between minibuffer and completions buffer. Mct can
-  be configured to open only when requested. Furthermore since Mct uses a fully
-  functional buffer you can reuse all your familar buffer commands inside the
-  completions buffer. The main distinction to Vertico's approach is that
-  ~*Completions*~ buffer displays all matching candidates. This has the advantage
-  that you can interact freely with the candidates and jump around with Isearch
-  or Avy. On the other hand it necessarily causes a slowdown in comparison to
-  Vertico, which only displays a subset of candidates. Mct supports completion
-  in region via its ~mct-region-mode~.
-- [[https://github.com/oantolin/icomplete-vertical][Icomplete-vertical]]: This package enhances the Emacs builtin Icomplete with a
-  vertical display. In contrast to Vertico, Icomplete rotates the candidates
-  such that the current candidate always appears at the top. From my
-  perspective, candidate rotation feels a bit less intuitive than the UI of
-  Vertico or Selectrum. Note that Emacs 28 offers a built-in
-  ~icomplete-vertical-mode~.
-- [[https://github.com/raxod502/selectrum][Selectrum]]: Selectrum is the predecessor of Vertico, since it directly inspired
-  Vertico. Selectrum has a similar UI and interaction model as Vertico. Vertico
-  offers additional features and is more flexible than Selectrum thanks to its
-  [[#extensions][extensions]]. Unfortunately Selectrum is not fully compatible with every Emacs
-  completion command and dynamic completion tables ([[https://github.com/raxod502/selectrum/issues/481][Issue #481]]), since it uses
-  its own filtering infrastructure, which deviates from the standard Emacs
-  completion facilities. The filtering infrastructure also leads to a larger and
-  more complex code base.
+- [[https://git.sr.ht/~protesilaos/mct][Mct]]: Minibuffer and Completions in Tandem. Mct reuses the default
+  ~*Completions*~ buffer and enhances it with automatic updates and additional
+  keybindings, to select a candidate and move between minibuffer and completions
+  buffer. Since Mct uses a fully functional buffer you can use familiar buffer
+  commands inside the completions buffer. The main distinction to Vertico's
+  approach is that ~*Completions*~ buffer displays all matching candidates. This
+  has the advantage that you can interact freely with the candidates and jump
+  around with Isearch or Avy. On the other hand it necessarily causes a
+  slowdown.
+- [[https://github.com/radian-software/selectrum][Selectrum]]: Selectrum is the predecessor of Vertico has been deprecated in
+  favor of Vertico. Read the [[https://github.com/minad/vertico/wiki/Migrating-from-Selectrum-to-Vertico][migration guide]] when migrating from Selectrum.
+  Vertico was designed specifically to address the technical shortcomings of
+  Selectrum. Selectrum is not fully compatible with every Emacs completion
+  command and dynamic completion tables, since it uses its own filtering
+  infrastructure, which deviates from the standard Emacs completion facilities.
+- Icomplete: Emacs 28 comes with a builtin =icomplete-vertical-mode=, which is a
+  more bare-bone than Vertico. Vertico offers additional flexibility thanks to
+  its [[#extensions][extensions]].
 
 * Resources
 
 If you want to learn more about Vertico and minibuffer completion, check out the
 following resources:
 
-- [[https://github.com/hlissner/doom-emacs/tree/develop/modules/completion/vertico][Doom Emacs Vertico Module]]: Vertico is Doom's default completion system.
+- [[https://github.com/doomemacs/doomemacs/tree/master/modules/completion/vertico][Doom Emacs Vertico Module]]: Vertico is Doom's default completion system.
+- [[https://github.com/SystemCrafters/crafted-emacs/blob/master/modules/crafted-completion.el][Crafted Emacs Completion Module]]: Vertico and Corfu are used for completion.
+- [[https://git.sr.ht/~protesilaos/dotfiles/tree/master/item/emacs/.emacs.d/][Prot's Emacs configuration]]: Vertico and Corfu are used for completion.
+- [[https://www.youtube.com/watch?v=fnE0lXoe7Y0][Emacs Completion Explained]] (2022-07-19) by Andrew Tropin.
 - [[https://www.youtube.com/watch?v=w9hHMDyF9V4][Emacs Minibuffer Completions]] (2022-02-12) by Greg Yut.
 - [[https://www.youtube.com/watch?v=hPwDbx--Waw][Vertico Extensions for Emacs]] (2022-01-08) by Karthik Chikmagalur.
 - [[https://youtu.be/5ffb2at2d7w][Using Emacs Episode 80 - Vertico, Marginalia, Consult and Embark]] (2021-10-26) by Mike Zamansky.
@@ -487,15 +484,35 @@ following resources:
 
 * Contributions
 
-  Since this package is part of [[http://elpa.gnu.org/packages/vertico.html][GNU ELPA]] contributions require a copyright
-  assignment to the FSF.
+Since this package is part of [[https://elpa.gnu.org/packages/vertico.html][GNU ELPA]] contributions require a copyright
+assignment to the FSF.
+
+* Debugging Vertico
+
+When you observe an error in the =vertico--exhibit= post command hook, you should
+install an advice to enforce debugging. This allows you to obtain a stack trace
+in order to narrow down the location of the error. The reason is that post
+command hooks are automatically disabled (and not debugged) by Emacs. Otherwise
+Emacs would become unusable, given that the hooks are executed after every
+command.
+
+#+begin_src emacs-lisp
+  (setq debug-on-error t)
+
+  (defun force-debug (func &rest args)
+    (condition-case e
+        (apply func args)
+      ((debug error) (signal (car e) (cdr e)))))
+
+  (advice-add #'vertico--exhibit :around #'force-debug)
+#+end_src
 
 * Problematic completion commands
 
-  Vertico is robust in most scenarios. However some completion commands make
-  certain assumptions about the completion styles and the completion UI. Some of
-  these assumptions may not hold in Vertico or other UIs and require minor
-  workarounds.
+Vertico is robust in most scenarios. However some completion commands make
+certain assumptions about the completion styles and the completion UI. Some of
+these assumptions may not hold in Vertico or other UIs and require minor
+workarounds.
 
 ** ~org-refile~
 
@@ -513,11 +530,19 @@ built-in file completion table. In your user configuration you can prioritize
   ;; Alternative 1: Use the basic completion style
   (setq org-refile-use-outline-path 'file
         org-outline-path-complete-in-steps t)
-  (advice-add #'org-olpath-completing-read :around
-              (lambda (&rest args)
-                (minibuffer-with-setup-hook
-                    (lambda () (setq-local completion-styles '(basic)))
-                  (apply args))))
+
+  (advice-add #'org-olpath-completing-read :around #'org-enforce-basic-completion)
+
+  (defun org-enforce-basic-completion (&rest args)
+    (minibuffer-with-setup-hook
+        (:append
+         (lambda ()
+           (let ((map (make-sparse-keymap (current-local-map))))
+             (define-key map [tab] #'minibuffer-complete)
+             (use-local-map map))
+           (setq-local completion-styles (cons 'basic completion-styles)
+                       vertico-preselect 'prompt)))
+      (apply args)))
 #+end_src
 
 Alternatively you may want to disable the outline path completion in steps. The
@@ -531,6 +556,24 @@ However the list of possible completions becomes much more cluttered.
         org-outline-path-complete-in-steps nil)
 #+end_src
 
+** ~org-agenda-filter~ and ~org-tags-view~
+
+Similar to ~org-refile~, the commands ~org-agenda-filter~ and ~org-tags-view~ do not
+make use of completion boundaries. The internal completion tables are
+~org-agenda-filter-completion-function~ and ~org-tags-completion-function~.
+Unfortunately =TAB= completion (~minibuffer-complete~) does not work for this reason
+with arbitrary completion styles like ~substring~, ~flex~ or ~orderless~. This affects
+Vertico and also the Emacs default completion system. For example if you enter
+~+tag<0 TAB~ the input is replaced with ~0:10~ which is not correct. With preserved
+completion boundaries, the expected result would be ~+tag<0:10~. Completion
+boundaries are used for example by file completion, where each part of the path
+can be completed separately. Ideally this issue would be fixed in Org.
+
+#+begin_src emacs-lisp
+  (advice-add #'org-make-tags-matcher :around #'org-enforce-basic-completion)
+  (advice-add #'org-agenda-filter :around #'org-enforce-basic-completion)
+#+end_src
+
 ** ~tmm-menubar~
 
 The text menu bar works well with Vertico but always shows a =*Completions*=
@@ -539,7 +582,7 @@ be disabled with an advice. If you disabled the standard GUI menu bar and prefer
 the Vertico interface you may also overwrite the default F10 keybinding.
 
 #+begin_src emacs-lisp
-  (global-set-key [f10] #'tmm-menubar)
+  (keymap-global-set "<f10>" #'tmm-menubar)
   (advice-add #'tmm-add-prompt :after #'minibuffer-hide-completions)
 #+end_src
 
@@ -550,10 +593,33 @@ The command ~ffap-menu~ shows the =*Completions*= buffer by default like
 disabled as follows.
 
 #+begin_src emacs-lisp
-  (advice-add #'ffap-menu-ask :around (lambda (&rest args)
-                                   (cl-letf (((symbol-function #'minibuffer-completion-help)
-                                              #'ignore))
-                                     (apply args))))
+  (advice-add #'ffap-menu-ask :around
+              (lambda (&rest args)
+                (cl-letf (((symbol-function #'minibuffer-completion-help)
+                           #'ignore))
+                  (apply args))))
+#+end_src
+
+** ~completion-table-dynamic~
+
+Dynamic completion tables (~completion-table-dynamic~, ~completion-table-in-turn~,
+...) should work well with Vertico. The only requirement is that the =basic=
+completion style is enabled. The =basic= style performs prefix filtering by
+passing the input to the completion table (or the dynamic completion table
+function). The =basic= completion style must not necessarily be configured with
+highest priority, it can also come after other completion styles like =orderless=,
+=substring= or =flex=, as is also recommended by the Orderless documentation because
+of ~completion-table-dynamic~.
+
+#+begin_src emacs-lisp
+  (setq completion-styles '(basic))
+  ;; (setq completion-styles '(orderless basic))
+  (completing-read "Dynamic: "
+                   (completion-table-dynamic
+                    (lambda (str)
+                      (list (concat str "1")
+                            (concat str "2")
+                            (concat str "3")))))
 #+end_src
 
 ** Submitting the empty string
@@ -577,21 +643,31 @@ In both cases the empty string can be submitted. In the first case no explicit
 default value is specified and Vertico preselects the *first* candidate. In order
 to exit with the empty string, press =M-RET=. In the second case the explicit
 default value "" is specified and Vertico preselects the prompt, such that
-existing with the empty string is possible by pressing =RET= only.
+exiting with the empty string is possible by pressing =RET= only.
 
-** Tramp hostname completion
+** Tramp hostname and username completion
 
-In combination with Orderless, hostnames are not made available for completion
-after entering =/ssh:=. In order to avoid this problem, the =basic= completion style
-should be specified for the file completion category.
+*NOTE:* On upcoming Emacs 30 and Tramp 2.6.0.2 the workarounds described in this
+section are not necessary anymore, since the relevant completion tables have
+been improved.
+
+In combination with Orderless or other non-prefix completion styles like
+=substring= or =flex=, host names and user names are not made available for
+completion after entering =/ssh:=. In order to avoid this problem, the =basic=
+completion style should be specified for the file completion category, such that
+=basic= is tried before =orderless=. This can be achieved by putting =basic= first in
+the completion style overrides for the file completion category.
 
 #+begin_src emacs-lisp
-  (setq completion-styles '(orderless)
+  (setq completion-styles '(orderless basic)
         completion-category-overrides '((file (styles basic partial-completion))))
 #+end_src
 
-For users who are familiar with the =completion-style= machinery: You may also
-define a custom completion style which sets in only for remote files!
+If you are familiar with the =completion-style= machinery and want to dig a bit
+deeper, you may also define a custom completion style which sets in only for
+remote files. The custom completion style ensures that you can always match
+substrings within non-remote file names, since =orderless= will stay the preferred
+style for non-remote files.
 
 #+begin_src emacs-lisp
   (defun basic-remote-try-completion (string table pred point)
@@ -603,6 +679,6 @@ define a custom completion style which sets in only for remote files!
   (add-to-list
    'completion-styles-alist
    '(basic-remote basic-remote-try-completion basic-remote-all-completions nil))
-  (setq completion-styles '(orderless)
+  (setq completion-styles '(orderless basic)
         completion-category-overrides '((file (styles basic-remote partial-completion))))
 #+end_src
