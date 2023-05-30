@@ -1719,6 +1719,20 @@ Calls INSERT."
     ("case" "" jacob-sml-skeleton-case)
     ))
 
+(define-abbrev-table 'sql-mode-abbrev-table
+  '(
+    ("s" "SELECT")
+    ("sa" "SELECT *")
+    ("f" "FROM")
+    ("w" "WHERE")
+    ("a" "AND")
+    ("l" "LIKE")
+    ("i" "IN")
+    ("c" "CASE")
+    ("wt" "WHEN THEN")
+    ("lim" "LIMIT")
+    ))
+
 
 
 ;; key bindings
