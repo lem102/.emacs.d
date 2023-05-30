@@ -804,12 +804,16 @@ Useful for deleting ^M after `eglot-code-actions'."
       "Insert kotlin list"
       > "listOf(" - ")")))
 
+
+
 (jacob-try-require 'orderless
   (setq completion-styles '(orderless initials)))
 
 
 
 (jacob-try-require 'vertico
+  ;; TODO: attempt to make number of candidates equal to 1/4 of screen
+  (setq vertico-count 25)
   (vertico-mode 1))
 
 
@@ -832,6 +836,14 @@ Useful for deleting ^M after `eglot-code-actions'."
 
   (setq xref-show-xrefs-function 'consult-xref)
   (setq xref-show-definitions-function 'consult-xref))
+
+
+
+(jacob-try-require 'embark)
+
+
+
+(jacob-try-require 'embark-consult)
 
 
 
