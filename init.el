@@ -1775,6 +1775,8 @@ Calls INSERT."
 
 (jacob-is-installed 'xah-fly-keys
 
+  (define-key global-map (kbd "M-SPC") 'xah-fly-command-mode-activate)
+
   (define-key xah-fly-command-map "a" 'execute-extended-command)
   (define-key xah-fly-command-map "s" 'jacob-return-macro)
   (define-key xah-fly-command-map "DEL" nil)
