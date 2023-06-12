@@ -1329,6 +1329,16 @@ Otherwise, display error message."
         (kill-word 1)
       (insert ".only"))))
 
+(defun jacob-toggle-test-category ()
+  "Toggle the presence of a test category attribute after a mstest unit test."
+  (interactive)
+  (save-excursion
+    (search-backward "[TestMethod]")
+    (forward-to-indentation 1)
+    (if (string-match "\\[TestCategory(\"MyCategory\")\\]" (thing-at-point 'line t))
+        (kill-line 1)
+      (insert "[TestCategory(\"MyCategory\")]\n"))))
+
 (defvar jacob-git-lab-push-set-upstream-jira-url ""
   "URL for current employer's jira board.")
 
