@@ -1663,6 +1663,7 @@ Calls INSERT."
 
 (define-abbrev-table 'csharp-mode-abbrev-table
   '(("cwl" "" jacob-insert-csharp-print)
+    ("jwe" "Console.WriteLine(\"jacobwozere\");" t)
     ("as" "async")
     ("ns" "namespace")
     ("guid" "Guid")
