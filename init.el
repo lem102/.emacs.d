@@ -1363,10 +1363,10 @@ For use with GitLab only."
                                   "-o merge_request.remove_source_branch "
                                   (concat "-o merge_request.title=\""
                                           branch-name
-                                          "\"")
+                                          "\" ")
                                   (concat "-o merge_request.description=\""
                                           "[" mr-key "](" jira-link ")"
-                                          "\""))))
+                                          "\" "))))
          (mr-link (with-temp-buffer
                     (eshell-command command t)
                     (goto-char (point-min))
