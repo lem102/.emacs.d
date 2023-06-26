@@ -51,6 +51,7 @@
 (setq switch-to-buffer-obey-display-actions t)
 (setq disabled-command-function nil)
 (setq enable-recursive-minibuffers t)
+(setq blink-cursor-blinks 0)            ; make cursor blink forever
 
 (setq kill-buffer-query-functions (delq 'process-kill-buffer-query-function
                                         kill-buffer-query-functions))
