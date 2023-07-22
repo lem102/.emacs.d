@@ -688,7 +688,8 @@ in that list."
 ;; eglot config
 
 (jacob-is-installed 'eglot
-  (setq eglot-confirm-server-initiated-edits nil)
+  (setq eglot-ignored-server-capabilites '(:documentHighlightProvider
+                                           :documentOnTypeFormattingProvider))
   ;; (load-file (expand-file-name "~/.emacs.d/myLisp/old-eglot-jdt.el"))
   (defun jacob-remove-ret-character-from-buffer (&rest _)
     "Remove all occurances of ^M from the buffer.
