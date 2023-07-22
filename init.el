@@ -387,7 +387,7 @@ hides this information."
 
 (add-hook 'org-mode-hook 'org-indent-mode)
 
-(with-eval-after-load 'org-mode
+(with-eval-after-load 'org
   (defun jacob-org-babel-tangle-delete-newline ()
     "Some code to get rid of the newline org babel likes to add
   in when it tangles into a file."
@@ -407,10 +407,11 @@ hides this information."
 
   (org-babel-do-load-languages
    'org-babel-load-languages
-   '((octave . t)
-     (mermaid . t)))
+   '((octave . t)))
 
-  (setq org-confirm-babel-evaluate nil))
+  (setq org-src-preserve-indentation t)
+  (setq org-confirm-babel-evaluate (lambda (lang body)
+                                     (not (string= lang "restclient")))))
 
 
 ;; pulse config
