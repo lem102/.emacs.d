@@ -86,6 +86,7 @@
 (setq save-place-forget-unreadable-files t)
 (save-place-mode 1)
 
+(setq auto-save-visited-interval 2)
 (auto-save-visited-mode 1)
 
 
