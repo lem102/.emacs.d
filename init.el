@@ -1380,6 +1380,20 @@ For use with GitLab only."
                       jira-link))
     (browse-url mr-link)))
 
+(defun jacob-next-error-or-punct ()
+  "Wrapper command to allow moving forward by error or punctuation."
+  (interactive)
+  (if flymake-mode
+      (flymake-goto-next-error 1 nil t)
+    (xah-forward-punct)))
+
+(defun jacob-previous-error-or-punct ()
+  "Wrapper command to allow moving backward by error or punctuation."
+  (interactive)
+  (if flymake-mode
+      (flymake-goto-prev-error 1 nil t)
+    (xah-backward-punct)))
+
 
 
 ;; abbrevs
@@ -1791,6 +1805,9 @@ Calls INSERT."
   (define-key xah-fly-command-map (kbd "M-SPC") 'xah-fly-command-mode-activate)
   (jacob-is-installed 'expand-region
     (define-key xah-fly-command-map "8" 'er/expand-region))
+
+  (define-key xah-fly-command-map (kbd "=") 'jacob-next-error-or-punct)
+  (define-key xah-fly-command-map (kbd "-") 'jacob-previous-error-or-punct)
 
   (define-prefix-command 'jacob-config-keymap)
 
