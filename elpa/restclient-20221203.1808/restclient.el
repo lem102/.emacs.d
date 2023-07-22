@@ -1,4 +1,4 @@
-;;; restclient.el --- An interactive HTTP client for Emacs
+;;; restclient.el --- An interactive HTTP client for Emacs  -*- lexical-binding: t; -*-
 ;;
 ;; Public domain.
 
@@ -6,8 +6,8 @@
 ;; Maintainer: Pavel Kurnosov <pashky@gmail.com>
 ;; Created: 01 Apr 2012
 ;; Keywords: http
-;; Package-Version: 20210923.2234
-;; Package-Commit: f59a7f5abf366145a2c9c1e9f0a2184139d2adce
+;; Package-Version: 20221203.1808
+;; Package-Commit: 0ba72816f92f3d5906cdf76f418fd0a3ee72809b
 
 ;; This file is not part of GNU Emacs.
 ;; This file is public domain software. Do what you want.
@@ -24,7 +24,10 @@
 (require 'json)
 (require 'outline)
 (eval-when-compile (require 'subr-x))
-(eval-when-compile (require 'cl))
+(eval-when-compile
+  (if (version< emacs-version "26")
+      (require 'cl)
+    (require 'cl-lib)))
 
 (defgroup restclient nil
   "An interactive HTTP client for Emacs."
@@ -44,6 +47,14 @@
   "Name for response buffer."
   :group 'restclient
   :type 'string)
+
+(defcustom restclient-response-size-threshold 100000
+  "Size of the response restclient can display without performance impact."
+  :group 'restclient
+  :type 'integer)
+
+(defvar restclient-threshold-multiplier 10
+  "In how many times size-threshold should be exceed to use fundamental mode.")
 
 (defcustom restclient-info-buffer-name "*Restclient Info*"
   "Name for info buffer."
@@ -294,7 +305,23 @@
         (when guessed-mode
           (delete-region start (point))
           (unless (eq guessed-mode 'image-mode)
-            (apply guessed-mode '())
+            (cond ((and restclient-response-size-threshold
+                        (> (buffer-size) (* restclient-response-size-threshold
+                                            restclient-threshold-multiplier)))
+                   (fundamental-mode)
+                   (setq comment-start (let ((guessed-mode guessed-mode))
+                                         (with-temp-buffer
+                                           (apply  guessed-mode '())
+                                           comment-start)))
+                   (message
+                    "Response is too huge, using fundamental-mode to display it!"))
+                  ((and restclient-response-size-threshold
+                        (> (buffer-size) restclient-response-size-threshold))
+                   (delay-mode-hooks (apply guessed-mode '()))
+                   (message
+                    "Response is too big, using bare %s to display it!" guessed-mode))
+                  (t
+                   (apply guessed-mode '())))
             (if (fboundp 'font-lock-flush)
                 (font-lock-flush)
               (with-no-warnings
@@ -503,7 +530,7 @@ The buffer contains the raw HTTP response sent by the server."
     (restclient-replace-all-in-string vars-at-point (cdr (assoc var-name vars-at-point)))))
 
 (defmacro restclient-get-var (var-name)
-  (lexical-let ((buf-name (buffer-name (current-buffer)))
+  (let ((buf-name (buffer-name (current-buffer)))
 		(buf-point (point)))
     `(restclient-get-var-at-point ,var-name ,buf-name ,buf-point)))
 
@@ -568,7 +595,7 @@ The buffer contains the raw HTTP response sent by the server."
 
 (defun restclient-elisp-result-function (args offset)
   (goto-char offset)
-  (lexical-let ((form (macroexpand-all (read (current-buffer)))))
+  (let ((form (macroexpand-all (read (current-buffer)))))
     (lambda ()
       (eval form))))
 
