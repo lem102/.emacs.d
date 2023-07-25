@@ -51,6 +51,7 @@
 (setq switch-to-buffer-obey-display-actions t)
 (setq disabled-command-function nil)
 (setq enable-recursive-minibuffers t)
+(setq blink-cursor-blinks 0)            ; make cursor blink forever
 
 (setq kill-buffer-query-functions (delq 'process-kill-buffer-query-function
                                         kill-buffer-query-functions))
@@ -85,6 +86,7 @@
 (setq save-place-forget-unreadable-files t)
 (save-place-mode 1)
 
+(setq auto-save-visited-interval 2)
 (auto-save-visited-mode 1)
 
 
@@ -385,7 +387,7 @@ hides this information."
 
 (add-hook 'org-mode-hook 'org-indent-mode)
 
-(with-eval-after-load 'org-mode
+(with-eval-after-load 'org
   (defun jacob-org-babel-tangle-delete-newline ()
     "Some code to get rid of the newline org babel likes to add
   in when it tangles into a file."
@@ -405,10 +407,11 @@ hides this information."
 
   (org-babel-do-load-languages
    'org-babel-load-languages
-   '((octave . t)
-     (mermaid . t)))
+   '((octave . t)))
 
-  (setq org-confirm-babel-evaluate nil))
+  (setq org-src-preserve-indentation t)
+  (setq org-confirm-babel-evaluate (lambda (lang body)
+                                     (not (string= lang "restclient")))))
 
 
 ;; pulse config
@@ -686,7 +689,8 @@ in that list."
 ;; eglot config
 
 (jacob-is-installed 'eglot
-  (setq eglot-confirm-server-initiated-edits nil)
+  (setq eglot-ignored-server-capabilites '(:documentHighlightProvider
+                                           :documentOnTypeFormattingProvider))
   ;; (load-file (expand-file-name "~/.emacs.d/myLisp/old-eglot-jdt.el"))
   (defun jacob-remove-ret-character-from-buffer (&rest _)
     "Remove all occurances of ^M from the buffer.
@@ -1329,6 +1333,16 @@ Otherwise, display error message."
         (kill-word 1)
       (insert ".only"))))
 
+(defun jacob-toggle-test-category ()
+  "Toggle the presence of a test category attribute after a mstest unit test."
+  (interactive)
+  (save-excursion
+    (search-backward "[TestMethod]")
+    (forward-to-indentation 1)
+    (if (string-match "\\[TestCategory(\"MyCategory\")\\]" (thing-at-point 'line t))
+        (kill-line 1)
+      (insert "[TestCategory(\"MyCategory\")]\n"))))
+
 (defvar jacob-git-lab-push-set-upstream-jira-url ""
   "URL for current employer's jira board.")
 
@@ -1353,10 +1367,10 @@ For use with GitLab only."
                                   "-o merge_request.remove_source_branch "
                                   (concat "-o merge_request.title=\""
                                           branch-name
-                                          "\"")
+                                          "\" ")
                                   (concat "-o merge_request.description=\""
                                           "[" mr-key "](" jira-link ")"
-                                          "\""))))
+                                          "\" "))))
          (mr-link (with-temp-buffer
                     (eshell-command command t)
                     (goto-char (point-min))
@@ -1366,6 +1380,20 @@ For use with GitLab only."
                       mr-link "\n"
                       jira-link))
     (browse-url mr-link)))
+
+(defun jacob-next-error-or-punct ()
+  "Wrapper command to allow moving forward by error or punctuation."
+  (interactive)
+  (if flymake-mode
+      (flymake-goto-next-error 1 nil t)
+    (xah-forward-punct)))
+
+(defun jacob-previous-error-or-punct ()
+  "Wrapper command to allow moving backward by error or punctuation."
+  (interactive)
+  (if flymake-mode
+      (flymake-goto-prev-error 1 nil t)
+    (xah-backward-punct)))
 
 
 
@@ -1653,6 +1681,7 @@ Calls INSERT."
 
 (define-abbrev-table 'csharp-mode-abbrev-table
   '(("cwl" "" jacob-insert-csharp-print)
+    ("jwe" "Console.WriteLine(\"jacobwozere\");" t)
     ("as" "async")
     ("ns" "namespace")
     ("guid" "Guid")
@@ -1764,6 +1793,8 @@ Calls INSERT."
 
 (jacob-is-installed 'xah-fly-keys
 
+  (define-key global-map (kbd "M-SPC") 'xah-fly-command-mode-activate)
+
   (define-key xah-fly-command-map "a" 'execute-extended-command)
   (define-key xah-fly-command-map "s" 'jacob-return-macro)
   (define-key xah-fly-command-map "DEL" nil)
@@ -1775,6 +1806,9 @@ Calls INSERT."
   (define-key xah-fly-insert-map (kbd "M-SPC") 'xah-fly-command-mode-activate)
   (jacob-is-installed 'expand-region
     (define-key xah-fly-command-map "8" 'er/expand-region))
+
+  (define-key xah-fly-command-map (kbd "=") 'jacob-next-error-or-punct)
+  (define-key xah-fly-command-map (kbd "-") 'jacob-previous-error-or-punct)
 
   (define-prefix-command 'jacob-config-keymap)
 
