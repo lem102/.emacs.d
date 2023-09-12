@@ -448,12 +448,14 @@ hides this information."
                                                       gcs-done))))))
 
 
+;; TODO: consider removing
 ;; calendar + diary config
 
 (when (and (boundp 'jacob-raspberry-pi-ip-address)
            (boundp 'jacob-raspberry-pi-connection-string))
-  (setq diary-file (concat jacob-raspberry-pi-connection-string
-                           "/home/pi/org/jacobsDiary.diary")))
+  ;; (setq diary-file (concat jacob-raspberry-pi-connection-string
+  ;;                          "/home/pi/org/jacobsDiary.diary"))
+  )
 
 (with-eval-after-load 'calendar
   (setq diary-date-forms diary-european-date-forms)
