@@ -465,12 +465,14 @@ hides this information."
                                                       gcs-done))))))
 
 
+;; TODO: consider removing
 ;; calendar + diary config
 
 (when (and (boundp 'jacob-raspberry-pi-ip-address)
            (boundp 'jacob-raspberry-pi-connection-string))
-  (setq diary-file (concat jacob-raspberry-pi-connection-string
-                           "/home/pi/org/jacobsDiary.diary")))
+  ;; (setq diary-file (concat jacob-raspberry-pi-connection-string
+  ;;                          "/home/pi/org/jacobsDiary.diary"))
+  )
 
 (with-eval-after-load 'calendar
   (setq diary-date-forms diary-european-date-forms)
@@ -1833,7 +1835,7 @@ Calls INSERT."
   (define-key xah-fly-command-map "2" 'winner-redo)
   (define-key xah-fly-command-map "9" 'jacob-swap-visible-buffers)
   (define-key xah-fly-command-map "'" 'jacob-format-words)
-  (define-key xah-fly-command-map (kbd "M-SPC") 'xah-fly-command-mode-activate)
+  (define-key xah-fly-insert-map (kbd "M-SPC") 'xah-fly-command-mode-activate)
   (jacob-is-installed 'expand-region
     (define-key xah-fly-command-map "8" 'er/expand-region))
 
