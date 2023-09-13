@@ -1,4 +1,4 @@
-;;; init.el --- Jacob's main init file. -*-lexical-binding: t-*-
+;;; init.el --- Jacob's main init file. -*-lexical-binding: t; eval: (flymake-mode 0)-*-
 ;;; Commentary:
 ;;; Code:
 
@@ -189,7 +189,6 @@
     (vc-mode vc-mode)
     " "
     mode-line-position
-    (xah-fly-keys " ∑")
     (flymake-mode flymake-mode-line-format)
     " "
     (eglot--managed-mode
@@ -313,6 +312,24 @@ hides this information."
                                       (goto-char (point-max))
                                       (+ 2 (line-beginning-position))))
       (split-string (buffer-substring-no-properties (point-min) (point-max)) "\n"))))
+
+
+
+;; flymake-mode config
+
+(with-eval-after-load 'flymake
+  (setq flymake-mode-line-format '(flymake-mode-line-exception flymake-mode-line-counters)))
+
+
+
+;; project config
+
+(with-eval-after-load 'project
+  (setq project-switch-commands '((project-find-file "Find file")
+                                  (jacob-project-search "Find regexp")
+                                  (project-find-dir "Find directory")
+                                  (project-vc-dir "VC-Dir")
+                                  (project-eshell "Eshell"))))
 
 
 ;; emacs-lisp-mode config
@@ -484,7 +501,8 @@ hides this information."
   "Indent buffer using current major mode.
 Designed for use in on-save hook in certain programming languages modes."
   (unless (ignore-errors smerge-mode)
-    (cond ((seq-contains-p '(csharp-tree-sitter-mode
+    (cond ((seq-contains-p '(
+                             ;; csharp-tree-sitter-mode
                              ;; typescript-react-mode
                              java-mode
                              sml-mode)
@@ -681,7 +699,7 @@ in that list."
 ;; csharp-mode config
 
 (jacob-is-installed 'csharp-mode
-  (add-to-list 'auto-mode-alist '("\\.cs\\'" . csharp-mode))
+  (add-to-list 'auto-mode-alist '("\\.cs\\'" . csharp-tree-sitter-mode))
   (add-hook 'csharp-mode-hook (lambda ()
                                 (local-set-key (kbd "TAB") 'indent-for-tab-command))))
 
@@ -717,7 +735,7 @@ Useful for deleting ^M after `eglot-code-actions'."
                                   (require 'eglot-fsharp)
                                   (eglot-ensure))))
   (with-eval-after-load 'eglot
-    (add-to-list 'eglot-server-programs '(csharp-mode . ("csharp-ls")))
+    (add-to-list 'eglot-server-programs '((csharp-mode csharp-tree-sitter-mode) . ("csharp-ls")))
 
     (add-to-list 'eglot-server-programs '((js-mode typescript-mode) . ("typescript-language-server" "--stdio")))
 
@@ -1310,6 +1328,7 @@ Otherwise, display error message."
     (shell-command "git commit -m \"chore: fix linting\" -na")
     (shell-command "git push")))
 
+;; TODO: current-line and current-column come from array.el, so this function will not work until after that lib is loaded
 (defun jacob-open-in-vscode ()
   "Open current file in vscode."
   (interactive)
@@ -1679,7 +1698,7 @@ Calls INSERT."
   nil
   :parents (list common-java-csharp-abbrev-table))
 
-(define-abbrev-table 'csharp-mode-abbrev-table
+(define-abbrev-table 'common-csharp-abbrev-table
   '(("cwl" "" jacob-insert-csharp-print)
     ("jwe" "Console.WriteLine(\"jacobwozere\");" t)
     ("as" "async")
@@ -1688,6 +1707,16 @@ Calls INSERT."
     ("prop" "" jacob-insert-csharp-property))
   nil
   :parents (list common-java-csharp-abbrev-table))
+
+(define-abbrev-table 'csharp-mode-abbrev-table
+  nil
+  nil
+  :parents (list common-csharp-abbrev-table))
+
+(define-abbrev-table 'csharp-tree-sitter-mode-abbrev-table
+  nil
+  nil
+  :parents (list common-csharp-abbrev-table))
 
 (define-abbrev-table 'emacs-lisp-mode-abbrev-table
   '(("def" "" jacob-insert-elisp-defun)
@@ -1766,6 +1795,7 @@ Calls INSERT."
   '(
     ("s" "SELECT")
     ("sa" "SELECT *")
+    ("saf" "SELECT * FROM")
     ("f" "FROM")
     ("w" "WHERE")
     ("a" "AND")
