@@ -181,7 +181,6 @@
     (:eval (pcase major-mode
              ('lisp-interaction-mode "ELi")
              ('emacs-lisp-mode "EL")
-             ('typescript-react-mode "TSX")
              ('nxml-mode "XML")
              (_ mode-name)))
     ": "
@@ -572,6 +571,98 @@ Designed for use in on-save hook in certain programming languages modes."
 (setq compilation-scroll-output t)
 
 
+;; treesit config
+
+;; strategy for adopting tree-sitter:
+;; on linux, use the auto build stuff included in emacs
+;; on windows, grab the .dlls from a bundle
+
+(when (eq system-type 'gnu/linux)
+  (setq treesit-language-source-alist '((c-sharp "https://github.com/tree-sitter/tree-sitter-c-sharp" "master" "src")))
+  (setq treesit-load-name-override-list '((c-sharp "libtree-sitter-csharp" "tree_sitter_c_sharp")))
+  ;; TODO: troubleshoot csharp-ts on windows
+  (setq major-mode-remap-alist '((csharp-mode . csharp-ts-mode))))
+
+
+;; eglot config
+
+(setq eglot-ignored-server-capabilities '(:documentHighlightProvider
+                                          :documentOnTypeFormattingProvider))
+
+(defun jacob-remove-ret-character-from-buffer (&rest _)
+  "Remove all occurances of ^M from the buffer.
+
+Useful for deleting ^M after `eglot-code-actions'."
+  (save-excursion
+    (goto-char (point-min))
+    (while (search-forward (char-to-string 13) nil t)
+      (replace-match ""))))
+
+(advice-add 'eglot-code-actions :after #'jacob-remove-ret-character-from-buffer)
+(advice-add 'eglot-rename :after #'jacob-remove-ret-character-from-buffer)
+
+(add-hook 'eglot-managed-mode-hook
+          #'(lambda ()
+              (eglot-inlay-hints-mode 0)
+              (setq-local eldoc-documentation-strategy
+                          'eldoc-documentation-compose)))
+
+(add-hook 'java-mode-hook 'eglot-ensure)
+(add-hook 'csharp-mode-hook 'eglot-ensure)
+(add-hook 'csharp-ts-mode-hook 'eglot-ensure)
+(add-hook 'typescript-mode-hook 'eglot-ensure)
+(add-hook 'fsharp-mode-hook (lambda ()
+                              (when (eq system-type 'gnu/linux)
+                                (require 'eglot-fsharp)
+                                (eglot-ensure))))
+(with-eval-after-load 'eglot
+  (add-to-list 'eglot-server-programs '((csharp-mode csharp-ts-mode) . ("csharp-ls")))
+
+  (add-to-list 'eglot-server-programs '((js-mode typescript-mode) . ("typescript-language-server" "--stdio")))
+
+  ;; (add-to-list 'eglot-server-programs '((js-mode typescript-mode) . (eglot-deno "deno" "lsp")))
+
+  (defclass eglot-deno (eglot-lsp-server) ()
+    :documentation "A custom class for deno lsp.")
+
+  (cl-defmethod eglot-initialization-options ((server eglot-deno))
+    "Passes through required deno initialization options"
+    (list :enable t
+          :lint t
+          :suggest.names t))
+
+  ;; (add-to-list 'eglot-server-programs '(go-mode . ("/home/jacob/go/bin/gopls")))
+
+  (eglot--code-action eglot-code-action-organize-imports-ts "source.organizeImports.ts")
+  (eglot--code-action eglot-code-action-add-missing-imports-ts "source.addMissingImports.ts")
+
+  (defun eglot--format-markup (markup)
+    "Format MARKUP according to LSP's spec."
+    (pcase-let ((is-csharp (equal 'csharp-mode-hook major-mode))
+                (`(,string ,mode)
+                 (if (stringp markup) (list markup 'gfm-view-mode)
+                   (list (plist-get markup :value)
+                         (pcase (plist-get markup :kind)
+                           ;; changed this line, before was gfm-view-mode instead of markdown-view-mode
+                           ("markdown" 'markdown-view-mode)
+                           ("plaintext" 'text-mode)
+                           (_ major-mode))))))
+      (with-temp-buffer
+        (switch-to-buffer (current-buffer))
+        (setq-local markdown-fontify-code-blocks-natively t)
+        (insert string)
+        (let ((inhibit-message t)
+	          (message-log-max nil))
+          (ignore-errors (delay-mode-hooks (funcall mode))))
+        (font-lock-ensure)
+        (string-trim (buffer-string))))))
+
+
+;; typescript config
+
+(add-to-list 'auto-mode-alist '("\\.ts\\'" . typescript-ts-mode))
+(add-to-list 'auto-mode-alist '("\\.tsx\\'" . tsx-ts-mode))
+
 
 ;; package installation
 
@@ -696,87 +787,6 @@ in that list."
 
 (jacob-is-installed 'restclient
   (add-to-list 'auto-mode-alist '("\\.http\\'" . restclient-mode)))
-
-
-;; csharp-mode config
-
-(jacob-is-installed 'csharp-mode
-  (add-to-list 'auto-mode-alist '("\\.cs\\'" . csharp-tree-sitter-mode))
-  (add-hook 'csharp-mode-hook (lambda ()
-                                (local-set-key (kbd "TAB") 'indent-for-tab-command))))
-
-
-;; eglot config
-
-(jacob-is-installed 'eglot
-  (setq eglot-ignored-server-capabilites '(:documentHighlightProvider
-                                           :documentOnTypeFormattingProvider))
-  ;; (load-file (expand-file-name "~/.emacs.d/myLisp/old-eglot-jdt.el"))
-  (defun jacob-remove-ret-character-from-buffer (&rest _)
-    "Remove all occurances of ^M from the buffer.
-
-Useful for deleting ^M after `eglot-code-actions'."
-    (save-excursion
-      (goto-char (point-min))
-      (while (search-forward (char-to-string 13) nil t)
-        (replace-match ""))))
-
-  (advice-add 'eglot-code-actions :after #'jacob-remove-ret-character-from-buffer)
-  (advice-add 'eglot-rename :after #'jacob-remove-ret-character-from-buffer)
-
-  (add-hook 'eglot-managed-mode-hook
-            #'(lambda ()
-                (setq-local eldoc-documentation-strategy
-                            'eldoc-documentation-compose)))
-
-  (add-hook 'java-mode-hook 'eglot-ensure)
-  (add-hook 'csharp-mode-hook 'eglot-ensure)
-  (add-hook 'typescript-mode-hook 'eglot-ensure)
-  (add-hook 'fsharp-mode-hook (lambda ()
-                                (when (eq system-type 'gnu/linux)
-                                  (require 'eglot-fsharp)
-                                  (eglot-ensure))))
-  (with-eval-after-load 'eglot
-    (add-to-list 'eglot-server-programs '((csharp-mode csharp-tree-sitter-mode) . ("csharp-ls")))
-
-    (add-to-list 'eglot-server-programs '((js-mode typescript-mode) . ("typescript-language-server" "--stdio")))
-
-    ;; (add-to-list 'eglot-server-programs '((js-mode typescript-mode) . (eglot-deno "deno" "lsp")))
-
-    (defclass eglot-deno (eglot-lsp-server) ()
-      :documentation "A custom class for deno lsp.")
-
-    (cl-defmethod eglot-initialization-options ((server eglot-deno))
-      "Passes through required deno initialization options"
-      (list :enable t
-            :lint t
-            :suggest.names t))
-
-    ;; (add-to-list 'eglot-server-programs '(go-mode . ("/home/jacob/go/bin/gopls")))
-
-    (eglot--code-action eglot-code-action-organize-imports-ts "source.organizeImports.ts")
-    (eglot--code-action eglot-code-action-add-missing-imports-ts "source.addMissingImports.ts")
-
-    (defun eglot--format-markup (markup)
-      "Format MARKUP according to LSP's spec."
-      (pcase-let ((is-csharp (equal 'csharp-mode-hook major-mode))
-                  (`(,string ,mode)
-                   (if (stringp markup) (list markup 'gfm-view-mode)
-                     (list (plist-get markup :value)
-                           (pcase (plist-get markup :kind)
-                             ;; changed this line, before was gfm-view-mode instead of markdown-view-mode
-                             ("markdown" 'markdown-view-mode)
-                             ("plaintext" 'text-mode)
-                             (_ major-mode))))))
-        (with-temp-buffer
-          (switch-to-buffer (current-buffer))
-          (setq-local markdown-fontify-code-blocks-natively t)
-          (insert string)
-          (let ((inhibit-message t)
-	            (message-log-max nil))
-            (ignore-errors (delay-mode-hooks (funcall mode))))
-          (font-lock-ensure)
-          (string-trim (buffer-string)))))))
 
 
 
@@ -911,25 +921,6 @@ Useful for deleting ^M after `eglot-code-actions'."
       "insert case" nil
       > "case " - " of" \n
       " => ")))
-
-
-;; typescript config
-
-(jacob-is-installed 'typescript-mode
-
-  (put 'tsi-typescript-indent-offset 'safe-local-variable #'numberp)
-
-  (define-derived-mode typescript-react-mode typescript-mode
-    "TSX")
-
-  (add-to-list 'auto-mode-alist '("\\.tsx?\\'" . typescript-react-mode))
-  (with-eval-after-load 'tree-sitter
-    (add-to-list 'tree-sitter-major-mode-language-alist '(typescript-react-mode . tsx))
-
-    (jacob-try-require 'tsi
-      (jacob-try-require 'tsi-typescript
-        (add-hook 'typescript-react-mode-hook (lambda ()
-                                                (tsi-typescript-mode 1)))))))
 
 
 ;; tree sitter config
@@ -1671,7 +1662,17 @@ Calls INSERT."
   nil
   :parents (list c-mode-abbrev-table))
 
-(define-abbrev-table 'typescript-mode-abbrev-table
+(define-abbrev-table 'js-ts-mode-abbrev-table
+  nil
+  nil
+  :parents (list js-mode-abbrev-table))
+
+(define-abbrev-table 'typescript-ts-mode-abbrev-table
+  nil
+  nil
+  :parents (list js-mode-abbrev-table))
+
+(define-abbrev-table 'tsx-ts-mode-abbrev-table
   nil
   nil
   :parents (list js-mode-abbrev-table))
@@ -1715,7 +1716,7 @@ Calls INSERT."
   nil
   :parents (list common-csharp-abbrev-table))
 
-(define-abbrev-table 'csharp-tree-sitter-mode-abbrev-table
+(define-abbrev-table 'csharp-ts-mode-abbrev-table
   nil
   nil
   :parents (list common-csharp-abbrev-table))
@@ -1844,11 +1845,10 @@ Calls INSERT."
 
   (define-prefix-command 'jacob-config-keymap)
 
-  (jacob-is-installed 'eglot
-    (define-prefix-command 'jacob-eglot-keymap)
-    (define-key xah-fly-leader-key-map "ee" jacob-eglot-keymap)
-    (define-key xah-fly-leader-key-map "eea" 'eglot-code-actions)
-    (define-key xah-fly-leader-key-map "eer" 'eglot-rename))
+  (define-prefix-command 'jacob-eglot-keymap)
+  (define-key xah-fly-leader-key-map "ee" jacob-eglot-keymap)
+  (define-key xah-fly-leader-key-map "eea" 'eglot-code-actions)
+  (define-key xah-fly-leader-key-map "eer" 'eglot-rename)
 
   (jacob-is-installed 'consult
     (define-key xah-fly-leader-key-map "es" 'consult-line))
