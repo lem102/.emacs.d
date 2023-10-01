@@ -423,11 +423,14 @@ hides this information."
 
   (org-babel-do-load-languages
    'org-babel-load-languages
-   '((octave . t)))
+   '((octave . t)
+     (sql . t)
+     (js . t)))
 
   (setq org-src-preserve-indentation t)
   (setq org-confirm-babel-evaluate (lambda (lang body)
-                                     (not (string= lang "restclient")))))
+                                     (not (string= lang "restclient"))))
+  (setq org-startup-folded t))
 
 
 ;; pulse config
@@ -578,7 +581,9 @@ Designed for use in on-save hook in certain programming languages modes."
 ;; on windows, grab the .dlls from a bundle
 
 (when (eq system-type 'gnu/linux)
-  (setq treesit-language-source-alist '((c-sharp "https://github.com/tree-sitter/tree-sitter-c-sharp" "master" "src")))
+  (setq treesit-language-source-alist '((c-sharp "https://github.com/tree-sitter/tree-sitter-c-sharp" "master" "src")
+                                        (typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src")
+                                        (tsx "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src")))
   (setq treesit-load-name-override-list '((c-sharp "libtree-sitter-csharp" "tree_sitter_c_sharp")))
   ;; TODO: troubleshoot csharp-ts on windows
   (setq major-mode-remap-alist '((csharp-mode . csharp-ts-mode))))
@@ -1384,6 +1389,7 @@ For use with GitLab only."
                                           "[" mr-key "](" jira-link ")"
                                           "\" "))))
          (mr-link (with-temp-buffer
+                    (switch-to-buffer (current-buffer))
                     (eshell-command command t)
                     (goto-char (point-min))
                     (search-forward "https")
@@ -1620,7 +1626,9 @@ Calls INSERT."
 (define-abbrev-table 'text-mode-abbrev-table
   '(("i" "I")
     ("im" "I'm")
-    ("id" "I'd")))
+    ("id" "I'd")
+    ("dont" "don't")
+    ("its" "it's")))
 
 (define-abbrev-table 'common-operators-abbrev-table
   '(
