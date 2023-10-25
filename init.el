@@ -1614,6 +1614,11 @@ Calls INSERT."
 (define-jacob-insert jacob-insert-clojure-case
   (jacob-insert-helper "(case ■\n●)"))
 
+(defun jacob-abbrev-expand-function ()
+  "Return t if not in string or comment. Else nil."
+  (let ((xsyntax-state (syntax-ppss)))
+    (not (or (nth 3 xsyntax-state) (nth 4 xsyntax-state)))))
+
 (define-abbrev-table 'global-abbrev-table
   '(
     ("dal" "$")
@@ -1650,7 +1655,8 @@ Calls INSERT."
     ("switch" "" jacob-insert-c-switch)
     ("case" "" jacob-insert-c-case))
   nil
-  :parents (list common-operators-abbrev-table))
+  :parents (list common-operators-abbrev-table)
+  :enable-function 'jacob-abbrev-expand-function)
 
 (define-abbrev-table 'js-mode-abbrev-table
   '(
