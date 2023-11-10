@@ -433,7 +433,11 @@ hides this information."
   (setq org-src-preserve-indentation t)
   (setq org-confirm-babel-evaluate (lambda (lang body)
                                      (not (string= lang "restclient"))))
-  (setq org-startup-folded t))
+  (setq org-startup-folded t)
+  (setq org-tags-column 0)
+
+  (setq org-time-stamp-custom-formats (cons "%A %d/%m/%y" "%A %d/%m/%y %H:%M"))
+  (setq org-display-custom-times t))
 
 
 ;; pulse config
