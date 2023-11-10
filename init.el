@@ -122,7 +122,10 @@
 
 ;; bookmark config
 
-(setq bookmark-set-fringe-mark nil)
+(with-eval-after-load 'bookmark
+  (setq bookmark-set-fringe-mark nil)
+  (bookmark-store "init.el" '((filename . "~/.emacs.d/init.el")) nil)
+  (bookmark-store "environment.el" '((filename . "~/.emacs.d/environment.el")) nil))
 
 
 ;; unicode
@@ -1161,16 +1164,6 @@ point."
              (current-buffer))
     (error (message "Invalid expression")
            (insert (current-kill 0)))))
-
-(defun jacob-config-visit ()
-  "Open the init file."
-  (interactive)
-  (find-file "~/.emacs.d/init.el"))
-
-(defun jacob-config-reload ()
-  "Evaluate the init file."
-  (interactive)
-  (load-file (expand-file-name "~/.emacs.d/init.el")))
 
 (require 'jacob-long-time-autoloads)
 
