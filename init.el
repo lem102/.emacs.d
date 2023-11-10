@@ -1818,10 +1818,8 @@ Calls INSERT."
 
   (define-key global-map (kbd "M-SPC") 'xah-fly-command-mode-activate)
 
-  (define-key xah-fly-command-map "a" 'execute-extended-command)
   (define-key xah-fly-command-map "s" 'jacob-return-macro)
-  (define-key xah-fly-command-map "DEL" nil)
-  (define-key xah-fly-command-map "4" 'other-window-prefix)
+  ;; (define-key xah-fly-command-map "4" 'other-window-prefix)
   (define-key xah-fly-command-map "1" 'winner-undo)
   (define-key xah-fly-command-map "2" 'winner-redo)
   (define-key xah-fly-command-map "9" 'jacob-swap-visible-buffers)
@@ -1830,18 +1828,18 @@ Calls INSERT."
   (jacob-is-installed 'expand-region
     (define-key xah-fly-command-map "8" 'er/expand-region))
 
+  (jacob-is-installed 'switch-window
+    (define-key xah-fly-command-map "," 'switch-window))
+
   (define-key xah-fly-command-map (kbd "=") 'jacob-next-error-or-punct)
   (define-key xah-fly-command-map (kbd "-") 'jacob-previous-error-or-punct)
 
   (define-prefix-command 'jacob-config-keymap)
 
   (define-prefix-command 'jacob-eglot-keymap)
-  (define-key xah-fly-leader-key-map "ee" jacob-eglot-keymap)
-  (define-key xah-fly-leader-key-map "eea" 'eglot-code-actions)
-  (define-key xah-fly-leader-key-map "eer" 'eglot-rename)
-
-  (jacob-is-installed 'consult
-    (define-key xah-fly-leader-key-map "es" 'consult-line))
+  (define-key xah-fly-leader-key-map "we" jacob-eglot-keymap)
+  (define-key xah-fly-leader-key-map "wea" 'eglot-code-actions)
+  (define-key xah-fly-leader-key-map "wer" 'eglot-rename)
 
   (let ((map vc-prefix-map))
     (define-key map "p" 'vc-push)
@@ -1864,29 +1862,24 @@ Calls INSERT."
   (define-key xah-fly-leader-key-map "dv" 'jacob-insert-tilde)
   (define-key xah-fly-leader-key-map "dx" 'jacob-insert-at)
   (define-key xah-fly-leader-key-map "dz" 'jacob-insert-apostrophe)
-  (define-key xah-fly-leader-key-map "eb" 'ef-themes-toggle)
-  (define-key xah-fly-leader-key-map "ec" jacob-config-keymap)
-  (define-key xah-fly-leader-key-map "ecc" 'jacob-org-src-block)
-  (define-key xah-fly-leader-key-map "ece" 'jacob-config-visit)
-  (define-key xah-fly-leader-key-map "ecp" 'jacob-recompile-packages)
-  (define-key xah-fly-leader-key-map "ecr" 'jacob-config-reload)
-  (define-key xah-fly-leader-key-map "ect" 'jacob-display-time)
-  (define-key xah-fly-leader-key-map "ei" 'jacob-format-buffer)
+  
+  (define-key xah-fly-leader-key-map "l8" 'ef-themes-toggle)
+  ;; (define-key xah-fly-leader-key-map "ect" 'jacob-display-time) ; silly
+  ;; (define-key xah-fly-leader-key-map "ei" 'jacob-format-buffer) ; should improve
   (define-key xah-fly-leader-key-map "ep" project-prefix-map)
-  (define-key xah-fly-leader-key-map "et" tab-prefix-map)
-  (define-key xah-fly-leader-key-map "ev" vc-prefix-map)
-  (define-key xah-fly-leader-key-map "ev" vc-prefix-map)
-  (define-key xah-fly-leader-key-map "ie" 'find-file)
-  (define-key xah-fly-leader-key-map "ij" 'consult-recent-file)
+
   (define-key xah-fly-leader-key-map "l3" 'jacob-async-shell-command)
   (define-key xah-fly-leader-key-map "la" 'jacob-font-size-increase)
 
+  (define-key xah-fly-leader-key-map "/c" 'vc-create-branch)
+  (define-key xah-fly-leader-key-map "/b" 'vc-switch-branch)
+  (define-key xah-fly-leader-key-map "/x" 'jacob-git-pull-master-new-branch)
+
   (jacob-is-installed 'consult
     (define-key xah-fly-leader-key-map "v" 'consult-yank-from-kill-ring)
-    (define-key xah-fly-leader-key-map "f" 'consult-buffer))
-
-  (jacob-is-installed 'restart-emacs
-    (define-key xah-fly-leader-key-map "ecR" 'restart-emacs))
+    (define-key xah-fly-leader-key-map "f" 'consult-buffer)
+    (define-key xah-fly-leader-key-map "ij" 'consult-recent-file)
+    (define-key xah-fly-leader-key-map "es" 'consult-line))
 
   (defvar jacob-insert-parentheses-character ?k)
   (defvar jacob-insert-square-bracket-character ?l)
@@ -2002,4 +1995,3 @@ Calls INSERT."
 
 (provide 'init)
 ;;; init.el ends here
-
