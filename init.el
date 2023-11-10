@@ -887,14 +887,6 @@ in that list."
 
 
 
-(jacob-try-require 'embark)
-
-
-
-(jacob-try-require 'embark-consult)
-
-
-
 (jacob-is-installed 'expand-region
   (with-eval-after-load 'expand-region
     (setq expand-region-contract-fast-key "9")))
@@ -937,14 +929,6 @@ in that list."
       " => ")))
 
 
-;; tree sitter config
-
-(jacob-is-installed 'tree-sitter
-  (add-hook 'typescript-react-mode-hook (lambda ()
-                                          (global-tree-sitter-mode 1)
-                                          (tree-sitter-hl-mode 1))))
-
-
 ;; xah-fly-keys config
 
 (setq xah-fly-use-control-key nil)
@@ -953,13 +937,6 @@ in that list."
 (jacob-try-require 'xah-fly-keys
   (xah-fly-keys-set-layout "qwerty")
   (xah-fly-keys 1))
-
-
-;; exec-path-from-shell config
-
-(jacob-is-installed 'exec-path-from-shell
-  (unless (equal 'windows-nt system-type)
-    (exec-path-from-shell-initialize)))
 
 
 
