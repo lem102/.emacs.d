@@ -743,7 +743,6 @@ If successful, evaluate BODY.  Used to eagerly load feature."
                          inf-ruby
                          cider
                          ;; misc
-                         restart-emacs
                          docker-tramp
                          auctex
                          ef-themes
