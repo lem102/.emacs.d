@@ -781,6 +781,13 @@ in that list."
 ;; package configuration
 
 
+;; switch-window configuration
+
+;; JACOBTODO: investigate switch window finish hook to solve compilation scroll issue
+(jacob-try-require 'switch-window
+  (setq switch-window-shortcut-style 'qwerty))
+
+
 ;; racket-mode
 
 (jacob-is-installed 'racket-mode
