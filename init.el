@@ -554,6 +554,29 @@ Designed for use in on-save hook in certain programming languages modes."
 (winner-mode 1)
 
 
+;; sql config
+
+(defun jacob-sql-login-hook ()
+  "Custom SQL log-in behaviours.
+
+See `sql-login-hook'."
+  (when (eq sql-product 'postgres)
+    (let ((proc (get-buffer-process (current-buffer))))
+      (comint-send-string proc "\\set AUTOCOMMIT off\n"))))
+
+(add-hook 'sql-login-hook 'jacob-sql-login-hook)
+
+(defun jacob-sql-interactive-mode-hook ()
+  "Custom interactive SQL mode behaviours.
+
+See `sql-interactive-mode-hook' and `sql-product-alist'."
+  (when (eq sql-product 'postgres)
+    (setq sql-prompt-regexp "^[-[:alnum:]_]*[-=]\\*?[#>] ")
+    (setq sql-prompt-cont-regexp "^\\(?:\\sw\\|\\s_\\)*[-(]\\*?[#>] ")))
+
+(add-hook 'sql-interactive-mode-hook 'jacob-sql-interactive-mode-hook)
+
+
 ;; docview config
 
 (with-eval-after-load 'doc-view-mode
