@@ -1,3 +1,13 @@
+(defun jacob-config-visit ()
+  "Open the init file."
+  (interactive)
+  (find-file "~/.emacs.d/init.el"))
+
+(defun jacob-config-reload ()
+  "Evaluate the init file."
+  (interactive)
+  (load-file (expand-file-name "~/.emacs.d/init.el")))
+
 (defun jacob-start-timer ()
   "Run a 25 min timer."
   (interactive)
