@@ -17,6 +17,7 @@ FsAutoComplete
 /racket-mode/
 /transient/
 /eshell/lastdir
+eln-cache
 
 # Files in root directory
 projects
