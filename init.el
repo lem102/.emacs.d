@@ -1294,10 +1294,14 @@ Otherwise, display error message."
   (interactive)
   (shell-command "git push --set-upstream origin HEAD"))
 
+(defvar jacob-vc-main-branch nil
+  "default main branch")
+
 (defun jacob-git-pull-master-new-branch ()
-  "Push current git branch to new upstream branch."
+  "Update main branch defined in `jacob-vc-main-branch'.
+Prompt for branch name."
   (interactive)
-  (when (zerop (shell-command "git checkout master"))
+  (when (zerop (shell-command (format "git checkout %s" jacob-vc-main-branch)))
     (when (zerop (shell-command "git pull"))
       (shell-command (concat "git checkout -b " (read-from-minibuffer "branch name: "))))))
 
@@ -1615,7 +1619,8 @@ Calls INSERT."
     ("im" "I'm")
     ("id" "I'd")
     ("dont" "don't")
-    ("its" "it's")))
+    ("its" "it's")
+    ("havent" "haven't")))
 
 (define-abbrev-table 'common-operators-abbrev-table
   '(
@@ -1703,7 +1708,9 @@ Calls INSERT."
     ("as" "async")
     ("ns" "namespace")
     ("guid" "Guid")
-    ("prop" "" jacob-insert-csharp-property))
+    ("prop" "" jacob-insert-csharp-property)
+    ("xgon" "x => x" t)
+    ("ro" "readonly"))
   nil
   :parents (list common-java-csharp-abbrev-table))
 
@@ -1803,6 +1810,16 @@ Calls INSERT."
     ("c" "CASE")
     ("wt" "WHEN THEN")
     ("lim" "LIMIT")
+    ("j" "JOIN")
+    ("o" "ON")
+    ))
+
+(define-jacob-insert jacob-racket-define-function
+  (jacob-insert-helper "(define (■)\n●)"))
+
+(define-abbrev-table 'racket-mode-abbrev-table
+  '(
+    ("deff" "" jacob-racket-define-function)
     ))
 
 
