@@ -162,6 +162,13 @@
 
 ;; mode line config
 
+(setq display-time-day-and-date t)
+(setq display-time-24hr-format t)
+(display-time-mode 1)
+
+(setq tab-bar-format '(tab-bar-format-align-right tab-bar-format-global))
+(tab-bar-mode 1)
+
 (column-number-mode 1)
 (line-number-mode 1)
 
