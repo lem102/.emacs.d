@@ -195,9 +195,7 @@
     (flymake-mode flymake-mode-line-format)
     " "
     (eglot--managed-mode
-     (" " eglot--mode-line-format " "))
-    (global-mode-string
-     ("" global-mode-string)))
+     (" " eglot--mode-line-format " ")))
   "Custom mode line format.")
 
 (setq-default mode-line-format jacob-mode-line-format)
