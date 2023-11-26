@@ -107,17 +107,11 @@
 
 (defvar jacob-welcome-messages '("\"A journey of a thousand miles begins with a single step.\" - 老子"
                                  "\"apex predator of grug is complexity\" - some grug"
-                                 "\"An idiot admires complexity, a genius admires simplicity.\" - Terry A. Davis"
-                                 "\"Perfection is achieved, not when there is nothing more to add, but when there is nothing left to take away.\" - Antoine de Saint-Exupéry")
+                                 "\"Perfection is achieved, not when there is nothing more to add, but when there is nothing left to take away.\" - Antoine de Saint-Exupéry"
+                                 "\"Always listen to Jiaqi.\" - Jacob Leeming")
   "List of messages to display in scratch buffer.")
 
 (setq initial-scratch-message (concat ";; " (nth (random (length jacob-welcome-messages)) jacob-welcome-messages) "\n\n"))
-
-(setq display-time-default-load-average nil)
-(setq display-time-day-and-date t)
-
-(setq display-time-format "%R %d/%m/%Y")
-(display-time-mode 1)
 
 
 ;; bookmark config
