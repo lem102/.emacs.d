@@ -140,14 +140,9 @@
 
 (global-subword-mode 1)
 
-(setq show-paren-style 'parenthesis)
 (setq show-paren-when-point-inside-paren t)
-(setq show-paren-when-point-in-periphery nil)
 (show-paren-mode 1)
 
-(setq electric-pair-preserve-balance t)
-(setq electric-pair-delete-adjacent-pairs t)
-(setq electric-pair-open-newline-between-pairs t)
 (electric-pair-mode 1)
 
 (delete-selection-mode 1)
@@ -156,8 +151,6 @@
 
 (setq dabbrev-case-fold-search nil)
 (setq dabbrev-case-replace nil)
-
-(setq line-move-visual t)
 
 
 ;; mode line config
