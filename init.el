@@ -220,20 +220,19 @@
 
 ;; theme config
 
-(load-theme 'ef-deuteranopia-dark "NO-CONFIRM")
-(setq ef-themes-to-toggle '(ef-deuteranopia-light ef-deuteranopia-dark))
+(setq ef-themes-to-toggle '(ef-autumn ef-cyprus))
 
 (defun jacob-ef-theme ()
   "For use in `ef-themes-post-load-hook'."
   (with-eval-after-load 'pulse
-    (modify-face 'pulse-highlight-start-face nil "yellow"))
+    (modify-face 'pulse-highlight-start-face nil "magenta"))
   (with-eval-after-load 'org
     (set-face-attribute 'org-headline-done
                         nil
                         :strike-through t)))
 
 (add-hook 'ef-themes-post-load-hook 'jacob-ef-theme)
-(jacob-ef-theme)
+(load-theme 'ef-autumn "NO-CONFIRM")
 
 
 ;; js-mode config
