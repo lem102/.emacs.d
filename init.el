@@ -159,6 +159,10 @@
 (setq display-time-24hr-format t)
 (display-time-mode 1)
 
+(setq display-time-load-average-threshold 0)
+
+(display-battery-mode 1)
+
 (setq tab-bar-format '(tab-bar-format-align-right tab-bar-format-global))
 (tab-bar-mode 1)
 
