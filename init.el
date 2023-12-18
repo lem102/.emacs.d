@@ -1591,8 +1591,7 @@ Calls INSERT."
     ("havent" "haven't")))
 
 (define-abbrev-table 'common-operators-abbrev-table
-  '(
-    ("lt" "<")
+  '(("lt" "<")
     ("gt" ">")
     ("lte" "<=")
     ("gte" ">=")
@@ -1600,7 +1599,8 @@ Calls INSERT."
     ("neq" "!=")
     ("or" "||")
     ("and" "&&")
-    ("ret" "return")))
+    ("ret" "return"))
+  :enable-function 'jacob-abbrev-expand-function)
 
 (define-abbrev-table 'c-mode-abbrev-table
   '(
@@ -1655,7 +1655,8 @@ Calls INSERT."
     ("var" "" jacob-insert-java-var)
     ("meth" "" jacob-insert-java-method))
   nil
-  :parents (list c-mode-abbrev-table))
+  :parents (list c-mode-abbrev-table)
+  :enable-function 'jacob-abbrev-expand-function)
 
 (define-abbrev-table 'java-mode-abbrev-table
   '(("sout" "" jacob-insert-java-print)
