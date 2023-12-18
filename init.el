@@ -790,7 +790,8 @@ in that list."
 
 ;; JACOBTODO: investigate switch window finish hook to solve compilation scroll issue
 (jacob-try-require 'switch-window
-  (setq switch-window-shortcut-style 'qwerty))
+  (setq switch-window-shortcut-style 'qwerty)
+  (setq switch-window-threshold 3))
 
 
 ;; racket-mode
