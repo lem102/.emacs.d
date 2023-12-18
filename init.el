@@ -235,6 +235,18 @@
 (setq-default c-basic-offset 4)
 
 
+;; csharp-mode config
+
+
+(with-eval-after-load 'csharp-mode
+  ;; mutate `csharp-ts-mode--indent-rules'
+  (nconc (assoc 'c-sharp csharp-ts-mode--indent-rules)
+         '(((parent-is "parameter_list") parent-bol csharp-ts-mode-indent-offset)
+           ((parent-is "implicit_parameter_list") parent-bol csharp-ts-mode-indent-offset)
+           ((parent-is "member_access_expression") parent-bol csharp-ts-mode-indent-offset)
+           ((parent-is "lambda_expression") parent-bol csharp-ts-mode-indent-offset))))
+
+
 ;; dired-mode config
 
 (with-eval-after-load 'dired
