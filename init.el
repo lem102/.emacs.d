@@ -251,19 +251,17 @@
 
 (with-eval-after-load 'dired
   (setq dired-recursive-copies 'always)
-  (setq dired-recursive-deletes 'top)
   (setq dired-dwim-target t)
   (setq delete-by-moving-to-trash t)
-  (setq dired-kill-when-opening-new-dired-buffer t)
 
   (require 'ls-lisp)
   (setq ls-lisp-use-insert-directory-program nil)
   (setq ls-lisp-dirs-first t)
+  (setq dired-listing-switches "-hal") ;; the h option needs to come first 🙃
+  (setq dired-guess-shell-alist-user '(("\\.mkv\\'" "mpv")))
 
   (defun jacob-dired-mode-setup ()
     "Hook function for dired."
-    (require 'dired-x)
-    (setq dired-guess-shell-alist-user '(("\\.mkv\\'" "mpv")))
     (dired-hide-details-mode 1))
 
   (add-hook 'dired-mode-hook 'jacob-dired-mode-setup))
