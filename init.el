@@ -656,7 +656,8 @@ Useful for deleting ^M after `eglot-code-actions'."
 (add-to-list 'auto-mode-alist '("\\.tsx\\'" . tsx-ts-mode))
 
 
-;; package installation
+
+;; package configuration
 
 (require 'package)
 
@@ -680,82 +681,6 @@ If successful, evaluate BODY.  Used to eagerly load feature."
                          ("non-GNU" . "https://elpa.nongnu.org/nongnu/")
                          ("melpa" . "https://melpa.org/packages/")
                          ))
-
-(defvar jacob-packages '(
-                         ;; essential
-                         xah-fly-keys
-                         expand-region
-                         ;; major modes
-                         ahk-mode
-                         csharp-mode
-                         go-mode
-                         sml-mode
-                         json-mode
-                         csv-mode
-                         powershell
-                         yaml-mode
-                         markdown-mode
-                         typescript-mode
-                         racket-mode
-                         feature-mode
-                         fsharp-mode
-                         purescript-mode
-                         dotenv-mode
-                         restclient
-                         dockerfile-mode
-                         kotlin-mode
-                         gdscript-mode
-                         clojure-mode
-                         dart-mode
-                         ;; completion enhancements
-                         vertico
-                         consult
-                         orderless
-                         marginalia
-                         ;; tree sitter
-                         tree-sitter-langs
-                         tree-sitter-indent
-                         ;; programming
-                         eglot
-                         eglot-fsharp
-                         inf-ruby
-                         cider
-                         ;; misc
-                         docker-tramp
-                         auctex
-                         ef-themes
-                         exec-path-from-shell
-                         uuid
-                         plz
-                         )
-  "List of packages to install.")
-
-(defun jacob-wrangle-packages ()
-  "Look at `jacob-packages'.
-
-Install packages missing from that list.  Delete packages that aren't
-in that list."
-  (interactive)
-  (let* ((desired jacob-packages)
-         (installed (mapcar #'car (package--alist)))
-         (missing-packages (cl-set-difference desired installed))
-         (unwanted-packages (cl-set-difference installed desired)))
-
-    (when (and (null missing-packages)
-               (null unwanted-packages))
-      (package-refresh-contents))
-
-    (mapc #'package-install
-          missing-packages)
-
-    (mapc (lambda (package-name)
-            (ignore-errors
-              (package-delete (package-get-descriptor package-name))))
-          unwanted-packages)))
-
-
-
-;; package configuration
 
 
 ;; dape config
