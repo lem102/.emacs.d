@@ -22,9 +22,6 @@
 
 ;; read environment file
 
-(defvar jacob-raspberry-pi-ip-address
-  nil "IP address of rasperry pi.")
-
 (defvar jacob-font-size
   12 "Font size to use.")
 
@@ -199,11 +196,6 @@
 
 
 ;; tramp
-
-(with-eval-after-load 'tramp
-  (defvar jacob-raspberry-pi-connection-string
-    (concat "/" tramp-default-method ":pi@" jacob-raspberry-pi-ip-address ":")
-    "Raspberry Pi connection string for tramp."))
 
 ;; tell vc to ignore tramp files
 (setq vc-ignore-dir-regexp
@@ -472,12 +464,6 @@ hides this information."
 ;; TODO: consider removing
 ;; calendar + diary config
 
-(when (and (boundp 'jacob-raspberry-pi-ip-address)
-           (boundp 'jacob-raspberry-pi-connection-string))
-  ;; (setq diary-file (concat jacob-raspberry-pi-connection-string
-  ;;                          "/home/pi/org/jacobsDiary.diary"))
-  )
-
 (with-eval-after-load 'calendar
   (setq diary-date-forms diary-european-date-forms)
   (setq calendar-date-style 'european)
@@ -486,12 +472,6 @@ hides this information."
   (setq calendar-mark-diary-entries-flag t)
   (setq calendar-mark-holidays-flag t)
   (add-hook 'calendar-today-visible-hook 'calendar-mark-today))
-
-
-;; remember config
-
-(with-eval-after-load 'remember
-  (setq remember-data-file (concat jacob-raspberry-pi-connection-string "/home/pi/org/remember")))
 
 
 ;; indentation config
