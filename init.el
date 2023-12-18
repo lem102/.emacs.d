@@ -758,6 +758,34 @@ in that list."
 ;; package configuration
 
 
+;; dape config
+
+(with-eval-after-load 'dape
+  (setq dape-info-hide-mode-line nil)
+  (setq dape-buffer-window-arrangment 'right)
+
+  (pop dape-configs)
+
+  ;; (netcoredbg modes
+  ;;            (csharp-mode csharp-ts-mode)
+  ;;            ensure dape-ensure-command command "netcoredbg" command-args
+  ;;            ["--interpreter=vscode"]
+  ;;            :request "launch" :cwd dape-cwd-fn :program dape-find-file :stopAtEntry t)
+
+  (push '(netcoredbg-attach-port modes (csharp-mode csharp-ts-mode)
+                                 ensure dape-ensure-command
+                                 command "netcoredbg"
+                                 command-args ["--interpreter=vscode"]
+                                 :request "attach"
+                                 :cwd dape-cwd-fn
+                                 :program dape-find-file
+                                 :stopAtEntry t
+                                 :processId dape-read-pid)
+        dape-configs
+        ))
+
+
+
 ;; switch-window configuration
 
 ;; JACOBTODO: investigate switch window finish hook to solve compilation scroll issue
