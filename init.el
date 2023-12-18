@@ -34,7 +34,7 @@
 
 ;; mouse config
 
-(setq scroll-conservatively 100)
+(setq scroll-conservatively 101)
 (setq mouse-wheel-progressive-speed nil)
 (setq mouse-wheel-scroll-amount '(10 ((shift) . hscroll)
                                      ((meta))
