@@ -412,6 +412,7 @@ hides this information."
                    other-window
                    xref-find-definitions
                    xref-pop-marker-stack
+                   isearch-done
                    ))
   (advice-add command :after #'jacob-pulse-line))
 
