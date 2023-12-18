@@ -333,45 +333,14 @@ hides this information."
 
 ;; font config
 
-(defvar jacob-font-name
-  (cdr (assoc-string system-type '(("windows-nt" . "Consolas")
-                                   ("darwin" . "Menlo")
-                                   ("gnu/linux" . "DejaVu Sans Mono")))))
-
-(defconst jacob-default-font-size jacob-font-size)
-
-(defun jacob-set-font-size (size)
-  "Set font to SIZE."
-  (set-frame-font (concat jacob-font-name "-" (number-to-string size)) nil t)
-  (setq jacob-font-size size))
-
-(defun jacob-font-size-increase ()
-  "Increase font size by two."
-  (interactive)
-  (jacob-set-font-size (+ jacob-font-size 2)))
-
-(defun jacob-font-size-decrease ()
-  "Decrease font size by two."
-  (interactive)
-  (jacob-set-font-size (- jacob-font-size 2)))
-
-(defun jacob-font-size-reset ()
-  "Reset font size to default."
-  (interactive)
-  (jacob-set-font-size jacob-default-font-size))
-
-(jacob-set-font-size jacob-font-size)
-
-(defvar jacob-font-size-repeat-map
-  (let ((map (make-sparse-keymap)))
-    (define-key map "a" 'jacob-font-size-increase)
-    (define-key map "s" 'jacob-font-size-decrease)
-    (define-key map "d" 'jacob-font-size-reset)
-    map))
-
-(put 'jacob-font-size-increase 'repeat-map 'jacob-font-size-repeat-map)
-(put 'jacob-font-size-decrease 'repeat-map 'jacob-font-size-repeat-map)
-(put 'jacob-font-size-reset 'repeat-map 'jacob-font-size-repeat-map)
+(set-frame-font (format "%s-%s"
+                        (cdr (assoc-string system-type
+                                           '(("windows-nt" . "Consolas")
+                                             ("darwin" . "Menlo")
+                                             ("gnu/linux" . "DejaVu Sans Mono"))))
+                        jacob-font-size)
+                t
+                t)
 
 ;; enable emoji fonts
 (set-fontset-font t
@@ -1890,7 +1859,7 @@ Calls INSERT."
   (define-key xah-fly-leader-key-map "ep" project-prefix-map)
 
   (define-key xah-fly-leader-key-map "l3" 'jacob-async-shell-command)
-  (define-key xah-fly-leader-key-map "la" 'jacob-font-size-increase)
+  (define-key xah-fly-leader-key-map "la" 'global-text-scale-adjust)
 
   (define-key xah-fly-leader-key-map "/c" 'vc-create-branch)
   (define-key xah-fly-leader-key-map "/b" 'vc-switch-branch)
