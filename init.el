@@ -221,7 +221,7 @@
                         :strike-through t)))
 
 (add-hook 'ef-themes-post-load-hook 'jacob-ef-theme)
-(load-theme 'ef-autumn "NO-CONFIRM")
+(ef-themes-toggle)
 
 
 ;; js-mode config
