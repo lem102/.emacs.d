@@ -108,7 +108,8 @@
                                  "\"Always listen to Jiaqi.\" - Jacob Leeming")
   "List of messages to display in scratch buffer.")
 
-(setq initial-scratch-message (format ";; %s\n\n" (nth (random (length jacob-welcome-messages)) jacob-welcome-messages)))
+(setq initial-scratch-message (format ";; %s\n\n"
+                                      (seq-random-elt jacob-welcome-messages)))
 
 
 ;; bookmark config
