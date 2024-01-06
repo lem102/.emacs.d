@@ -1454,6 +1454,9 @@ Calls INSERT."
 (define-jacob-insert jacob-insert-elisp-defun
   (jacob-insert-helper "(defun ■ (●)\n●)"))
 
+(define-jacob-insert jacob-insert-elisp-message
+  (jacob-insert-helper "(message \"%s\" ■)"))
+
 (define-jacob-insert jacob-insert-lisp-cond
   (jacob-insert-helper "(cond ((■))\n●)"))
 
@@ -1662,7 +1665,8 @@ Calls INSERT."
     ("gc" "" jacob-insert-elisp-goto-char)
     ("pmi" "(point-min)" t)
     ("pma" "(point-max)" t)
-    ("weal" "" jacob-insert-elisp-with-eval-after-load)))
+    ("weal" "" jacob-insert-elisp-with-eval-after-load)
+    ("mes" "" jacob-insert-elisp-message)))
 
 (define-abbrev-table 'clojure-mode-abbrev-table
   '(("defn" "" jacob-insert-clojure-defn)
