@@ -123,9 +123,6 @@
 ;; unicode
 
 (prefer-coding-system 'utf-8)
-(set-default-coding-systems 'utf-8)
-(set-terminal-coding-system 'utf-8)
-(set-keyboard-coding-system 'utf-8)
 
 
 ;; help at point
@@ -237,7 +234,6 @@
 
 
 ;; csharp-mode config
-
 
 (with-eval-after-load 'csharp-mode
   ;; mutate `csharp-ts-mode--indent-rules'
