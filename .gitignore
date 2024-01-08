@@ -39,12 +39,13 @@ amx-items
 custom.el
 eww-bookmarks
 srecode-map.el
+diary
+network-security.data
+environment.el
 
 # Ignore all .elc (byte-compiled emacs lisp) files
 *.elc
 
-
-
-environment.el
 tramp
 eaf/
+emojis/
