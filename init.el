@@ -653,6 +653,20 @@ Useful for deleting ^M after `eglot-code-actions'."
 (add-to-list 'auto-mode-alist '("\\.tsx\\'" . tsx-ts-mode))
 
 
+;; message config
+
+(with-eval-after-load 'message
+  (setq message-send-mail-function 'smtpmail-send-it))
+
+
+;; gnus config
+
+(with-eval-after-load 'gnus
+  (setq gnus-always-read-dribble-file t)
+  (gnus-demon-add-handler 'gnus-demon-scan-news 5 30)
+  (add-hook 'gnus-after-getting-new-news-hook 'gnus-notifications))
+
+
 
 ;; package configuration
 
