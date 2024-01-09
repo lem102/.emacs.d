@@ -694,6 +694,17 @@ If successful, evaluate BODY.  Used to eagerly load feature."
                          ))
 
 
+;; slack config
+
+(unless (package-installed-p 'slack)
+  (package-vc-install '(slack . (:url "https://github.com/lem102/emacs-slack.git"))))
+
+(with-eval-after-load 'slack
+  (setq slack-enable-global-mode-string t)
+  (setq slack-buffer-emojify t)
+  (setq slack-prefer-current-team t))
+
+
 ;; dape config
 
 (with-eval-after-load 'dape
