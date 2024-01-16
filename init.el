@@ -1668,7 +1668,9 @@ Calls INSERT."
     ("guid" "Guid")
     ("prop" "" jacob-insert-csharp-property)
     ("xgon" "x => x" t)
-    ("ro" "readonly"))
+    ("ro" "readonly")
+    ("guid" "Guid.NewGuid()" t)
+    ("tostr" "ToString()" t))
   nil
   :parents (list common-java-csharp-abbrev-table))
 
