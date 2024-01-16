@@ -187,10 +187,7 @@
     (vc-mode vc-mode)
     " "
     mode-line-position
-    (flymake-mode flymake-mode-line-format)
-    " "
-    (eglot--managed-mode
-     (" " eglot--mode-line-format " ")))
+    (flymake-mode flymake-mode-line-format))
   "Custom mode line format.")
 
 (setq-default mode-line-format jacob-mode-line-format)
