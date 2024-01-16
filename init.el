@@ -43,6 +43,7 @@
 (setq-default use-dialog-box nil)
 (setq use-short-answers t)
 (setq ring-bell-function 'ignore)
+(setq truncate-partial-width-windows nil)
 (setq-default truncate-lines nil)
 (setq confirm-kill-processes nil)
 (setq switch-to-buffer-obey-display-actions t)
