@@ -85,6 +85,8 @@
 (save-place-mode 1)
 
 (setq auto-save-visited-interval 2)
+(setq auto-save-visited-predicate (lambda ()
+                                    (not (equal major-mode 'message-mode))))
 (auto-save-visited-mode 1)
 
 
