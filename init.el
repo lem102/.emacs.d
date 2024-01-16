@@ -663,7 +663,7 @@ Useful for deleting ^M after `eglot-code-actions'."
 
 (with-eval-after-load 'gnus
   (setq gnus-always-read-dribble-file t)
-  (gnus-demon-add-handler 'gnus-demon-scan-news 5 30)
+  (gnus-demon-add-handler 'gnus-demon-scan-news 5 1)
   (add-hook 'gnus-after-getting-new-news-hook 'gnus-notifications))
 
 
