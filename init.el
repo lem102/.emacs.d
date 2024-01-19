@@ -703,7 +703,14 @@ If successful, evaluate BODY.  Used to eagerly load feature."
 (with-eval-after-load 'slack
   (setq slack-enable-global-mode-string t)
   (setq slack-buffer-emojify t)
-  (setq slack-prefer-current-team t))
+  (setq slack-prefer-current-team t)
+  (setq slack-thread-also-send-to-room nil)
+
+  (defun jacob-slack-hook-function ()
+    "Function to be run in slack mode hooks."
+    (toggle-word-wrap 1))
+
+  (add-hook 'slack-message-buffer-mode-hook 'jacob-slack-hook-function))
 
 
 ;; dape config
