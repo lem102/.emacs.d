@@ -1828,6 +1828,8 @@ Calls INSERT."
 
   (define-prefix-command 'jacob-config-keymap)
 
+  (define-key xah-fly-leader-key-map "u" 'kill-current-buffer)
+
   (define-prefix-command 'jacob-eglot-keymap)
   (define-key xah-fly-leader-key-map "we" jacob-eglot-keymap)
   (define-key xah-fly-leader-key-map "wea" 'eglot-code-actions)
