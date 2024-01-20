@@ -54,6 +54,22 @@
 (setq kill-buffer-query-functions (delq 'process-kill-buffer-query-function
                                         kill-buffer-query-functions))
 
+(setq display-buffer-alist '(
+                             ;; slack
+                             ((or (derived-mode . slack-mode)
+                                  (derived-mode . lui-mode))
+                              (display-buffer-in-side-window display-buffer-reuse-mode-window)
+                              (side . right)
+                              (slot . 0))
+                             ;; sql
+                             ((major-mode . sql-interactive-mode)
+                              (display-buffer-same-window))
+                             ;; shell
+                             ("eshell\\*"
+                              (display-buffer-in-side-window)
+                              (side . bottom)
+                              (slot . -1))))
+
 
 ;; screen sharing config
 
