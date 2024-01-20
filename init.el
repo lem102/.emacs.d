@@ -722,11 +722,27 @@ If successful, evaluate BODY.  Used to eagerly load feature."
   (setq slack-prefer-current-team t)
   (setq slack-thread-also-send-to-room nil)
 
+  (setq lui-fill-type nil)
+  (setq lui-time-stamp-position 0)
+
   (defun jacob-slack-hook-function ()
     "Function to be run in slack mode hooks."
     (toggle-word-wrap 1))
 
-  (add-hook 'slack-message-buffer-mode-hook 'jacob-slack-hook-function))
+  (add-hook 'slack-message-buffer-mode-hook 'jacob-slack-hook-function)
+
+  (defun jacob-slack-display-unread ()
+    "Open an unread slack message."
+    (interactive)
+    (let* ((team (slack-team-select))
+           (rooms (seq-filter #'(lambda (room)
+                                  (slack-room-has-unread-p room team))
+                              (append (slack-team-ims team)
+                                      (slack-team-groups team)
+                                      (slack-team-channels team)))))
+      (if (null rooms)
+          (message "no unread slack messages")
+        (slack-room-display (seq-first rooms) team)))))
 
 
 ;; dape config
