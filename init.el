@@ -782,6 +782,7 @@ If successful, evaluate BODY.  Used to eagerly load feature."
 
   (setq lui-fill-type nil)
   (setq lui-time-stamp-position 0)
+  (setq lui-time-stamp-format "%a %b %e %H:%M")
 
   (defun jacob-slack-hook-function ()
     "Function to be run in slack mode hooks."
