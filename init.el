@@ -1956,6 +1956,7 @@ Calls INSERT."
 
   (define-key xah-fly-leader-key-map "l3" 'jacob-async-shell-command)
   (define-key xah-fly-leader-key-map "la" 'global-text-scale-adjust)
+  (define-key xah-fly-leader-key-map "le" 'toggle-frame-fullscreen)
 
   (define-key xah-fly-leader-key-map "/c" 'vc-create-branch)
   (define-key xah-fly-leader-key-map "/b" 'vc-switch-branch)
