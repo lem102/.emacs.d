@@ -257,7 +257,43 @@
          '(((parent-is "parameter_list") parent-bol csharp-ts-mode-indent-offset)
            ((parent-is "implicit_parameter_list") parent-bol csharp-ts-mode-indent-offset)
            ((parent-is "member_access_expression") parent-bol csharp-ts-mode-indent-offset)
-           ((parent-is "lambda_expression") parent-bol csharp-ts-mode-indent-offset))))
+           ((parent-is "lambda_expression") parent-bol csharp-ts-mode-indent-offset)))
+
+  (defun jacob-csharp-ts-hook-function ()
+    "Set vars in csharp-ts-mode buffer."
+    (setq treesit-defun-type-regexp "\\(method\\|constructor\\|field\\)_declaration"))
+
+  (add-hook 'csharp-ts-mode-hook 'jacob-csharp-ts-hook-function))
+
+(defun jacob-csharp-forward-statement ()
+  "Move forward over a csharp statement."
+  (interactive)
+  (treesit-end-of-thing "statement"))
+
+(defun jacob-csharp-backward-statement ()
+  "Move backward over a csharp statement."
+  (interactive)
+  (treesit-beginning-of-thing "statement"))
+
+(defun jacob-csharp-beginning-of-line-or-statement ()
+  "Move cursor to the beginning of line or previous csharp statement."
+  (interactive)
+  (let ((p (point)))
+    (if (or (equal (point) (line-beginning-position))
+            (eq last-command this-command))
+        (call-interactively 'jacob-csharp-backward-statement)
+      (back-to-indentation)
+      (when (eq p (point))
+        (beginning-of-line)))))
+
+(defun jacob-csharp-end-of-line-or-statement ()
+  "Move cursor to the end of line or next csharp statement."
+  (interactive)
+  (let ((p (point)))
+    (if (or (equal (point) (line-beginning-position))
+            (eq last-command this-command))
+        (call-interactively 'jacob-csharp-forward-statement)
+      (end-of-line))))
 
 
 ;; dired-mode config
