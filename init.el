@@ -733,8 +733,13 @@ Useful for deleting ^M after `eglot-code-actions'."
 (with-eval-after-load 'gnus
   (setq gnus-use-full-window nil)
   (setq gnus-always-read-dribble-file t)
-  (gnus-demon-add-handler 'gnus-demon-scan-news 2 t)
-  (add-hook 'gnus-after-getting-new-news-hook 'gnus-notifications))
+  (add-hook 'gnus-after-getting-new-news-hook 'gnus-notifications)
+
+  (defun jacob-gnus-hook-function ()
+    "Hook function to be used with a gnus hook."
+    (gnus-demon-add-handler 'gnus-demon-scan-news 2 t))
+
+  (add-hook 'gnus-started-hook 'jacob-gnus-hook-function))
 
 
 
