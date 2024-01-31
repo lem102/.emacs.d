@@ -58,7 +58,7 @@
                              ;; slack
                              ((or (derived-mode . slack-mode)
                                   (derived-mode . lui-mode))
-                              (display-buffer-in-side-window display-buffer-reuse-mode-window)
+                              (display-buffer-in-side-window)
                               (side . right)
                               (slot . 0))
                              ;; sql
