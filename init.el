@@ -1741,7 +1741,8 @@ Calls INSERT."
     ("class" "" jacob-insert-java-class)
     ("cons" "" jacob-insert-java-constructor)
     ("var" "" jacob-insert-java-var)
-    ("meth" "" jacob-insert-java-method))
+    ("meth" "" jacob-insert-java-method)
+    ("jt" "// JACOBTODO:"))
   nil
   :parents (list c-mode-abbrev-table)
   :enable-function 'jacob-abbrev-expand-function)
@@ -1764,12 +1765,12 @@ Calls INSERT."
     ("jwe" "Console.WriteLine(\"jacobwozere\");" t)
     ("as" "async")
     ("ns" "namespace")
-    ("guid" "Guid")
     ("prop" "" jacob-insert-csharp-property)
     ("xgon" "x => x" t)
     ("ro" "readonly")
-    ("guid" "Guid.NewGuid()" t)
-    ("tostr" "ToString()" t))
+    ("nuguid" "Guid.NewGuid()")
+    ("tostr" "ToString()" t)
+    ("iia" "It.IsAny<>()" t))
   nil
   :parents (list common-java-csharp-abbrev-table))
 
