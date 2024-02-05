@@ -1963,6 +1963,8 @@ Calls INSERT."
   (define-key xah-fly-leader-key-map "/b" 'vc-switch-branch)
   (define-key xah-fly-leader-key-map "/x" 'jacob-git-pull-master-new-branch)
 
+  (define-key xah-fly-leader-key-map "wj" 'xref-find-references)
+
   (jacob-is-installed 'consult
     (define-key xah-fly-leader-key-map "v" 'consult-yank-from-kill-ring)
     (define-key xah-fly-leader-key-map "f" 'consult-buffer)
