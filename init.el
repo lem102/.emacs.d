@@ -63,7 +63,7 @@
                               (slot . 0))
                              ;; sql
                              ((major-mode . sql-interactive-mode)
-                              (display-buffer-same-window))
+                              (display-buffer-reuse-mode-window display-buffer-same-window))
                              ;; shell
                              ("eshell\\*"
                               (display-buffer-in-side-window)
