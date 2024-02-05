@@ -789,6 +789,7 @@ If successful, evaluate BODY.  Used to eagerly load feature."
     (toggle-word-wrap 1))
 
   (add-hook 'slack-message-buffer-mode-hook 'jacob-slack-hook-function)
+  (add-hook 'slack-thread-message-buffer-mode-hook 'jacob-slack-hook-function)
 
   (defun jacob-slack-display-unread ()
     "Open an unread slack message."
