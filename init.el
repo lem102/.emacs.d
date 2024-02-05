@@ -2066,7 +2066,7 @@ Calls INSERT."
     (let ((map diff-mode-map))
       (jacob-xfk-define-key-in-major-mode map "q" 'quit-window)))
 
-  (with-eval-after-load 'csharp-ts-mode
+  (with-eval-after-load 'csharp-mode
     (let ((map csharp-ts-mode-map))
       (jacob-xfk-define-key-in-major-mode map "h" 'jacob-csharp-beginning-of-line-or-statement)
       (jacob-xfk-define-key-in-major-mode map ";" 'jacob-csharp-end-of-line-or-statement))))
