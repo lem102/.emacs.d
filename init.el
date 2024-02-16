@@ -584,7 +584,9 @@ See `sql-interactive-mode-hook' and `sql-product-alist'."
   "Wrapper for sql connect to set postgres password."
   (interactive
    (if sql-connection-alist
-       (list (sql-read-connection "Connection: ")
+       (list (progn
+               (require 'sql)
+               (sql-read-connection "Connection: "))
              current-prefix-arg)
      (user-error "No SQL Connections defined")))
   (if (not (null (getenv "PGPASSWORD")))
