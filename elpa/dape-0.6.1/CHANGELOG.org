@@ -1,0 +1,54 @@
+#+title: dape.el - Changelog
+#+author: Daniel Pettersson
+#+language: en
+
+* Version 0.6
+- Harden breakpoints functions against dead breakpoint overlays
+- Small improvements in the batteries included configurations
+- Nicer variable print in repl
+- Improve current connection guesses (improves =debugpy= multi process support)
+- Bump required jsonrpc version to 1.0.24
+- Fix broken external terminal with correct =runInTerminal= response in =js-debug=
+- Normalize naming and usage of dape faces
+- Add typescript as part of js-debug modes
+- Focus emacs on stopped, controllable with =dape-on-stopped-hooks=
+
+* Version 0.5
+- Use setBreakpoints response and event =breakpoint= to validate and move breakpoints
+- Add =dape-debug= custom to disable debug printouts in =*dape-repl*=
+- Fix =startDebugging= request removing stack pointer
+
+* Version 0.4
+- Switched to jsonrpc.el for parsing DAP messages
+- Add support for modules and loaded sources
+- Added jdtls (java-debug) as a supported adapter
+- Handle subprocess creation for =debugpy= processes (fix =startDebugging= handling)
+- Add option to align variables buffer =dape-info-variable-table-aligned= (unaligned per default)
+- Add overlay for inline exception stoppage description
+- Rework dape debugging printouts (removed =*dape-debug*= buffer) in =*dape-repl*=
+- =dape-info= now toggles buffers on interactive calls
+- Add file name completion for interactive calls of =dape=
+- New global non interactive mode for =dape-active-mode= for adding bindings
+- Added hints in minibuffer controlled by =dape-minibuffer-hint=, =dape-minibuffer-hint-ignore-properties=
+- Rework of =dape-configs=; remove usage of =read-*= functions and guess default values instead.
+- Add =dape-command= as an analog to =compile-command=
+- Rework in buffer stack pointers to be able to display breakpoints and arrow at same line
+- Change defaults of =dape-display-source-buffer-action=
+- Add commands for moving up and down the stack =C-o=, =C-i=
+- Add mouse bindings for adding, changing and removing =dape-breakpoints-*=
+- Add generic =dape-config= entries for exploring adapters =launch=, =attach=
+- Improve usability of =dape-evaluate-expression=, if sends region if active
+- Rework =dape-breakpoints=*= =dape= incorrectly allowed for multiple breakpoints on same line
+- Minor bugfixes and improvements
+
+* Version 0.3
+- Add support for source by sourceReference by =dape-mime-mode-alist=
+- Support stepping granularity with =dape-stepping-granularity=
+- Improve repl completions with completionTriggerCharacters
+- Add =rdbg= as a batteries included adapter
+- Extend =fn= config keyword to take a list of functions as well
+- Cleanup breakpoints on buffer kill
+- Add basic support for debugging with tramp
+- Add new configuration keys prefix-local and prefix-remote for source mapping
+- Minor bugfixes and improvements
+
