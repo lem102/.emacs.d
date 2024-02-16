@@ -676,7 +676,7 @@ Useful for deleting ^M after `eglot-code-actions'."
 
   (add-to-list 'eglot-server-programs '((js-mode typescript-mode) . ("typescript-language-server" "--stdio")))
 
-  (add-to-list 'eglot-server-programs '(sql-mode . ("sql-language-server" "up" "--method" "stdio")))
+  (add-to-list 'eglot-server-programs '(sql-mode . ("sqls")))
 
   ;; (add-to-list 'eglot-server-programs '((js-mode typescript-mode) . (eglot-deno "deno" "lsp")))
 
