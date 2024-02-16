@@ -815,30 +815,41 @@ If successful, evaluate BODY.  Used to eagerly load feature."
 
 ;; dape config
 
+(defun jacob-select-dll ()
+  (completing-read "dll: "
+                   (seq-map (lambda (filename)
+                              (cons (file-name-nondirectory filename)
+                                    filename))
+                            (directory-files-recursively
+                             (project-root (project-current))
+                             "\\.dll"))))
+
 (with-eval-after-load 'dape
   (setq dape-info-hide-mode-line nil)
   (setq dape-buffer-window-arrangment 'right)
 
-  (pop dape-configs)
-
-  ;; (netcoredbg modes
-  ;;            (csharp-mode csharp-ts-mode)
-  ;;            ensure dape-ensure-command command "netcoredbg" command-args
-  ;;            ["--interpreter=vscode"]
-  ;;            :request "launch" :cwd dape-cwd-fn :program dape-find-file :stopAtEntry t)
-
-  (push '(netcoredbg-attach-port modes (csharp-mode csharp-ts-mode)
-                                 ensure dape-ensure-command
-                                 command "netcoredbg"
-                                 command-args ["--interpreter=vscode"]
-                                 :request "attach"
-                                 :cwd dape-cwd-fn
-                                 :program dape-find-file
-                                 :stopAtEntry t
-                                 :processId dape-read-pid)
-        dape-configs
-        ))
-
+  (push '(netcoredbg-attach-port
+          modes (csharp-mode csharp-ts-mode)
+          ensure dape-ensure-command
+          command "netcoredbg"
+          command-args ["--interpreter=vscode"]
+          :request "attach"
+          :cwd dape-cwd-fn
+          :program jacob-select-dll
+          :stopAtEntry t
+          :processId
+          (lambda ()
+            (let* ((collection
+                    (seq-map
+                     (lambda (pid)
+                       (cons (cdr (assoc 'args
+                                         (process-attributes pid)))
+                             pid))
+                     (list-system-processes)))
+                   (selection (completing-read "process: "
+                                               collection)))
+              (cdr (assoc selection collection)))))
+        dape-configs))
 
 
 ;; switch-window configuration
