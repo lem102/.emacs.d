@@ -769,6 +769,14 @@ If successful, evaluate BODY.  Used to eagerly load feature."
                          ))
 
 
+;; eglot-booster
+(unless (package-installed-p 'eglot-booster)
+  (package-vc-install "https://github.com/jdtsmith/eglot-booster"))
+
+(with-eval-after-load 'eglot
+  (eglot-booster-mode))
+
+
 ;; slack config
 
 (unless (package-installed-p 'slack)
