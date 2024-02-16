@@ -419,8 +419,6 @@ hides this information."
 (setq org-calendar-to-agenda-key nil)
 (setq org-calendar-insert-diary-entry-key nil)
 
-(add-hook 'org-mode-hook 'org-indent-mode)
-
 (with-eval-after-load 'org
   (defun jacob-org-babel-tangle-delete-newline ()
     "Some code to get rid of the newline org babel likes to add
