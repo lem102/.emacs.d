@@ -1963,6 +1963,24 @@ Calls INSERT."
   (let ((map minibuffer-local-completion-map))
     (define-key map "SPC" 'self-insert-command))
 
+  (define-prefix-command 'jacob-map)
+  (define-key xah-fly-leader-key-map " " jacob-map)
+
+  (with-eval-after-load 'slack
+    (define-prefix-command 'jacob-slack-map)
+    (define-key jacob-map "s" jacob-slack-map)
+    (define-key jacob-slack-map "s" 'slack-start)    
+    (define-key jacob-slack-map "u" 'jacob-slack-display-unread)
+    (define-key jacob-slack-map "r" 'slack-select-rooms))
+
+  (define-prefix-command 'jacob-csharp-map)
+  (define-key jacob-map "c" jacob-csharp-map)
+  (define-key jacob-csharp-map "f" 'jacob-format-csharp-statement)
+  (define-key jacob-csharp-map "t" 'jacob-csharp-run-test)
+
+  (define-key jacob-map "d" 'jacob-sql-connect)
+  (define-key jacob-map "g" 'gnus)
+  
   (let ((map dired-mode-map))
     (jacob-xfk-define-key-in-major-mode map "q" 'quit-window)
     (jacob-xfk-define-key-in-major-mode map "i" 'dired-previous-line)
