@@ -1367,58 +1367,6 @@ Otherwise, display error message."
   (interactive)
   (shell-command "git push --set-upstream origin HEAD"))
 
-(defvar jacob-vc-main-branch nil
-  "default main branch")
-
-(defun jacob-git-pull-master-new-branch ()
-  "Update main branch defined in `jacob-vc-main-branch'.
-Prompt for branch name."
-  (interactive)
-  (when (zerop (shell-command (format "git checkout %s" jacob-vc-main-branch)))
-    (when (zerop (shell-command "git pull"))
-      (shell-command (concat "git checkout -b " (read-from-minibuffer "branch name: "))))))
-
-(defun jacob-npm-fix-linting ()
-  "Fix linting for npm then commit and push."
-  (interactive)
-  (when (zerop (shell-command "npm run lint:fix"))
-    (shell-command "git commit -m \"chore: fix linting\" -na")
-    (shell-command "git push")))
-
-;; TODO: current-line and current-column come from array.el, so this function will not work until after that lib is loaded
-(defun jacob-open-in-vscode ()
-  "Open current file in vscode."
-  (interactive)
-  (let ((default-directory (project-root (project-current)))
-        (file (buffer-file-name))
-        (line (number-to-string (+ (current-line) 1)))
-        (column (number-to-string (+ (current-column) 1))))
-    (shell-command (concat "code . --reuse-window --goto \"" file "\":" line ":" column))))
-
-(defun jacob-toggle-mocha-only ()
-  "Toggle the presence of .only after an it/describe mocha test."
-  (interactive)
-  (save-excursion
-    (backward-up-list)
-    (re-search-backward (rx (or (one-or-more blank)
-                                line-start)
-                            (or "it"
-                                "describe")))
-    (forward-word)
-    (if (string-match "\\.only" (thing-at-point 'line t))
-        (kill-word 1)
-      (insert ".only"))))
-
-(defun jacob-toggle-test-category ()
-  "Toggle the presence of a test category attribute after a mstest unit test."
-  (interactive)
-  (save-excursion
-    (search-backward "[TestMethod]")
-    (forward-to-indentation 1)
-    (if (string-match "\\[TestCategory(\"MyCategory\")\\]" (thing-at-point 'line t))
-        (kill-line 1)
-      (insert "[TestCategory(\"MyCategory\")]\n"))))
-
 (defvar jacob-git-lab-push-set-upstream-jira-url ""
   "URL for current employer's jira board.")
 
@@ -1938,8 +1886,6 @@ Calls INSERT."
   (define-key xah-fly-command-map (kbd "=") 'jacob-next-error-or-punct)
   (define-key xah-fly-command-map (kbd "-") 'jacob-previous-error-or-punct)
 
-  (define-prefix-command 'jacob-config-keymap)
-
   (define-key xah-fly-leader-key-map "u" 'kill-current-buffer)
 
   (define-prefix-command 'jacob-eglot-keymap)
@@ -1947,34 +1893,30 @@ Calls INSERT."
   (define-key xah-fly-leader-key-map "wea" 'eglot-code-actions)
   (define-key xah-fly-leader-key-map "wer" 'eglot-rename)
 
-  (let ((map vc-prefix-map))
-    (define-key map "p" 'vc-push)
-    (define-key map "P" 'jacob-git-push-set-upstream)
-    (define-key map "c" 'jacob-git-pull-master-new-branch))
+  ;; (define-key map "P" 'jacob-git-push-set-upstream)
 
   (let ((map project-prefix-map))
     (define-key map "g" 'jacob-project-search))
 
   (define-key xah-fly-leader-key-map ",n" 'jacob-eval-and-replace)
-  (define-key xah-fly-leader-key-map "d," 'xah-insert-low-line)
-  (define-key xah-fly-leader-key-map "d." 'jacob-insert-equals)
-  (define-key xah-fly-leader-key-map "d/" 'jacob-insert-plus)
-  (define-key xah-fly-leader-key-map "dc" 'jacob-insert-hash)
-  (define-key xah-fly-leader-key-map "dd" 'backward-delete-char)
-  (define-key xah-fly-leader-key-map "de" 'jacob-insert-dollar-sign)
-  (define-key xah-fly-leader-key-map "dm" 'xah-insert-hyphen)
-  (define-key xah-fly-leader-key-map "do" 'jacob-insert-ampersand)
-  (define-key xah-fly-leader-key-map "dr" 'jacob-insert-caret)
-  (define-key xah-fly-leader-key-map "dv" 'jacob-insert-tilde)
-  (define-key xah-fly-leader-key-map "dx" 'jacob-insert-at)
-  (define-key xah-fly-leader-key-map "dz" 'jacob-insert-apostrophe)
-  
-  (define-key xah-fly-leader-key-map "l8" 'ef-themes-toggle)
-  ;; (define-key xah-fly-leader-key-map "ect" 'jacob-display-time) ; silly
+  ;; TODO: do you miss these keybinds?
+  ;; (define-key xah-fly-leader-key-map "d," 'xah-insert-low-line)
+  ;; (define-key xah-fly-leader-key-map "d." 'jacob-insert-equals)
+  ;; (define-key xah-fly-leader-key-map "d/" 'jacob-insert-plus)
+  ;; (define-key xah-fly-leader-key-map "dc" 'jacob-insert-hash)
+  ;; (define-key xah-fly-leader-key-map "de" 'jacob-insert-dollar-sign)
+  ;; (define-key xah-fly-leader-key-map "dm" 'xah-insert-hyphen)
+  ;; (define-key xah-fly-leader-key-map "do" 'jacob-insert-ampersand)
+  ;; (define-key xah-fly-leader-key-map "dr" 'jacob-insert-caret)
+  ;; (define-key xah-fly-leader-key-map "dv" 'jacob-insert-tilde)
+  ;; (define-key xah-fly-leader-key-map "dx" 'jacob-insert-at)
+  ;; (define-key xah-fly-leader-key-map "dz" 'jacob-insert-apostrophe)
+
   ;; (define-key xah-fly-leader-key-map "ei" 'jacob-format-buffer) ; should improve
   (define-key xah-fly-leader-key-map "ep" project-prefix-map)
 
   (define-key xah-fly-leader-key-map "l3" 'jacob-async-shell-command)
+  (define-key xah-fly-leader-key-map "l8" 'ef-themes-toggle)
   (define-key xah-fly-leader-key-map "la" 'global-text-scale-adjust)
   (define-key xah-fly-leader-key-map "le" 'toggle-frame-fullscreen)
 
