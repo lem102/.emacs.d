@@ -274,7 +274,16 @@ ALIST is as described in `battery-update-functions'."
     "Set vars in csharp-ts-mode buffer."
     (setq treesit-defun-type-regexp "\\(method\\|constructor\\|field\\)_declaration"))
 
-  (add-hook 'csharp-ts-mode-hook 'jacob-csharp-ts-hook-function))
+  (add-hook 'csharp-ts-mode-hook 'jacob-csharp-ts-hook-function)
+
+  (add-to-list 'compilation-error-regexp-alist-alist
+               '(jacob-dotnet-stacktrace-re
+                 "   at [^
+]+ in \\(.+\\):line \\([[:digit:]]+\\)"
+                 1
+                 2))
+
+  (add-to-list 'compilation-error-regexp-alist 'jacob-dotnet-stacktrace-re))
 
 (defun jacob-csharp-forward-statement ()
   "Move forward over a csharp statement."
