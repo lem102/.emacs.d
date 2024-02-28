@@ -169,19 +169,29 @@
 
 ;; mode line config
 
-(setq display-time-day-and-date t)
-(setq display-time-24hr-format t)
+(setq display-time-format "%b %e %R")
+(setq display-time-load-average-threshold 1)
+;; needs to be evaluated after variables changed
 (display-time-mode 1)
 
-(setq display-time-load-average-threshold 0)
+(defun jacob-battery-maybe-show (alist)
+  "For use in `battery-update-functions'.
+ALIST is as described in `battery-update-functions'."
+  (let ((percentage (cdr (assoc ?p alist)))
+        (battery-status (cdr (assoc ?B alist))))
+    (cond ((equal battery-status "fully-charged")
+           (setq global-mode-string (remq 'battery-mode-line-string global-mode-string)))
+          (t
+           (add-to-list 'global-mode-string 'battery-mode-line-string "APPEND")))))
 
+(setq battery-mode-line-format " %b%p%% ")
 (display-battery-mode 1)
-
-(setq tab-bar-format '(tab-bar-format-align-right tab-bar-format-global))
-(tab-bar-mode 1)
+(add-to-list 'battery-update-functions 'jacob-battery-maybe-show)
 
 (column-number-mode 1)
 (line-number-mode 1)
+
+(setq mode-line-percent-position nil)
 
 (defun jacob-mode-line-saved-status ()
   "Display symbol to show saved status of buffer."
@@ -203,7 +213,8 @@
     (vc-mode vc-mode)
     " "
     mode-line-position
-    (flymake-mode flymake-mode-line-format))
+    (flymake-mode flymake-mode-line-format)
+    global-mode-string)
   "Custom mode line format.")
 
 (setq-default mode-line-format jacob-mode-line-format)
