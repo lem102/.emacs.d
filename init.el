@@ -1903,6 +1903,8 @@ Calls INSERT."
 
 (jacob-is-installed 'xah-fly-keys
 
+  (global-set-key (kbd "<f7>") 'xah-fly-leader-key-map)
+
   (define-key global-map (kbd "M-SPC") 'xah-fly-command-mode-activate)
 
   (define-key xah-fly-command-map "s" 'jacob-return-macro)
@@ -2001,12 +2003,11 @@ Calls INSERT."
   (define-prefix-command 'jacob-map)
   (define-key xah-fly-leader-key-map " " jacob-map)
 
-  (with-eval-after-load 'slack
-    (define-prefix-command 'jacob-slack-map)
-    (define-key jacob-map "s" jacob-slack-map)
-    (define-key jacob-slack-map "s" 'slack-start)    
-    (define-key jacob-slack-map "u" 'jacob-slack-display-unread)
-    (define-key jacob-slack-map "r" 'slack-select-rooms))
+  (define-prefix-command 'jacob-slack-map)
+  (define-key jacob-map "s" jacob-slack-map)
+  (define-key jacob-slack-map "s" 'slack-start)
+  (define-key jacob-slack-map "u" 'jacob-slack-display-unread)
+  (define-key jacob-slack-map "r" 'slack-select-rooms)
 
   (define-prefix-command 'jacob-csharp-map)
   (define-key jacob-map "c" jacob-csharp-map)
