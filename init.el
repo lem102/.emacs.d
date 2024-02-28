@@ -800,6 +800,34 @@ If successful, evaluate BODY.  Used to eagerly load feature."
 (unless (package-installed-p 'slack)
   (package-vc-install '(slack . (:url "https://github.com/lem102/emacs-slack.git"))))
 
+;; JACOBTODO: advise slack-update-modeline to remove slack part from
+;; global mode string when there are no unread messages
+
+(defun jacob-slack-modeline-formatter (alist)
+  "Hide the slack modeline if there are no notifications.
+
+Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (channel . (has-unreads . mention-count)))))"
+  (if (seq-find (lambda (team)
+                  (seq-find (lambda (room-type)
+                              (car (cdr room-type)))
+                            (cdr team)))
+                alist)
+      (slack-default-modeline-formatter alist)
+    ""))
+
+(defun jacob-slack-display-unread ()
+  "Open an unread slack message."
+  (interactive)
+  (let* ((team (slack-team-select))
+         (rooms (seq-filter #'(lambda (room)
+                                (slack-room-has-unread-p room team))
+                            (append (slack-team-ims team)
+                                    (slack-team-groups team)
+                                    (slack-team-channels team)))))
+    (if (null rooms)
+        (message "no unread slack messages")
+      (slack-room-display (seq-first rooms) team))))
+
 (with-eval-after-load 'slack
   (setq slack-enable-global-mode-string t)
   (setq slack-buffer-emojify t)
@@ -817,18 +845,7 @@ If successful, evaluate BODY.  Used to eagerly load feature."
   (add-hook 'slack-message-buffer-mode-hook 'jacob-slack-hook-function)
   (add-hook 'slack-thread-message-buffer-mode-hook 'jacob-slack-hook-function)
 
-  (defun jacob-slack-display-unread ()
-    "Open an unread slack message."
-    (interactive)
-    (let* ((team (slack-team-select))
-           (rooms (seq-filter #'(lambda (room)
-                                  (slack-room-has-unread-p room team))
-                              (append (slack-team-ims team)
-                                      (slack-team-groups team)
-                                      (slack-team-channels team)))))
-      (if (null rooms)
-          (message "no unread slack messages")
-        (slack-room-display (seq-first rooms) team)))))
+  (setq slack-modeline-formatter #'jacob-slack-modeline-formatter))
 
 
 ;; dape config
