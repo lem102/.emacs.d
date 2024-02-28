@@ -299,8 +299,7 @@ ALIST is as described in `battery-update-functions'."
   "Move cursor to the beginning of line or previous csharp statement."
   (interactive)
   (let ((p (point)))
-    (if (or (equal (point) (line-beginning-position))
-            (eq last-command this-command))
+    (if (eq last-command this-command)
         (call-interactively 'jacob-csharp-backward-statement)
       (back-to-indentation)
       (when (eq p (point))
@@ -310,8 +309,7 @@ ALIST is as described in `battery-update-functions'."
   "Move cursor to the end of line or next csharp statement."
   (interactive)
   (let ((p (point)))
-    (if (or (equal (point) (line-beginning-position))
-            (eq last-command this-command))
+    (if (eq last-command this-command)
         (call-interactively 'jacob-csharp-forward-statement)
       (end-of-line))))
 
