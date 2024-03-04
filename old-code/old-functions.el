@@ -197,3 +197,57 @@ Search youtube for string and display in browser."
   "Attempt to open current file in camunda modeler."
   (interactive)
   (start-process "camunda-modeler" nil jacob-camunda-modeler-executable buffer-file-name))
+
+(defvar jacob-vc-main-branch nil
+  "default main branch")
+
+(defun jacob-git-pull-master-new-branch ()
+  "Update main branch defined in `jacob-vc-main-branch'.
+Prompt for branch name."
+  (interactive)
+  (when (zerop (shell-command (format "git checkout %s" jacob-vc-main-branch)))
+    (when (zerop (shell-command "git pull"))
+      (shell-command (concat "git checkout -b " (read-from-minibuffer "branch name: "))))))
+
+(defun jacob-npm-fix-linting ()
+  "Fix linting for npm then commit and push."
+  (interactive)
+  (when (zerop (shell-command "npm run lint:fix"))
+    (shell-command "git commit -m \"chore: fix linting\" -na")
+    (shell-command "git push")))
+
+;; TODO: current-line and current-column come from array.el, so this function will not work until after that lib is loaded
+(defun jacob-open-in-vscode ()
+  "Open current file in vscode."
+  (interactive)
+  (let ((default-directory (project-root (project-current)))
+        (file (buffer-file-name))
+        (line (number-to-string (+ (current-line) 1)))
+        (column (number-to-string (+ (current-column) 1))))
+    (shell-command (concat "code . --reuse-window --goto \"" file "\":" line ":" column))))
+
+(defun jacob-toggle-mocha-only ()
+  "Toggle the presence of .only after an it/describe mocha test."
+  (interactive)
+  (save-excursion
+    (backward-up-list)
+    (re-search-backward (rx (or (one-or-more blank)
+                                line-start)
+                            (or "it"
+                                "describe")))
+    (forward-word)
+    (if (string-match "\\.only" (thing-at-point 'line t))
+        (kill-word 1)
+      (insert ".only"))))
+
+(defun jacob-toggle-test-category ()
+  "Toggle the presence of a test category attribute after a mstest unit test."
+  (interactive)
+  (save-excursion
+    (search-backward "[TestMethod]")
+    (forward-to-indentation 1)
+    (if (string-match "\\[TestCategory(\"MyCategory\")\\]" (thing-at-point 'line t))
+        (kill-line 1)
+      (insert "[TestCategory(\"MyCategory\")]\n"))))
+
+
