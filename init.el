@@ -714,22 +714,20 @@ Useful for deleting ^M after `eglot-code-actions'."
 (with-eval-after-load 'eglot
   (add-to-list 'eglot-server-programs '((csharp-mode csharp-ts-mode) . ("csharp-ls")))
 
-  (add-to-list 'eglot-server-programs '((js-mode typescript-mode) . ("typescript-language-server" "--stdio")))
-
   (add-to-list 'eglot-server-programs '(sql-mode . ("sqls")))
 
-  ;; (add-to-list 'eglot-server-programs '((js-mode typescript-mode) . (eglot-deno "deno" "lsp")))
-
-  (defclass eglot-deno (eglot-lsp-server) ()
-    :documentation "A custom class for deno lsp.")
-
-  (cl-defmethod eglot-initialization-options ((server eglot-deno))
-    "Passes through required deno initialization options"
-    (list :enable t
-          :lint t
-          :suggest.names t))
-
-  ;; (add-to-list 'eglot-server-programs '(go-mode . ("/home/jacob/go/bin/gopls")))
+  (add-to-list 'eglot-server-programs `((js-mode
+                                         js-ts-mode
+                                         tsx-ts-mode
+                                         (typescript-ts-base-mode :language-id "typescript")
+                                         typescript-mode)
+                                        . ,(eglot-alternatives
+                                            '(("typescript-language-server" "--stdio")
+                                              ("deno" "lsp"
+                                               :initializationOptions
+                                               (:enable t
+                                                        :lint t
+                                                        :suggest.names t))))))
 
   (eglot--code-action eglot-code-action-organize-imports-ts "source.organizeImports.ts")
   (eglot--code-action eglot-code-action-add-missing-imports-ts "source.addMissingImports.ts")
