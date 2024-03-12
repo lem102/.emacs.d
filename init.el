@@ -673,7 +673,8 @@ See `sql-interactive-mode-hook' and `sql-product-alist'."
 (when (eq system-type 'gnu/linux)
   (setq treesit-language-source-alist '((c-sharp "https://github.com/tree-sitter/tree-sitter-c-sharp" "master" "src")
                                         (typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src")
-                                        (tsx "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src")))
+                                        (tsx "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src")
+                                        (yaml "https://github.com/ikatyang/tree-sitter-yaml")))
   (setq treesit-load-name-override-list '((c-sharp "libtree-sitter-csharp" "tree_sitter_c_sharp")))
   ;; TODO: troubleshoot csharp-ts on windows
   (setq major-mode-remap-alist '((csharp-mode . csharp-ts-mode))))
