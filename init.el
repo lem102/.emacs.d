@@ -706,7 +706,7 @@ Useful for deleting ^M after `eglot-code-actions'."
 (add-hook 'java-mode-hook 'eglot-ensure)
 (add-hook 'csharp-mode-hook 'eglot-ensure)
 (add-hook 'csharp-ts-mode-hook 'eglot-ensure)
-(add-hook 'typescript-mode-hook 'eglot-ensure)
+
 (add-hook 'fsharp-mode-hook (lambda ()
                               (when (eq system-type 'gnu/linux)
                                 (require 'eglot-fsharp)
