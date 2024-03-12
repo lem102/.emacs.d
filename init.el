@@ -835,9 +835,6 @@ If successful, evaluate BODY.  Used to eagerly load feature."
 (unless (package-installed-p 'slack)
   (package-vc-install '(slack . (:url "https://github.com/lem102/emacs-slack.git"))))
 
-;; JACOBTODO: advise slack-update-modeline to remove slack part from
-;; global mode string when there are no unread messages
-
 (defun jacob-slack-modeline-formatter (alist)
   "Hide the slack modeline if there are no notifications.
 
