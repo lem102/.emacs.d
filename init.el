@@ -395,7 +395,26 @@ hides this information."
                                   (jacob-project-search "Find regexp")
                                   (project-find-dir "Find directory")
                                   (project-vc-dir "VC-Dir")
-                                  (project-eshell "Eshell"))))
+                                  (project-eshell "Eshell")
+                                  (project-compile "Compile"))))
+
+(with-eval-after-load 'consult
+
+  (defun jacob-consult-project-filter ()
+    (if (project-current)
+        (project-files (project-current))
+      (list)))
+
+  (defvar jacob-consult-project-source
+    `(:name     "Project"
+                :narrow   ?p
+                :category file
+                :face     consult-file
+                :history  file-name-history
+                :items    ,#'jacob-consult-project-filter
+                :action   ,#'find-file))
+
+  (add-to-list 'consult-buffer-sources jacob-consult-project-source "APPEND"))
 
 
 ;; emacs-lisp-mode config
@@ -845,7 +864,25 @@ Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (c
   (add-hook 'slack-message-buffer-mode-hook 'jacob-slack-hook-function)
   (add-hook 'slack-thread-message-buffer-mode-hook 'jacob-slack-hook-function)
 
-  (setq slack-modeline-formatter #'jacob-slack-modeline-formatter))
+  (setq slack-modeline-formatter #'jacob-slack-modeline-formatter)
+
+  (with-eval-after-load 'consult
+
+    (defun jacob-consult-slack-filter ()
+      (consult--buffer-query :sort 'visibility
+                             :as #'buffer-name
+                             :include "^*Slack"))
+
+    (jacob-consult-slack-source
+     `(:name     "Slack"
+                 :narrow   ?s
+                 :category buffer
+                 :face     consult-buffer
+                 :history  buffer-name-history
+                 :items    ,#'jacob-consult-slack-filter
+                 :action   ,#'switch-to-buffer))
+
+    (add-to-list 'consult-buffer-sources jacob-consult-slack-source "APPEND")))
 
 
 ;; dape config
