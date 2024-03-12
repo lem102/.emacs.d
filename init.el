@@ -807,7 +807,17 @@ If successful, evaluate BODY.  Used to eagerly load feature."
                          ))
 
 
-;; eglot-booster
+;; format-all config
+
+(when (package-installed-p 'format-all)
+  (add-hook 'typescript-ts-mode-hook 'format-all-mode)
+  (add-hook 'tsx-ts-mode-hook 'format-all-mode))
+
+(with-eval-after-load 'format-all
+  (add-hook 'format-all-mode-hook 'format-all-ensure-formatter))
+
+
+;; eglot-booster config
 (unless (package-installed-p 'eglot-booster)
   (package-vc-install "https://github.com/jdtsmith/eglot-booster"))
 
