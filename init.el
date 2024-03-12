@@ -661,6 +661,8 @@ See `sql-interactive-mode-hook' and `sql-product-alist'."
 (setq compilation-always-kill t)
 (setq compilation-scroll-output t)
 
+(add-hook 'compilation-filter-hook 'ansi-color-compilation-filter)
+
 
 ;; treesit config
 
