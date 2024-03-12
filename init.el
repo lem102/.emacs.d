@@ -150,6 +150,11 @@
 (help-at-pt-set-timer)
 
 
+;; warnings config
+
+(setq warning-minimum-level :error)
+
+
 ;; editing config
 
 (global-subword-mode 1)
