@@ -874,14 +874,14 @@ Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (c
                              :as #'buffer-name
                              :include "^*Slack"))
 
-    (jacob-consult-slack-source
-     `(:name     "Slack"
-                 :narrow   ?s
-                 :category buffer
-                 :face     consult-buffer
-                 :history  buffer-name-history
-                 :items    ,#'jacob-consult-slack-filter
-                 :action   ,#'switch-to-buffer))
+    (setq jacob-consult-slack-source
+          `(:name     "Slack"
+                      :narrow   ?s
+                      :category buffer
+                      :face     consult-buffer
+                      :history  buffer-name-history
+                      :items    ,#'jacob-consult-slack-filter
+                      :action   ,#'switch-to-buffer))
 
     (add-to-list 'consult-buffer-sources jacob-consult-slack-source "APPEND")))
 
