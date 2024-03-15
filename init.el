@@ -1054,7 +1054,24 @@ Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (c
             (car (project-roots project)))))
 
   (setq xref-show-xrefs-function 'consult-xref)
-  (setq xref-show-definitions-function 'consult-xref))
+  (setq xref-show-definitions-function 'consult-xref)
+
+  (defun jacob-consult-buffer-state-no-tramp ()
+    "Buffer state function that doesn't preview Tramp buffers."
+    (let ((orig-state (consult--buffer-state))
+          (filter (lambda (action cand)
+                    (if (and cand
+                             (or (eq action 'return)
+                                 (let ((buffer (get-buffer cand)))
+                                   (and buffer
+                                        (not (file-remote-p (buffer-local-value 'default-directory buffer)))))))
+                        cand
+                      nil))))
+      (lambda (action cand)
+        (funcall orig-state action (funcall filter action cand)))))
+
+  (setq consult--source-buffer
+        (plist-put consult--source-buffer :state #'jacob-consult-buffer-state-no-tramp)))
 
 
 
