@@ -804,6 +804,18 @@ If successful, evaluate BODY.  Used to eagerly load feature."
                          ))
 
 
+;; avy config
+
+(defun jacob-avy-action-xref-find-definitions (point)
+  "Go to the definition at POINT."
+  (goto-char point)
+  (call-interactively 'xref-find-definitions)
+  t)
+
+(jacob-try-require 'avy
+  (add-to-list 'avy-dispatch-alist '(?t . jacob-avy-action-xref-find-definitions)))
+
+
 ;; format-all config
 
 (when (package-installed-p 'format-all)
@@ -2058,6 +2070,9 @@ Calls INSERT."
 
   (define-key jacob-map "d" 'jacob-sql-connect)
   (define-key jacob-map "g" 'gnus)
+  
+  (jacob-is-installed 'avy
+    (define-key jacob-map "a" 'avy-goto-char-timer))
   
   (let ((map dired-mode-map))
     (jacob-xfk-define-key-in-major-mode map "q" 'quit-window)
