@@ -576,14 +576,6 @@ Designed for use in on-save hook in certain programming languages modes."
 ;; microsoft windows config
 
 (when (eq system-type 'windows-nt)
-  (setq w32-pass-rwindow-to-system nil)
-  (setq w32-rwindow-modifier 'super)
-  (setq w32-apps-modifier 'hyper)
-
-  (add-hook 'after-init-hook (lambda ()
-                               ;; maximize window
-                               (w32-send-sys-command 61488)))
-
   (defun jacob-confirm-terminate-batch-job ()
     "Type y and enter to terminate batch job after sending ^C."
     (when (not (null eshell-process-list))
