@@ -1525,193 +1525,88 @@ For use with GitLab only."
 
 (defun jacob-insert-block-helper (template)
   "Call `jacob-insert-helper' with a block appended to TEMPLATE."
-  (jacob-insert-helper (concat template " {\n●\n}")))
+  (jacob-insert (concat template " {\n●\n}")))
 
 (defun jacob-insert-assignment-helper (template)
   "Call `jacob-insert-helper' with \" ■ = \" appended to TEMPLATE."
-  (jacob-insert-helper (concat template " ■ = ●")))
+  (jacob-insert (concat template " ■ = ●")))
 
 (defun jacob-insert-js-function-helper (template)
   "Call `jacob-insert-helper' and insert js anonymous function inside of TEMPLATE."
-  (jacob-insert-helper (concat template "((■) => ●)")))
+  (jacob-insert (concat template "((■) => ●)")))
 
-(defun jacob-insert-helper (template)
-  "Insert TEMPLATE in current buffer.
-If present, set mark at each ● so that going throught the mark ring
-will take the user from first instance to last and delete it.  If
-present, move point back to ■ and delete it."
-  (let* ((●-positions '())
-         (■-position)
-         (start (prog1
-                    (point)
-                  (insert template)))
-         (end (point)))
+(defun jacob-insert (&optional template)
+  "Handle `jacob-insert' abbrev expansion.
+Insert TEMPLATE.  Set mark at each ● so that popping the mark ring
+will take the user from first instance to last.  If present, move
+point back to ■.  Special characters (■, ●) will be deleted."
+  (when template
+    (insert template))
+  (let* ((start-position (if template
+                             (- (point)
+                                (length template))
+                           last-abbrev-location))
+         ■-position)
+    (while (search-backward-regexp "[■●]"
+                                   start-position
+                                   t)
+      (let ((match (match-string-no-properties 0)))
+        (delete-char 1)
+        (cond ((string= match "■")
+               (setq ■-position (point-marker)))
+              ((string= match "●")
+               (push-mark)))))
+    (goto-char ■-position)))
 
-    (goto-char start)
-    (dotimes (_ (- (+ 1 (line-number-at-pos end)) (line-number-at-pos (point))))
-      (ignore-errors (indent-according-to-mode))
+(put 'jacob-insert 'no-self-insert t)
 
-      (goto-char (line-beginning-position))
-      (while (search-forward-regexp (rx (or ?■ ?●)) (line-end-position) t)
-        (let ((match (match-string-no-properties 0)))
-          (backward-delete-char 1)
-          (if (string= match "■")
-              (setq ■-position (point))
-            (setq ●-positions (cons (point) ●-positions)))))
+(defun jacob-insert-elisp-goto-char ()
+  (jacob-insert "(goto-char ■)"))
 
-      (forward-line 1))
+(defun jacob-insert-js-print ()
+  (jacob-insert "console.log(■);"))
 
-    (mapc (lambda (position)
-            (goto-char position)
-            (push-mark))
-          ●-positions)
-
-    (goto-char ■-position)
-
-    ;; return t to prevent self insert when calling from abbrev.
-    t))
-
-(defmacro define-jacob-insert (name insert)
-  "Define a jacob-insert command called NAME.
-Calls INSERT."
-  (declare (indent 1))
-  `(progn
-     ;; prevent abbrev from self-inserting
-     (put ',name 'no-self-insert t)
-     (defun ,name ()
-       ,insert)))
-
-(define-jacob-insert jacob-insert-c-if
-  (jacob-insert-block-helper "if (■)"))
-
-(define-jacob-insert jacob-insert-c-while
-  (jacob-insert-block-helper "while (■)"))
-
-(define-jacob-insert jacob-insert-c-for
-  (jacob-insert-block-helper "for (■)"))
-
-(define-jacob-insert jacob-insert-java-for-each
-  (jacob-insert-block-helper "for (var ■ : ●)"))
-
-(define-jacob-insert jacob-insert-java-class
-  (jacob-insert-block-helper "●class ■"))
-
-(define-jacob-insert jacob-insert-java-method
-  (jacob-insert-block-helper "■(●)"))
-
-(define-jacob-insert jacob-insert-java-constructor
-  (jacob-insert-block-helper (concat (save-excursion
-                                       (when (search-backward-regexp (rx "class "
-                                                                         (group (one-or-more (any "a-zA-Z"))))
-                                                                     nil
-                                                                     t)
-                                         (match-string-no-properties 1)))
-                                     "■(●)")))
-
-(define-jacob-insert jacob-insert-c-switch
-  (jacob-insert-block-helper "switch (■)"))
-
-(define-jacob-insert jacob-insert-c-case
-  (jacob-insert-helper "case ■: \n●\nbreak;"))
-
-(define-jacob-insert jacob-insert-java-main
-  (jacob-insert-block-helper "public static void main(String[] args)"))
-
-(define-jacob-insert jacob-insert-java-print
-  (jacob-insert-helper "System.out.println(■);"))
-
-(define-jacob-insert jacob-insert-java-var
-  (jacob-insert-assignment-helper "var"))
-
-(define-jacob-insert jacob-insert-elisp-goto-char
-  (jacob-insert-helper "(goto-char ■)"))
-
-(define-jacob-insert jacob-insert-elisp-with-eval-after-load
-  (jacob-insert-helper "(with-eval-after-load ■)"))
-
-(define-jacob-insert jacob-insert-lisp-let
-  (jacob-insert-helper "(let ((■))\n●)"))
-
-(define-jacob-insert jacob-insert-elisp-defun
-  (jacob-insert-helper "(defun ■ (●)\n●)"))
-
-(define-jacob-insert jacob-insert-elisp-message
-  (jacob-insert-helper "(message \"%s\" ■)"))
-
-(define-jacob-insert jacob-insert-lisp-cond
-  (jacob-insert-helper "(cond ((■))\n●)"))
-
-(define-jacob-insert jacob-insert-js-print
-  (jacob-insert-helper "console.log(■);"))
-
-(define-jacob-insert jacob-insert-js-const
+(defun jacob-insert-js-const ()
   (jacob-insert-assignment-helper "const"))
 
-(define-jacob-insert jacob-insert-js-let
+(defun jacob-insert-js-let ()
   (jacob-insert-assignment-helper "let"))
 
-(define-jacob-insert jacob-insert-js-function
-  (jacob-insert-helper "(■) => ●"))
+(defun jacob-insert-js-function ()
+  (jacob-insert "(■) => ●"))
 
-(define-jacob-insert jacob-insert-js-for-each
+(defun jacob-insert-js-for-each ()
   (jacob-insert-assignment-helper "forEach(■)"))
 
-(define-jacob-insert jacob-insert-js-describe
-  (jacob-insert-helper "describe(\"■\", () => {\n●\n});"))
+(defun jacob-insert-js-describe ()
+  (jacob-insert "describe(\"■\", () => {\n●\n});"))
 
-(define-jacob-insert jacob-insert-js-it
-  (jacob-insert-helper "it(\"■\", () => {\n●\n});"))
+(defun jacob-insert-js-it ()
+  (jacob-insert "it(\"■\", () => {\n●\n});"))
 
-(define-jacob-insert jacob-insert-js-map-function
+(defun jacob-insert-js-map-function ()
   (jacob-insert-js-function-helper "map"))
 
-(define-jacob-insert jacob-insert-js-filter-function
+(defun jacob-insert-js-filter-function ()
   (jacob-insert-js-function-helper "filter"))
 
-(define-jacob-insert jacob-insert-go-println
-  (jacob-insert-helper "fmt.Println(■)"))
+(defun jacob-insert-clojure-defn ()
+  (jacob-insert "(defn ■ [●]\n●)"))
 
-(define-jacob-insert jacob-insert-go-printf
-  (jacob-insert-helper "fmt.Printf(■)"))
+(defun jacob-insert-clojure-loop ()
+  (jacob-insert "(loop [■]\n●)"))
 
-(define-jacob-insert jacob-insert-go-func
-  (jacob-insert-block-helper "func ■()"))
+(defun jacob-insert-clojure-recur ()
+  (jacob-insert "(recur ■)"))
 
-(define-jacob-insert jacob-insert-go-for
-  (jacob-insert-block-helper "for ■"))
+(defun jacob-insert-clojure-let ()
+  (jacob-insert "(let [■]\n●)"))
 
-(define-jacob-insert jacob-insert-go-for-range
-  (jacob-insert-block-helper "for i, v := range ■"))
+(defun jacob-insert-clojure-if ()
+  (jacob-insert "(if ■)"))
 
-(define-jacob-insert jacob-insert-go-if
-  (jacob-insert-block-helper "if ■"))
-
-(define-jacob-insert jacob-insert-go-struct
-  (jacob-insert-block-helper "struct"))
-
-(define-jacob-insert jacob-insert-csharp-print
-  (jacob-insert-helper "Console.WriteLine(■);"))
-
-(define-jacob-insert jacob-insert-csharp-property
-  (jacob-insert-helper "■ { get; set; }"))
-
-(define-jacob-insert jacob-insert-clojure-defn
-  (jacob-insert-helper "(defn ■ [●]\n●)"))
-
-(define-jacob-insert jacob-insert-clojure-loop
-  (jacob-insert-helper "(loop [■]\n●)"))
-
-(define-jacob-insert jacob-insert-clojure-recur
-  (jacob-insert-helper "(recur ■)"))
-
-(define-jacob-insert jacob-insert-clojure-let
-  (jacob-insert-helper "(let [■]\n●)"))
-
-(define-jacob-insert jacob-insert-clojure-if
-  (jacob-insert-helper "(if ■)"))
-
-(define-jacob-insert jacob-insert-clojure-case
-  (jacob-insert-helper "(case ■\n●)"))
+(defun jacob-insert-clojure-case ()
+  (jacob-insert "(case ■\n●)"))
 
 (defun jacob-abbrev-expand-function ()
   "Return t if not in string or comment. Else nil."
@@ -1748,12 +1643,11 @@ Calls INSERT."
   :enable-function 'jacob-abbrev-expand-function)
 
 (define-abbrev-table 'c-mode-abbrev-table
-  '(
-    ("if" "" jacob-insert-c-if)
-    ("for" "" jacob-insert-c-for)
-    ("while" "" jacob-insert-c-while)
-    ("switch" "" jacob-insert-c-switch)
-    ("case" "" jacob-insert-c-case))
+  '(("if" "if (■)\n{\n●\n}" jacob-insert)
+    ("for" "for (■)\n{\n●\n}" jacob-insert)
+    ("while" "while (■)\n{●\n}" jacob-insert)
+    ("switch" "switch (■)\n{●\n}" jacob-insert)
+    ("case" "case ■: \n●\nbreak;" jacob-insert))
   nil
   :parents (list common-operators-abbrev-table)
   :enable-function 'jacob-abbrev-expand-function)
@@ -1791,66 +1685,39 @@ Calls INSERT."
   nil
   :parents (list js-mode-abbrev-table))
 
-(define-abbrev-table 'common-java-csharp-abbrev-table
-  '(("pri" "private")
-    ("pub" "public")
-    ("sta" "static")
-    ("class" "" jacob-insert-java-class)
-    ("cons" "" jacob-insert-java-constructor)
-    ("var" "" jacob-insert-java-var)
-    ("meth" "" jacob-insert-java-method)
-    ("jt" "// JACOBTODO:"))
-  nil
-  :parents (list c-mode-abbrev-table)
-  :enable-function 'jacob-abbrev-expand-function)
-
-(define-abbrev-table 'java-mode-abbrev-table
-  '(("sout" "" jacob-insert-java-print)
-    ("psvm" "" jacob-insert-java-main)
-    ("fore" "" jacob-insert-java-for-each)
-    ("string" "String")
-    ("double" "Double")
-    ("object" "Object")
-    ("fin" "final")
-    ("char" "Character")
-    ("inst" "instanceof"))
-  nil
-  :parents (list common-java-csharp-abbrev-table))
-
-(define-abbrev-table 'common-csharp-abbrev-table
-  '(("cwl" "" jacob-insert-csharp-print)
+(define-abbrev-table 'csharp-ts-mode-abbrev-table
+  '(("class" "class ■\n{\n●\n}" jacob-insert)
+    ("cons" "public ■ ()\n{\n●\n}" jacob-insert)
+    ("var" "var ■ = ●;" jacob-insert)
+    ("meth" "■()\n{\n●\n}" jacob-insert)
+    ("jt" "JACOBTODO:" nil :enable-function nil)
+    ("to" "JACOBTODO:" nil :enable-function nil)
+    ("cwl" "Console.WriteLine(■);" jacob-insert)
+    ("prop" "public ■ { get; set; }" jacob-insert)
     ("jwe" "Console.WriteLine(\"jacobwozere\");" t)
+    ("tostr" "ToString()" t)
+    ("iia" "It.IsAny<>()" t)
     ("as" "async")
     ("ns" "namespace")
-    ("prop" "" jacob-insert-csharp-property)
-    ("xgon" "x => x" t)
+    ("xgon" "x => x")
     ("ro" "readonly")
     ("nuguid" "Guid.NewGuid()")
-    ("tostr" "ToString()" t)
-    ("iia" "It.IsAny<>()" t))
+    ("pri" "private")
+    ("pub" "public")
+    ("sta" "static"))
   nil
-  :parents (list common-java-csharp-abbrev-table))
-
-(define-abbrev-table 'csharp-mode-abbrev-table
-  nil
-  nil
-  :parents (list common-csharp-abbrev-table))
-
-(define-abbrev-table 'csharp-ts-mode-abbrev-table
-  nil
-  nil
-  :parents (list common-csharp-abbrev-table))
+  :parents (list c-mode-abbrev-table))
 
 (define-abbrev-table 'emacs-lisp-mode-abbrev-table
-  '(("def" "" jacob-insert-elisp-defun)
-    ("let" "" jacob-insert-lisp-let)
-    ("int" "(interactive)" t)
-    ("cond" "" jacob-insert-lisp-cond)
-    ("gc" "" jacob-insert-elisp-goto-char)
-    ("pmi" "(point-min)" t)
-    ("pma" "(point-max)" t)
-    ("weal" "" jacob-insert-elisp-with-eval-after-load)
-    ("mes" "" jacob-insert-elisp-message)))
+  '(("def" "(defun ■ (●)\n●)" jacob-insert)
+    ("let" "(let ((■))\n●)" jacob-insert)
+    ("cond" "(cond ((■))\n●)" jacob-insert)
+    ("gc" "(goto-char ■)" jacob-insert)
+    ("weal" "(with-eval-after-load ■)" jacob-insert)
+    ("mes" "(message \"%s\" ■)" jacob-insert)
+    ("pmi" "(point-min)")
+    ("pma" "(point-max)")
+    ("int" "(interactive)")))
 
 (define-abbrev-table 'clojure-mode-abbrev-table
   '(("defn" "" jacob-insert-clojure-defn)
@@ -1862,15 +1729,14 @@ Calls INSERT."
 
 (define-abbrev-table 'go-mode-abbrev-table
   '(
-    ("pl" "" jacob-insert-go-println)
-    ("pf" "" jacob-insert-go-printf)
-    ("fun" "" jacob-insert-go-func)
-    ("for" "" jacob-insert-go-for)
-    ("forr" "" jacob-insert-go-for-range)
-    ("if" "" jacob-insert-go-if)
-    ("struct" "" jacob-insert-go-struct)
-    ("ass" ":=")
-    )
+    ("pl" "fmt.Println(■)" jacob-insert)
+    ("pf" "fmt.Printf(■)" jacob-insert)
+    ("fun" "func ■()\n{\n●\n}" jacob-insert)
+    ("for" "for ■\n{\n●\n}" jacob-insert)
+    ("forr" "for i, v := range ■\n{\n●\n}" jacob-insert)
+    ("if" "if ■\n{\n●\n}" jacob-insert)
+    ("struct" "struct\n{\n●\n}" jacob-insert)
+    ("ass" ":="))
   nil
   :parents (list common-operators-abbrev-table))
 
@@ -1932,8 +1798,8 @@ Calls INSERT."
     ("o" "ON")
     ))
 
-(define-jacob-insert jacob-racket-define-function
-  (jacob-insert-helper "(define (■)\n●)"))
+(defun jacob-racket-define-function ()
+  (jacob-insert "(define (■)\n●)"))
 
 (define-abbrev-table 'racket-mode-abbrev-table
   '(
