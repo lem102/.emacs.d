@@ -1547,6 +1547,7 @@ point back to ■.  Special characters (■, ●) will be deleted."
                                 (length template))
                            last-abbrev-location))
          ■-position)
+    (indent-region start-position (point))
     (while (search-backward-regexp "[■●]"
                                    start-position
                                    t)
