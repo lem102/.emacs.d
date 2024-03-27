@@ -273,7 +273,11 @@ ALIST is as described in `battery-update-functions'."
          '(((parent-is "parameter_list") parent-bol csharp-ts-mode-indent-offset)
            ((parent-is "implicit_parameter_list") parent-bol csharp-ts-mode-indent-offset)
            ((parent-is "member_access_expression") parent-bol csharp-ts-mode-indent-offset)
-           ((parent-is "lambda_expression") parent-bol csharp-ts-mode-indent-offset)))
+           ((parent-is "lambda_expression") parent-bol csharp-ts-mode-indent-offset)
+           ((parent-is "try_statement") parent-bol 0)
+           ((parent-is "catch_clause") parent-bol 0)
+           ((parent-is "throw_expression") parent-bol csharp-ts-mode-indent-offset)
+           ((parent-is "return_statement") parent-bol csharp-ts-mode-indent-offset)))
 
   (defun jacob-csharp-ts-hook-function ()
     "Set vars in csharp-ts-mode buffer."
