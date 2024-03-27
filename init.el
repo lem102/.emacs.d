@@ -1715,6 +1715,7 @@ point back to ■.  Special characters (■, ●) will be deleted."
     ("gc" "(goto-char ■)" jacob-insert)
     ("weal" "(with-eval-after-load ■)" jacob-insert)
     ("mes" "(message \"%s\" ■)" jacob-insert)
+    ("if" "(if ■)" jacob-insert)
     ("pmi" "(point-min)")
     ("pma" "(point-max)")
     ("int" "(interactive)")))
