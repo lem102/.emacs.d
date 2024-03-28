@@ -1114,6 +1114,12 @@ Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (c
 
 ;; personal functions
 
+(defun jacob-random-init ()
+  "Go to a random place in init file."
+  (interactive)
+  (find-file user-init-file)
+  (goto-char (random (point-max))))
+
 (defun jacob-insert-elisp-colour ()
   "Ask user for a colour, insert colour name at point."
   (interactive)
@@ -1670,8 +1676,8 @@ point back to ■.  Special characters (■, ●) will be deleted."
     ("jwe" "console.log(\"jacobwozere\");" t)
     ("desc" "" jacob-insert-js-describe)
     ("it" "" jacob-insert-js-it)
-    ("map" "" jacob-insert-js-map-function)
-    ("filter" "" jacob-insert-js-filter-function))
+    ("map" "map((■) => ●)" jacob-insert)
+    ("filter" "filter((■) => ●)" jacob-insert))
   nil
   :parents (list c-mode-abbrev-table))
 
