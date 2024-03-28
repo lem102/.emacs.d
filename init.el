@@ -1541,10 +1541,6 @@ For use with GitLab only."
   "Call `jacob-insert-helper' with \" ■ = \" appended to TEMPLATE."
   (jacob-insert (concat template " ■ = ●")))
 
-(defun jacob-insert-js-function-helper (template)
-  "Call `jacob-insert-helper' and insert js anonymous function inside of TEMPLATE."
-  (jacob-insert (concat template "((■) => ●)")))
-
 (defun jacob-insert (&optional template)
   "Handle `jacob-insert' abbrev expansion.
 Insert TEMPLATE.  Set mark at each ● so that popping the mark ring
@@ -1594,12 +1590,6 @@ point back to ■.  Special characters (■, ●) will be deleted."
 
 (defun jacob-insert-js-it ()
   (jacob-insert "it(\"■\", () => {\n●\n});"))
-
-(defun jacob-insert-js-map-function ()
-  (jacob-insert-js-function-helper "map"))
-
-(defun jacob-insert-js-filter-function ()
-  (jacob-insert-js-function-helper "filter"))
 
 (defun jacob-insert-clojure-defn ()
   (jacob-insert "(defn ■ [●]\n●)"))
