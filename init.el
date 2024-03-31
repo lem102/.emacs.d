@@ -1259,12 +1259,12 @@ point."
   (undo-boundary)
 
   (unless (eq last-command this-command)
-    (setq jacob-format-words-3-style-and-start (cons (read-char-from-minibuffer "select style: " '(?c ?p ?k ?s ?S))
-                                                     (point))))
+    (setq jacob-format-words-style-and-start (cons (read-char-from-minibuffer "select style: " '(?c ?p ?k ?s ?S))
+                                                   (point))))
 
   (save-excursion
-    (let* ((style (car jacob-format-words-3-style-and-start))
-           (format-position (cdr jacob-format-words-3-style-and-start))
+    (let* ((style (car jacob-format-words-style-and-start))
+           (format-position (cdr jacob-format-words-style-and-start))
            (bounds (progn
                      (goto-char format-position)
                      (bounds-of-thing-at-point 'word)))
@@ -1303,7 +1303,7 @@ point."
               (backward-word)
               (upcase-word 1))))
 
-      (setq jacob-format-words-3-style-and-start (cons style (point))))))
+      (setq jacob-format-words-style-and-start (cons style (point))))))
 
 (defun jacob-count-words-region ()
   "If mark active count words in region, otherwise count words in whole buffer."
