@@ -1504,21 +1504,6 @@ point back to ■.  Special characters (■, ●) will be deleted."
 (defun jacob-insert-elisp-goto-char ()
   (jacob-insert "(goto-char ■)"))
 
-(defun jacob-insert-js-print ()
-  (jacob-insert "console.log(■);"))
-
-(defun jacob-insert-js-const ()
-  (jacob-insert-assignment-helper "const"))
-
-(defun jacob-insert-js-let ()
-  (jacob-insert-assignment-helper "let"))
-
-(defun jacob-insert-js-function ()
-  (jacob-insert "(■) => ●"))
-
-(defun jacob-insert-js-for-each ()
-  (jacob-insert-assignment-helper "forEach(■)"))
-
 (defun jacob-insert-js-describe ()
   (jacob-insert "describe(\"■\", () => {\n●\n});"))
 
@@ -1589,19 +1574,20 @@ point back to ■.  Special characters (■, ●) will be deleted."
 
 (define-abbrev-table 'js-mode-abbrev-table
   '(
-    ("cl" "" jacob-insert-js-print)
-    ("fun" "" jacob-insert-js-function)
-    ("con" "" jacob-insert-js-const)
-    ("let" "" jacob-insert-js-let)
-    ("eq" "===")
-    ("neq" "!==")
-    ("ret" "return")
-    ("fore" "" jacob-insert-js-for-each)
-    ("jwe" "console.log(\"jacobwozere\");" t)
+    ("cl" "console.log(■);" jacob-insert)
+    ("fun" "(■) => ●" jacob-insert)
+    ("con" "const ■ = ●;" jacob-insert)
+    ("let" "let ■ = ●;" jacob-insert)
+    ("fore" "forEach((■) => ●)" jacob-insert)
     ("desc" "" jacob-insert-js-describe)
     ("it" "" jacob-insert-js-it)
     ("map" "map((■) => ●)" jacob-insert)
-    ("filter" "filter((■) => ●)" jacob-insert))
+    ("filter" "filter((■) => ●)" jacob-insert)
+    ("red" "reduce((■) => ●)" jacob-insert)
+    ("jwe" "console.log(\"jacobwozere\");" t)
+    ("eq" "===")
+    ("neq" "!==")
+    ("ret" "return"))
   nil
   :parents (list c-mode-abbrev-table))
 
