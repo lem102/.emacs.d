@@ -1327,71 +1327,6 @@ point."
 
 (require 'jacob-long-time-autoloads)
 
-(defun jacob-insert-plus ()
-  "Insert +."
-  (interactive)
-  (insert "+"))
-
-(defun jacob-insert-equals ()
-  "Insert =."
-  (interactive)
-  (insert "="))
-
-(defun jacob-insert-apostrophe ()
-  "Insert '."
-  (interactive)
-  (insert "'"))
-
-(defun jacob-insert-at ()
-  "Insert @."
-  (interactive)
-  (insert "@"))
-
-(defun jacob-insert-tilde ()
-  "Insert ~."
-  (interactive)
-  (insert "~"))
-
-(defun jacob-insert-hash ()
-  "Insert #."
-  (interactive)
-  (insert "#"))
-
-(defun jacob-insert-exclamation-mark ()
-  "Insert !."
-  (interactive)
-  (insert "!"))
-
-(defun jacob-insert-pound-sign ()
-  "Insert £."
-  (interactive)
-  (insert "£"))
-
-(defun jacob-insert-dollar-sign ()
-  "Insert $."
-  (interactive)
-  (insert "$"))
-
-(defun jacob-insert-percentage-sign ()
-  "Insert %."
-  (interactive)
-  (insert "%"))
-
-(defun jacob-insert-caret ()
-  "Insert ^."
-  (interactive)
-  (insert "^"))
-
-(defun jacob-insert-ampersand ()
-  "Insert &."
-  (interactive)
-  (insert "&"))
-
-(defun jacob-insert-asterisk ()
-  "Insert *."
-  (interactive)
-  (insert "*"))
-
 (defun josh-kill-process-on-port ()
   "Ask for a port, kill process on that port.  For powershell."
   (interactive)
@@ -1857,18 +1792,6 @@ point back to ■.  Special characters (■, ●) will be deleted."
     (define-key map "g" 'jacob-project-search))
 
   (define-key xah-fly-leader-key-map ",n" 'jacob-eval-and-replace)
-  ;; TODO: do you miss these keybinds?
-  ;; (define-key xah-fly-leader-key-map "d," 'xah-insert-low-line)
-  ;; (define-key xah-fly-leader-key-map "d." 'jacob-insert-equals)
-  ;; (define-key xah-fly-leader-key-map "d/" 'jacob-insert-plus)
-  ;; (define-key xah-fly-leader-key-map "dc" 'jacob-insert-hash)
-  ;; (define-key xah-fly-leader-key-map "de" 'jacob-insert-dollar-sign)
-  ;; (define-key xah-fly-leader-key-map "dm" 'xah-insert-hyphen)
-  ;; (define-key xah-fly-leader-key-map "do" 'jacob-insert-ampersand)
-  ;; (define-key xah-fly-leader-key-map "dr" 'jacob-insert-caret)
-  ;; (define-key xah-fly-leader-key-map "dv" 'jacob-insert-tilde)
-  ;; (define-key xah-fly-leader-key-map "dx" 'jacob-insert-at)
-  ;; (define-key xah-fly-leader-key-map "dz" 'jacob-insert-apostrophe)
 
   ;; (define-key xah-fly-leader-key-map "ei" 'jacob-format-buffer) ; should improve
   (define-key xah-fly-leader-key-map "ep" project-prefix-map)
