@@ -1238,7 +1238,7 @@ will return the json data as a Lisp object."
 				                 (dired-get-filename nil t)))))
 			              (and filename (file-relative-name filename))))))
   (async-shell-command command
-                       (concat "* " default-directory " " command " *")))
+                       (format "* %s %s *" default-directory command)))
 
 (defvar jacob-format-words-style-and-start nil
   "Pair of currently selected style and starting point.
