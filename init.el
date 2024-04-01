@@ -1070,8 +1070,10 @@ Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (c
       (lambda (action cand)
         (funcall orig-state action (funcall filter action cand)))))
 
-  (setq consult--source-buffer
-        (plist-put consult--source-buffer :state #'jacob-consult-buffer-state-no-tramp)))
+  (with-eval-after-load 'consult
+    (setq consult--source-buffer
+          (plist-put consult--source-buffer
+                     :state #'jacob-consult-buffer-state-no-tramp))))
 
 
 
