@@ -1762,8 +1762,37 @@ point back to ■.  Special characters (■, ●) will be deleted."
 
 ;; key bindings
 
-(global-set-key (kbd "C-<next>") 'next-buffer)
-(global-set-key (kbd "C-<prior>") 'previous-buffer)
+(keymap-set lisp-interaction-mode-map (kbd "C-j") 'jacob-eval-print-last-sexp)
+
+(keymap-global-set "C-x k" 'kill-this-buffer)
+(keymap-global-set "C-k" 'jacob-kill-line-or-region)
+
+(jacob-is-installed 'consult
+  (keymap-global-set "C-x b" 'consult-buffer)
+  (keymap-set project-prefix-map "g" 'jacob-project-search)
+  (keymap-global-set "M-g i" 'consult-imenu))
+
+(defvar-keymap jacob-recenter-repeat-map
+  :repeat t
+  "l" #'recenter-top-bottom)
+
+(defvar-keymap jacob-sexp-repeat-map
+  :repeat t
+  "f" #'forward-sexp
+  "b" #'backward-sexp
+  "n" #'forward-list
+  "p" #'backward-list
+  "u" #'backward-up-list
+  "d" #'down-list
+  "k" #'kill-sexp)
+
+(with-eval-after-load 'smerge-mode
+  (defvar-keymap jacob-smerge-repeat-map
+    :repeat t
+    "n" #'smerge-next
+    "p" #'smerge-prev
+    "u" #'smerge-keep-upper
+    "l" #'smerge-keep-lower))
 
 
 ;; macros
@@ -1948,23 +1977,6 @@ point back to ■.  Special characters (■, ●) will be deleted."
     (let ((map csharp-ts-mode-map))
       (jacob-xfk-define-key-in-major-mode map "h" 'jacob-csharp-beginning-of-line-or-statement)
       (jacob-xfk-define-key-in-major-mode map ";" 'jacob-csharp-end-of-line-or-statement))))
-
-(with-eval-after-load 'smerge-mode
-  (defvar jacob-smerge-repeat-map
-    (let ((map (make-sparse-keymap)))
-      (define-key map (kbd "n") 'smerge-next)
-      (define-key map (kbd "p") 'smerge-prev)
-      (define-key map (kbd "u") 'smerge-keep-upper)
-      (define-key map (kbd "l") 'smerge-keep-lower)
-      map))
-
-  (put 'smerge-next 'repeat-map 'jacob-smerge-repeat-map)
-  (put 'smerge-prev 'repeat-map 'jacob-smerge-repeat-map)
-  (put 'smerge-keep-upper 'repeat-map 'jacob-smerge-repeat-map)
-  (put 'smerge-keep-lower 'repeat-map 'jacob-smerge-repeat-map))
-
-(define-key emacs-lisp-mode-map (kbd "C-j") 'jacob-eval-print-last-sexp)
-(define-key lisp-interaction-mode-map (kbd "C-j") 'jacob-eval-print-last-sexp)
 
 (provide 'init)
 ;;; init.el ends here
