@@ -150,6 +150,10 @@
 (help-at-pt-set-timer)
 
 
+;; help config
+(setq help-window-select t)
+
+
 ;; warnings config
 
 (setq warning-minimum-level :error)
