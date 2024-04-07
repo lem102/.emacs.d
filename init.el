@@ -400,7 +400,6 @@ hides this information."
   (setq flymake-mode-line-format '(flymake-mode-line-exception flymake-mode-line-counters)))
 
 
-
 ;; project config
 
 (with-eval-after-load 'project
