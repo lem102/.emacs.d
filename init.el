@@ -821,12 +821,18 @@ If successful, evaluate BODY.  Used to eagerly load feature."
 
 ;; format-all config
 
-(when (package-installed-p 'format-all)
-  (add-hook 'typescript-ts-mode-hook 'format-all-mode)
-  (add-hook 'tsx-ts-mode-hook 'format-all-mode))
+;; (when (package-installed-p 'format-all)
+;;   (add-hook 'typescript-ts-mode-hook 'format-all-mode)
+;;   (add-hook 'tsx-ts-mode-hook 'format-all-mode))
 
-(with-eval-after-load 'format-all
-  (add-hook 'format-all-mode-hook 'format-all-ensure-formatter))
+;; (with-eval-after-load 'format-all
+;;   (add-hook 'format-all-mode-hook 'format-all-ensure-formatter))
+
+
+;; aphelia config
+
+(when (package-installed-p 'apheleia)
+  (add-hook 'typescript-ts-mode-hook 'apheleia-mode))
 
 
 ;; eglot-booster config
