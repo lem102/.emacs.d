@@ -1511,12 +1511,12 @@ will take the user from first instance to last.  If present, move
 point back to ■.  Special characters (■, ●) will be deleted."
   (when template
     (insert template))
-  (let* ((start-position (if template
-                             (- (point)
+  (let* ((end-position (point))
+         (start-position (if template
+                             (- end-position
                                 (length template))
                            last-abbrev-location))
          ■-position)
-    (indent-region start-position (point))
     (while (search-backward-regexp "[■●]"
                                    start-position
                                    t)
@@ -1526,6 +1526,7 @@ point back to ■.  Special characters (■, ●) will be deleted."
                (setq ■-position (point-marker)))
               ((string= match "●")
                (push-mark)))))
+    (indent-region start-position end-position)
     (goto-char ■-position)))
 
 (put 'jacob-insert 'no-self-insert t)
