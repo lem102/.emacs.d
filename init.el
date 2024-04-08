@@ -822,20 +822,13 @@ If successful, evaluate BODY.  Used to eagerly load feature."
   (add-to-list 'avy-dispatch-alist '(?t . jacob-avy-action-xref-find-definitions)))
 
 
-;; format-all config
-
-;; (when (package-installed-p 'format-all)
-;;   (add-hook 'typescript-ts-mode-hook 'format-all-mode)
-;;   (add-hook 'tsx-ts-mode-hook 'format-all-mode))
-
-;; (with-eval-after-load 'format-all
-;;   (add-hook 'format-all-mode-hook 'format-all-ensure-formatter))
-
-
 ;; aphelia config
 
 (when (package-installed-p 'apheleia)
-  (add-hook 'typescript-ts-mode-hook 'apheleia-mode))
+  (apheleia-global-mode 1)
+  (setq apheleia-inhibit t)             ; set `apheleia-inhibit' to
+                                        ; nil in dir locals to enable
+  )
 
 
 ;; eglot-booster config
@@ -1761,7 +1754,7 @@ point back to ■.  Special characters (■, ●) will be deleted."
 
 ;; key bindings
 
-(keymap-set lisp-interaction-mode-map (kbd "C-j") 'jacob-eval-print-last-sexp)
+(keymap-set lisp-interaction-mode-map "C-j" 'jacob-eval-print-last-sexp)
 
 (keymap-global-set "C-x k" 'kill-this-buffer)
 (keymap-global-set "C-k" 'jacob-kill-line-or-region)
