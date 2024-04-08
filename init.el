@@ -826,8 +826,8 @@ If successful, evaluate BODY.  Used to eagerly load feature."
 
 (when (package-installed-p 'apheleia)
   (apheleia-global-mode 1)
-  (setq apheleia-inhibit t)             ; set `apheleia-inhibit' to
-                                        ; nil in dir locals to enable
+  (setq-default apheleia-inhibit t)     ; set `apheleia-inhibit' to
+                                        ; nil to enable
   )
 
 
