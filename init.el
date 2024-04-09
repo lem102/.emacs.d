@@ -1171,6 +1171,34 @@ Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (c
 
 ;; personal functions
 
+(defun jacob-beginning-of-line ()
+  "Go to indentation, line start, backward paragraph."
+  (interactive)
+  (cond ((bolp)
+         (backward-paragraph))
+        ((= (save-excursion (back-to-indentation) (point)) (point))
+         (move-beginning-of-line 1))
+        (t
+         (back-to-indentation))))
+
+(defun jacob-kill-line ()
+  "If region is active, kill it. Otherwise:
+
+If point is at the beginning of the line, kill the whole line.
+
+If point is at the end of the line, kill until the beginning of the line.
+
+Otherwise, kill from point to the end of the line."
+  (interactive)
+  (cond ((region-active-p)
+         (call-interactively #'kill-region))
+        ((bolp)
+         (kill-whole-line))
+        ((eolp)
+         (kill-line 0))
+        (t
+         (kill-line))))
+
 (defun jacob-random-init ()
   "Go to a random place in init file."
   (interactive)
