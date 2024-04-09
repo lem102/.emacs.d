@@ -873,7 +873,7 @@ Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (c
   (kill-some-buffers
    (seq-filter (lambda (b)
                  (seq-contains-p
-                  '(slack-message-buffer-mode)
+                  '(slack-message-buffer-mode slack-thread-message-buffer-mode)
                   (buffer-local-value 'major-mode b)))
                (buffer-list))))
 
