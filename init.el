@@ -1053,7 +1053,7 @@ Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (c
 
 ;; consult config
 
-(jacob-is-installed 'consult
+(jacob-try-require 'consult
   (setq completion-in-region-function 'consult-completion-in-region)
 
   (setq consult-preview-raw-size 0)
