@@ -870,12 +870,12 @@ Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (c
 (defun jacob-slack-kill-buffers ()
   "Kill all slack message buffers."
   (interactive)
-  (seq-do #'kill-buffer
-          (seq-filter (lambda (b)
-                        (seq-contains-p
-                         '(slack-message-buffer-mode)
-                         (buffer-local-value 'major-mode b)))
-                      (buffer-list))))
+  (kill-some-buffers
+   (seq-filter (lambda (b)
+                 (seq-contains-p
+                  '(slack-message-buffer-mode)
+                  (buffer-local-value 'major-mode b)))
+               (buffer-list))))
 
 (with-eval-after-load 'slack
   (setq slack-enable-global-mode-string t)
