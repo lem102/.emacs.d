@@ -1789,17 +1789,16 @@ point back to ■.  Special characters (■, ●) will be deleted."
 
 
 
-;; key bindings
+;; keybindings
 
-(keymap-set lisp-interaction-mode-map "C-j" 'jacob-eval-print-last-sexp)
+(keymap-set lisp-interaction-mode-map "C-j" #'jacob-eval-print-last-sexp)
 
-(keymap-global-set "C-x k" 'kill-this-buffer)
-(keymap-global-set "C-k" 'jacob-kill-line-or-region)
+(keymap-global-set "C-x k" #'kill-this-buffer)
+(keymap-global-set "C-k" #'jacob-kill-line)
+(keymap-global-unset "C-x C-u")
+(keymap-global-set "C-a" #'jacob-beginning-of-line)
 
-(jacob-is-installed 'consult
-  (keymap-global-set "C-x b" 'consult-buffer)
-  (keymap-set project-prefix-map "g" 'jacob-project-search)
-  (keymap-global-set "M-g i" 'consult-imenu))
+(keymap-global-set "C-x C-b" #'ibuffer)
 
 (defvar-keymap jacob-recenter-repeat-map
   :repeat t
@@ -1822,6 +1821,22 @@ point back to ■.  Special characters (■, ●) will be deleted."
     "p" #'smerge-prev
     "u" #'smerge-keep-upper
     "l" #'smerge-keep-lower))
+
+(with-eval-after-load 'consult
+  (keymap-set ctl-x-map "b" #'consult-buffer)
+  (keymap-set ctl-x-4-map "b" #'consult-buffer-other-window)
+
+  (keymap-set project-prefix-map "g" #'jacob-project-search)
+  
+  (keymap-global-set "M-g i" #'consult-imenu))
+
+(with-eval-after-load 'slack
+  (define-prefix-command 'jacob-slack-map)
+  (keymap-global-set "C-c s" jacob-slack-map)
+  (define-key jacob-slack-map "s" #'slack-start)
+  (define-key jacob-slack-map "u" #'jacob-slack-display-unread)
+  (define-key jacob-slack-map "r" #'slack-select-rooms)
+  (define-key jacob-slack-map "k" #'jacob-slack-kill-buffers))
 
 
 ;; macros
@@ -1885,7 +1900,8 @@ point back to ■.  Special characters (■, ●) will be deleted."
     (define-key xah-fly-leader-key-map "v" 'consult-yank-from-kill-ring)
     (define-key xah-fly-leader-key-map "f" 'consult-buffer)
     (define-key xah-fly-leader-key-map "ij" 'consult-recent-file)
-    (define-key xah-fly-leader-key-map "es" 'consult-line))
+    (define-key xah-fly-leader-key-map "es" 'consult-line)
+    (define-key xah-fly-leader-key-map "ku" 'consult-goto-line))
 
   (defvar jacob-insert-parentheses-character ?k)
   (defvar jacob-insert-square-bracket-character ?l)
@@ -1920,12 +1936,6 @@ point back to ■.  Special characters (■, ●) will be deleted."
 
   (define-prefix-command 'jacob-map)
   (define-key xah-fly-leader-key-map " " jacob-map)
-
-  (define-prefix-command 'jacob-slack-map)
-  (define-key jacob-map "s" jacob-slack-map)
-  (define-key jacob-slack-map "s" 'slack-start)
-  (define-key jacob-slack-map "u" 'jacob-slack-display-unread)
-  (define-key jacob-slack-map "r" 'slack-select-rooms)
 
   (define-prefix-command 'jacob-csharp-map)
   (define-key jacob-map "c" jacob-csharp-map)
