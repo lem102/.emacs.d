@@ -119,8 +119,6 @@
 
 (setq split-height-threshold nil)
 
-(setq parens-require-spaces nil)
-
 (defvar jacob-welcome-messages '("\"A journey of a thousand miles begins with a single step.\" - 老子"
                                  "\"apex predator of grug is complexity\" - some grug"
                                  "\"Perfection is achieved, not when there is nothing more to add, but when there is nothing left to take away.\" - Antoine de Saint-Exupéry"
