@@ -1852,6 +1852,7 @@ point back to ■.  Special characters (■, ●) will be deleted."
 
 (keymap-global-set "C-c d" #'jacob-sql-connect)
 (keymap-global-set "C-c g" #'gnus)
+(keymap-global-set "C-c t" #'ef-themes-toggle)
 
 (with-eval-after-load 'consult
   (keymap-set ctl-x-map "b" #'consult-buffer)
