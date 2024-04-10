@@ -1823,7 +1823,7 @@ point back to ■.  Special characters (■, ●) will be deleted."
 
 (keymap-global-set "C-x k" #'kill-this-buffer)
 (keymap-global-set "C-k" #'jacob-kill-line)
-(keymap-global-unset "C-x C-u")
+(keymap-global-unset "C-x u")
 (keymap-global-set "C-a" #'jacob-beginning-of-line)
 
 (keymap-global-set "C-x C-b" #'ibuffer)
@@ -1850,13 +1850,18 @@ point back to ■.  Special characters (■, ●) will be deleted."
     "u" #'smerge-keep-upper
     "l" #'smerge-keep-lower))
 
+(keymap-global-set "C-c d" #'jacob-sql-connect)
+(keymap-global-set "C-c g" #'gnus)
+
 (with-eval-after-load 'consult
   (keymap-set ctl-x-map "b" #'consult-buffer)
   (keymap-set ctl-x-4-map "b" #'consult-buffer-other-window)
 
   (keymap-set project-prefix-map "g" #'jacob-project-search)
   
-  (keymap-global-set "M-g i" #'consult-imenu))
+  (keymap-global-set "M-g i" #'consult-imenu)
+
+  (keymap-global-set "C-c l" #'consult-line))
 
 (with-eval-after-load 'slack
   (define-prefix-command 'jacob-slack-map)
@@ -1865,6 +1870,12 @@ point back to ■.  Special characters (■, ●) will be deleted."
   (define-key jacob-slack-map "u" #'jacob-slack-display-unread)
   (define-key jacob-slack-map "r" #'slack-select-rooms)
   (define-key jacob-slack-map "k" #'jacob-slack-kill-buffers))
+
+(with-eval-after-load 'eglot
+  (define-prefix-command 'jacob-eglot-map)
+  (keymap-global-set "C-c e" jacob-eglot-map)
+  (keymap-set jacob-eglot-map "a" #'eglot-code-actions)
+  (keymap-set jacob-eglot-map "r" #'eglot-rename))
 
 
 ;; macros
