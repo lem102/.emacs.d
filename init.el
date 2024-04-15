@@ -1858,8 +1858,11 @@ point back to ■.  Special characters (■, ●) will be deleted."
 
 (keymap-global-set "C-x k" #'jacob-kill-buffer)
 (keymap-global-set "C-k" #'jacob-kill-line)
-(keymap-global-unset "C-x u")
 (keymap-global-set "C-a" #'jacob-beginning-of-line)
+
+(keymap-global-unset "C-x C-c")         ; `save-buffers-kill-terminal'
+(keymap-global-unset "C-z")             ; `suspend-frame'
+(keymap-global-unset "C-x u")           ; `undo'
 
 (keymap-global-set "C-x C-b" #'ibuffer)
 
