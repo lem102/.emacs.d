@@ -854,7 +854,7 @@ Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (c
       (slack-default-modeline-formatter alist)
     ""))
 
-(defun jacob-slack-display-unread ()
+(defun jacob-slack-show-unread ()
   "Open an unread slack message."
   (interactive)
   (let* ((team (slack-team-select))
@@ -876,6 +876,21 @@ Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (c
                   '(slack-message-buffer-mode slack-thread-message-buffer-mode)
                   (buffer-local-value 'major-mode b)))
                (buffer-list))))
+
+
+(defun jacob-slack-show-all-unread ()
+  "Show all unread messages."
+  (interactive)
+  (let* ((team (slack-team-select))
+         (rooms (seq-filter #'(lambda (room)
+                                (slack-room-has-unread-p room team))
+                            (append (slack-team-ims team)
+                                    (slack-team-groups team)
+                                    (slack-team-channels team)))))
+    (if (null rooms)
+        (message "no unread slack messages")
+      (dolist (room rooms)
+        (slack-room-display room team)))))
 
 (with-eval-after-load 'slack
   (setq slack-enable-global-mode-string t)
@@ -1170,6 +1185,11 @@ Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (c
 
 
 ;; personal functions
+
+(defun jacob-kill-buffer ()
+  "Kill the current buffer."
+  (interactive)
+  (kill-buffer))
 
 (defun jacob-beginning-of-line ()
   "Go to indentation, line start, backward paragraph."
@@ -1699,7 +1719,6 @@ point back to ■.  Special characters (■, ●) will be deleted."
     ("var" "var ■ = ●;" jacob-insert)
     ("meth" "■()\n{\n●\n}" jacob-insert)
     ("jt" "JACOBTODO:" nil :enable-function nil)
-    ("to" "JACOBTODO:" nil :enable-function nil)
     ("cwl" "Console.WriteLine(■);" jacob-insert)
     ("prop" "public ■ { get; set; }" jacob-insert)
     ("jwe" "Console.WriteLine(\"jacobwozere\");" t)
@@ -1819,9 +1838,25 @@ point back to ■.  Special characters (■, ●) will be deleted."
 
 ;; keybindings
 
+;; default keybinds that can be rebound:
+
+;; +-------+------------------+
+;; |Key    |Command           |
+;; +-------+------------------+
+;; |C-z    |suspend-frame     |
+;; +-------+------------------+
+;; |C-m    |RET               |
+;; +-------+------------------+
+;; |C/M 0-9|Universal argument|
+;; +-------+------------------+
+;; |C-i    |TAB               |
+;; +-------+------------------+
+;; |       |                  |
+;; +-------+------------------+
+
 (keymap-set lisp-interaction-mode-map "C-j" #'jacob-eval-print-last-sexp)
 
-(keymap-global-set "C-x k" #'kill-this-buffer)
+(keymap-global-set "C-x k" #'jacob-kill-buffer)
 (keymap-global-set "C-k" #'jacob-kill-line)
 (keymap-global-unset "C-x u")
 (keymap-global-set "C-a" #'jacob-beginning-of-line)
@@ -1842,6 +1877,10 @@ point back to ■.  Special characters (■, ●) will be deleted."
   "d" #'down-list
   "k" #'kill-sexp)
 
+(defvar-keymap jacob-other-frame-repeat-map
+  :repeat t
+  "o" #'other-frame)
+
 (with-eval-after-load 'smerge-mode
   (defvar-keymap jacob-smerge-repeat-map
     :repeat t
@@ -1854,6 +1893,9 @@ point back to ■.  Special characters (■, ●) will be deleted."
 (keymap-global-set "C-c g" #'gnus)
 (keymap-global-set "C-c t" #'ef-themes-toggle)
 
+(when (package-installed-p 'expand-region)
+  (keymap-global-set "C-@" #'er/expand-region))
+
 (with-eval-after-load 'consult
   (keymap-set ctl-x-map "b" #'consult-buffer)
   (keymap-set ctl-x-4-map "b" #'consult-buffer-other-window)
@@ -1864,11 +1906,12 @@ point back to ■.  Special characters (■, ●) will be deleted."
 
   (keymap-global-set "C-c l" #'consult-line))
 
-(with-eval-after-load 'slack
+(when (package-installed-p 'slack)
   (define-prefix-command 'jacob-slack-map)
   (keymap-global-set "C-c s" jacob-slack-map)
   (define-key jacob-slack-map "s" #'slack-start)
-  (define-key jacob-slack-map "u" #'jacob-slack-display-unread)
+  (define-key jacob-slack-map "u" #'jacob-slack-show-unread)
+  (define-key jacob-slack-map "U" #'jacob-slack-show-all-unread)
   (define-key jacob-slack-map "r" #'slack-select-rooms)
   (define-key jacob-slack-map "k" #'jacob-slack-kill-buffers))
 
@@ -1876,7 +1919,8 @@ point back to ■.  Special characters (■, ●) will be deleted."
   (define-prefix-command 'jacob-eglot-map)
   (keymap-global-set "C-c e" jacob-eglot-map)
   (keymap-set jacob-eglot-map "a" #'eglot-code-actions)
-  (keymap-set jacob-eglot-map "r" #'eglot-rename))
+  (keymap-set jacob-eglot-map "r" #'eglot-rename)
+  (keymap-set jacob-eglot-map "i" #'eglot-find-implementation))
 
 
 ;; macros
@@ -1910,10 +1954,7 @@ point back to ■.  Special characters (■, ●) will be deleted."
 
   (define-key xah-fly-leader-key-map "u" 'kill-current-buffer)
 
-  (define-prefix-command 'jacob-eglot-keymap)
-  (define-key xah-fly-leader-key-map "we" jacob-eglot-keymap)
-  (define-key xah-fly-leader-key-map "wea" 'eglot-code-actions)
-  (define-key xah-fly-leader-key-map "wer" 'eglot-rename)
+  
 
   ;; (define-key map "P" 'jacob-git-push-set-upstream)
 
