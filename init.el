@@ -59,16 +59,14 @@
                              ((or (derived-mode . slack-mode)
                                   (derived-mode . lui-mode))
                               (display-buffer-in-side-window)
-                              (side . right)
-                              (slot . 0))
+                              (side . right))
                              ;; sql
                              ((major-mode . sql-interactive-mode)
                               (display-buffer-reuse-mode-window display-buffer-same-window))
                              ;; shell
                              ("eshell\\*"
                               (display-buffer-in-side-window)
-                              (side . bottom)
-                              (slot . -1))))
+                              (side . bottom))))
 
 
 ;; screen sharing config
