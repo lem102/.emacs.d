@@ -1858,6 +1858,9 @@ point back to ■.  Special characters (■, ●) will be deleted."
 (keymap-global-set "C-k" #'jacob-kill-line)
 (keymap-global-set "C-a" #'jacob-beginning-of-line)
 
+(keymap-global-set "M-n" #'flymake-goto-next-error)
+(keymap-global-set "M-p" #'flymake-goto-prev-error)
+
 (keymap-global-unset "C-x C-c")         ; `save-buffers-kill-terminal'
 (keymap-global-unset "C-z")             ; `suspend-frame'
 (keymap-global-unset "C-x u")           ; `undo'
@@ -1921,7 +1924,8 @@ point back to ■.  Special characters (■, ●) will be deleted."
   (keymap-global-set "C-c e" jacob-eglot-map)
   (keymap-set jacob-eglot-map "a" #'eglot-code-actions)
   (keymap-set jacob-eglot-map "r" #'eglot-rename)
-  (keymap-set jacob-eglot-map "i" #'eglot-find-implementation))
+  (keymap-set jacob-eglot-map "i" #'eglot-find-implementation)
+  (keymap-set jacob-eglot-map "R" #'eglot-reconnect))
 
 
 ;; macros
