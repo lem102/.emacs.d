@@ -1897,6 +1897,9 @@ point back to ■.  Special characters (■, ●) will be deleted."
 (keymap-global-set "C-c g" #'gnus)
 (keymap-global-set "C-c t" #'ef-themes-toggle)
 
+(when (package-installed-p 'avy)
+  (keymap-global-set "C-c a" 'avy-goto-char-timer))
+
 (when (package-installed-p 'expand-region)
   (keymap-global-set "C-@" #'er/expand-region))
 
@@ -1922,6 +1925,7 @@ point back to ■.  Special characters (■, ●) will be deleted."
 (with-eval-after-load 'eglot
   (define-prefix-command 'jacob-eglot-map)
   (keymap-global-set "C-c e" jacob-eglot-map)
+  (keymap-set jacob-eglot-map "e" #'eglot)
   (keymap-set jacob-eglot-map "a" #'eglot-code-actions)
   (keymap-set jacob-eglot-map "r" #'eglot-rename)
   (keymap-set jacob-eglot-map "i" #'eglot-find-implementation)
