@@ -1709,9 +1709,6 @@ point back to ■.  Special characters (■, ●) will be deleted."
 (defun jacob-insert-js-describe ()
   (jacob-insert "describe(\"■\", () => {\n●\n});"))
 
-(defun jacob-insert-js-it ()
-  (jacob-insert "it(\"■\", () => {\n●\n});"))
-
 (defun jacob-insert-clojure-defn ()
   (jacob-insert "(defn ■ [●]\n●)"))
 
@@ -1747,7 +1744,7 @@ point back to ■.  Special characters (■, ●) will be deleted."
 (define-abbrev-table 'text-mode-abbrev-table
   '(("i" "I")
     ("im" "I'm")
-    ("id" "I'd")
+    ("idd" "I'd")
     ("dont" "don't")
     ("its" "it's")
     ("havent" "haven't")))
@@ -1782,7 +1779,6 @@ point back to ■.  Special characters (■, ●) will be deleted."
     ("let" "let ■ = ●;" jacob-insert)
     ("fore" "forEach((■) => ●)" jacob-insert)
     ("desc" "" jacob-insert-js-describe)
-    ("it" "" jacob-insert-js-it)
     ("map" "map((■) => ●)" jacob-insert)
     ("filter" "filter((■) => ●)" jacob-insert)
     ("red" "reduce((■) => ●)" jacob-insert)
