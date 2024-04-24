@@ -810,14 +810,26 @@ If successful, evaluate BODY.  Used to eagerly load feature."
 
 ;; avy config
 
-(defun jacob-avy-action-xref-find-definitions (point)
-  "Go to the definition at POINT."
-  (goto-char point)
-  (call-interactively 'xref-find-definitions)
+(defun jacob-avy-action-xref (pt)
+  (save-excursion
+    (goto-char pt)
+    (call-interactively #'xref-find-definitions))
+  (select-window
+   (cdr (ring-ref avy-ring 0)))
   t)
 
-(jacob-try-require 'avy
-  (add-to-list 'avy-dispatch-alist '(?t . jacob-avy-action-xref-find-definitions)))
+(when (package-installed-p 'avy)
+  (require 'avy)
+  (setq avy-keys '(?a ?s ?d ?f ?g ?h ?j ?l ?\;))
+  (setq avy-dispatch-alist '((?y . avy-action-yank)
+                             (?k . avy-action-kill-stay)
+                             (?K . avy-action-kill-move)
+                             (?t . avy-action-teleport)
+                             (?m . avy-action-mark)
+                             (?w . avy-action-copy)
+                             (?i . avy-action-ispell)
+                             (?z . avy-action-zap-to-char)
+                             (?. . jacob-avy-action-xref))))
 
 
 ;; aphelia config
