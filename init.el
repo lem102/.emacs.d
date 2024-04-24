@@ -841,6 +841,16 @@ If successful, evaluate BODY.  Used to eagerly load feature."
   )
 
 
+;; combobulate config
+(unless (package-installed-p 'combobulate)
+  (package-vc-install "https://github.com/lem102/combobulate.git"))
+
+(with-eval-after-load 'combobulate
+  (setq combobulate-key-prefix "C-o o"))
+
+(add-hook 'typescript-ts-mode-hook #'combobulate-mode)
+
+
 ;; eglot-booster config
 (unless (package-installed-p 'eglot-booster)
   (package-vc-install "https://github.com/jdtsmith/eglot-booster"))
