@@ -40,8 +40,6 @@ evaluate `(default-value \\='xah-fly-keys)'.
 The mode's hook is called both when the mode is enabled and when
 it is disabled.
 
-\\{xah-fly-insert-map}
-
 (fn &optional ARG)" t)
 (register-definition-prefixes "xah-fly-keys" '("xah-"))
 
