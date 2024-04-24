@@ -1947,7 +1947,7 @@ point back to ■.  Special characters (■, ●) will be deleted."
 
 (keymap-set lisp-interaction-mode-map "C-j" #'jacob-eval-print-last-sexp)
 
-(keymap-global-set "C-x k" #'jacob-kill-buffer)
+(keymap-global-set "C-x k" #'kill-current-buffer)
 (keymap-global-set "C-k" #'jacob-kill-line)
 (keymap-global-set "C-a" #'jacob-beginning-of-line)
 
@@ -1959,24 +1959,6 @@ point back to ■.  Special characters (■, ●) will be deleted."
 (keymap-global-unset "C-x u")           ; `undo'
 
 (keymap-global-set "C-x C-b" #'ibuffer)
-
-(defvar-keymap jacob-recenter-repeat-map
-  :repeat t
-  "l" #'recenter-top-bottom)
-
-(defvar-keymap jacob-sexp-repeat-map
-  :repeat t
-  "f" #'forward-sexp
-  "b" #'backward-sexp
-  "n" #'forward-list
-  "p" #'backward-list
-  "u" #'backward-up-list
-  "d" #'down-list
-  "k" #'kill-sexp)
-
-(defvar-keymap jacob-other-frame-repeat-map
-  :repeat t
-  "o" #'other-frame)
 
 (with-eval-after-load 'smerge-mode
   (defvar-keymap jacob-smerge-repeat-map
@@ -2007,22 +1989,35 @@ point back to ■.  Special characters (■, ●) will be deleted."
   (keymap-global-set "C-c l" #'consult-line))
 
 (when (package-installed-p 'slack)
-  (define-prefix-command 'jacob-slack-map)
-  (keymap-global-set "C-c s" jacob-slack-map)
-  (define-key jacob-slack-map "s" #'slack-start)
-  (define-key jacob-slack-map "u" #'jacob-slack-show-unread)
-  (define-key jacob-slack-map "U" #'jacob-slack-show-all-unread)
-  (define-key jacob-slack-map "r" #'slack-select-rooms)
-  (define-key jacob-slack-map "k" #'jacob-slack-kill-buffers))
+  (defvar-keymap jacob-slack-map
+    "s" #'slack-start
+    "u" #'jacob-slack-show-unread
+    "U" #'jacob-slack-show-all-unread
+    "r" #'slack-select-rooms
+    "k" #'jacob-slack-kill-buffers))
 
 (with-eval-after-load 'eglot
-  (define-prefix-command 'jacob-eglot-map)
-  (keymap-global-set "C-c e" jacob-eglot-map)
-  (keymap-set jacob-eglot-map "e" #'eglot)
-  (keymap-set jacob-eglot-map "a" #'eglot-code-actions)
-  (keymap-set jacob-eglot-map "r" #'eglot-rename)
-  (keymap-set jacob-eglot-map "i" #'eglot-find-implementation)
-  (keymap-set jacob-eglot-map "R" #'eglot-reconnect))
+  (defvar-keymap jacob-eglot-map
+    "e" #'eglot
+    "a" #'eglot-code-actions
+    "r" #'eglot-rename
+    "i" #'eglot-find-implementation
+    "R" #'eglot-reconnect))
+
+(defvar-keymap jacob-csharp-map
+  "f" #'jacob-format-csharp-statement
+  "t" #'jacob-csharp-run-test)
+
+(defvar-keymap jacob-map
+  "a" #'avy-goto-char-timer
+  "d" #'jacob-sql-connect
+  "g" #'gnus
+  "t" #'ef-themes-toggle
+  "s" jacob-slack-map
+  "e" jacob-eglot-map
+  "c" jacob-csharp-map)
+
+(keymap-global-set "C-c" jacob-map)
 
 
 ;; macros
@@ -2038,7 +2033,10 @@ point back to ■.  Special characters (■, ●) will be deleted."
 
   (define-key global-map (kbd "M-SPC") 'xah-fly-command-mode-activate)
 
-  (define-key xah-fly-command-map "s" 'jacob-return-macro)
+  (define-key xah-fly-command-map "h" #'jacob-beginning-of-line)
+  (define-key xah-fly-command-map ";" #'jacob-end-of-line)
+  (define-key xah-fly-command-map "s" #'jacob-return-macro)
+  (define-key xah-fly-command-map "d" #'jacob-backspace)
   ;; (define-key xah-fly-command-map "4" 'other-window-prefix)
   (define-key xah-fly-command-map "1" 'winner-undo)
   (define-key xah-fly-command-map "2" 'winner-redo)
@@ -2055,8 +2053,6 @@ point back to ■.  Special characters (■, ●) will be deleted."
   (define-key xah-fly-command-map (kbd "-") 'jacob-previous-error-or-punct)
 
   (define-key xah-fly-leader-key-map "u" 'kill-current-buffer)
-
-  
 
   ;; (define-key map "P" 'jacob-git-push-set-upstream)
 
@@ -2111,20 +2107,8 @@ point back to ■.  Special characters (■, ●) will be deleted."
   (let ((map minibuffer-local-completion-map))
     (define-key map "SPC" 'self-insert-command))
 
-  (define-prefix-command 'jacob-map)
   (define-key xah-fly-leader-key-map " " jacob-map)
 
-  (define-prefix-command 'jacob-csharp-map)
-  (define-key jacob-map "c" jacob-csharp-map)
-  (define-key jacob-csharp-map "f" 'jacob-format-csharp-statement)
-  (define-key jacob-csharp-map "t" 'jacob-csharp-run-test)
-
-  (define-key jacob-map "d" 'jacob-sql-connect)
-  (define-key jacob-map "g" 'gnus)
-  
-  (jacob-is-installed 'avy
-    (define-key jacob-map "a" 'avy-goto-char-timer))
-  
   (let ((map dired-mode-map))
     (jacob-xfk-define-key-in-major-mode map "q" 'quit-window)
     (jacob-xfk-define-key-in-major-mode map "i" 'dired-previous-line)
@@ -2132,6 +2116,7 @@ point back to ■.  Special characters (■, ●) will be deleted."
     (jacob-xfk-define-key-in-major-mode map "s" 'dired-find-file)
     (jacob-xfk-define-key-in-major-mode map "e" 'dired-mark)
     (jacob-xfk-define-key-in-major-mode map "r" 'dired-unmark)
+    (jacob-xfk-define-key-in-major-mode map "g" #'revert-buffer)
     (jacob-xfk-define-key-in-major-mode map "x" 'dired-do-rename)
     (jacob-xfk-define-key-in-major-mode map "c" 'dired-do-copy)
     (jacob-xfk-define-key-in-major-mode map "d" 'dired-do-delete) ; we skip the "flag, delete" process as files are sent to system bin on deletion
@@ -2146,6 +2131,7 @@ point back to ■.  Special characters (■, ●) will be deleted."
   (with-eval-after-load 'vc-dir
     (let ((map vc-dir-mode-map))
       (jacob-xfk-define-key-in-major-mode map "q" 'quit-window)
+      (jacob-xfk-define-key-in-major-mode map "g" 'revert-buffer)
       (jacob-xfk-define-key-in-major-mode map "i" 'vc-dir-previous-line)
       (jacob-xfk-define-key-in-major-mode map "k" 'vc-dir-next-line)
       (jacob-xfk-define-key-in-major-mode map "o" 'vc-dir-next-directory)
@@ -2155,7 +2141,9 @@ point back to ■.  Special characters (■, ●) will be deleted."
       (jacob-xfk-define-key-in-major-mode map "r" 'vc-dir-unmark)
       (jacob-xfk-define-key-in-major-mode map "v" 'vc-next-action)
       (jacob-xfk-define-key-in-major-mode map "p" 'vc-push)
-      (jacob-xfk-define-key-in-major-mode map "P" 'jacob-git-push-set-upstream)))
+      (jacob-xfk-define-key-in-major-mode map "P" 'jacob-git-push-set-upstream)
+      (jacob-xfk-define-key-in-major-mode map "=" 'vc-diff)
+      (jacob-xfk-define-key-in-major-mode map "x" #'vc-dir-hide-up-to-date)))
 
   (with-eval-after-load 'info
     (let ((map Info-mode-map))
@@ -2187,7 +2175,33 @@ point back to ■.  Special characters (■, ●) will be deleted."
 
   (with-eval-after-load 'diff-mode
     (let ((map diff-mode-map))
-      (jacob-xfk-define-key-in-major-mode map "q" 'quit-window)))
+      (jacob-xfk-define-key-in-major-mode map "q" #'quit-window)
+      (jacob-xfk-define-key-in-major-mode map "e" #'diff-hunk-prev)
+      (jacob-xfk-define-key-in-major-mode map "r" #'diff-hunk-next)
+      (jacob-xfk-define-key-in-major-mode map "x" #'diff-hunk-kill)
+      (jacob-xfk-define-key-in-major-mode map "g" 'revert-buffer)))
+
+  (with-eval-after-load 'gnus
+    (jacob-xfk-define-key-in-major-mode gnus-group-mode-map "q" #'gnus-group-exit)
+    (jacob-xfk-define-key-in-major-mode gnus-group-mode-map "i" #'gnus-group-prev-group)
+    (jacob-xfk-define-key-in-major-mode gnus-group-mode-map "k" #'gnus-group-next-group)
+    (jacob-xfk-define-key-in-major-mode gnus-group-mode-map "g" #'gnus-group-get-new-news)
+
+    (with-eval-after-load 'gnus-topic-mode
+      (jacob-xfk-define-key-in-major-mode gnus-topic-mode-map "s" #'gnus-topic-select-group))
+
+    (jacob-xfk-define-key-in-major-mode gnus-summary-mode-map "q" #'gnus-summary-exit)
+    (jacob-xfk-define-key-in-major-mode gnus-summary-mode-map "i" #'gnus-summary-prev-article)
+    (jacob-xfk-define-key-in-major-mode gnus-summary-mode-map "k" #'gnus-summary-next-article)
+    (jacob-xfk-define-key-in-major-mode gnus-summary-mode-map "j" #'gnus-summary-prev-page)
+    (jacob-xfk-define-key-in-major-mode gnus-summary-mode-map "l" #'gnus-summary-next-page))
+
+  (with-eval-after-load 'help
+    (jacob-xfk-define-key-in-major-mode help-mode-map "q" #'quit-window)
+    (jacob-xfk-define-key-in-major-mode help-mode-map "e" #'help-go-back))
+
+  (with-eval-after-load 'compilation
+    (jacob-xfk-define-key-in-major-mode compilation-mode-map #'recompile))
 
   (with-eval-after-load 'csharp-mode
     (let ((map csharp-ts-mode-map))
