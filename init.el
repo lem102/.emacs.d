@@ -776,7 +776,9 @@ Useful for deleting ^M after `eglot-code-actions'."
     "Hook function to be used with a gnus hook."
     (gnus-demon-add-handler 'gnus-demon-scan-news 2 t))
 
-  (add-hook 'gnus-started-hook 'jacob-gnus-hook-function))
+  (add-hook 'gnus-started-hook 'jacob-gnus-hook-function)
+
+  (add-hook 'gnus-group-mode-hook 'gnus-topic-mode))
 
 
 
