@@ -239,7 +239,7 @@ ALIST is as described in `battery-update-functions'."
 
 ;; theme config
 
-(setq ef-themes-to-toggle '(ef-autumn ef-cyprus))
+(setq ef-themes-to-toggle '(ef-winter ef-summer))
 
 (defun jacob-ef-theme ()
   "For use in `ef-themes-post-load-hook'."
