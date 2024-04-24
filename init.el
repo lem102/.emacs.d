@@ -1224,6 +1224,25 @@ Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (c
         (t
          (back-to-indentation))))
 
+(defun jacob-end-of-line ()
+  "Line end, forward paragraph."
+  (interactive)
+  (cond ((eolp)
+         (forward-paragraph))
+        ((= (save-excursion
+              (comment-search-forward (line-end-position) "NOERROR")
+              (goto-char (match-beginning 0))
+              (skip-syntax-backward " " (line-beginning-position))
+              (point))
+            (point))
+         (move-end-of-line 1))
+        ((save-excursion
+           (comment-search-forward (line-end-position) "NOERROR"))
+         (goto-char (match-beginning 0))
+         (skip-syntax-backward " " (line-beginning-position)))
+        (t
+         (move-end-of-line 1))))
+
 (defun jacob-kill-line ()
   "If region is active, kill it. Otherwise:
 
