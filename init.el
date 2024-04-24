@@ -1124,6 +1124,7 @@ Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (c
                      :state #'jacob-consult-buffer-state-no-tramp))))
 
 
+;; expand region config
 
 (jacob-is-installed 'expand-region
   (with-eval-after-load 'expand-region
