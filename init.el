@@ -1210,39 +1210,35 @@ Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (c
 
 ;; personal functions
 
-(defun jacob-kill-buffer ()
-  "Kill the current buffer."
-  (interactive)
-  (kill-buffer))
-
 (defun jacob-beginning-of-line ()
   "Go to indentation, line start, backward paragraph."
   (interactive)
   (cond ((bolp)
          (backward-paragraph))
-        ((= (save-excursion (back-to-indentation) (point)) (point))
+        ((= (save-excursion
+              (back-to-indentation)
+              (point))
+            (point))
          (move-beginning-of-line 1))
         (t
          (back-to-indentation))))
 
 (defun jacob-end-of-line ()
-  "Line end, forward paragraph."
+  "Go to content end, line end, forward paragraph."
   (interactive)
-  (cond ((eolp)
-         (forward-paragraph))
-        ((= (save-excursion
-              (comment-search-forward (line-end-position) "NOERROR")
-              (goto-char (match-beginning 0))
-              (skip-syntax-backward " " (line-beginning-position))
-              (point))
-            (point))
-         (move-end-of-line 1))
-        ((save-excursion
-           (comment-search-forward (line-end-position) "NOERROR"))
-         (goto-char (match-beginning 0))
-         (skip-syntax-backward " " (line-beginning-position)))
-        (t
-         (move-end-of-line 1))))
+  (let ((content-end (save-excursion
+                       (if (comment-search-forward (line-end-position) "NOERROR")
+                           (progn
+                             (goto-char (match-beginning 0))
+                             (skip-syntax-backward " " (line-beginning-position))
+                             (point))
+                         (line-end-position)))))
+    (cond ((eolp)                       ; end of line
+           (forward-paragraph))
+          ((= content-end (point))      ; end of content
+           (move-end-of-line 1))
+          (t                            ; middle of line
+           (goto-char content-end)))))
 
 (defun jacob-kill-line ()
   "If region is active, kill it. Otherwise:
