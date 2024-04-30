@@ -1178,35 +1178,6 @@ Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (c
   (xah-fly-keys 1))
 
 
-;; devil-mode config
-
-(when (package-installed-p 'devil)
-  (assoc-delete-all "%k SPC" devil-special-keys)
-  (assoc-delete-all "%k RET" devil-special-keys)
-  (assoc-delete-all "%k <return>" devil-special-keys)
-
-  (setq devil-repeatable-keys '(("%k /")
-                                ("%k d")
-                                ("%k k")
-                                ("%k m ^")
-                                ("%k m e")
-                                ("%k m b" "%k m f" "%k m a" "% k m e")
-                                ("%k m @" "%k m h")
-                                ("%k m m @")
-                                ("%k m y")
-                                ("%k p" "%k n" "%k b" "%k f" "%k a" "%k e")
-                                ("%k s")
-                                ("%k x [" "%k x ]")
-                                ("%k x ^" "%k x {" "%k x }")
-                                ("%k x o")
-                                ("%k x u")
-                                ("%k v")
-                                ("%k m v")
-                                ("%k <backspace>")))
-
-  (global-devil-mode 1))
-
-
 
 ;; personal functions
 
