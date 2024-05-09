@@ -130,6 +130,9 @@
 (setq parens-require-spaces nil)
 (setq delete-pair-blink-delay 0)
 
+;; support for files like `/etc/fstab'
+(require 'generic-x)
+
 
 ;; bookmark config
 
