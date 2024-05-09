@@ -926,6 +926,8 @@ Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (c
   (setq slack-prefer-current-team t)
   (setq slack-thread-also-send-to-room nil)
 
+  (setq alert-default-style 'notifications)
+
   (setq lui-fill-type nil)
   (setq lui-time-stamp-position 0)
   (setq lui-time-stamp-format "%a %b %e %H:%M")
