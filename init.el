@@ -1234,8 +1234,8 @@ Otherwise, kill from point to the end of the line."
         (t
          (kill-line))))
 
-(defvar jacob-backspace-function nil
-  "Buffer local function.  Called by `jacob-backspace' if non-nil.")
+(defvar-local jacob-backspace-function nil
+  "Called by `jacob-backspace' if non-nil.")
 
 (defun jacob-backspace ()
   "DWIM backspace command.
@@ -1243,48 +1243,53 @@ Otherwise, kill from point to the end of the line."
 If character to the left is a pair character as determined by
 `insert-pair-alist', kill from the pair to its match. If the
 prefix argument is provided, just delete the pair characters."
-  ;; JACOBTODO: add a variable which can hold a buffer local
-  ;; function. call that function if it is set, this can be used to
-  ;; handle cases like wanting to delete <> pairs in csharp-ts-mode.
-
-  ;; issue being that in the csharp syntax table <> are punctuation
-  ;; and idk how to make them also work as paired characters so sexp
-  ;; functions work with them without breaking the <> that are used in
-  ;; boolean logic.
-
-  ;; maybe ask on the mailing list first.
   (interactive)
   (undo-boundary)
-  (let ((char (char-before))
-        (open-chars (seq-map (lambda (x)
-                               (nth (if (= (length x) 3) 1 0)
-                                    x))
-                             insert-pair-alist))
-        (close-chars (seq-map (lambda (x)
-                                (car (last x)))
-                              insert-pair-alist))
+  (let ((char-class (char-syntax (char-before)))
         (f (if current-prefix-arg
                #'delete-pair
              #'kill-sexp)))
-    (cond ((region-active-p)
-           (delete-active-region))
-          ((and (seq-contains-p open-chars char)
-                (seq-contains-p close-chars char))
-           ;; possible string
-           (if (nth 3 (syntax-ppss))
-               (backward-char)
-             (backward-sexp))
-           (funcall f))
-          ((seq-contains-p open-chars char)
-           ;; delete from start of pair
-           (backward-char)
-           (funcall f))
-          ((seq-contains-p close-chars char)
-           ;; delete from end of pair
-           (backward-sexp)
-           (funcall f))
-          (t
-           (backward-delete-char 1)))))
+    (unless (ignore-errors
+              (funcall jacob-backspace-function f))
+      (cond ((region-active-p)
+             (delete-active-region))
+            ((= ?\" char-class)                         ; string
+             (if (nth 3 (syntax-ppss))
+                 (backward-char)
+               (backward-sexp))
+             (funcall f))
+            ((= ?\( char-class)                         ; delete from start of pair
+             (backward-char)
+             (funcall f))
+            ((= ?\) char-class)                         ; delete from end of pair
+             (backward-sexp)
+             (funcall f))
+            (t                                          ; delete character
+             (backward-delete-char 1))))))
+
+(defun jacob-backspace-csharp (f)
+  "Function for `jacob-backspace' to help with csharp.
+
+Figure out if the `<' or `>' before point is part of a
+`type_argument_list', and delete accordingly. F is used to
+perform the deletion."
+  (when (or (= (char-before) ?<)
+            (= (char-before) ?>))
+    (let ((node-parent (save-excursion
+                         (backward-char)
+                         (treesit-node-type
+                          (treesit-node-parent
+                           (treesit-node-at (point)))))))
+      (when (string= node-parent "type_argument_list")
+        (let ((table (copy-syntax-table csharp-mode-syntax-table)))
+          (modify-syntax-entry ?< "(>" table)
+          (modify-syntax-entry ?> ")>" table)
+          (with-syntax-table table
+            (if (= (char-before) ?<)
+                (backward-char)
+              (backward-sexp))
+            (funcall f)))
+        t))))
 
 (defun jacob-random-init ()
   "Go to a random place in init file."
