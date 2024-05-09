@@ -773,7 +773,7 @@ Useful for deleting ^M after `eglot-code-actions'."
 ;; gnus config
 
 (with-eval-after-load 'gnus
-  (setq gnus-use-full-window nil)
+  (setq gnus-use-full-window t)
   (setq gnus-always-read-dribble-file t)
   (add-hook 'gnus-after-getting-new-news-hook 'gnus-notifications)
 
