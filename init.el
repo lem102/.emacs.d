@@ -246,12 +246,10 @@ ALIST is as described in `battery-update-functions'."
 
 ;; theme config
 
-(setq ef-themes-to-toggle '(ef-winter ef-summer))
+(setq ef-themes-to-toggle '(ef-spring ef-autumn))
 
 (defun jacob-ef-theme ()
   "For use in `ef-themes-post-load-hook'."
-  (with-eval-after-load 'pulse
-    (modify-face 'pulse-highlight-start-face nil "magenta"))
   (with-eval-after-load 'org
     (set-face-attribute 'org-headline-done
                         nil
