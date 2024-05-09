@@ -1573,7 +1573,10 @@ Otherwise, display error message."
 ;; FIXME: keys that are not already bound will not work for jacob-xfk-define-key-in-major-mode
 (defun jacob-xfk-define-key-in-major-mode (major-mode-keymap key command)
   "In MAJOR-MODE-KEYMAP bind KEY to COMMAND only when in xfk command mode."
-  (define-key major-mode-keymap (vector 'remap (lookup-key xah-fly-command-map key)) command))
+  (define-key major-mode-keymap
+              (vector 'remap
+                      (lookup-key xah-fly-command-map key))
+              command))
 
 (defun jacob-git-push-set-upstream ()
   "Push current git branch to new upstream branch."
