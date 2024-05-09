@@ -1806,7 +1806,8 @@ point back to ■.  Special characters (■, ●) will be deleted."
     ("pub" "public")
     ("sta" "static"))
   nil
-  :parents (list c-mode-abbrev-table))
+  :parents (list c-mode-abbrev-table)
+  :enable-function 'jacob-abbrev-expand-function)
 
 (define-abbrev-table 'emacs-lisp-mode-abbrev-table
   '(("def" "(defun ■ (●)\n●)" jacob-insert)
