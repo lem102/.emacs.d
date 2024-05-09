@@ -1937,6 +1937,7 @@ point back to ■.  Special characters (■, ●) will be deleted."
 
 (keymap-global-set "C-x C-b" #'ibuffer)
 
+;; JACOBTODO: how can i make this more xfk friendly?
 (with-eval-after-load 'smerge-mode
   (defvar-keymap jacob-smerge-repeat-map
     :repeat t
@@ -2156,7 +2157,15 @@ point back to ■.  Special characters (■, ●) will be deleted."
       (jacob-xfk-define-key-in-major-mode map "e" #'diff-hunk-prev)
       (jacob-xfk-define-key-in-major-mode map "r" #'diff-hunk-next)
       (jacob-xfk-define-key-in-major-mode map "x" #'diff-hunk-kill)
-      (jacob-xfk-define-key-in-major-mode map "g" 'revert-buffer)))
+      (jacob-xfk-define-key-in-major-mode map "g" #'revert-buffer)))
+
+  (with-eval-after-load 'vc-annotate
+    (let ((map vc-annotate-mode-map))
+      (jacob-xfk-define-key-in-major-mode map "q" #'quit-window)
+      (jacob-xfk-define-key-in-major-mode map "g" #'revert-buffer)))
+
+  (with-eval-after-load 'vc-git
+    (jacob-xfk-define-key-in-major-mode vc-git-log-view-mode-map "q" #'quit-window))
 
   (with-eval-after-load 'gnus
     (jacob-xfk-define-key-in-major-mode gnus-group-mode-map "q" #'gnus-group-exit)
@@ -2164,7 +2173,7 @@ point back to ■.  Special characters (■, ●) will be deleted."
     (jacob-xfk-define-key-in-major-mode gnus-group-mode-map "k" #'gnus-group-next-group)
     (jacob-xfk-define-key-in-major-mode gnus-group-mode-map "g" #'gnus-group-get-new-news)
 
-    (with-eval-after-load 'gnus-topic-mode
+    (with-eval-after-load 'gnus-topic
       (jacob-xfk-define-key-in-major-mode gnus-topic-mode-map "s" #'gnus-topic-select-group))
 
     (jacob-xfk-define-key-in-major-mode gnus-summary-mode-map "q" #'gnus-summary-exit)
@@ -2177,13 +2186,14 @@ point back to ■.  Special characters (■, ●) will be deleted."
     (jacob-xfk-define-key-in-major-mode help-mode-map "q" #'quit-window)
     (jacob-xfk-define-key-in-major-mode help-mode-map "e" #'help-go-back))
 
-  (with-eval-after-load 'compilation
-    (jacob-xfk-define-key-in-major-mode compilation-mode-map #'recompile))
+  (with-eval-after-load 'compile
+    (jacob-xfk-define-key-in-major-mode compilation-mode-map "g" #'recompile))
 
   (with-eval-after-load 'csharp-mode
     (let ((map csharp-ts-mode-map))
-      (jacob-xfk-define-key-in-major-mode map "h" 'jacob-csharp-beginning-of-line-or-statement)
-      (jacob-xfk-define-key-in-major-mode map ";" 'jacob-csharp-end-of-line-or-statement))))
+      ;; (jacob-xfk-define-key-in-major-mode map "h" 'jacob-csharp-beginning-of-line-or-statement)
+      ;; (jacob-xfk-define-key-in-major-mode map ";" 'jacob-csharp-end-of-line-or-statement)
+      )))
 
 (provide 'init)
 ;;; init.el ends here
