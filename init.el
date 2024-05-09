@@ -126,6 +126,10 @@
 (setq initial-scratch-message (format ";; %s\n\n"
                                       (seq-random-elt jacob-welcome-messages)))
 
+;; JACOBTODO: figure out how to set this on a mode basis
+(setq parens-require-spaces nil)
+(setq delete-pair-blink-delay 0)
+
 
 ;; bookmark config
 
