@@ -2236,7 +2236,8 @@ point back to ■.  Special characters (■, ●) will be deleted."
 
   (with-eval-after-load 'help
     (jacob-xfk-define-key-in-major-mode help-mode-map "q" #'quit-window)
-    (jacob-xfk-define-key-in-major-mode help-mode-map "e" #'help-go-back))
+    (jacob-xfk-define-key-in-major-mode help-mode-map "e" #'help-go-back)
+    (jacob-xfk-define-key-in-major-mode help-mode-map "g" #'revert-buffer))
 
   (with-eval-after-load 'compile
     (jacob-xfk-define-key-in-major-mode compilation-mode-map "g" #'recompile))
