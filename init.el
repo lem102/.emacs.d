@@ -677,15 +677,13 @@ See `sql-interactive-mode-hook' and `sql-product-alist'."
                (sql-read-connection "Connection: "))
              current-prefix-arg)
      (user-error "No SQL Connections defined")))
-  (if (not (null (getenv "PGPASSWORD")))
-      (message "postgres password already set, aborting.")
-    (setenv "PGPASSWORD"
-            (cadr (assoc 'sql-password
-                         (assoc-string connection
-                                       sql-connection-alist
-                                       t))))
-    (sql-connect connection buf-name)
-    (setenv "PGPASSWORD")))
+  (setenv "PGPASSWORD"
+          (cadr (assoc 'sql-password
+                       (assoc-string connection
+                                     sql-connection-alist
+                                     t))))
+  (sql-connect connection buf-name)
+  (setenv "PGPASSWORD"))
 
 
 ;; docview config
