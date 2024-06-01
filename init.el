@@ -658,16 +658,6 @@ Designed for use in on-save hook in certain programming languages modes."
 
 ;; sql config
 
-(defun jacob-sql-login-hook ()
-  "Custom SQL log-in behaviours.
-
-See `sql-login-hook'."
-  (when (eq sql-product 'postgres)
-    (let ((proc (get-buffer-process (current-buffer))))
-      (comint-send-string proc "\\set AUTOCOMMIT off\n"))))
-
-(add-hook 'sql-login-hook 'jacob-sql-login-hook)
-
 (defun jacob-sql-interactive-mode-hook ()
   "Custom interactive SQL mode behaviours.
 
