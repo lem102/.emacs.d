@@ -247,17 +247,7 @@ ALIST is as described in `battery-update-functions'."
 
 ;; theme config
 
-(setq ef-themes-to-toggle '(ef-spring ef-autumn))
-
-(defun jacob-ef-theme ()
-  "For use in `ef-themes-post-load-hook'."
-  (with-eval-after-load 'org
-    (set-face-attribute 'org-headline-done
-                        nil
-                        :strike-through t)))
-
-(add-hook 'ef-themes-post-load-hook 'jacob-ef-theme)
-(ef-themes-toggle)
+(load-theme 'modus-vivendi "NO-CONFIRM")
 
 
 ;; js-mode config
@@ -2096,7 +2086,7 @@ point back to ■.  Special characters (■, ●) will be deleted."
   (define-key xah-fly-leader-key-map "ep" project-prefix-map)
 
   (define-key xah-fly-leader-key-map "l3" 'jacob-async-shell-command)
-  (define-key xah-fly-leader-key-map "l8" 'ef-themes-toggle)
+  (define-key xah-fly-leader-key-map "l8" 'toggle-theme)
   (define-key xah-fly-leader-key-map "la" 'global-text-scale-adjust)
   (define-key xah-fly-leader-key-map "le" 'toggle-frame-fullscreen)
 
