@@ -65,9 +65,10 @@
                              ((major-mode . sql-interactive-mode)
                               (display-buffer-reuse-mode-window display-buffer-same-window))
                              ;; shell
-                             ("eshell\\*"
-                              (display-buffer-in-side-window)
-                              (side . bottom))))
+                             ;; ("eshell\\*"
+                             ;;  (display-buffer-in-side-window)
+                             ;;  (side . bottom))
+                             ))
 
 
 ;; screen sharing config
@@ -377,6 +378,11 @@ ALIST is as described in `battery-update-functions'."
       (end-of-line))))
 
 
+;; common lisp config
+
+(setq inferior-lisp-program "sbcl")
+
+
 ;; dired-mode config
 
 (with-eval-after-load 'dired
@@ -587,7 +593,7 @@ hides this information."
                                                       gcs-done))))))
 
 
-;; TODO: consider removing
+;; JACOBTODO: consider removing
 ;; calendar + diary config
 
 (with-eval-after-load 'calendar
@@ -714,11 +720,12 @@ See `sql-interactive-mode-hook' and `sql-product-alist'."
 
 (when (eq system-type 'gnu/linux)
   (setq treesit-language-source-alist '((c-sharp "https://github.com/tree-sitter/tree-sitter-c-sharp" "master" "src")
+                                        (javascript "https://github.com/tree-sitter/tree-sitter-javascript" "master" "src")
                                         (typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src")
                                         (tsx "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src")
                                         (yaml "https://github.com/ikatyang/tree-sitter-yaml")))
   (setq treesit-load-name-override-list '((c-sharp "libtree-sitter-csharp" "tree_sitter_c_sharp")))
-  ;; TODO: troubleshoot csharp-ts on windows
+  ;; JACOBTODO: troubleshoot csharp-ts on windows
   (setq major-mode-remap-alist '((csharp-mode . csharp-ts-mode))))
 
 
@@ -775,8 +782,7 @@ Useful for deleting ^M after `eglot-code-actions'."
 
   (defun eglot--format-markup (markup)
     "Format MARKUP according to LSP's spec."
-    (pcase-let ((is-csharp (equal 'csharp-mode-hook major-mode))
-                (`(,string ,mode)
+    (pcase-let ((`(,string ,mode)
                  (if (stringp markup) (list markup 'gfm-view-mode)
                    (list (plist-get markup :value)
                          (pcase (plist-get markup :kind)
@@ -785,7 +791,6 @@ Useful for deleting ^M after `eglot-code-actions'."
                            ("plaintext" 'text-mode)
                            (_ major-mode))))))
       (with-temp-buffer
-        (switch-to-buffer (current-buffer))
         (setq-local markdown-fontify-code-blocks-natively t)
         (insert string)
         (let ((inhibit-message t)
@@ -1079,51 +1084,13 @@ Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (c
 
 
 
-;; kotlin-mode config
-
-(jacob-is-installed 'kotlin-mode
-  (with-eval-after-load 'kotlin-mode
-
-    (define-skeleton jacob-kotlin-test
-      "Insert kotlin function"
-      > "@Test" \n
-      "fun " - "() {" \n
-      \n
-      -4 "}")
-
-    (define-skeleton jacob-kotlin-function
-      "Insert kotlin function"
-      > "fun " - "() {" \n
-      -4 \n
-      -4 "}")
-
-    (define-skeleton jacob-kotlin-val
-      "Insert kotlin val"
-      > "val " - " = ")
-
-    (define-skeleton jacob-kotlin-println
-      "Insert kotlin println"
-      > "println(" - ")")
-
-    (define-skeleton jacob-kotlin-when
-      "Insert kotlin when"
-      > "when (" - ") {" \n
-      "else -> " \n
-      -4 "}")
-
-    (define-skeleton jacob-kotlin-list
-      "Insert kotlin list"
-      > "listOf(" - ")")))
-
-
-
 (jacob-try-require 'orderless
   (setq completion-styles '(orderless initials)))
 
 
 
 (jacob-try-require 'vertico
-  ;; TODO: attempt to make number of candidates equal to 1/4 of screen
+  ;; JACOBTODO: attempt to make number of candidates equal to 1/4 of screen
   (setq vertico-count 25)
   (vertico-mode 1))
 
@@ -1175,41 +1142,17 @@ Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (c
     (setq expand-region-contract-fast-key "9")))
 
 
+;; sml-mode config
 
 (jacob-is-installed 'sml-mode
   (with-eval-after-load 'sml-mode
+    (setq sml-abbrev-skeletons nil)))
 
-    (setq sml-abbrev-skeletons nil)
+
+;; sly config
 
-    (define-skeleton jacob-sml-skeleton-val
-      "insert val" nil
-      > "val " - " =")
-
-    (define-skeleton jacob-sml-skeleton-if
-      "insert if" nil
-      > "if " - "" \n
-      -4 "then " \n
-      -4 "else ")
-
-    (define-skeleton jacob-sml-skeleton-let
-      "insert let" nil
-      > "let" \n
-      - \n
-      -4 "in" \n
-      -4 "end")
-
-    (define-skeleton jacob-sml-skeleton-function
-      "insert function" nil
-      > "fun " - " =")
-
-    (define-skeleton jacob-sml-skeleton-anonymous-function
-      "insert anonymous functionction" nil
-      > "fn " - " => ")
-
-    (define-skeleton jacob-sml-skeleton-case
-      "insert case" nil
-      > "case " - " of" \n
-      " => ")))
+(with-eval-after-load 'sly
+  (setq sly-symbol-completion-mode nil))
 
 
 ;; xah-fly-keys config
@@ -1224,6 +1167,13 @@ Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (c
 
 
 ;; personal functions
+
+(defun jacob-ip-to-kill-ring ()
+  "Copy v4 ip address to kill ring."
+  (interactive)
+  (kill-new (with-temp-buffer (shell-command "curl --silent -4 ifconfig.me"
+                                             t)
+                              (buffer-string))))
 
 (defun jacob-beginning-of-line ()
   "Go to indentation, line start, backward paragraph."
@@ -1241,19 +1191,18 @@ Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (c
 (defun jacob-end-of-line ()
   "Go to content end, line end, forward paragraph."
   (interactive)
-  (let ((content-end (save-excursion
-                       (if (comment-search-forward (line-end-position) "NOERROR")
-                           (progn
-                             (goto-char (match-beginning 0))
-                             (skip-syntax-backward " " (line-beginning-position))
-                             (point))
-                         (line-end-position)))))
-    (cond ((eolp)                       ; end of line
-           (forward-paragraph))
-          ((= content-end (point))      ; end of content
-           (move-end-of-line 1))
-          (t                            ; middle of line
-           (goto-char content-end)))))
+  (if (eolp)
+      (forward-paragraph)
+    (let* ((content-end (save-excursion
+                          (when (comment-search-forward (line-end-position) "NOERROR")
+                            (skip-syntax-backward "< " (line-beginning-position))
+                            (point)))))
+      (cond ((null content-end)
+             (goto-char (line-end-position)))
+            ((= content-end (point))
+             (move-end-of-line 1))
+            ("else"
+             (goto-char content-end))))))
 
 (defun jacob-kill-line ()
   "If region is active, kill it. Otherwise:
@@ -1306,6 +1255,7 @@ prefix argument is provided, just delete the pair characters."
             (t                                          ; delete character
              (backward-delete-char 1))))))
 
+;; JACOBTODO: if point is at start of buffer this will error due to char before being nil
 (defun jacob-backspace-csharp (f)
   "Function for `jacob-backspace' to help with csharp.
 
@@ -1379,7 +1329,7 @@ Should work cross platform."
               (indent-region (point-min) (point-max))
               (buffer-substring-no-properties (point-min) (point-max))))))
 
-;; TODO: remove web request helper code, replace with either request.el, or pls.el packages.
+;; JACOBTODO: remove web request helper code, replace with either request.el, or pls.el packages.
 
 (defun jacob-web-request-helper (url &optional method headers data data-format-function data-parse)
   "Helper function for making web requests.
@@ -1629,7 +1579,6 @@ Use GitLab push options to create a merge request and set all
 necessary values.
 
 For use with GitLab only."
-  ;; TODO: auto-update jira ticket with MR link
   (interactive)
   (let* ((branch-name (with-temp-buffer
                         (eshell-command "git symbolic-ref HEAD --short" t)
@@ -1687,19 +1636,10 @@ For use with GitLab only."
 
 ;; jacob-insert-config
 
-(defun jacob-insert-block-helper (template)
-  "Call `jacob-insert-helper' with a block appended to TEMPLATE."
-  (jacob-insert (concat template " {\n●\n}")))
-
-(defun jacob-insert-assignment-helper (template)
-  "Call `jacob-insert-helper' with \" ■ = \" appended to TEMPLATE."
-  (jacob-insert (concat template " ■ = ●")))
-
 (defun jacob-insert (&optional template)
   "Handle `jacob-insert' abbrev expansion.
-Insert TEMPLATE.  Set mark at each ● so that popping the mark ring
-will take the user from first instance to last.  If present, move
-point back to ■.  Special characters (■, ●) will be deleted."
+Insert TEMPLATE.  If present, move point back to ■.  ■ will be
+deleted."
   (when template
     (insert template))
   (let* ((end-position (point))
@@ -1708,17 +1648,14 @@ point back to ■.  Special characters (■, ●) will be deleted."
                                 (length template))
                            last-abbrev-location))
          ■-position)
-    (while (search-backward-regexp "[■●]"
-                                   start-position
-                                   t)
-      (let ((match (match-string-no-properties 0)))
-        (delete-char 1)
-        (cond ((string= match "■")
-               (setq ■-position (point-marker)))
-              ((string= match "●")
-               (push-mark)))))
+    (when (search-backward-regexp "■"
+                                  start-position
+                                  t)
+      (delete-char 1)
+      (setq ■-position (point-marker)))
     (indent-region start-position end-position)
-    (goto-char ■-position)))
+    (when ■-position
+      (goto-char ■-position))))
 
 (put 'jacob-insert 'no-self-insert t)
 
@@ -1726,39 +1663,17 @@ point back to ■.  Special characters (■, ●) will be deleted."
   (jacob-insert "(goto-char ■)"))
 
 (defun jacob-insert-js-describe ()
-  (jacob-insert "describe(\"■\", () => {\n●\n});"))
+  (jacob-insert "describe(\"■\", () => {\n\n});"))
 
-(defun jacob-insert-clojure-defn ()
-  (jacob-insert "(defn ■ [●]\n●)"))
-
-(defun jacob-insert-clojure-loop ()
-  (jacob-insert "(loop [■]\n●)"))
-
-(defun jacob-insert-clojure-recur ()
-  (jacob-insert "(recur ■)"))
-
-(defun jacob-insert-clojure-let ()
-  (jacob-insert "(let [■]\n●)"))
-
-(defun jacob-insert-clojure-if ()
-  (jacob-insert "(if ■)"))
-
-(defun jacob-insert-clojure-case ()
-  (jacob-insert "(case ■\n●)"))
-
-(defun jacob-abbrev-expand-function ()
-  "Return t if not in string or comment. Else nil."
+(defun jacob-point-in-text-p ()
+  "Return t if in comment. Else nil."
   (let ((xsyntax-state (syntax-ppss)))
-    (not (or (nth 3 xsyntax-state) (nth 4 xsyntax-state)))))
+    (or (nth 3 xsyntax-state)
+        (nth 4 xsyntax-state))))
 
-(define-abbrev-table 'global-abbrev-table
-  '(
-    ("dal" "$")
-    ;; ("eq" "=")
-    ("eeq" "==")
-    ("eeeq" "===")
-    ("sco" "_")
-    ))
+(defun jacob-point-in-code-p ()
+  "Return t if outside of string or comment. Else nil."
+  (not (jacob-point-in-text-p)))
 
 (define-abbrev-table 'text-mode-abbrev-table
   '(("i" "I")
@@ -1768,7 +1683,7 @@ point back to ■.  Special characters (■, ●) will be deleted."
     ("its" "it's")
     ("havent" "haven't")))
 
-(define-abbrev-table 'common-operators-abbrev-table
+(define-abbrev-table 'common-c-abbrev-table
   '(("lt" "<")
     ("gt" ">")
     ("lte" "<=")
@@ -1778,62 +1693,61 @@ point back to ■.  Special characters (■, ●) will be deleted."
     ("or" "||")
     ("and" "&&")
     ("ret" "return"))
-  :enable-function 'jacob-abbrev-expand-function)
+  :enable-function 'jacob-point-in-code-p)
+
+(define-abbrev-table 'jacob-comment-abbrev-table
+  '(("jt" "JACOBTODO:"))
+  nil
+  :enable-function 'jacob-point-in-text-p)
 
 (define-abbrev-table 'c-mode-abbrev-table
-  '(("if" "if (■)\n{\n●\n}" jacob-insert)
-    ("for" "for (■)\n{\n●\n}" jacob-insert)
-    ("while" "while (■)\n{●\n}" jacob-insert)
-    ("switch" "switch (■)\n{●\n}" jacob-insert)
-    ("case" "case ■: \n●\nbreak;" jacob-insert))
+  '(("if" "if (■)\n{\n\n}" jacob-insert)
+    ("for" "for (■)\n{\n\n}" jacob-insert)
+    ("while" "while (■)\n{\n}" jacob-insert)
+    ("switch" "switch (■)\n{\n}" jacob-insert)
+    ("case" "case ■: \n\nbreak;" jacob-insert))
   nil
-  :parents (list common-operators-abbrev-table)
-  :enable-function 'jacob-abbrev-expand-function)
-
-(define-abbrev-table 'js-mode-abbrev-table
-  '(
-    ("cl" "console.log(■);" jacob-insert)
-    ("fun" "(■) => ●" jacob-insert)
-    ("con" "const ■ = ●;" jacob-insert)
-    ("let" "let ■ = ●;" jacob-insert)
-    ("fore" "forEach((■) => ●)" jacob-insert)
-    ("desc" "" jacob-insert-js-describe)
-    ("map" "map((■) => ●)" jacob-insert)
-    ("filter" "filter((■) => ●)" jacob-insert)
-    ("red" "reduce((■) => ●)" jacob-insert)
-    ("jwe" "console.log(\"jacobwozere\");" t)
-    ("eq" "===")
-    ("neq" "!==")
-    ("ret" "return"))
-  nil
-  :parents (list c-mode-abbrev-table))
+  :parents (list common-c-abbrev-table jacob-comment-abbrev-table)
+  :enable-function 'jacob-point-in-code-p)
 
 (define-abbrev-table 'js-ts-mode-abbrev-table
+  '(("cl" "console.log(■);" jacob-insert)
+    ("fun" "(■) => " jacob-insert)
+    ("con" "const ■ = ;" jacob-insert)
+    ("let" "let ■ = ;" jacob-insert)
+    ("fore" "forEach((■) => )" jacob-insert)
+    ("desc" "" jacob-insert-js-describe)
+    ("map" "map((■) => )" jacob-insert)
+    ("filter" "filter((■) => )" jacob-insert)
+    ("red" "reduce((■) => )" jacob-insert)
+    ("jwe" "console.log(\"jacobwozere\");" t)
+    ("eeq" "===")
+    ("neeq" "!=="))
   nil
-  nil
-  :parents (list js-mode-abbrev-table))
+  :parents (list c-mode-abbrev-table))
 
 (define-abbrev-table 'typescript-ts-mode-abbrev-table
   nil
   nil
-  :parents (list js-mode-abbrev-table))
+  :parents (list js-ts-mode-abbrev-table))
 
 (define-abbrev-table 'tsx-ts-mode-abbrev-table
   nil
   nil
-  :parents (list js-mode-abbrev-table))
+  :parents (list js-ts-mode-abbrev-table))
 
 (define-abbrev-table 'csharp-ts-mode-abbrev-table
-  '(("class" "class ■\n{\n●\n}" jacob-insert)
-    ("cons" "public ■ ()\n{\n●\n}" jacob-insert)
-    ("var" "var ■ = ●;" jacob-insert)
-    ("meth" "■()\n{\n●\n}" jacob-insert)
-    ("jt" "JACOBTODO:" nil :enable-function nil)
-    ("cwl" "Console.WriteLine(■);" jacob-insert)
+  '(("class" "class ■\n{\n\n}" jacob-insert) ; JACOBTODO: make function to guess class name based on filename
+    ("cons" "public ■ ()\n{\n\n}" jacob-insert)
+    ("var" "var ■ = " jacob-insert)
+    ("meth" "void ■()\n{\n\n}" jacob-insert)
+    ("switche" "switch\n{\n■\n}")
+    ("cl" "Console.WriteLine(■);" jacob-insert)
     ("prop" "public ■ { get; set; }" jacob-insert)
+    ("field" "private ■ _" jacob-insert)
     ("jwe" "Console.WriteLine(\"jacobwozere\");" t)
     ("tostr" "ToString()" t)
-    ("iia" "It.IsAny<>()" t)
+    ("iia" "It.IsAny<■>()" jacob-insert)
     ("as" "async")
     ("ns" "namespace")
     ("xgon" "x => x")
@@ -1841,47 +1755,41 @@ point back to ■.  Special characters (■, ●) will be deleted."
     ("nuguid" "Guid.NewGuid()")
     ("pri" "private")
     ("pub" "public")
-    ("sta" "static"))
+    ("sta" "static")
+    ("fun" "(■) => " jacob-insert))
   nil
-  :parents (list c-mode-abbrev-table)
-  :enable-function 'jacob-abbrev-expand-function)
+  :parents (list c-mode-abbrev-table jacob-comment-abbrev-table)
+  :enable-function 'jacob-point-in-code-p)
 
 (define-abbrev-table 'emacs-lisp-mode-abbrev-table
-  '(("def" "(defun ■ (●)\n●)" jacob-insert)
-    ("let" "(let ((■))\n●)" jacob-insert)
-    ("cond" "(cond ((■))\n●)" jacob-insert)
+  '(("def" "(defun ■ ()\n)" jacob-insert)
+    ("let" "(let ((■))\n)" jacob-insert)
+    ("cond" "(cond ((■))\n)" jacob-insert)
     ("gc" "(goto-char ■)" jacob-insert)
     ("weal" "(with-eval-after-load ■)" jacob-insert)
     ("mes" "(message \"%s\" ■)" jacob-insert)
     ("if" "(if ■)" jacob-insert)
     ("pmi" "(point-min)")
     ("pma" "(point-max)")
-    ("int" "(interactive)")))
-
-(define-abbrev-table 'clojure-mode-abbrev-table
-  '(("defn" "" jacob-insert-clojure-defn)
-    ("if" "" jacob-insert-clojure-if)
-    ("loop" "" jacob-insert-clojure-loop)
-    ("rec" "" jacob-insert-clojure-recur)
-    ("let" "" jacob-insert-clojure-let)
-    ("case" "" jacob-insert-clojure-case)))
+    ("int" "(interactive)"))
+  nil
+  :parents (list jacob-comment-abbrev-table)
+  :enable-function 'jacob-point-in-code-p)
 
 (define-abbrev-table 'go-mode-abbrev-table
-  '(
-    ("pl" "fmt.Println(■)" jacob-insert)
+  '(("pl" "fmt.Println(■)" jacob-insert)
     ("pf" "fmt.Printf(■)" jacob-insert)
-    ("fun" "func ■()\n{\n●\n}" jacob-insert)
-    ("for" "for ■\n{\n●\n}" jacob-insert)
-    ("forr" "for i, v := range ■\n{\n●\n}" jacob-insert)
-    ("if" "if ■\n{\n●\n}" jacob-insert)
-    ("struct" "struct\n{\n●\n}" jacob-insert)
+    ("fun" "func ■()\n{\n\n}" jacob-insert)
+    ("for" "for ■\n{\n\n}" jacob-insert)
+    ("forr" "for i, v := range ■\n{\n\n}" jacob-insert)
+    ("if" "if ■\n{\n\n}" jacob-insert)
+    ("struct" "struct\n{\n\n}" jacob-insert)
     ("ass" ":="))
   nil
-  :parents (list common-operators-abbrev-table))
+  :parents (list common-c-abbrev-table))
 
 (define-abbrev-table 'purescript-mode-abbrev-table
-  '(
-    ("fa" "∀")
+  '(("fa" "∀")
     ("ar" "->")
     ("nil" "Nil")
     ("maybe" "Maybe")
@@ -1892,33 +1800,7 @@ point back to ■.  Special characters (■, ●) will be deleted."
     ("just" "Just")
     ("effect" "Effect")
     ("list" "List")
-    ("tuple" "Tuple")
-    ))
-
-(define-abbrev-table 'kotlin-mode-abbrev-table
-  '(
-    ("ar" "->")
-    ("int" "Int")
-    ("string" "String")
-    ("char" "Char")
-    ("list" "List")
-    ("neq" "!=")
-    ("fun" "" jacob-kotlin-function)
-    ("val" "" jacob-kotlin-val)
-    ("pl" "" jacob-kotlin-println)
-    ("when" "" jacob-kotlin-when)
-    ("listof" "" jacob-kotlin-list)
-    ("test" "" jacob-kotlin-test)))
-
-(define-abbrev-table 'sml-mode-abbrev-table
-  '(
-    ("val" "" jacob-sml-skeleton-val)
-    ("if" "" jacob-sml-skeleton-if)
-    ("let" "" jacob-sml-skeleton-let)
-    ("fun" "" jacob-sml-skeleton-function)
-    ("fn" "" jacob-sml-skeleton-anonymous-function)
-    ("case" "" jacob-sml-skeleton-case)
-    ))
+    ("tuple" "Tuple")))
 
 (define-abbrev-table 'sql-mode-abbrev-table
   '(
@@ -1935,14 +1817,6 @@ point back to ■.  Special characters (■, ●) will be deleted."
     ("lim" "LIMIT")
     ("j" "JOIN")
     ("o" "ON")
-    ))
-
-(defun jacob-racket-define-function ()
-  (jacob-insert "(define (■)\n●)"))
-
-(define-abbrev-table 'racket-mode-abbrev-table
-  '(
-    ("deff" "" jacob-racket-define-function)
     ))
 
 
@@ -1989,10 +1863,6 @@ point back to ■.  Special characters (■, ●) will be deleted."
     "u" #'smerge-keep-upper
     "l" #'smerge-keep-lower))
 
-(keymap-global-set "C-c d" #'jacob-sql-connect)
-(keymap-global-set "C-c g" #'gnus)
-(keymap-global-set "C-c t" #'ef-themes-toggle)
-
 (when (package-installed-p 'avy)
   (keymap-global-set "C-c a" 'avy-goto-char-timer))
 
@@ -2033,7 +1903,7 @@ point back to ■.  Special characters (■, ●) will be deleted."
   "a" #'avy-goto-char-timer
   "d" #'jacob-sql-connect
   "g" #'gnus
-  "t" #'ef-themes-toggle
+  "t" #'toggle-theme
   "s" jacob-slack-map
   "e" jacob-eglot-map
   "c" jacob-csharp-map)
@@ -2150,21 +2020,20 @@ point back to ■.  Special characters (■, ●) will be deleted."
     (jacob-xfk-define-key-in-major-mode map "k" 'next-error-no-select))
 
   (with-eval-after-load 'vc-dir
-    (let ((map vc-dir-mode-map))
-      (jacob-xfk-define-key-in-major-mode map "q" 'quit-window)
-      (jacob-xfk-define-key-in-major-mode map "g" 'revert-buffer)
-      (jacob-xfk-define-key-in-major-mode map "i" 'vc-dir-previous-line)
-      (jacob-xfk-define-key-in-major-mode map "k" 'vc-dir-next-line)
-      (jacob-xfk-define-key-in-major-mode map "o" 'vc-dir-next-directory)
-      (jacob-xfk-define-key-in-major-mode map "u" 'vc-dir-previous-directory)
-      (jacob-xfk-define-key-in-major-mode map "s" 'vc-dir-find-file)
-      (jacob-xfk-define-key-in-major-mode map "e" 'vc-dir-mark)
-      (jacob-xfk-define-key-in-major-mode map "r" 'vc-dir-unmark)
-      (jacob-xfk-define-key-in-major-mode map "v" 'vc-next-action)
-      (jacob-xfk-define-key-in-major-mode map "p" 'vc-push)
-      (jacob-xfk-define-key-in-major-mode map "P" 'jacob-git-push-set-upstream)
-      (jacob-xfk-define-key-in-major-mode map "=" 'vc-diff)
-      (jacob-xfk-define-key-in-major-mode map "x" #'vc-dir-hide-up-to-date)))
+    (jacob-xfk-define-key-in-major-mode vc-dir-mode-map "q" 'quit-window)
+    (jacob-xfk-define-key-in-major-mode vc-dir-mode-map "g" 'revert-buffer)
+    (jacob-xfk-define-key-in-major-mode vc-dir-mode-map "i" 'vc-dir-previous-line)
+    (jacob-xfk-define-key-in-major-mode vc-dir-mode-map "k" 'vc-dir-next-line)
+    (jacob-xfk-define-key-in-major-mode vc-dir-mode-map "o" 'vc-dir-next-directory)
+    (jacob-xfk-define-key-in-major-mode vc-dir-mode-map "u" 'vc-dir-previous-directory)
+    (jacob-xfk-define-key-in-major-mode vc-dir-mode-map "s" 'vc-dir-find-file)
+    (jacob-xfk-define-key-in-major-mode vc-dir-mode-map "e" 'vc-dir-mark)
+    (jacob-xfk-define-key-in-major-mode vc-dir-mode-map "r" 'vc-dir-unmark)
+    (jacob-xfk-define-key-in-major-mode vc-dir-mode-map "v" 'vc-next-action)
+    (jacob-xfk-define-key-in-major-mode vc-dir-mode-map "p" 'vc-push)
+    (jacob-xfk-define-key-in-major-mode vc-dir-mode-map "P" 'jacob-git-push-set-upstream)
+    (jacob-xfk-define-key-in-major-mode vc-dir-mode-map "=" 'vc-diff)
+    (jacob-xfk-define-key-in-major-mode vc-dir-mode-map "x" #'vc-dir-hide-up-to-date))
 
   (with-eval-after-load 'info
     (let ((map Info-mode-map))
@@ -2237,7 +2106,12 @@ point back to ■.  Special characters (■, ●) will be deleted."
     (let ((map csharp-ts-mode-map))
       ;; (jacob-xfk-define-key-in-major-mode map "h" 'jacob-csharp-beginning-of-line-or-statement)
       ;; (jacob-xfk-define-key-in-major-mode map ";" 'jacob-csharp-end-of-line-or-statement)
-      )))
+      ))
+
+  (with-eval-after-load 'sly
+    (jacob-xfk-define-key-in-major-mode lisp-mode-map " ,m" #'sly-eval-last-expression)
+    (jacob-xfk-define-key-in-major-mode lisp-mode-map " ,d" #'sly-eval-defun)
+    (jacob-xfk-define-key-in-major-mode lisp-mode-map " ,e" #'sly-eval-buffer)))
 
 (provide 'init)
 ;;; init.el ends here
