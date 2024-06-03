@@ -1232,6 +1232,8 @@ If character to the left is a pair character as determined by
 `insert-pair-alist', kill from the pair to its match. If the
 prefix argument is provided, just delete the pair characters."
   (interactive)
+  (when (= 1 (point))
+    (user-error "Beginning of buffer."))
   (undo-boundary)
   (let ((char-class (char-syntax (char-before)))
         (f (if current-prefix-arg
