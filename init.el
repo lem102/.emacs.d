@@ -726,7 +726,8 @@ See `sql-interactive-mode-hook' and `sql-product-alist'."
                                         (yaml "https://github.com/ikatyang/tree-sitter-yaml")))
   (setq treesit-load-name-override-list '((c-sharp "libtree-sitter-csharp" "tree_sitter_c_sharp")))
   ;; JACOBTODO: troubleshoot csharp-ts on windows
-  (setq major-mode-remap-alist '((csharp-mode . csharp-ts-mode))))
+  (setq major-mode-remap-alist '((csharp-mode . csharp-ts-mode)
+                                 (javascript-mode . js-ts-mode))))
 
 
 ;; eglot config
@@ -1715,8 +1716,8 @@ deleted."
 (define-abbrev-table 'js-ts-mode-abbrev-table
   '(("cl" "console.log(■);" jacob-insert)
     ("fun" "(■) => " jacob-insert)
-    ("con" "const ■ = ;" jacob-insert)
-    ("let" "let ■ = ;" jacob-insert)
+    ("con" "const ■ = " jacob-insert)
+    ("let" "let ■ = " jacob-insert)
     ("fore" "forEach((■) => )" jacob-insert)
     ("desc" "" jacob-insert-js-describe)
     ("map" "map((■) => )" jacob-insert)
@@ -2109,6 +2110,9 @@ deleted."
       ;; (jacob-xfk-define-key-in-major-mode map "h" 'jacob-csharp-beginning-of-line-or-statement)
       ;; (jacob-xfk-define-key-in-major-mode map ";" 'jacob-csharp-end-of-line-or-statement)
       ))
+
+  (with-eval-after-load 'js
+    (jacob-xfk-define-key-in-major-mode js-ts-mode-map " ,d" #'recompile))
 
   (with-eval-after-load 'sly
     (jacob-xfk-define-key-in-major-mode lisp-mode-map " ,m" #'sly-eval-last-expression)
