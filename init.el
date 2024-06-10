@@ -135,6 +135,8 @@
 ;; support for files like `/etc/fstab'
 (require 'generic-x)
 
+(setq frame-resize-pixelwise t)
+
 
 ;; bookmark config
 
