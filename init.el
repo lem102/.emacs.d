@@ -676,13 +676,12 @@ See `sql-interactive-mode-hook' and `sql-product-alist'."
                (sql-read-connection "Connection: "))
              current-prefix-arg)
      (user-error "No SQL Connections defined")))
-  (setenv "PGPASSWORD"
-          (cadr (assoc 'sql-password
-                       (assoc-string connection
-                                     sql-connection-alist
-                                     t))))
-  (sql-connect connection buf-name)
-  (setenv "PGPASSWORD"))
+  (with-environment-variables
+      (("PGPASSWORD" (cadr (assoc 'sql-password
+                                  (assoc-string connection
+                                                sql-connection-alist
+                                                t)))))
+    (sql-connect connection buf-name)))
 
 
 ;; docview config
