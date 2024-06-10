@@ -1190,21 +1190,20 @@ Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (c
         (t
          (back-to-indentation))))
 
+;; JACOBTODO: if line only has comment, go to end of line
 (defun jacob-end-of-line ()
   "Go to content end, line end, forward paragraph."
   (interactive)
   (if (eolp)
       (forward-paragraph)
-    (let* ((content-end (save-excursion
-                          (when (comment-search-forward (line-end-position) "NOERROR")
-                            (skip-syntax-backward "< " (line-beginning-position))
-                            (point)))))
-      (cond ((null content-end)
-             (goto-char (line-end-position)))
-            ((= content-end (point))
-             (move-end-of-line 1))
-            ("else"
-             (goto-char content-end))))))
+    (let ((content-end (save-excursion
+                         (when (comment-search-forward (line-end-position) "NOERROR")
+                           (skip-syntax-backward "< " (line-beginning-position))
+                           (point)))))
+      (if (or (null content-end)
+              (= content-end (point)))
+          (move-end-of-line 1)
+        (goto-char content-end)))))
 
 (defun jacob-kill-line ()
   "If region is active, kill it. Otherwise:
