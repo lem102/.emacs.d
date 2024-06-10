@@ -1725,7 +1725,12 @@ deleted."
     ("red" "reduce((■) => )" jacob-insert)
     ("jwe" "console.log(\"jacobwozere\");" t)
     ("eeq" "===")
-    ("neeq" "!=="))
+    ("neeq" "!==")
+    ("if" "if (■) {\n\n}" jacob-insert)
+    ("for" "for (■) {\n\n}" jacob-insert)
+    ("while" "while (■) {\n}" jacob-insert)
+    ("switch" "switch (■) {\n}" jacob-insert)
+    ("case" "case ■: \n\nbreak;" jacob-insert))
   nil
   :parents (list c-mode-abbrev-table))
 
