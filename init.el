@@ -2107,7 +2107,8 @@ deleted."
   (with-eval-after-load 'help
     (jacob-xfk-define-key-in-major-mode help-mode-map "q" #'quit-window)
     (jacob-xfk-define-key-in-major-mode help-mode-map "e" #'help-go-back)
-    (jacob-xfk-define-key-in-major-mode help-mode-map "g" #'revert-buffer))
+    (jacob-xfk-define-key-in-major-mode help-mode-map "g" #'revert-buffer)
+    (jacob-xfk-define-key-in-major-mode help-mode-map "s" #'help-view-source))
 
   (with-eval-after-load 'compile
     (jacob-xfk-define-key-in-major-mode compilation-mode-map "g" #'recompile))
@@ -2119,7 +2120,10 @@ deleted."
       ))
 
   (with-eval-after-load 'js
-    (jacob-xfk-define-key-in-major-mode js-ts-mode-map " ,d" #'recompile))
+    (jacob-xfk-define-key-in-major-mode js-ts-mode-map " ,c" #'recompile))
+
+  (with-eval-after-load 'typescript-ts-mode
+    (jacob-xfk-define-key-in-major-mode typescript-ts-mode-map " ,c" #'recompile))
 
   (with-eval-after-load 'sly
     (jacob-xfk-define-key-in-major-mode lisp-mode-map " ,m" #'sly-eval-last-expression)
