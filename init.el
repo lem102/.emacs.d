@@ -788,9 +788,7 @@ Useful for deleting ^M after `eglot-code-actions'."
                                             '(("typescript-language-server" "--stdio")
                                               ("deno" "lsp"
                                                :initializationOptions
-                                               (:enable t
-                                                        :lint t
-                                                        :suggest.names t))))))
+                                               (:enable t :lint t :suggest.names t))))))
 
   (eglot--code-action eglot-code-action-organize-imports-ts "source.organizeImports.ts")
   (eglot--code-action eglot-code-action-add-missing-imports-ts "source.addMissingImports.ts")
@@ -1203,7 +1201,6 @@ Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (c
         (t
          (back-to-indentation))))
 
-;; JACOBTODO: if line only has comment, go to end of line
 (defun jacob-end-of-line ()
   "Go to content end, line end, forward paragraph."
   (interactive)
