@@ -159,6 +159,18 @@
 
 ;; help config
 (setq help-window-select t)
+(setq help-enable-variable-value-editing t)
+
+(defun jacob-help-edit ()
+  "Edit variable in current help buffer."
+  (interactive)
+  (unless (equal major-mode 'help-mode)
+    (message "not in help buffer"))
+  (save-excursion
+    (goto-char (point-min))
+    (if (search-forward "Its value is " nil "NOERROR")
+        (help-fns-edit-variable)
+      (message "cannot find editable variable"))))
 
 
 ;; warnings config
@@ -2107,6 +2119,8 @@ deleted."
   (with-eval-after-load 'help
     (jacob-xfk-define-key-in-major-mode help-mode-map "q" #'quit-window)
     (jacob-xfk-define-key-in-major-mode help-mode-map "e" #'help-go-back)
+    (jacob-xfk-define-key-in-major-mode help-mode-map "r" #'jacob-go-forward)
+    (jacob-xfk-define-key-in-major-mode help-mode-map "w" #'jacob-help-edit)
     (jacob-xfk-define-key-in-major-mode help-mode-map "g" #'revert-buffer)
     (jacob-xfk-define-key-in-major-mode help-mode-map "s" #'help-view-source))
 
