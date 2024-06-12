@@ -1169,6 +1169,12 @@ Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (c
   (setq sly-symbol-completion-mode nil))
 
 
+;; activities config
+
+(when (require 'activities nil "NOERROR")
+  (activities-mode 1))
+
+
 ;; xah-fly-keys config
 
 (setq xah-fly-use-control-key nil)
