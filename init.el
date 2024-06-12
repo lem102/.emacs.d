@@ -136,6 +136,7 @@
 (require 'generic-x)
 
 (setq frame-resize-pixelwise t)
+(setq save-interprogram-paste-before-kill t)
 
 
 ;; bookmark config
