@@ -201,7 +201,7 @@
 (setq display-time-format "%b %e %R")
 (setq display-time-load-average-threshold 1)
 ;; needs to be evaluated after variables changed
-(display-time-mode 1)
+(display-time-mode 0)
 
 (defun jacob-battery-maybe-show (alist)
   "For use in `battery-update-functions'.
@@ -214,7 +214,7 @@ ALIST is as described in `battery-update-functions'."
            (add-to-list 'global-mode-string 'battery-mode-line-string "APPEND")))))
 
 (setq battery-mode-line-format " %b%p%% ")
-(display-battery-mode 1)
+(display-battery-mode 0)
 (add-to-list 'battery-update-functions 'jacob-battery-maybe-show)
 
 (column-number-mode 1)
@@ -246,7 +246,7 @@ ALIST is as described in `battery-update-functions'."
     global-mode-string)
   "Custom mode line format.")
 
-(setq-default mode-line-format jacob-mode-line-format)
+;; (setq-default mode-line-format jacob-mode-line-format)
 
 
 ;; tramp
@@ -468,7 +468,8 @@ hides this information."
 ;; flymake-mode config
 
 (with-eval-after-load 'flymake
-  (setq flymake-mode-line-format '(flymake-mode-line-exception flymake-mode-line-counters)))
+  ;; (setq flymake-mode-line-format '(flymake-mode-line-exception flymake-mode-line-counters))
+  )
 
 
 ;; project config
