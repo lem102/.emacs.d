@@ -1252,30 +1252,30 @@ If character to the left is a pair character as determined by
 `insert-pair-alist', kill from the pair to its match. If the
 prefix argument is provided, just delete the pair characters."
   (interactive)
-  (when (= 1 (point))
-    (user-error "Beginning of buffer."))
   (undo-boundary)
-  (let ((char-class (char-syntax (char-before)))
-        (f (if current-prefix-arg
-               #'delete-pair
-             #'kill-sexp)))
-    (unless (ignore-errors
-              (funcall jacob-backspace-function f))
-      (cond ((region-active-p)
-             (delete-active-region))
-            ((= ?\" char-class)                         ; string
-             (if (nth 3 (syntax-ppss))
-                 (backward-char)
-               (backward-sexp))
-             (funcall f))
-            ((= ?\( char-class)                         ; delete from start of pair
-             (backward-char)
-             (funcall f))
-            ((= ?\) char-class)                         ; delete from end of pair
-             (backward-sexp)
-             (funcall f))
-            (t                                          ; delete character
-             (backward-delete-char 1))))))
+  (if (region-active-p)
+      (delete-active-region)
+    (when (= 1 (point))
+      (user-error "Beginning of buffer"))
+    (let ((char-class (char-syntax (char-before)))
+          (f (if current-prefix-arg
+                 #'delete-pair
+               #'kill-sexp)))
+      (unless (ignore-errors
+                (funcall jacob-backspace-function f))
+        (cond ((= ?\" char-class)                         ; string
+               (if (nth 3 (syntax-ppss))
+                   (backward-char)
+                 (backward-sexp))
+               (funcall f))
+              ((= ?\( char-class)                         ; delete from start of pair
+               (backward-char)
+               (funcall f))
+              ((= ?\) char-class)                         ; delete from end of pair
+               (backward-sexp)
+               (funcall f))
+              (t                                          ; delete character
+               (backward-delete-char 1)))))))
 
 ;; JACOBTODO: if point is at start of buffer this will error due to char before being nil
 (defun jacob-backspace-csharp (f)
