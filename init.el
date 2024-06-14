@@ -1830,21 +1830,9 @@ deleted."
     ("tuple" "Tuple")))
 
 (define-abbrev-table 'sql-mode-abbrev-table
-  '(
-    ("s" "SELECT")
-    ("sa" "SELECT *")
-    ("saf" "SELECT * FROM")
-    ("f" "FROM")
-    ("w" "WHERE")
-    ("a" "AND")
-    ("l" "LIKE")
-    ("i" "IN")
-    ("c" "CASE")
-    ("wt" "WHEN THEN")
-    ("lim" "LIMIT")
-    ("j" "JOIN")
-    ("o" "ON")
-    ))
+  '(("sel" "SELECT * FROM ■ WHERE x = y;" jacob-insert)
+    ("upd" "UPDATE ■ SET x = y WHERE condition;" jacob-insert)
+    ("del" "DELETE FROM ■ WHERE x = y;" jacob-insert)))
 
 
 
