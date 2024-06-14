@@ -263,7 +263,7 @@ ALIST is as described in `battery-update-functions'."
 
 ;; theme config
 
-(load-theme 'modus-vivendi "NO-CONFIRM")
+(load-theme 'modus-operandi "NO-CONFIRM")
 
 
 ;; js-mode config
