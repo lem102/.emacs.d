@@ -1849,9 +1849,9 @@ deleted."
     ("tuple" "Tuple")))
 
 (define-abbrev-table 'sql-mode-abbrev-table
-  '(("sel" "SELECT * FROM ■ WHERE x = y;" jacob-insert)
+  '(("sel" "SELECT * FROM ■ WHERE condition;" jacob-insert)
     ("upd" "UPDATE ■ SET x = y WHERE condition;" jacob-insert)
-    ("del" "DELETE FROM ■ WHERE x = y;" jacob-insert)))
+    ("del" "DELETE FROM ■ WHERE condition;" jacob-insert)))
 
 
 
