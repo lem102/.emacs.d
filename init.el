@@ -263,7 +263,26 @@ ALIST is as described in `battery-update-functions'."
 
 ;; theme config
 
-(load-theme 'modus-operandi "NO-CONFIRM")
+(defun jacob-xfce-set-theme (theme)
+  "Set xfce theme to THEME."
+  (start-process "xfce-change-theme"
+                 nil
+                 "xfconf-query"
+                 "--channel" "xsettings"
+                 "--property" "/Net/ThemeName"
+                 "--set" theme))
+
+(defun jacob-modus-themes-hook ()
+  "Set the xfce theme.  To be used in `modus-themes-after-load-theme-hook'."
+  (let ((theme (car custom-enabled-themes)))
+    (if (eq 'modus-operandi theme)
+        (jacob-xfce-set-theme "Adwaita")
+      (jacob-xfce-set-theme "Adwaita-dark"))))
+
+(when (eq system-type 'gnu/linux)
+  (add-hook 'modus-themes-after-load-theme-hook 'jacob-modus-themes-hook))
+
+(modus-themes-load-operandi)
 
 
 ;; js-mode config
@@ -1971,7 +1990,7 @@ deleted."
   (define-key xah-fly-leader-key-map "ep" project-prefix-map)
 
   (define-key xah-fly-leader-key-map "l3" 'jacob-async-shell-command)
-  (define-key xah-fly-leader-key-map "l8" 'toggle-theme)
+  (define-key xah-fly-leader-key-map "l8" 'modus-themes-toggle)
   (define-key xah-fly-leader-key-map "la" 'global-text-scale-adjust)
 
   (define-key xah-fly-leader-key-map "/c" 'vc-create-branch)
