@@ -282,7 +282,7 @@ ALIST is as described in `battery-update-functions'."
 (when (eq system-type 'gnu/linux)
   (add-hook 'modus-themes-after-load-theme-hook 'jacob-modus-themes-hook))
 
-(modus-themes-load-operandi)
+(load-theme 'modus-operandi "NO-CONFIRM")
 
 
 ;; js-mode config
