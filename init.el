@@ -704,6 +704,15 @@ See `sql-interactive-mode-hook' and `sql-product-alist'."
                                                 t)))))
     (sql-connect connection buf-name)))
 
+(defun jacob-sqli-end-of-buffer ()
+  "Move point to end of sqli buffer before sending paragraph.
+
+Intended as before advice for `sql-send-paragraph'."
+  (with-current-buffer sql-buffer
+    (end-of-buffer)))
+
+(advice-add #'sql-send-paragraph :before #'jacob-sqli-end-of-buffer)
+
 
 ;; docview config
 
