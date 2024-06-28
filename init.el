@@ -1510,16 +1510,6 @@ point."
 
       (setq jacob-format-words-style-and-start (cons style (point))))))
 
-(defun jacob-count-words-region ()
-  "If mark active count words in region, otherwise count words in whole buffer."
-  (interactive)
-  (if mark-active
-      (call-interactively 'count-words-region)
-    (let ((current-prefix-arg t))
-      (call-interactively 'count-words-region))))
-
-(define-key global-map (kbd "M-=") 'jacob-count-words-region)
-
 (defun jacob-eval-and-replace ()
   "Replace the preceding sexp with its value."
   (interactive)
@@ -1531,20 +1521,6 @@ point."
            (insert (current-kill 0)))))
 
 (require 'jacob-long-time-autoloads)
-
-(defun josh-kill-process-on-port ()
-  "Ask for a port, kill process on that port.  For powershell."
-  (interactive)
-  (shell-command (concat "powershell.exe -File %home%\\Downloads\\Jacob.ps1 -localPort " (read-from-minibuffer "port: "))))
-
-(require 'jacob-play-youtube-autoloads)
-
-(defun jacob-lookup-wikipedia ()
-  "Ask for a string to search.
-Search youtube for string and display in browser."
-  (interactive)
-  (let ((search-query (read-from-minibuffer "Wikipedia: ")))
-    (browse-url (concat "https://en.wikipedia.org/wiki/" search-query))))
 
 (defun jacob-bookmark-jump-to-url (bookmark)
   "Open link stored in the filename property of BOOKMARK in browser."
@@ -1574,26 +1550,6 @@ Otherwise, display error message."
   (seq-find (lambda (x)
               (string= x "package.json"))
             (directory-files (project-root (project-current)))))
-
-(defun jacob-format-buffer-shell-command (command)
-  "Run shell command COMMAND to format the current file, then revert the buffer."
-  (save-buffer)
-  (shell-command (format command
-                         (shell-quote-argument buffer-file-name)))
-  (revert-buffer t t t))
-
-(defun jacob-format-buffer ()
-  "Format the current buffer."
-  (interactive)
-  (pcase major-mode
-    ((or 'typescript-react-mode 'js-mode) (progn
-                                            (ignore-errors (eglot-code-action-add-missing-imports-ts (point-min) (point-max)))
-                                            (eglot-code-action-organize-imports-ts (point-min) (point-max))
-                                            (jacob-format-buffer-shell-command (if (jacob-npm-project-p)
-                                                                                   "prettier %s -w"
-                                                                                 "deno fmt %s"))))
-    ('go-mode (jacob-format-buffer-shell-command "gofmt -w %s"))
-    (t (message "no formatting specified"))))
 
 ;; FIXME: keys that are not already bound will not work for jacob-xfk-define-key-in-major-mode
 (defun jacob-xfk-define-key-in-major-mode (major-mode-keymap key command)
