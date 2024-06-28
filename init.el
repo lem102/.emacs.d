@@ -506,7 +506,14 @@ hides this information."
 (defun jacob-elisp-config-hook-function ()
   "Configure `emacs-lisp-mode' when hook run."
   (flymake-mode 1)
-  (eldoc-mode 1))
+  (eldoc-mode 1)
+
+  (setq prettify-symbols-alist '(("lambda" . ?λ)
+                                 ("=>" . "⇒")
+		                         ("<=" . "≤")
+		                         (">=" . "≥")))
+  
+  (prettify-symbols-mode 1))
 
 (add-hook 'emacs-lisp-mode-hook 'jacob-elisp-config-hook-function)
 
