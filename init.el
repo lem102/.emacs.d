@@ -526,7 +526,7 @@ hides this information."
                                              ("darwin" . "Menlo")
                                              ("gnu/linux" . "DejaVu Sans Mono"))))
                         jacob-font-size)
-                t
+                "KEEP-SIZE"
                 t)
 
 ;; enable emoji fonts
