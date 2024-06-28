@@ -263,25 +263,6 @@ ALIST is as described in `battery-update-functions'."
 
 ;; theme config
 
-(defun jacob-xfce-set-theme (theme)
-  "Set xfce theme to THEME."
-  (start-process "xfce-change-theme"
-                 nil
-                 "xfconf-query"
-                 "--channel" "xsettings"
-                 "--property" "/Net/ThemeName"
-                 "--set" theme))
-
-(defun jacob-modus-themes-hook ()
-  "Set the xfce theme.  To be used in `modus-themes-after-load-theme-hook'."
-  (let ((theme (car custom-enabled-themes)))
-    (if (eq 'modus-operandi theme)
-        (jacob-xfce-set-theme "Adwaita")
-      (jacob-xfce-set-theme "Adwaita-dark"))))
-
-(when (eq system-type 'gnu/linux)
-  (add-hook 'modus-themes-after-load-theme-hook 'jacob-modus-themes-hook))
-
 (load-theme 'modus-operandi "NO-CONFIRM")
 
 
