@@ -1172,12 +1172,6 @@ Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (c
     (setq sml-abbrev-skeletons nil)))
 
 
-;; sly config
-
-(with-eval-after-load 'sly
-  (setq sly-symbol-completion-mode nil))
-
-
 ;; activities config
 
 (when (require 'activities nil "NOERROR")
