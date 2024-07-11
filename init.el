@@ -751,13 +751,18 @@ Intended as before advice for `sql-send-paragraph'."
   (setq treesit-load-name-override-list '((c-sharp "libtree-sitter-csharp" "tree_sitter_c_sharp")))
   ;; JACOBTODO: troubleshoot csharp-ts on windows
   (setq major-mode-remap-alist '((csharp-mode . csharp-ts-mode)
-                                 (javascript-mode . js-ts-mode))))
+                                 (javascript-mode . js-ts-mode)))
+  (setq treesit-font-lock-level 4)      ; max level of fontification
+  )
 
 
 ;; eglot config
 
-(setq eglot-ignored-server-capabilities '(:documentHighlightProvider
-                                          :documentOnTypeFormattingProvider))
+;; JACOBTODO: function that can smartly decide between jumping to
+;; definition or implementation (`xref-find-definitions' vs
+;; `eglot-find-implementation')
+
+(setq eglot-ignored-server-capabilities '(:documentOnTypeFormattingProvider))
 
 (defun jacob-remove-ret-character-from-buffer (&rest _)
   "Remove all occurances of ^M from the buffer.
@@ -785,7 +790,9 @@ Useful for deleting ^M after `eglot-code-actions'."
                                 (require 'eglot-fsharp)
                                 (eglot-ensure))))
 (with-eval-after-load 'eglot
-  (add-to-list 'eglot-server-programs '((csharp-mode csharp-ts-mode) . ("csharp-ls")))
+  (add-to-list 'eglot-server-programs `((csharp-mode csharp-ts-mode) . ,(eglot-alternatives
+                                                                         '(("csharp-ls")
+                                                                           ("OmniSharp" "-lsp")))))
 
   (add-to-list 'eglot-server-programs '(sql-mode . ("sqls")))
 
@@ -922,11 +929,12 @@ If successful, evaluate BODY.  Used to eagerly load feature."
 
 
 ;; eglot-booster config
-(unless (package-installed-p 'eglot-booster)
-  (package-vc-install "https://github.com/jdtsmith/eglot-booster"))
 
 (with-eval-after-load 'eglot
-  (eglot-booster-mode))
+  (unless (package-installed-p 'eglot-booster)
+    (package-vc-install "https://github.com/jdtsmith/eglot-booster"))
+
+  (eglot-booster-mode 1))
 
 
 ;; slack config
@@ -1640,14 +1648,8 @@ deleted."
 
 (put 'jacob-insert 'no-self-insert t)
 
-(defun jacob-insert-elisp-goto-char ()
-  (jacob-insert "(goto-char ■)"))
-
-(defun jacob-insert-js-describe ()
-  (jacob-insert "describe(\"■\", () => {\n\n});"))
-
 (defun jacob-point-in-text-p ()
-  "Return t if in comment. Else nil."
+  "Return t if in comment or string. Else nil."
   (let ((xsyntax-state (syntax-ppss)))
     (or (nth 3 xsyntax-state)
         (nth 4 xsyntax-state))))
@@ -1681,23 +1683,12 @@ deleted."
   nil
   :enable-function 'jacob-point-in-text-p)
 
-(define-abbrev-table 'c-mode-abbrev-table
-  '(("if" "if (■)\n{\n\n}" jacob-insert)
-    ("for" "for (■)\n{\n\n}" jacob-insert)
-    ("while" "while (■)\n{\n}" jacob-insert)
-    ("switch" "switch (■)\n{\n}" jacob-insert)
-    ("case" "case ■: \n\nbreak;" jacob-insert))
-  nil
-  :parents (list common-c-abbrev-table jacob-comment-abbrev-table)
-  :enable-function 'jacob-point-in-code-p)
-
 (define-abbrev-table 'js-ts-mode-abbrev-table
   '(("cl" "console.log(■);" jacob-insert)
     ("fun" "(■) => " jacob-insert)
     ("con" "const ■ = " jacob-insert)
     ("let" "let ■ = " jacob-insert)
     ("fore" "forEach((■) => )" jacob-insert)
-    ("desc" "" jacob-insert-js-describe)
     ("map" "map((■) => )" jacob-insert)
     ("filter" "filter((■) => )" jacob-insert)
     ("red" "reduce((■) => )" jacob-insert)
@@ -1710,7 +1701,8 @@ deleted."
     ("switch" "switch (■) {\n}" jacob-insert)
     ("case" "case ■: \n\nbreak;" jacob-insert))
   nil
-  :parents (list c-mode-abbrev-table))
+  :parents (list jacob-comment-abbrev-table)
+  :enable-function 'jacob-point-in-code-p)
 
 (define-abbrev-table 'typescript-ts-mode-abbrev-table
   nil
@@ -1727,14 +1719,14 @@ deleted."
     ("cons" "public ■ ()\n{\n\n}" jacob-insert)
     ("var" "var ■ = " jacob-insert)
     ("meth" "void ■()\n{\n\n}" jacob-insert)
-    ("switche" "switch\n{\n■\n}")
+    ("switche" "switch\n{\n■\n}" jacob-insert)
     ("cl" "Console.WriteLine(■);" jacob-insert)
     ("prop" "public ■ { get; set; }" jacob-insert)
     ("field" "private ■ _" jacob-insert)
     ("jwe" "Console.WriteLine(\"jacobwozere\");" t)
     ("tostr" "ToString()" t)
     ("iia" "It.IsAny<■>()" jacob-insert)
-    ("as" "async")
+    ("az" "async")
     ("ns" "namespace")
     ("xgon" "x => x")
     ("ro" "readonly")
@@ -1742,9 +1734,14 @@ deleted."
     ("pri" "private")
     ("pub" "public")
     ("sta" "static")
-    ("fun" "(■) => " jacob-insert))
+    ("fun" "(■) => " jacob-insert)
+    ("if" "if (■)\n{\n\n}" jacob-insert)
+    ("for" "for (■)\n{\n\n}" jacob-insert)
+    ("while" "while (■)\n{\n}" jacob-insert)
+    ("switch" "switch (■)\n{\n}" jacob-insert)
+    ("case" "case ■: \n\nbreak;" jacob-insert))
   nil
-  :parents (list c-mode-abbrev-table jacob-comment-abbrev-table)
+  :parents (list jacob-comment-abbrev-table)
   :enable-function 'jacob-point-in-code-p)
 
 (define-abbrev-table 'emacs-lisp-mode-abbrev-table
@@ -1789,9 +1786,15 @@ deleted."
     ("tuple" "Tuple")))
 
 (define-abbrev-table 'sql-mode-abbrev-table
-  '(("sel" "SELECT * FROM ■ WHERE condition;" jacob-insert)
-    ("upd" "UPDATE ■ SET x = y WHERE condition;" jacob-insert)
-    ("del" "DELETE FROM ■ WHERE condition;" jacob-insert)))
+  '(("sel" "SELECT *\nFROM ■\nWHERE condition;" jacob-insert)
+    ("upd" "UPDATE ■\nSET x = y\nWHERE condition;" jacob-insert)
+    ("del" "DELETE FROM ■\nWHERE condition;" jacob-insert)
+    ("joi" "JOIN ■\nON field = field" jacob-insert)
+    ("ins" "INSERT INTO ■ (column, column2)\nVALUES (value, value2)" jacob-insert)
+    ("ord" "ORDER BY")
+    ("gro" "GROUP BY")
+    ("and" "AND")
+    ("as" "AS")))
 
 
 
@@ -1799,34 +1802,16 @@ deleted."
 
 ;; default keybinds that can be rebound:
 
-;; +-------+------------------+
-;; |Key    |Command           |
-;; +-------+------------------+
-;; |C-z    |suspend-frame     |
-;; +-------+------------------+
-;; |C-m    |RET               |
-;; +-------+------------------+
-;; |C/M 0-9|Universal argument|
-;; +-------+------------------+
-;; |C-i    |TAB               |
-;; +-------+------------------+
-;; |       |                  |
-;; +-------+------------------+
+;; JACOBTODO: figure out how to prevent issues with packages not being
+;; installed, etc.  JACOBTODO: or, go for the simple approach: assume
+;; all packages are installed and require them at the top of the
+;; file. this way all packages will be loaded on startup.
 
 (keymap-set lisp-interaction-mode-map "C-j" #'jacob-eval-print-last-sexp)
-
-(keymap-global-set "C-x k" #'kill-current-buffer)
-(keymap-global-set "C-k" #'jacob-kill-line)
-(keymap-global-set "C-a" #'jacob-beginning-of-line)
-
-(keymap-global-set "M-n" #'flymake-goto-next-error)
-(keymap-global-set "M-p" #'flymake-goto-prev-error)
 
 (keymap-global-unset "C-x C-c")         ; `save-buffers-kill-terminal'
 (keymap-global-unset "C-z")             ; `suspend-frame'
 (keymap-global-unset "C-x u")           ; `undo'
-
-(keymap-global-set "C-x C-b" #'ibuffer)
 
 ;; JACOBTODO: how can i make this more xfk friendly?
 (with-eval-after-load 'smerge-mode
@@ -1837,52 +1822,9 @@ deleted."
     "u" #'smerge-keep-upper
     "l" #'smerge-keep-lower))
 
-(when (package-installed-p 'avy)
-  (keymap-global-set "C-c a" 'avy-goto-char-timer))
-
-(when (package-installed-p 'expand-region)
-  (keymap-global-set "C-@" #'er/expand-region))
-
 (with-eval-after-load 'consult
-  (keymap-set ctl-x-map "b" #'consult-buffer)
-  (keymap-set ctl-x-4-map "b" #'consult-buffer-other-window)
-
   (keymap-set project-prefix-map "g" #'jacob-project-search)
-  
-  (keymap-global-set "M-g i" #'consult-imenu)
-
-  (keymap-global-set "C-c l" #'consult-line))
-
-(when (package-installed-p 'slack)
-  (defvar-keymap jacob-slack-map
-    "s" #'slack-start
-    "u" #'jacob-slack-show-unread
-    "U" #'jacob-slack-show-all-unread
-    "r" #'slack-select-rooms
-    "k" #'jacob-slack-kill-buffers))
-
-(with-eval-after-load 'eglot
-  (defvar-keymap jacob-eglot-map
-    "e" #'eglot
-    "a" #'eglot-code-actions
-    "r" #'eglot-rename
-    "i" #'eglot-find-implementation
-    "R" #'eglot-reconnect))
-
-(defvar-keymap jacob-csharp-map
-  "f" #'jacob-format-csharp-statement
-  "t" #'jacob-csharp-run-test)
-
-(defvar-keymap jacob-map
-  "a" #'avy-goto-char-timer
-  "d" #'jacob-sql-connect
-  "g" #'gnus
-  "t" #'toggle-theme
-  "s" jacob-slack-map
-  "e" jacob-eglot-map
-  "c" jacob-csharp-map)
-
-(keymap-global-set "C-c" jacob-map)
+  (keymap-global-set "M-g i" #'consult-imenu))
 
 
 ;; macros
@@ -1926,7 +1868,6 @@ deleted."
 
   (define-key xah-fly-leader-key-map ",n" 'jacob-eval-and-replace)
 
-  ;; (define-key xah-fly-leader-key-map "ei" 'jacob-format-buffer) ; should improve
   (define-key xah-fly-leader-key-map "ep" project-prefix-map)
 
   (define-key xah-fly-leader-key-map "l3" 'jacob-async-shell-command)
@@ -1971,7 +1912,37 @@ deleted."
   (let ((map minibuffer-local-completion-map))
     (define-key map "SPC" 'self-insert-command))
 
-  (define-key xah-fly-leader-key-map " " jacob-map)
+  (keymap-unset xah-fly-leader-key-map "SPC")
+
+  (keymap-set xah-fly-leader-key-map "SPC e e" #'eglot)
+
+  (with-eval-after-load 'eglot
+    (keymap-set xah-fly-leader-key-map "SPC e a" #'eglot-code-actions)
+    (keymap-set xah-fly-leader-key-map "SPC e r" #'eglot-rename)
+    (keymap-set xah-fly-leader-key-map "SPC e i" #'eglot-find-implementation)
+    (keymap-set xah-fly-leader-key-map "SPC e R" #'eglot-reconnect))
+
+  (when (package-installed-p 'slack)
+    (keymap-set xah-fly-leader-key-map "SPC s s" #'slack-start))
+
+  (with-eval-after-load 'slack
+    (keymap-set xah-fly-leader-key-map "SPC s u" #'jacob-slack-show-unread)
+    (keymap-set xah-fly-leader-key-map "SPC s U" #'jacob-slack-show-all-unread)
+    (keymap-set xah-fly-leader-key-map "SPC s r" #'slack-select-rooms)
+    (keymap-set xah-fly-leader-key-map "SPC s k" #'jacob-slack-kill-buffers))
+
+  (with-eval-after-load 'avy
+    (keymap-set xah-fly-leader-key-map "SPC a" #'avy-goto-char-timer))
+
+  (defvar-keymap jacob-csharp-map
+    "f" #'jacob-format-csharp-statement
+    "t" #'jacob-csharp-run-test)
+
+  (keymap-set xah-fly-leader-key-map "SPC c f" #'jacob-format-csharp-statement)
+  (keymap-set xah-fly-leader-key-map "SPC c t" #'jacob-csharp-run-test)
+
+  (keymap-set xah-fly-leader-key-map "SPC g" #'gnus)
+  (keymap-set xah-fly-leader-key-map "SPC d" #'jacob-sql-connect)
 
   (let ((map dired-mode-map))
     (jacob-xfk-define-key-in-major-mode map "q" 'quit-window)
@@ -2088,12 +2059,7 @@ deleted."
     (jacob-xfk-define-key-in-major-mode js-ts-mode-map " ,c" #'recompile))
 
   (with-eval-after-load 'typescript-ts-mode
-    (jacob-xfk-define-key-in-major-mode typescript-ts-mode-map " ,c" #'recompile))
-
-  (with-eval-after-load 'sly
-    (jacob-xfk-define-key-in-major-mode lisp-mode-map " ,m" #'sly-eval-last-expression)
-    (jacob-xfk-define-key-in-major-mode lisp-mode-map " ,d" #'sly-eval-defun)
-    (jacob-xfk-define-key-in-major-mode lisp-mode-map " ,e" #'sly-eval-buffer)))
+    (jacob-xfk-define-key-in-major-mode typescript-ts-mode-map " ,c" #'recompile)))
 
 (provide 'init)
 ;;; init.el ends here
