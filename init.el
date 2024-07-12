@@ -411,6 +411,8 @@ ALIST is as described in `battery-update-functions'."
   (setq dired-listing-switches "-hal") ;; the h option needs to come first 🙃
   (setq dired-guess-shell-alist-user '(("\\.mkv\\'" "mpv")))
 
+  (setq dired-vc-rename-file t)
+
   (defun jacob-dired-mode-setup ()
     "Hook function for dired."
     (dired-hide-details-mode 1))
