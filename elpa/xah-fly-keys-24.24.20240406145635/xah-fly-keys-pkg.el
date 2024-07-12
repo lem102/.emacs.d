@@ -1,2 +1,0 @@
-;; Generated package description from xah-fly-keys.el  -*- no-byte-compile: t -*-
-(define-package "xah-fly-keys" "24.24.20240406145635" "ergonomic modal keybinding minor mode." '((emacs "27")) :commit "ab78ee6092507be9a8b45dee54f69d93c1f055e6" :maintainer '("Xah Lee" . "xah@xahlee.org") :keywords '("convenience" "vi" "vim" "ergoemacs" "keybinding") :url "http://xahlee.info/emacs/misc/xah-fly-keys.html")
