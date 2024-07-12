@@ -894,6 +894,10 @@ If successful, evaluate BODY.  Used to eagerly load feature."
                          ("non-GNU" . "https://elpa.nongnu.org/nongnu/")
                          ("melpa" . "https://melpa.org/packages/")))
 
+(setopt package-selected-packages '(xah-fly-keys))
+
+(package-install-selected-packages)
+
 
 ;; avy config
 
