@@ -748,12 +748,11 @@ Intended as before advice for `sql-send-paragraph'."
                                         (typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src")
                                         (tsx "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src")
                                         (yaml "https://github.com/ikatyang/tree-sitter-yaml")))
-  (setq treesit-load-name-override-list '((c-sharp "libtree-sitter-csharp" "tree_sitter_c_sharp")))
-  ;; JACOBTODO: troubleshoot csharp-ts on windows
-  (setq major-mode-remap-alist '((csharp-mode . csharp-ts-mode)
-                                 (javascript-mode . js-ts-mode)))
-  (setq treesit-font-lock-level 4)      ; max level of fontification
-  )
+  (setq treesit-load-name-override-list '((c-sharp "libtree-sitter-csharp" "tree_sitter_c_sharp"))))
+
+(setq major-mode-remap-alist '((csharp-mode . csharp-ts-mode)
+                               (javascript-mode . js-ts-mode)))
+(setq treesit-font-lock-level 4)      ; max level of fontification
 
 
 ;; eglot config
