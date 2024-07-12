@@ -411,6 +411,8 @@ ALIST is as described in `battery-update-functions'."
   (setq dired-listing-switches "-hal") ;; the h option needs to come first 🙃
   (setq dired-guess-shell-alist-user '(("\\.mkv\\'" "mpv")))
 
+  (setq dired-vc-rename-file t)
+
   (defun jacob-dired-mode-setup ()
     "Hook function for dired."
     (dired-hide-details-mode 1))
@@ -860,7 +862,17 @@ Useful for deleting ^M after `eglot-code-actions'."
 
 ;; package configuration
 
+;; JACOBTODO: maintain package list and package vc list to control
+;; what packages are installed.
+
+;; stop commiting packages into git
+
+;; for most packages installing from latest is fine. for special cases, use package-vc
+
 (require 'package)
+
+;; JACOBTODO: get rid of macros, replace with constants ala
+;; jacob-system-windows / jacob-system-linux
 
 (defmacro jacob-is-installed (package &rest body)
   "If PACKAGE is installed, evaluate BODY.
@@ -877,11 +889,9 @@ If successful, evaluate BODY.  Used to eagerly load feature."
   `(when (require ,feature nil 'noerror)
      ,@body))
 
-(setq package-archives '(
-                         ("GNU" . "https://elpa.gnu.org/packages/")
+(setq package-archives '(("GNU" . "https://elpa.gnu.org/packages/")
                          ("non-GNU" . "https://elpa.nongnu.org/nongnu/")
-                         ("melpa" . "https://melpa.org/packages/")
-                         ))
+                         ("melpa" . "https://melpa.org/packages/")))
 
 
 ;; avy config
