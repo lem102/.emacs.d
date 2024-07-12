@@ -930,11 +930,12 @@ If successful, evaluate BODY.  Used to eagerly load feature."
 
 ;; eglot-booster config
 
-(with-eval-after-load 'eglot
-  (unless (package-installed-p 'eglot-booster)
-    (package-vc-install "https://github.com/jdtsmith/eglot-booster"))
+(unless (eq system-type 'windows-nt)
+  (with-eval-after-load 'eglot
+    (unless (package-installed-p 'eglot-booster)
+      (package-vc-install "https://github.com/jdtsmith/eglot-booster"))
 
-  (eglot-booster-mode 1))
+    (eglot-booster-mode 1)))
 
 
 ;; slack config
