@@ -793,7 +793,10 @@ Useful for deleting ^M after `eglot-code-actions'."
 (with-eval-after-load 'eglot
   (add-to-list 'eglot-server-programs `((csharp-mode csharp-ts-mode) . ,(eglot-alternatives
                                                                          '(("csharp-ls")
-                                                                           ("OmniSharp" "-lsp")))))
+                                                                           ("OmniSharp" "-lsp")
+                                                                           ("Microsoft.CodeAnalysis.LanguageServer"
+                                                                            "--logLevel=Information"
+                                                                            "--extensionLogDirectory=/home/jacobl/dev/roslynLSP/logs/")))))
 
   (add-to-list 'eglot-server-programs '(sql-mode . ("sqls")))
 
@@ -871,8 +874,7 @@ Useful for deleting ^M after `eglot-code-actions'."
 
 (require 'package)
 
-;; JACOBTODO: get rid of macros, replace with constants ala
-;; jacob-system-windows / jacob-system-linux
+;; JACOBTODO: get rid of macros, replace with use-package
 
 (defmacro jacob-is-installed (package &rest body)
   "If PACKAGE is installed, evaluate BODY.
@@ -881,17 +883,15 @@ Used when attempting to lazy load PACKAGE."
   `(when (package-installed-p ,package)
      ,@body))
 
-(defmacro jacob-try-require (feature &rest body)
-  "Attempt to require FEATURE.
-
-If successful, evaluate BODY.  Used to eagerly load feature."
-  (declare (indent 1))
-  `(when (require ,feature nil 'noerror)
-     ,@body))
-
 (setq package-archives '(("GNU" . "https://elpa.gnu.org/packages/")
                          ("non-GNU" . "https://elpa.nongnu.org/nongnu/")
                          ("melpa" . "https://melpa.org/packages/")))
+
+(eval-when-compile
+  (require 'use-package))
+
+(setopt use-package-always-ensure t
+        use-package-hook-name-suffix nil)
 
 
 ;; avy config
@@ -1082,12 +1082,16 @@ Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (c
         dape-configs))
 
 
-;; switch-window configuration
 
-;; JACOBTODO: investigate switch window finish hook to solve compilation scroll issue
-(jacob-try-require 'switch-window
-  (setq switch-window-shortcut-style 'qwerty)
-  (setq switch-window-threshold 3))
+(use-package switch-window
+  ;; JACOBTODO: investigate switch window finish hook to solve compilation scroll issue
+  :after xah-fly-keys
+  :custom
+  (switch-window-shortcut-style 'qwerty)
+  (switch-window-threshold 3)
+  :bind (nil
+         :map xah-fly-command-map
+         ("," . switch-window)))
 
 
 ;; racket-mode
@@ -1125,37 +1129,32 @@ Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (c
 
 
 
-(jacob-try-require 'orderless
-  (setq completion-styles '(orderless initials)))
+(use-package orderless
+  :config
+  (setopt completion-styles '(orderless initials)))
 
 
 
-(jacob-try-require 'vertico
+(use-package vertico
+  :config
   ;; JACOBTODO: attempt to make number of candidates equal to 1/4 of screen
-  (setq vertico-count 25)
+  (setopt vertico-count 25)
   (vertico-mode 1))
 
 
 
-(jacob-try-require 'marginalia
+(use-package marginalia
+  :config
   (marginalia-mode 1))
 
 
-;; consult config
 
-(jacob-try-require 'consult
-  (setq completion-in-region-function 'consult-completion-in-region)
-
-  (setq consult-preview-raw-size 0)
-
-  (setq consult-project-root-function
-        (lambda ()
-          (when-let (project (project-current))
-            (car (project-roots project)))))
-
-  (setq xref-show-xrefs-function 'consult-xref)
-  (setq xref-show-definitions-function 'consult-xref)
-
+(use-package consult
+  :init
+  (setopt completion-in-region-function 'consult-completion-in-region
+          xref-show-xrefs-function 'consult-xref
+          xref-show-definitions-function 'consult-xref)
+  :config
   (defun jacob-consult-buffer-state-no-tramp ()
     "Buffer state function that doesn't preview Tramp buffers."
     (let ((orig-state (consult--buffer-state))
@@ -1169,41 +1168,47 @@ Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (c
                       nil))))
       (lambda (action cand)
         (funcall orig-state action (funcall filter action cand)))))
-
-  (with-eval-after-load 'consult
-    (setq consult--source-buffer
+  
+  (setopt consult--source-buffer
           (plist-put consult--source-buffer
-                     :state #'jacob-consult-buffer-state-no-tramp))))
+                     :state #'jacob-consult-buffer-state-no-tramp)))
 
 
-;; expand region config
 
-(jacob-is-installed 'expand-region
-  (with-eval-after-load 'expand-region
-    (setq expand-region-contract-fast-key "9")))
-
-
-;; sml-mode config
-
-(jacob-is-installed 'sml-mode
-  (with-eval-after-load 'sml-mode
-    (setq sml-abbrev-skeletons nil)))
+(use-package expand-region
+  :after xah-fly-keys
+  :config
+  (setopt expand-region-contract-fast-key "9")
+  :bind (nil
+         :map xah-fly-command-map
+         ("8" . er/expand-region)))
 
 
-;; activities config
 
-(when (require 'activities nil "NOERROR")
+(use-package sml-mode
+  :config
+  (setopt sml-abbrev-skeletons nil))
+
+
+
+(use-package activities
+  :config
   (activities-mode 1))
 
 
-;; xah-fly-keys config
 
-(setq xah-fly-use-control-key nil)
-(setq xah-fly-use-meta-key nil)
-
-(jacob-try-require 'xah-fly-keys
+(use-package xah-fly-keys
+  :init
+  (setopt xah-fly-use-control-key nil
+          xah-fly-use-meta-key nil)
+  :config
   (xah-fly-keys-set-layout "qwerty")
   (xah-fly-keys 1))
+
+
+
+(use-package verb
+  :hook (org-mode-hook . verb-mode))
 
 
 
@@ -1844,7 +1849,7 @@ deleted."
 
 ;; xah-fly-keys keybindings
 
-(jacob-is-installed 'xah-fly-keys
+(with-eval-after-load 'xah-fly-keys
 
   (global-set-key (kbd "<f7>") 'xah-fly-leader-key-map)
 
@@ -1860,11 +1865,6 @@ deleted."
   (define-key xah-fly-command-map "9" 'jacob-swap-visible-buffers)
   (define-key xah-fly-command-map "'" 'jacob-format-words)
   (define-key xah-fly-insert-map (kbd "M-SPC") 'xah-fly-command-mode-activate)
-  (jacob-is-installed 'expand-region
-    (define-key xah-fly-command-map "8" 'er/expand-region))
-
-  (jacob-is-installed 'switch-window
-    (define-key xah-fly-command-map "," 'switch-window))
 
   (define-key xah-fly-command-map (kbd "=") 'jacob-next-error-or-punct)
   (define-key xah-fly-command-map (kbd "-") 'jacob-previous-error-or-punct)
