@@ -872,8 +872,7 @@ Useful for deleting ^M after `eglot-code-actions'."
 
 (require 'package)
 
-;; JACOBTODO: get rid of macros, replace with constants ala
-;; jacob-system-windows / jacob-system-linux
+;; JACOBTODO: get rid of macros, replace with use-package
 
 (defmacro jacob-is-installed (package &rest body)
   "If PACKAGE is installed, evaluate BODY.
@@ -894,9 +893,15 @@ If successful, evaluate BODY.  Used to eagerly load feature."
                          ("non-GNU" . "https://elpa.nongnu.org/nongnu/")
                          ("melpa" . "https://melpa.org/packages/")))
 
-(setopt package-selected-packages '(xah-fly-keys))
+(setopt package-selected-packages '(verb))
 
 (package-install-selected-packages)
+
+(eval-when-compile
+  (require 'use-package))
+
+(setopt use-package-always-ensure t)
+(setopt use-package-hook-name-suffix nil)
 
 
 ;; avy config
@@ -1196,16 +1201,18 @@ Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (c
 
 ;; activities config
 
-(when (require 'activities nil "NOERROR")
+(use-package activities
+  :config
   (activities-mode 1))
 
 
 ;; xah-fly-keys config
 
-(setq xah-fly-use-control-key nil)
-(setq xah-fly-use-meta-key nil)
-
-(jacob-try-require 'xah-fly-keys
+(use-package xah-fly-keys
+  :init
+  (setopt xah-fly-use-control-key nil)
+  (setopt xah-fly-use-meta-key nil)
+  :config
   (xah-fly-keys-set-layout "qwerty")
   (xah-fly-keys 1))
 
