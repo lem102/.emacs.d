@@ -794,7 +794,10 @@ Useful for deleting ^M after `eglot-code-actions'."
 (with-eval-after-load 'eglot
   (add-to-list 'eglot-server-programs `((csharp-mode csharp-ts-mode) . ,(eglot-alternatives
                                                                          '(("csharp-ls")
-                                                                           ("OmniSharp" "-lsp")))))
+                                                                           ("OmniSharp" "-lsp")
+                                                                           ("Microsoft.CodeAnalysis.LanguageServer"
+                                                                            "--logLevel=Information"
+                                                                            "--extensionLogDirectory=/home/jacobl/dev/roslynLSP/logs/")))))
 
   (add-to-list 'eglot-server-programs '(sql-mode . ("sqls")))
 
