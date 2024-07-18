@@ -500,7 +500,8 @@ hides this information."
                 :items    ,#'jacob-consult-project-filter
                 :action   ,#'find-file))
 
-  (add-to-list 'consult-buffer-sources jacob-consult-project-source "APPEND"))
+  (unless (eq system-type 'windows-nt)
+    (add-to-list 'consult-buffer-sources jacob-consult-project-source "APPEND")))
 
 
 ;; emacs-lisp-mode config
@@ -663,7 +664,9 @@ Designed for use in on-save hook in certain programming languages modes."
       (insert "y")
       (eshell-send-input)))
 
-  (advice-add 'eshell-interrupt-process :after #'jacob-confirm-terminate-batch-job))
+  (advice-add 'eshell-interrupt-process :after #'jacob-confirm-terminate-batch-job)
+
+  (setopt find-program "C:/Program Files (x86)/GnuWin32/bin/find.exe"))
 
 
 ;; winner-mode
@@ -763,7 +766,8 @@ Intended as before advice for `sql-send-paragraph'."
 ;; definition or implementation (`xref-find-definitions' vs
 ;; `eglot-find-implementation')
 
-(setq eglot-ignored-server-capabilities '(:documentOnTypeFormattingProvider))
+(setq eglot-ignored-server-capabilities '(:documentOnTypeFormattingProvider
+                                          :documentHighlightProvider))
 
 (defun jacob-remove-ret-character-from-buffer (&rest _)
   "Remove all occurances of ^M from the buffer.
@@ -1119,7 +1123,10 @@ Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (c
 
 (jacob-is-installed 'fsharp-mode
   (with-eval-after-load 'fsharp-mode
-    (setq inferior-fsharp-program "dotnet fsi --fsi-server-input-codepage:65001")))
+    ;; (setq inferior-fsharp-program "dotnet fsi --fsi-server-input-codepage:65001")
+    (setq inferior-fsharp-program "dotnet fsi")))
+
+(setopt eglot-fsharp-server-install-dir nil)
 
 
 
