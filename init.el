@@ -1080,31 +1080,10 @@ Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (c
 
 ;; JACOBTODO: jacob-csharp package requires dape, causing it to be loaded prematurely
 (use-package dape
+  :commands dape
   :custom
   (dape-info-hide-mode-line nil)
   (dape-buffer-window-arrangment 'right)
-  (dape-configs (cons '(netcoredbg-attach-port
-                        modes (csharp-mode csharp-ts-mode)
-                        ensure dape-ensure-command
-                        command "netcoredbg"
-                        command-args ["--interpreter=vscode"]
-                        :request "attach"
-                        :cwd dape-cwd-fn
-                        :program jacob-select-dll
-                        :stopAtEntry t
-                        :processId
-                        (lambda ()
-                          (let* ((collection
-                                  (seq-map
-                                   (lambda (pid)
-                                     (cons (cdr (assoc 'args
-                                                       (process-attributes pid)))
-                                           pid))
-                                   (list-system-processes)))
-                                 (selection (completing-read "process: "
-                                                             collection)))
-                            (cdr (assoc selection collection)))))
-                      dape-configs))
   :config
   (defun jacob-select-dll ()
     (completing-read "dll: "
@@ -1113,7 +1092,30 @@ Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (c
                                       filename))
                               (directory-files-recursively
                                (project-root (project-current))
-                               "\\.dll")))))
+                               "\\.dll"))))
+
+  (setopt dape-configs (cons '(netcoredbg-attach-port
+                               modes (csharp-mode csharp-ts-mode)
+                               ensure dape-ensure-command
+                               command "netcoredbg"
+                               command-args ["--interpreter=vscode"]
+                               :request "attach"
+                               :cwd dape-cwd-fn
+                               :program jacob-select-dll
+                               :stopAtEntry t
+                               :processId
+                               (lambda ()
+                                 (let* ((collection
+                                         (seq-map
+                                          (lambda (pid)
+                                            (cons (cdr (assoc 'args
+                                                              (process-attributes pid)))
+                                                  pid))
+                                          (list-system-processes)))
+                                        (selection (completing-read "process: "
+                                                                    collection)))
+                                   (cdr (assoc selection collection)))))
+                             dape-configs)))
 
 
 
