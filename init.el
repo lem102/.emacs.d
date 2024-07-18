@@ -3,6 +3,18 @@
 ;;; Code:
 
 ;; built-in
+
+;; use package
+
+(eval-when-compile
+  (require 'use-package))
+
+(setopt use-package-always-ensure t
+        use-package-hook-name-suffix nil
+        use-package-enable-imenu-support t)
+
+
+
 ;; garbage collection
 
 ;; tweak garbage collection when using the minibuffer
@@ -282,71 +294,73 @@ ALIST is as described in `battery-update-functions'."
 (with-eval-after-load 'csharp-mode
   ;; JACOBTODO: get rid of this when updated to a version of emacs
   ;; with your changes to csharp mode
-  (setq csharp-ts-mode--indent-rules
-        `((c-sharp
-           ((parent-is "compilation_unit") parent-bol 0)
-           ((node-is "}") parent-bol 0)
-           ((node-is ")") parent-bol 0)
-           ((node-is "]") parent-bol 0)
-           ((and (parent-is "comment") c-ts-common-looking-at-star)
-            c-ts-common-comment-start-after-first-star -1)
-           ((parent-is "comment") prev-adaptive-prefix 0)
-           ((parent-is "namespace_declaration") parent-bol 0)
-           ((parent-is "class_declaration") parent-bol 0)
-           ((parent-is "constructor_declaration") parent-bol 0)
-           ((parent-is "initializer_expression") parent-bol csharp-ts-mode-indent-offset)
-           ((match "{" "anonymous_object_creation_expression") parent-bol 0)
-           ((parent-is "anonymous_object_creation_expression") parent-bol csharp-ts-mode-indent-offset)
-           ((match "{" "object_creation_expression") parent-bol 0)
-           ((parent-is "object_creation_expression") parent-bol 0)
-           ((parent-is "method_declaration") parent-bol 0)
-           ((parent-is "enum_declaration") parent-bol 0)
-           ((parent-is "operator_declaration") parent-bol 0)
-           ((parent-is "field_declaration") parent-bol 0)
-           ((parent-is "struct_declaration") parent-bol 0)
-           ((parent-is "declaration_list") parent-bol csharp-ts-mode-indent-offset)
-           ((parent-is "argument_list") parent-bol csharp-ts-mode-indent-offset)
-           ((parent-is "interpolation") parent-bol csharp-ts-mode-indent-offset)
-           ((parent-is "binary_expression") parent 0)
-           ((parent-is "block") parent-bol csharp-ts-mode-indent-offset)
-           ((parent-is "local_function_statement") parent-bol 0)
-           ((match "block" "if_statement") parent-bol 0)
-           ((match "else" "if_statement") parent-bol 0)
-           ((parent-is "if_statement") parent-bol csharp-ts-mode-indent-offset)
-           ((parent-is "for_statement") parent-bol 0)
-           ((parent-is "for_each_statement") parent-bol 0)
-           ((parent-is "while_statement") parent-bol 0)
-           ((match "{" "switch_expression") parent-bol 0)
-           ((parent-is "switch_statement") parent-bol 0)
-           ((parent-is "switch_body") parent-bol csharp-ts-mode-indent-offset)
-           ((parent-is "switch_section") parent-bol csharp-ts-mode-indent-offset)
-           ((parent-is "switch_expression") parent-bol csharp-ts-mode-indent-offset)
-           ((parent-is "case_statement") parent-bol 0)
-           ((parent-is "do_statement") parent-bol 0)
-           ((parent-is "equals_value_clause") parent-bol csharp-ts-mode-indent-offset)
-           ((parent-is "ternary_expression") parent-bol csharp-ts-mode-indent-offset)
-           ((parent-is "conditional_expression") parent-bol csharp-ts-mode-indent-offset)
-           ((parent-is "statement_block") parent-bol csharp-ts-mode-indent-offset)
-           ((parent-is "type_arguments") parent-bol csharp-ts-mode-indent-offset)
-           ((parent-is "variable_declarator") parent-bol csharp-ts-mode-indent-offset)
-           ((parent-is "arguments") parent-bol csharp-ts-mode-indent-offset)
-           ((parent-is "array") parent-bol csharp-ts-mode-indent-offset)
-           ((parent-is "formal_parameters") parent-bol csharp-ts-mode-indent-offset)
-           ((parent-is "template_substitution") parent-bol csharp-ts-mode-indent-offset)
-           ((parent-is "object_pattern") parent-bol csharp-ts-mode-indent-offset)
-           ((parent-is "object") parent-bol csharp-ts-mode-indent-offset)
-           ((parent-is "object_type") parent-bol csharp-ts-mode-indent-offset)
-           ((parent-is "enum_body") parent-bol csharp-ts-mode-indent-offset)
-           ((parent-is "arrow_function") parent-bol csharp-ts-mode-indent-offset)
-           ((parent-is "parenthesized_expression") parent-bol csharp-ts-mode-indent-offset)
-           ((parent-is "parameter_list") parent-bol csharp-ts-mode-indent-offset)
-           ((parent-is "implicit_parameter_list") parent-bol csharp-ts-mode-indent-offset)
-           ((parent-is "member_access_expression") parent-bol csharp-ts-mode-indent-offset)
-           ((parent-is "lambda_expression") parent-bol csharp-ts-mode-indent-offset)
-           ((parent-is "try_statement") parent-bol 0)
-           ((parent-is "catch_clause") parent-bol 0)
-           ((parent-is "throw_expression") parent-bol csharp-ts-mode-indent-offset)
-           ((parent-is "return_statement") parent-bol csharp-ts-mode-indent-offset))))
+  (setopt csharp-ts-mode--indent-rules
+          `((c-sharp
+             ((parent-is "compilation_unit") parent-bol 0)
+             ((node-is "}") parent-bol 0)
+             ((node-is ")") parent-bol 0)
+             ((node-is "]") parent-bol 0)
+             ((and (parent-is "comment") c-ts-common-looking-at-star)
+              c-ts-common-comment-start-after-first-star -1)
+             ((parent-is "comment") prev-adaptive-prefix 0)
+             ((parent-is "namespace_declaration") parent-bol 0)
+             ((parent-is "class_declaration") parent-bol 0)
+             ((parent-is "record_declaration") parent-bol 0)
+             ((parent-is "interface_declaration") parent-bol 0)
+             ((parent-is "constructor_declaration") parent-bol 0)
+             ((parent-is "initializer_expression") parent-bol csharp-ts-mode-indent-offset)
+             ((match "{" "anonymous_object_creation_expression") parent-bol 0)
+             ((parent-is "anonymous_object_creation_expression") parent-bol csharp-ts-mode-indent-offset)
+             ((match "{" "object_creation_expression") parent-bol 0)
+             ((parent-is "object_creation_expression") parent-bol 0)
+             ((parent-is "method_declaration") parent-bol 0)
+             ((parent-is "enum_declaration") parent-bol 0)
+             ((parent-is "operator_declaration") parent-bol 0)
+             ((parent-is "field_declaration") parent-bol 0)
+             ((parent-is "struct_declaration") parent-bol 0)
+             ((parent-is "declaration_list") parent-bol csharp-ts-mode-indent-offset)
+             ((parent-is "argument_list") parent-bol csharp-ts-mode-indent-offset)
+             ((parent-is "interpolation") parent-bol csharp-ts-mode-indent-offset)
+             ((parent-is "binary_expression") parent 0)
+             ((parent-is "block") parent-bol csharp-ts-mode-indent-offset)
+             ((parent-is "local_function_statement") parent-bol 0)
+             ((match "block" "if_statement") parent-bol 0)
+             ((match "else" "if_statement") parent-bol 0)
+             ((parent-is "if_statement") parent-bol csharp-ts-mode-indent-offset)
+             ((parent-is "for_statement") parent-bol 0)
+             ((parent-is "for_each_statement") parent-bol 0)
+             ((parent-is "while_statement") parent-bol 0)
+             ((match "{" "switch_expression") parent-bol 0)
+             ((parent-is "switch_statement") parent-bol 0)
+             ((parent-is "switch_body") parent-bol csharp-ts-mode-indent-offset)
+             ((parent-is "switch_section") parent-bol csharp-ts-mode-indent-offset)
+             ((parent-is "switch_expression") parent-bol csharp-ts-mode-indent-offset)
+             ((parent-is "case_statement") parent-bol 0)
+             ((parent-is "do_statement") parent-bol 0)
+             ((parent-is "equals_value_clause") parent-bol csharp-ts-mode-indent-offset)
+             ((parent-is "ternary_expression") parent-bol csharp-ts-mode-indent-offset)
+             ((parent-is "conditional_expression") parent-bol csharp-ts-mode-indent-offset)
+             ((parent-is "statement_block") parent-bol csharp-ts-mode-indent-offset)
+             ((parent-is "type_arguments") parent-bol csharp-ts-mode-indent-offset)
+             ((parent-is "variable_declarator") parent-bol csharp-ts-mode-indent-offset)
+             ((parent-is "arguments") parent-bol csharp-ts-mode-indent-offset)
+             ((parent-is "array") parent-bol csharp-ts-mode-indent-offset)
+             ((parent-is "formal_parameters") parent-bol csharp-ts-mode-indent-offset)
+             ((parent-is "template_substitution") parent-bol csharp-ts-mode-indent-offset)
+             ((parent-is "object_pattern") parent-bol csharp-ts-mode-indent-offset)
+             ((parent-is "object") parent-bol csharp-ts-mode-indent-offset)
+             ((parent-is "object_type") parent-bol csharp-ts-mode-indent-offset)
+             ((parent-is "enum_body") parent-bol csharp-ts-mode-indent-offset)
+             ((parent-is "arrow_function") parent-bol csharp-ts-mode-indent-offset)
+             ((parent-is "parenthesized_expression") parent-bol csharp-ts-mode-indent-offset)
+             ((parent-is "parameter_list") parent-bol csharp-ts-mode-indent-offset)
+             ((parent-is "implicit_parameter_list") parent-bol csharp-ts-mode-indent-offset)
+             ((parent-is "member_access_expression") parent-bol csharp-ts-mode-indent-offset)
+             ((parent-is "lambda_expression") parent-bol csharp-ts-mode-indent-offset)
+             ((parent-is "try_statement") parent-bol 0)
+             ((parent-is "catch_clause") parent-bol 0)
+             ((parent-is "throw_expression") parent-bol csharp-ts-mode-indent-offset)
+             ((parent-is "return_statement") parent-bol csharp-ts-mode-indent-offset))))
   
   (defun jacob-csharp-ts-hook-function ()
     "Set vars in csharp-ts-mode buffer."
@@ -669,47 +683,54 @@ Designed for use in on-save hook in certain programming languages modes."
   (setopt find-program "C:/Program Files (x86)/GnuWin32/bin/find.exe"))
 
 
-;; winner-mode
 
-(winner-mode 1)
+(use-package winner
+  :after xah-fly-keys
+  :demand t
+  :config
+  (winner-mode 1)
+  :bind (:map
+         xah-fly-command-map
+         ("1" . winner-undo)
+         ("2" . winner-redo)))
 
 
-;; sql config
 
-(defun jacob-sql-interactive-mode-hook ()
-  "Custom interactive SQL mode behaviours.
+(use-package sql
+  :commands jacob-sql-connect
+  :config
+  (defun jacob-sql-connect (connection &optional buf-name)
+    "Wrapper for sql connect to set postgres password."
+    (interactive
+     (if sql-connection-alist
+         (list (progn
+                 (require 'sql)
+                 (sql-read-connection "Connection: "))
+               current-prefix-arg)
+       (user-error "No SQL Connections defined")))
+    (with-environment-variables
+        (("PGPASSWORD" (cadr (assoc 'sql-password
+                                    (assoc-string connection
+                                                  sql-connection-alist
+                                                  t)))))
+      (sql-connect connection buf-name)))
+  (defun jacob-sql-interactive-mode-hook ()
+    "Custom interactive SQL mode behaviours.
 
 See `sql-interactive-mode-hook' and `sql-product-alist'."
-  (when (eq sql-product 'postgres)
-    (setq sql-prompt-regexp "^[-[:alnum:]_]*[-=]\\*?[#>] ")
-    (setq sql-prompt-cont-regexp "^\\(?:\\sw\\|\\s_\\)*[-(]\\*?[#>] ")))
+    (when (eq sql-product 'postgres)
+      (setq sql-prompt-regexp "^[-[:alnum:]_]*[-=]\\*?[#>] ")
+      (setq sql-prompt-cont-regexp "^\\(?:\\sw\\|\\s_\\)*[-(]\\*?[#>] ")))
 
-(add-hook 'sql-interactive-mode-hook 'jacob-sql-interactive-mode-hook)
-
-(defun jacob-sql-connect (connection &optional buf-name)
-  "Wrapper for sql connect to set postgres password."
-  (interactive
-   (if sql-connection-alist
-       (list (progn
-               (require 'sql)
-               (sql-read-connection "Connection: "))
-             current-prefix-arg)
-     (user-error "No SQL Connections defined")))
-  (with-environment-variables
-      (("PGPASSWORD" (cadr (assoc 'sql-password
-                                  (assoc-string connection
-                                                sql-connection-alist
-                                                t)))))
-    (sql-connect connection buf-name)))
-
-(defun jacob-sqli-end-of-buffer ()
-  "Move point to end of sqli buffer before sending paragraph.
+  (defun jacob-sqli-end-of-buffer ()
+    "Move point to end of sqli buffer before sending paragraph.
 
 Intended as before advice for `sql-send-paragraph'."
-  (with-current-buffer sql-buffer
-    (end-of-buffer)))
+    (with-current-buffer sql-buffer
+      (end-of-buffer)))
 
-(advice-add #'sql-send-paragraph :before #'jacob-sqli-end-of-buffer)
+  (advice-add #'sql-send-paragraph :before #'jacob-sqli-end-of-buffer)
+  :hook (sql-interactive-mode-hook . jacob-sql-interactive-mode-hook))
 
 
 ;; docview config
@@ -765,6 +786,24 @@ Intended as before advice for `sql-send-paragraph'."
 ;; JACOBTODO: function that can smartly decide between jumping to
 ;; definition or implementation (`xref-find-definitions' vs
 ;; `eglot-find-implementation')
+
+;; WIP
+(defun jacob-go-definition ()
+  "If not in an eglot buffer, do regular xref stuff.
+
+Otherwise, go to implementation. If already at implementation go
+to definition."
+  (interactive)
+  (if (not eglot--managed-mode)
+      (call-interactively #'xref-find-definitions)
+    (let ((start-buffer (current-buffer)))
+      (ignore-errors
+        (eglot-find-implementation))
+      (when (eq start-buffer (current-buffer))
+        ;; JACOBTODO: won't work, this just takes us to the current
+        ;; method. if language server implemented go to declaration
+        ;; something might be possible.
+        (call-interactively #'xref-find-definitions)))))
 
 (setq eglot-ignored-server-capabilities '(:documentOnTypeFormattingProvider
                                           :documentHighlightProvider))
@@ -869,10 +908,7 @@ Useful for deleting ^M after `eglot-code-actions'."
 
 ;; package configuration
 
-;; JACOBTODO: maintain package list and package vc list to control
-;; what packages are installed.
-
-;; stop commiting packages into git
+;; JACOBTODO: stop commiting packages into git
 
 ;; for most packages installing from latest is fine. for special cases, use package-vc
 
@@ -887,15 +923,9 @@ Used when attempting to lazy load PACKAGE."
   `(when (package-installed-p ,package)
      ,@body))
 
-(setq package-archives '(("GNU" . "https://elpa.gnu.org/packages/")
-                         ("non-GNU" . "https://elpa.nongnu.org/nongnu/")
-                         ("melpa" . "https://melpa.org/packages/")))
-
-(eval-when-compile
-  (require 'use-package))
-
-(setopt use-package-always-ensure t
-        use-package-hook-name-suffix nil)
+(setopt package-archives '(("GNU" . "https://elpa.gnu.org/packages/")
+                           ("non-GNU" . "https://elpa.nongnu.org/nongnu/")
+                           ("melpa" . "https://melpa.org/packages/")))
 
 
 ;; avy config
@@ -1047,43 +1077,43 @@ Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (c
     (add-to-list 'consult-buffer-sources jacob-consult-slack-source "APPEND")))
 
 
-;; dape config
 
-(defun jacob-select-dll ()
-  (completing-read "dll: "
-                   (seq-map (lambda (filename)
-                              (cons (file-name-nondirectory filename)
-                                    filename))
-                            (directory-files-recursively
-                             (project-root (project-current))
-                             "\\.dll"))))
-
-(with-eval-after-load 'dape
-  (setq dape-info-hide-mode-line nil)
-  (setq dape-buffer-window-arrangment 'right)
-
-  (push '(netcoredbg-attach-port
-          modes (csharp-mode csharp-ts-mode)
-          ensure dape-ensure-command
-          command "netcoredbg"
-          command-args ["--interpreter=vscode"]
-          :request "attach"
-          :cwd dape-cwd-fn
-          :program jacob-select-dll
-          :stopAtEntry t
-          :processId
-          (lambda ()
-            (let* ((collection
-                    (seq-map
-                     (lambda (pid)
-                       (cons (cdr (assoc 'args
-                                         (process-attributes pid)))
-                             pid))
-                     (list-system-processes)))
-                   (selection (completing-read "process: "
-                                               collection)))
-              (cdr (assoc selection collection)))))
-        dape-configs))
+;; JACOBTODO: jacob-csharp package requires dape, causing it to be loaded prematurely
+(use-package dape
+  :custom
+  (dape-info-hide-mode-line nil)
+  (dape-buffer-window-arrangment 'right)
+  (dape-configs (cons '(netcoredbg-attach-port
+                        modes (csharp-mode csharp-ts-mode)
+                        ensure dape-ensure-command
+                        command "netcoredbg"
+                        command-args ["--interpreter=vscode"]
+                        :request "attach"
+                        :cwd dape-cwd-fn
+                        :program jacob-select-dll
+                        :stopAtEntry t
+                        :processId
+                        (lambda ()
+                          (let* ((collection
+                                  (seq-map
+                                   (lambda (pid)
+                                     (cons (cdr (assoc 'args
+                                                       (process-attributes pid)))
+                                           pid))
+                                   (list-system-processes)))
+                                 (selection (completing-read "process: "
+                                                             collection)))
+                            (cdr (assoc selection collection)))))
+                      dape-configs))
+  :config
+  (defun jacob-select-dll ()
+    (completing-read "dll: "
+                     (seq-map (lambda (filename)
+                                (cons (file-name-nondirectory filename)
+                                      filename))
+                              (directory-files-recursively
+                               (project-root (project-current))
+                               "\\.dll")))))
 
 
 
@@ -1137,15 +1167,16 @@ Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (c
 
 
 (use-package orderless
-  :config
-  (setopt completion-styles '(orderless initials)))
+  :custom
+  (completion-styles '(orderless initials)))
 
 
 
 (use-package vertico
-  :config
   ;; JACOBTODO: attempt to make number of candidates equal to 1/4 of screen
-  (setopt vertico-count 25)
+  :custom
+  (vertico-count 25)
+  :config
   (vertico-mode 1))
 
 
@@ -1157,35 +1188,40 @@ Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (c
 
 
 (use-package consult
-  :init
-  (setopt completion-in-region-function 'consult-completion-in-region
-          xref-show-xrefs-function 'consult-xref
-          xref-show-definitions-function 'consult-xref)
+  :custom
+  (completion-in-region-function 'consult-completion-in-region)
+  (xref-show-xrefs-function 'consult-xref)
+  (xref-show-definitions-function 'consult-xref)
+  (consult--source-buffer (plist-put consult--source-buffer
+                                     :state #'jacob-consult-buffer-state-no-tramp))
   :config
+  (defun jacob-project-search ()
+    "If current project is a git project, use consult git grep, otherwise use consult grep."
+    (interactive)
+    (if (vc-find-root default-directory ".git")
+        (consult-git-grep)
+      (consult-grep)))
+  
   (defun jacob-consult-buffer-state-no-tramp ()
     "Buffer state function that doesn't preview Tramp buffers."
     (let ((orig-state (consult--buffer-state))
-          (filter (lambda (action cand)
-                    (if (and cand
+          (filter (lambda (action candidate)
+                    (if (and candidate
                              (or (eq action 'return)
-                                 (let ((buffer (get-buffer cand)))
+                                 (let ((buffer (get-buffer candidate)))
                                    (and buffer
                                         (not (file-remote-p (buffer-local-value 'default-directory buffer)))))))
-                        cand
+                        candidate
                       nil))))
-      (lambda (action cand)
-        (funcall orig-state action (funcall filter action cand)))))
-  
-  (setopt consult--source-buffer
-          (plist-put consult--source-buffer
-                     :state #'jacob-consult-buffer-state-no-tramp)))
+      (lambda (action candidate)
+        (funcall orig-state action (funcall filter action cand))))))
 
 
 
 (use-package expand-region
   :after xah-fly-keys
-  :config
-  (setopt expand-region-contract-fast-key "9")
+  :custom
+  (expand-region-contract-fast-key "9")
   :bind (nil
          :map xah-fly-command-map
          ("8" . er/expand-region)))
@@ -1193,8 +1229,8 @@ Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (c
 
 
 (use-package sml-mode
-  :config
-  (setopt sml-abbrev-skeletons nil))
+  :custom
+  (sml-abbrev-skeletons nil))
 
 
 
@@ -1205,9 +1241,9 @@ Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (c
 
 
 (use-package xah-fly-keys
-  :init
-  (setopt xah-fly-use-control-key nil
-          xah-fly-use-meta-key nil)
+  :custom
+  (xah-fly-use-control-key nil)
+  (xah-fly-use-meta-key nil)
   :config
   (xah-fly-keys-set-layout "qwerty")
   (xah-fly-keys 1))
@@ -1435,14 +1471,6 @@ will return the json data as a Lisp object."
                              jacob-mode-line-format
                            nil)))
 
-(jacob-is-installed 'consult
-  (defun jacob-project-search ()
-    "If current project is a git project, use consult git grep, otherwise use consult grep."
-    (interactive)
-    (if (vc-find-root default-directory ".git")
-        (consult-git-grep)
-      (consult-grep))))
-
 (defun jacob-async-shell-command (command)
   "Wrapper command for (`async-shell-command' COMMAND)."
   (interactive
@@ -1632,6 +1660,22 @@ For use with GitLab only."
   (if flymake-mode
       (flymake-goto-prev-error 1 nil t)
     (xah-backward-punct)))
+
+(defun jacob-gitlab-link-at-point ()
+  "Create a gitlab link for the line of code at point."
+  (interactive)
+  (let* ((project (project-current))
+         (repository (project-name project))
+         (branch "development")
+         (filepath (file-relative-name buffer-file-name (project-root project)))
+         (line-number (line-number-at-pos))
+         (link (format "https://gitlab.com/tappit-leeds-devs/%s/-/blob/%s/%s#L%d"
+                       repository
+                       branch
+                       filepath
+                       line-number)))
+    (kill-new link)
+    (message "%s" link)))
 
 
 
@@ -1867,8 +1911,6 @@ deleted."
   (define-key xah-fly-command-map "s" #'jacob-return-macro)
   (define-key xah-fly-command-map "d" #'jacob-backspace)
   ;; (define-key xah-fly-command-map "4" 'other-window-prefix)
-  (define-key xah-fly-command-map "1" 'winner-undo)
-  (define-key xah-fly-command-map "2" 'winner-redo)
   (define-key xah-fly-command-map "9" 'jacob-swap-visible-buffers)
   (define-key xah-fly-command-map "'" 'jacob-format-words)
   (define-key xah-fly-insert-map (kbd "M-SPC") 'xah-fly-command-mode-activate)
