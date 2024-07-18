@@ -32,10 +32,16 @@
 (add-hook 'minibuffer-exit-hook #'doom-restore-garbage-collection-h)
 
 
-;; read environment file
+;; read environment file and variable setup
 
-(defvar jacob-font-size
-  12 "Font size to use.")
+(defvar jacob-font-size 12
+  "Font size to use.")
+
+(defconst jacob-is-windows (eq system-type 'windows-nt)
+  "Is the current OS windows?")
+
+(defconst jacob-is-linux (eq system-type 'gnu/linux)
+  "Is the current OS linux?")
 
 (when (file-exists-p "~/.emacs.d/environment.el")
   (load-file "~/.emacs.d/environment.el"))
@@ -514,7 +520,7 @@ hides this information."
                 :items    ,#'jacob-consult-project-filter
                 :action   ,#'find-file))
 
-  (unless (eq system-type 'windows-nt)
+  (unless jacob-is-windows
     (add-to-list 'consult-buffer-sources jacob-consult-project-source "APPEND")))
 
 
@@ -671,7 +677,7 @@ Designed for use in on-save hook in certain programming languages modes."
 
 ;; microsoft windows config
 
-(when (eq system-type 'windows-nt)
+(when jacob-is-windows
   (defun jacob-confirm-terminate-batch-job ()
     "Type y and enter to terminate batch job after sending ^C."
     (when (not (null eshell-process-list))
@@ -743,7 +749,7 @@ Intended as before advice for `sql-send-paragraph'."
 
   (add-hook 'doc-view-mode-hook 'jacob-doc-view-hook)
 
-  (when (eq system-type 'windows-nt)
+  (when jacob-is-windows
     ;; To get these, install miktex.
     (setq doc-view-ghostscript-program "mgs.exe")
     (setq doc-view-pdf->png-converter-function 'doc-view-pdf->png-converter-ghostscript)
@@ -768,7 +774,7 @@ Intended as before advice for `sql-send-paragraph'."
 ;; on linux, use the auto build stuff included in emacs
 ;; on windows, grab the .dlls from a bundle
 
-(when (eq system-type 'gnu/linux)
+(when jacob-is-linux
   (setq treesit-language-source-alist '((c-sharp "https://github.com/tree-sitter/tree-sitter-c-sharp" "master" "src")
                                         (javascript "https://github.com/tree-sitter/tree-sitter-javascript" "master" "src")
                                         (typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src")
@@ -830,7 +836,7 @@ Useful for deleting ^M after `eglot-code-actions'."
 (add-hook 'csharp-ts-mode-hook 'eglot-ensure)
 
 (add-hook 'fsharp-mode-hook (lambda ()
-                              (when (eq system-type 'gnu/linux)
+                              (when jacob-is-linux
                                 (require 'eglot-fsharp)
                                 (eglot-ensure))))
 (with-eval-after-load 'eglot
@@ -973,7 +979,7 @@ Used when attempting to lazy load PACKAGE."
 
 ;; eglot-booster config
 
-(unless (eq system-type 'windows-nt)
+(unless jacob-is-windows
   (with-eval-after-load 'eglot
     (unless (package-installed-p 'eglot-booster)
       (package-vc-install "https://github.com/jdtsmith/eglot-booster"))
