@@ -32,10 +32,16 @@
 (add-hook 'minibuffer-exit-hook #'doom-restore-garbage-collection-h)
 
 
-;; read environment file
+;; read environment file and variable setup
 
-(defvar jacob-font-size
-  12 "Font size to use.")
+(defvar jacob-font-size 12
+  "Font size to use.")
+
+(defconst jacob-is-windows (eq system-type 'windows-nt)
+  "Is the current OS windows?")
+
+(defconst jacob-is-linux (eq system-type 'gnu/linux)
+  "Is the current OS linux?")
 
 (when (file-exists-p "~/.emacs.d/environment.el")
   (load-file "~/.emacs.d/environment.el"))
@@ -524,7 +530,8 @@ hides this information."
                 :items    ,#'jacob-consult-project-filter
                 :action   ,#'find-file))
 
-  (add-to-list 'consult-buffer-sources jacob-consult-project-source "APPEND"))
+  (unless jacob-is-windows
+    (add-to-list 'consult-buffer-sources jacob-consult-project-source "APPEND")))
 
 
 ;; emacs-lisp-mode config
@@ -680,14 +687,16 @@ Designed for use in on-save hook in certain programming languages modes."
 
 ;; microsoft windows config
 
-(when (eq system-type 'windows-nt)
+(when jacob-is-windows
   (defun jacob-confirm-terminate-batch-job ()
     "Type y and enter to terminate batch job after sending ^C."
     (when (not (null eshell-process-list))
       (insert "y")
       (eshell-send-input)))
 
-  (advice-add 'eshell-interrupt-process :after #'jacob-confirm-terminate-batch-job))
+  (advice-add 'eshell-interrupt-process :after #'jacob-confirm-terminate-batch-job)
+
+  (setopt find-program "C:/Program Files (x86)/GnuWin32/bin/find.exe"))
 
 
 
@@ -750,7 +759,7 @@ Intended as before advice for `sql-send-paragraph'."
 
   (add-hook 'doc-view-mode-hook 'jacob-doc-view-hook)
 
-  (when (eq system-type 'windows-nt)
+  (when jacob-is-windows
     ;; To get these, install miktex.
     (setq doc-view-ghostscript-program "mgs.exe")
     (setq doc-view-pdf->png-converter-function 'doc-view-pdf->png-converter-ghostscript)
@@ -775,18 +784,17 @@ Intended as before advice for `sql-send-paragraph'."
 ;; on linux, use the auto build stuff included in emacs
 ;; on windows, grab the .dlls from a bundle
 
-(when (eq system-type 'gnu/linux)
+(when jacob-is-linux
   (setq treesit-language-source-alist '((c-sharp "https://github.com/tree-sitter/tree-sitter-c-sharp" "master" "src")
                                         (javascript "https://github.com/tree-sitter/tree-sitter-javascript" "master" "src")
                                         (typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src")
                                         (tsx "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src")
                                         (yaml "https://github.com/ikatyang/tree-sitter-yaml")))
-  (setq treesit-load-name-override-list '((c-sharp "libtree-sitter-csharp" "tree_sitter_c_sharp")))
-  ;; JACOBTODO: troubleshoot csharp-ts on windows
-  (setq major-mode-remap-alist '((csharp-mode . csharp-ts-mode)
-                                 (javascript-mode . js-ts-mode)))
-  (setq treesit-font-lock-level 4)      ; max level of fontification
-  )
+  (setq treesit-load-name-override-list '((c-sharp "libtree-sitter-csharp" "tree_sitter_c_sharp"))))
+
+(setq major-mode-remap-alist '((csharp-mode . csharp-ts-mode)
+                               (javascript-mode . js-ts-mode)))
+(setq treesit-font-lock-level 4)      ; max level of fontification
 
 
 ;; eglot config
@@ -813,7 +821,8 @@ to definition."
         ;; something might be possible.
         (call-interactively #'xref-find-definitions)))))
 
-(setq eglot-ignored-server-capabilities '(:documentOnTypeFormattingProvider))
+(setq eglot-ignored-server-capabilities '(:documentOnTypeFormattingProvider
+                                          :documentHighlightProvider))
 
 (defun jacob-remove-ret-character-from-buffer (&rest _)
   "Remove all occurances of ^M from the buffer.
@@ -837,7 +846,7 @@ Useful for deleting ^M after `eglot-code-actions'."
 (add-hook 'csharp-ts-mode-hook 'eglot-ensure)
 
 (add-hook 'fsharp-mode-hook (lambda ()
-                              (when (eq system-type 'gnu/linux)
+                              (when jacob-is-linux
                                 (require 'eglot-fsharp)
                                 (eglot-ensure))))
 (with-eval-after-load 'eglot
@@ -980,11 +989,12 @@ Used when attempting to lazy load PACKAGE."
 
 ;; eglot-booster config
 
-(with-eval-after-load 'eglot
-  (unless (package-installed-p 'eglot-booster)
-    (package-vc-install "https://github.com/jdtsmith/eglot-booster"))
+(unless jacob-is-windows
+  (with-eval-after-load 'eglot
+    (unless (package-installed-p 'eglot-booster)
+      (package-vc-install "https://github.com/jdtsmith/eglot-booster"))
 
-  (eglot-booster-mode 1))
+    (eglot-booster-mode 1)))
 
 
 ;; slack config
@@ -1086,31 +1096,10 @@ Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (c
 
 ;; JACOBTODO: jacob-csharp package requires dape, causing it to be loaded prematurely
 (use-package dape
+  :commands dape
   :custom
   (dape-info-hide-mode-line nil)
   (dape-buffer-window-arrangment 'right)
-  (dape-configs (cons '(netcoredbg-attach-port
-                        modes (csharp-mode csharp-ts-mode)
-                        ensure dape-ensure-command
-                        command "netcoredbg"
-                        command-args ["--interpreter=vscode"]
-                        :request "attach"
-                        :cwd dape-cwd-fn
-                        :program jacob-select-dll
-                        :stopAtEntry t
-                        :processId
-                        (lambda ()
-                          (let* ((collection
-                                  (seq-map
-                                   (lambda (pid)
-                                     (cons (cdr (assoc 'args
-                                                       (process-attributes pid)))
-                                           pid))
-                                   (list-system-processes)))
-                                 (selection (completing-read "process: "
-                                                             collection)))
-                            (cdr (assoc selection collection)))))
-                      dape-configs))
   :config
   (defun jacob-select-dll ()
     (completing-read "dll: "
@@ -1119,7 +1108,30 @@ Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (c
                                       filename))
                               (directory-files-recursively
                                (project-root (project-current))
-                               "\\.dll")))))
+                               "\\.dll"))))
+
+  (setopt dape-configs (cons '(netcoredbg-attach-port
+                               modes (csharp-mode csharp-ts-mode)
+                               ensure dape-ensure-command
+                               command "netcoredbg"
+                               command-args ["--interpreter=vscode"]
+                               :request "attach"
+                               :cwd dape-cwd-fn
+                               :program jacob-select-dll
+                               :stopAtEntry t
+                               :processId
+                               (lambda ()
+                                 (let* ((collection
+                                         (seq-map
+                                          (lambda (pid)
+                                            (cons (cdr (assoc 'args
+                                                              (process-attributes pid)))
+                                                  pid))
+                                          (list-system-processes)))
+                                        (selection (completing-read "process: "
+                                                                    collection)))
+                                   (cdr (assoc selection collection)))))
+                             dape-configs)))
 
 
 
@@ -1159,7 +1171,10 @@ Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (c
 
 (jacob-is-installed 'fsharp-mode
   (with-eval-after-load 'fsharp-mode
-    (setq inferior-fsharp-program "dotnet fsi --fsi-server-input-codepage:65001")))
+    ;; (setq inferior-fsharp-program "dotnet fsi --fsi-server-input-codepage:65001")
+    (setq inferior-fsharp-program "dotnet fsi")))
+
+(setopt eglot-fsharp-server-install-dir nil)
 
 
 
