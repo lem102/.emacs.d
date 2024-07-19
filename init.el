@@ -289,9 +289,9 @@ ALIST is as described in `battery-update-functions'."
 (setq-default c-basic-offset 4)
 
 
-;; csharp-mode config
-
-(with-eval-after-load 'csharp-mode
+(use-package csharp-mode
+  :defer t
+  :config
   ;; JACOBTODO: get rid of this when updated to a version of emacs
   ;; with your changes to csharp mode
   (setopt csharp-ts-mode--indent-rules
@@ -361,6 +361,16 @@ ALIST is as described in `battery-update-functions'."
              ((parent-is "catch_clause") parent-bol 0)
              ((parent-is "throw_expression") parent-bol csharp-ts-mode-indent-offset)
              ((parent-is "return_statement") parent-bol csharp-ts-mode-indent-offset))))
+
+  ;; JACOBTODO: merge into emacs core
+  (nconc csharp-ts-mode--font-lock-settings
+         (treesit-font-lock-rules
+          :language 'c-sharp
+          :feature 'property
+          :override t
+          `((property_declaration
+             type: (generic_name name: (identifier) @font-lock-type-face)
+             name: (identifier) @font-lock-variable-name-face))))
   
   (defun jacob-csharp-ts-hook-function ()
     "Set vars in csharp-ts-mode buffer."
@@ -1793,6 +1803,8 @@ deleted."
     ("pri" "private")
     ("pub" "public")
     ("sta" "static")
+    ("ret" "return")
+    ("eq" "==")
     ("fun" "(■) => " jacob-insert)
     ("if" "if (■)\n{\n\n}" jacob-insert)
     ("for" "for (■)\n{\n\n}" jacob-insert)
