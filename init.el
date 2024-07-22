@@ -811,8 +811,7 @@ to definition."
         ;; something might be possible.
         (call-interactively #'xref-find-definitions)))))
 
-(setq eglot-ignored-server-capabilities '(:documentOnTypeFormattingProvider
-                                          :documentHighlightProvider))
+(setq eglot-ignored-server-capabilities '(:documentOnTypeFormattingProvider))
 
 (defun jacob-remove-ret-character-from-buffer (&rest _)
   "Remove all occurances of ^M from the buffer.
@@ -1100,28 +1099,28 @@ Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (c
                                (project-root (project-current))
                                "\\.dll"))))
 
-  (setopt dape-configs (cons '(netcoredbg-attach-port
-                               modes (csharp-mode csharp-ts-mode)
-                               ensure dape-ensure-command
-                               command "netcoredbg"
-                               command-args ["--interpreter=vscode"]
-                               :request "attach"
-                               :cwd dape-cwd-fn
-                               :program jacob-select-dll
-                               :stopAtEntry t
-                               :processId
-                               (lambda ()
-                                 (let* ((collection
-                                         (seq-map
-                                          (lambda (pid)
-                                            (cons (cdr (assoc 'args
-                                                              (process-attributes pid)))
-                                                  pid))
-                                          (list-system-processes)))
-                                        (selection (completing-read "process: "
-                                                                    collection)))
-                                   (cdr (assoc selection collection)))))
-                             dape-configs)))
+  (push '(netcoredbg-attach-port
+          modes (csharp-mode csharp-ts-mode)
+          ensure dape-ensure-command
+          command "netcoredbg"
+          command-args ["--interpreter=vscode"]
+          :request "attach"
+          :cwd dape-cwd-fn
+          :program jacob-select-dll
+          :stopAtEntry t
+          :processId
+          (lambda ()
+            (let* ((collection
+                    (seq-map
+                     (lambda (pid)
+                       (cons (cdr (assoc 'args
+                                         (process-attributes pid)))
+                             pid))
+                     (list-system-processes)))
+                   (selection (completing-read "process: "
+                                               collection)))
+              (cdr (assoc selection collection)))))
+        dape-configs))
 
 
 
