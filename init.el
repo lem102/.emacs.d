@@ -924,48 +924,41 @@ Useful for deleting ^M after `eglot-code-actions'."
 
 ;; package configuration
 
-;; JACOBTODO: stop commiting packages into git
-
-;; for most packages installing from latest is fine. for special cases, use package-vc
+;; for most packages installing from latest is fine. for special
+;; cases, use package-vc
 
 (require 'package)
-
-;; JACOBTODO: get rid of macros, replace with use-package
-
-(defmacro jacob-is-installed (package &rest body)
-  "If PACKAGE is installed, evaluate BODY.
-Used when attempting to lazy load PACKAGE."
-  (declare (indent 1))
-  `(when (package-installed-p ,package)
-     ,@body))
 
 (setopt package-archives '(("GNU" . "https://elpa.gnu.org/packages/")
                            ("non-GNU" . "https://elpa.nongnu.org/nongnu/")
                            ("melpa" . "https://melpa.org/packages/")))
 
 
-;; avy config
 
-(defun jacob-avy-action-xref (pt)
-  (save-excursion
-    (goto-char pt)
-    (call-interactively #'xref-find-definitions))
-  (select-window
-   (cdr (ring-ref avy-ring 0)))
-  t)
-
-(when (package-installed-p 'avy)
-  (require 'avy)
-  (setq avy-keys '(?a ?s ?d ?f ?g ?h ?j ?l ?\;))
-  (setq avy-dispatch-alist '((?y . avy-action-yank)
-                             (?k . avy-action-kill-stay)
-                             (?K . avy-action-kill-move)
-                             (?t . avy-action-teleport)
-                             (?m . avy-action-mark)
-                             (?w . avy-action-copy)
-                             (?i . avy-action-ispell)
-                             (?z . avy-action-zap-to-char)
-                             (?. . jacob-avy-action-xref))))
+(use-package avy
+  :after xah-fly-keys
+  :config
+  (defun jacob-avy-action-xref (pt)
+    (save-excursion
+      (goto-char pt)
+      (call-interactively #'xref-find-definitions))
+    (select-window
+     (cdr (ring-ref avy-ring 0)))
+    t)
+  :custom
+  (avy-keys '(?a ?s ?d ?f ?g ?h ?j ?l ?\;))
+  (avy-dispatch-alist '((?y . avy-action-yank)
+                        (?k . avy-action-kill-stay)
+                        (?K . avy-action-kill-move)
+                        (?t . avy-action-teleport)
+                        (?m . avy-action-mark)
+                        (?w . avy-action-copy)
+                        (?i . avy-action-ispell)
+                        (?z . avy-action-zap-to-char)
+                        (?. . jacob-avy-action-xref)))
+  :bind (nil
+         :map xah-fly-leader-key-map
+         ("SPC a" . avy-goto-char-timer)))
 
 
 ;; aphelia config
@@ -1146,45 +1139,49 @@ Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (c
          ("," . switch-window)))
 
 
-;; racket-mode
 
-(jacob-is-installed 'racket-mode
-  (add-hook 'racket-mode-hook 'racket-xp-mode))
-
-
-;; auctex
-
-(jacob-is-installed 'auctex
-  (with-eval-after-load 'auctex
-    (setq TeX-auto-save t)
-    (setq TeX-parse-self t)
-    (setq-default japanese-TeX-error-messages nil)
-    (TeX-global-PDF-mode 0)))
+(use-package racket-mode
+  :hook (racket-mode-hook . racket-xp-mode))
 
 
-;; restclient
+;; auctex config (weird)
 
-(jacob-is-installed 'restclient
-  (add-to-list 'auto-mode-alist '("\\.http\\'" . restclient-mode)))
+(use-package tex
+  :ensure auctex
+  :mode ("\\.tex\\$" . latex-mode)
+  :config
+  (setq TeX-auto-save t)
+  (setq TeX-parse-self t)
+  (setq-default japanese-TeX-error-messages nil)
+  (TeX-global-PDF-mode 0))
 
 
 
-(jacob-is-installed 'fsharp-mode
-  (with-eval-after-load 'fsharp-mode
-    ;; (setq inferior-fsharp-program "dotnet fsi --fsi-server-input-codepage:65001")
-    (setq inferior-fsharp-program "dotnet fsi")))
-
-(setopt eglot-fsharp-server-install-dir nil)
+(use-package ob-restclient)
 
 
 
-(jacob-is-installed 'purescript-mode
-  (with-eval-after-load 'purescript-mode
-    (add-hook 'purescript-mode-hook 'turn-on-purescript-indentation)))
+(use-package fsharp-mode
+  :defer t
+  :custom
+  ;; (setq inferior-fsharp-program "dotnet fsi --fsi-server-input-codepage:65001")
+  (inferior-fsharp-program "dotnet fsi"))
+
+(use-package eglot-fsharp
+  :after fsharp-mode
+  :custom
+  (eglot-fsharp-server-install-dir nil))
+
+
+
+(use-package purescript-mode
+  :defer t
+  :hook (purescript-mode-hook . turn-on-purescript-indentation))
 
 
 
 (use-package orderless
+  :after vertico
   :custom
   (completion-styles '(orderless initials)))
 
@@ -1200,12 +1197,14 @@ Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (c
 
 
 (use-package marginalia
+  :after vertico
   :config
   (marginalia-mode 1))
 
 
 
 (use-package consult
+  :after xah-fly-keys vertico
   :custom
   (completion-in-region-function 'consult-completion-in-region)
   (xref-show-xrefs-function 'consult-xref)
@@ -1232,7 +1231,14 @@ Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (c
                         candidate
                       nil))))
       (lambda (action candidate)
-        (funcall orig-state action (funcall filter action cand))))))
+        (funcall orig-state action (funcall filter action cand)))))
+  :bind (nil
+         :map xah-fly-leader-key-map
+         ("v" . consult-yank-from-kill-ring)
+         ("f" . consult-buffer)
+         ("ij" . consult-recent-file)
+         ("es" . consult-line)
+         ("ku" . consult-goto-line)))
 
 
 
@@ -1959,13 +1965,6 @@ deleted."
 
   (define-key xah-fly-leader-key-map "wj" 'xref-find-references)
 
-  (jacob-is-installed 'consult
-    (define-key xah-fly-leader-key-map "v" 'consult-yank-from-kill-ring)
-    (define-key xah-fly-leader-key-map "f" 'consult-buffer)
-    (define-key xah-fly-leader-key-map "ij" 'consult-recent-file)
-    (define-key xah-fly-leader-key-map "es" 'consult-line)
-    (define-key xah-fly-leader-key-map "ku" 'consult-goto-line))
-
   (setq insert-pair-alist (append insert-pair-alist
                                   '((?k ?\( ?\))
                                     (?l ?\[ ?\])
@@ -2009,9 +2008,6 @@ deleted."
     (keymap-set xah-fly-leader-key-map "SPC s U" #'jacob-slack-show-all-unread)
     (keymap-set xah-fly-leader-key-map "SPC s r" #'slack-select-rooms)
     (keymap-set xah-fly-leader-key-map "SPC s k" #'jacob-slack-kill-buffers))
-
-  (with-eval-after-load 'avy
-    (keymap-set xah-fly-leader-key-map "SPC a" #'avy-goto-char-timer))
 
   (defvar-keymap jacob-csharp-map
     "f" #'jacob-format-csharp-statement
