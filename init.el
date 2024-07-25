@@ -295,6 +295,7 @@ ALIST is as described in `battery-update-functions'."
 (setq-default c-basic-offset 4)
 
 
+
 (use-package csharp-mode
   :defer t
   :config
@@ -956,17 +957,20 @@ Useful for deleting ^M after `eglot-code-actions'."
                         (?z . avy-action-zap-to-char)
                         (?. . jacob-avy-action-xref)))
   :bind (nil
-         :map xah-fly-leader-key-map
-         ("SPC a" . avy-goto-char-timer)))
+         ;; :map xah-fly-leader-key-map
+         ;; ("SPC a" . avy-goto-char-timer)
+         :map xah-fly-command-map
+         ("n" . avy-goto-char-timer)))
 
 
-;; aphelia config
+;; apheleia config
 
 (when (package-installed-p 'apheleia)
   (apheleia-global-mode 1)
   (setq-default apheleia-inhibit t)     ; set `apheleia-inhibit' to
                                         ; nil to enable
-  )
+  (push '(csharpier "dotnet" "csharpier" "--write-stdout")
+        apheleia-formatters))
 
 
 ;; combobulate config
