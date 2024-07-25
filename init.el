@@ -963,9 +963,9 @@ Useful for deleting ^M after `eglot-code-actions'."
          ("n" . avy-goto-char-timer)))
 
 
-;; apheleia config
 
-(when (package-installed-p 'apheleia)
+(use-package apheleia
+  :config
   (apheleia-global-mode 1)
   (setq-default apheleia-inhibit t)     ; set `apheleia-inhibit' to
                                         ; nil to enable
