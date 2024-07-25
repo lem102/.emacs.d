@@ -1163,7 +1163,7 @@ Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (c
 (use-package fsharp-mode
   :defer t
   :custom
-  ;; (setq inferior-fsharp-program "dotnet fsi --fsi-server-input-codepage:65001")
+  ;; (inferior-fsharp-program "dotnet fsi --fsi-server-input-codepage:65001")
   (inferior-fsharp-program "dotnet fsi"))
 
 (use-package eglot-fsharp
