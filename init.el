@@ -886,9 +886,19 @@ Useful for deleting ^M after `eglot-code-actions'."
                            ("melpa" . "https://melpa.org/packages/")))
 
 
+;; key-chord
+
+(unless (package-installed-p 'key-chord)
+  (package-vc-install "https://github.com/emacsorphanage/key-chord.git"))
+
+(key-chord-mode 1)
+
+
 
 (use-package avy
-  :after xah-fly-keys
+  :defer t
+  :init
+  (key-chord-define-global "fj" 'avy-goto-char-timer)  
   :config
   (defun jacob-avy-action-xref (pt)
     (save-excursion
@@ -907,9 +917,7 @@ Useful for deleting ^M after `eglot-code-actions'."
                         (?w . avy-action-copy)
                         (?i . avy-action-ispell)
                         (?z . avy-action-zap-to-char)
-                        (?. . jacob-avy-action-xref)))
-  :bind ( :map xah-fly-command-map
-          ("n" . avy-goto-char-timer)))
+                        (?. . jacob-avy-action-xref))))
 
 
 
