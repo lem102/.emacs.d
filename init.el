@@ -214,69 +214,22 @@
 (setq dabbrev-case-replace nil)
 
 
-;; mode line config
 
-(setq display-time-format "%b %e %R")
-(setq display-time-load-average-threshold 1)
-;; needs to be evaluated after variables changed
-(display-time-mode 0)
-
-(defun jacob-battery-maybe-show (alist)
-  "For use in `battery-update-functions'.
-ALIST is as described in `battery-update-functions'."
-  (let ((percentage (cdr (assoc ?p alist)))
-        (battery-status (cdr (assoc ?B alist))))
-    (cond ((equal battery-status "fully-charged")
-           (setq global-mode-string (remq 'battery-mode-line-string global-mode-string)))
-          (t
-           (add-to-list 'global-mode-string 'battery-mode-line-string "APPEND")))))
-
-(setq battery-mode-line-format " %b%p%% ")
-(display-battery-mode 0)
-(add-to-list 'battery-update-functions 'jacob-battery-maybe-show)
-
-(column-number-mode 1)
-(line-number-mode 1)
-
-(setq mode-line-percent-position nil)
-
-(defun jacob-mode-line-saved-status ()
-  "Display symbol to show saved status of buffer."
-  (cond ((buffer-modified-p (current-buffer)) "❌")
-        (buffer-read-only "📚")
-        (t "✓")))
-
-(defvar jacob-mode-line-format
-  '(" %e"
-    mode-line-front-space
-    (:eval (jacob-mode-line-saved-status))
-    (:eval (pcase major-mode
-             ('lisp-interaction-mode "ELi")
-             ('emacs-lisp-mode "EL")
-             ('nxml-mode "XML")
-             (_ mode-name)))
-    ": "
-    "%b "
-    (vc-mode vc-mode)
-    " "
-    mode-line-position
-    (flymake-mode flymake-mode-line-format)
-    global-mode-string)
-  "Custom mode line format.")
-
-;; (setq-default mode-line-format jacob-mode-line-format)
+(use-package vc
+  :defer t
+  :custom
+  (vc-ignore-dir-regexp
+   (format "\\(%s\\)\\|\\(%s\\)"
+           vc-ignore-dir-regexp
+           tramp-file-name-regexp)
+   "ignore tramp files"))
 
 
-;; tramp
 
-;; tell vc to ignore tramp files
-(setq vc-ignore-dir-regexp
-      (format "\\(%s\\)\\|\\(%s\\)"
-              vc-ignore-dir-regexp
-              tramp-file-name-regexp))
-
-;; lots of problems. for now, disable it!
-(setq tramp-archive-enabled nil)
+(use-package tramp
+  :defer t
+  :custom
+  (tramp-archive-enabled nil "lots of problems. for now, disable it!"))
 
 
 ;; theme config
@@ -703,13 +656,12 @@ Designed for use in on-save hook in certain programming languages modes."
 
 (use-package winner
   :after xah-fly-keys
-  :demand t
+  :demand
   :config
   (winner-mode 1)
-  :bind (:map
-         xah-fly-command-map
-         ("1" . winner-undo)
-         ("2" . winner-redo)))
+  :bind ( :map xah-fly-command-map
+          ("1" . winner-undo)
+          ("2" . winner-redo)))
 
 
 
@@ -956,11 +908,8 @@ Useful for deleting ^M after `eglot-code-actions'."
                         (?i . avy-action-ispell)
                         (?z . avy-action-zap-to-char)
                         (?. . jacob-avy-action-xref)))
-  :bind (nil
-         ;; :map xah-fly-leader-key-map
-         ;; ("SPC a" . avy-goto-char-timer)
-         :map xah-fly-command-map
-         ("n" . avy-goto-char-timer)))
+  :bind ( :map xah-fly-command-map
+          ("n" . avy-goto-char-timer)))
 
 
 
@@ -1137,9 +1086,8 @@ Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (c
   :custom
   (switch-window-shortcut-style 'qwerty)
   (switch-window-threshold 3)
-  :bind (nil
-         :map xah-fly-command-map
-         ("," . switch-window)))
+  :bind ( :map xah-fly-command-map
+          ("," . switch-window)))
 
 
 
@@ -1191,8 +1139,8 @@ Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (c
 
 
 (use-package vertico
-  ;; JACOBTODO: attempt to make number of candidates equal to 1/4 of screen
   :custom
+  ;; JACOBTODO: attempt to make number of candidates equal to 1/4 of screen
   (vertico-count 25)
   :config
   (vertico-mode 1))
@@ -1207,7 +1155,7 @@ Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (c
 
 
 (use-package consult
-  :after xah-fly-keys vertico
+  :after xah-fly-keys
   :custom
   (completion-in-region-function 'consult-completion-in-region)
   (xref-show-xrefs-function 'consult-xref)
@@ -1235,13 +1183,12 @@ Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (c
                       nil))))
       (lambda (action candidate)
         (funcall orig-state action (funcall filter action cand)))))
-  :bind (nil
-         :map xah-fly-leader-key-map
-         ("v" . consult-yank-from-kill-ring)
-         ("f" . consult-buffer)
-         ("ij" . consult-recent-file)
-         ("es" . consult-line)
-         ("ku" . consult-goto-line)))
+  :bind ( :map xah-fly-leader-key-map
+          ("v" . consult-yank-from-kill-ring)
+          ("f" . consult-buffer)
+          ("ij" . consult-recent-file)
+          ("es" . consult-line)
+          ("ku" . consult-goto-line)))
 
 
 
@@ -1249,9 +1196,8 @@ Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (c
   :after xah-fly-keys
   :custom
   (expand-region-contract-fast-key "9")
-  :bind (nil
-         :map xah-fly-command-map
-         ("8" . er/expand-region)))
+  :bind ( :map xah-fly-command-map
+          ("8" . er/expand-region)))
 
 
 
