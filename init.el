@@ -214,10 +214,18 @@
 (setq dabbrev-case-replace nil)
 
 
+;; modeline config
+
+(column-number-mode 0)
+(line-number-mode 1)
+
+(setq mode-line-percent-position nil)
+
 
 (use-package vc
   :defer t
   :custom
+  (vc-git-show-stash 0 "show 0 stashes")
   (vc-ignore-dir-regexp
    (format "\\(%s\\)\\|\\(%s\\)"
            vc-ignore-dir-regexp
@@ -699,6 +707,8 @@ Intended as before advice for `sql-send-paragraph'."
       (end-of-buffer)))
 
   (advice-add #'sql-send-paragraph :before #'jacob-sqli-end-of-buffer)
+
+  (jacob-xfk-define-key-in-major-mode sql-mode-map " ,d" #'sql-send-paragraph)
   :hook (sql-interactive-mode-hook . jacob-sql-interactive-mode-hook))
 
 
@@ -898,7 +908,7 @@ Useful for deleting ^M after `eglot-code-actions'."
 (use-package avy
   :defer t
   :init
-  (key-chord-define-global "fj" 'avy-goto-char-timer)  
+  (key-chord-define-global "fj" 'avy-goto-char-timer) ; JACOBTODO: use use-package :chord keyword here (apparently built in)
   :config
   (defun jacob-avy-action-xref (pt)
     (save-excursion
@@ -1227,12 +1237,33 @@ Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (c
   (xah-fly-use-meta-key nil)
   :config
   (xah-fly-keys-set-layout "qwerty")
-  (xah-fly-keys 1))
+  (xah-fly-keys 1)
+
+  ;; FIXME: keys that are not already bound will not work for jacob-xfk-define-key-in-major-mode
+  (defun jacob-xfk-define-key-in-major-mode (major-mode-keymap key command)
+    "In MAJOR-MODE-KEYMAP bind KEY to COMMAND only when in xfk command mode."
+    (define-key major-mode-keymap
+                (vector 'remap
+                        (lookup-key xah-fly-command-map key))
+                command)))
 
 
 
 (use-package verb
   :hook (org-mode-hook . verb-mode))
+
+
+
+(use-package sly
+  :after xah-fly-keys
+  :config
+  (jacob-xfk-define-key-in-major-mode lisp-mode-map " ,m" #'sly-eval-last-expression)
+  (jacob-xfk-define-key-in-major-mode lisp-mode-map " ,d" #'sly-eval-defun)
+  (jacob-xfk-define-key-in-major-mode lisp-mode-map " ,e" #'sly-eval-buffer)
+
+  (jacob-xfk-define-key-in-major-mode lisp-mode-map " wk" #'sly-edit-definition)
+  
+  (sly-symbol-completion-mode 0))
 
 
 
@@ -1577,14 +1608,6 @@ Otherwise, display error message."
               (string= x "package.json"))
             (directory-files (project-root (project-current)))))
 
-;; FIXME: keys that are not already bound will not work for jacob-xfk-define-key-in-major-mode
-(defun jacob-xfk-define-key-in-major-mode (major-mode-keymap key command)
-  "In MAJOR-MODE-KEYMAP bind KEY to COMMAND only when in xfk command mode."
-  (define-key major-mode-keymap
-              (vector 'remap
-                      (lookup-key xah-fly-command-map key))
-              command))
-
 (defun jacob-git-push-set-upstream ()
   "Push current git branch to new upstream branch."
   (interactive)
@@ -1627,6 +1650,16 @@ For use with GitLab only."
                       mr-link "\n"
                       jira-link))
     (browse-url mr-link)))
+
+;; JACOBTODO: make movement act like moving over words, e.g.
+
+;; bla bla bla ERROR
+;; ^
+
+;; for example, `jacob-next-error-or-punct' should result in this:
+
+;; bla bla bla ERROR
+;;                  ^
 
 (defun jacob-next-error-or-punct ()
   "Wrapper command to allow moving forward by error or punctuation."
@@ -1771,6 +1804,7 @@ deleted."
     ("prop" "public ■ { get; set; }" jacob-insert)
     ("field" "private ■ _" jacob-insert)
     ("jwe" "Console.WriteLine(\"jacobwozere\");" t)
+    ;; JACOBTODO: cant insert tostring inside interpolated string thing e.g. $"bla bla {variable.tostr}" won't work
     ("tostr" "ToString()" t)
     ("iia" "It.IsAny<■>()" jacob-insert)
     ("az" "async")
@@ -1804,6 +1838,12 @@ deleted."
     ("pmi" "(point-min)")
     ("pma" "(point-max)")
     ("int" "(interactive)"))
+  nil
+  :parents (list jacob-comment-abbrev-table)
+  :enable-function 'jacob-point-in-code-p)
+
+(define-abbrev-table 'lisp-mode-abbrev-table
+  '()
   nil
   :parents (list jacob-comment-abbrev-table)
   :enable-function 'jacob-point-in-code-p)
