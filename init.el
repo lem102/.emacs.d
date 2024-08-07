@@ -1254,16 +1254,20 @@ Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (c
 
 
 
+(use-package web-mode
+  :mode "\\.cshtml\\'")
+
+
+
 (use-package sly
   :after xah-fly-keys
   :config
+  (sly-symbol-completion-mode 0)
+
   (jacob-xfk-define-key-in-major-mode lisp-mode-map " ,m" #'sly-eval-last-expression)
   (jacob-xfk-define-key-in-major-mode lisp-mode-map " ,d" #'sly-eval-defun)
   (jacob-xfk-define-key-in-major-mode lisp-mode-map " ,e" #'sly-eval-buffer)
-
-  (jacob-xfk-define-key-in-major-mode lisp-mode-map " wk" #'sly-edit-definition)
-  
-  (sly-symbol-completion-mode 0))
+  (jacob-xfk-define-key-in-major-mode lisp-mode-map " wk" #'sly-edit-definition))
 
 
 
