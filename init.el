@@ -43,6 +43,9 @@
 (defconst jacob-is-linux (eq system-type 'gnu/linux)
   "Is the current OS linux?")
 
+(defvar jacob-stumpwm-installed (stringp (executable-find "stumpwm"))
+  "Is stumpwm installed on the current system?")
+
 (when (file-exists-p "~/.emacs.d/environment.el")
   (load-file "~/.emacs.d/environment.el"))
 
@@ -160,9 +163,10 @@
 ;; bookmark config
 
 (with-eval-after-load 'bookmark
-  (setq bookmark-set-fringe-mark nil)
-  (bookmark-store "init.el" '((filename . "~/.emacs.d/init.el")) nil)
-  (bookmark-store "environment.el" '((filename . "~/.emacs.d/environment.el")) nil))
+  (setopt bookmark-set-fringe-mark nil)
+  (bookmark-store "emacs init file" '((filename . "~/.emacs.d/init.el")) nil)
+  (bookmark-store "stumpwm init file" '((filename . "~/.stumpwm.d/init.lisp")) nil)
+  (bookmark-store "emacs environment file" '((filename . "~/.emacs.d/environment.el")) nil))
 
 
 ;; unicode
@@ -1273,6 +1277,28 @@ Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (c
 
 ;; personal functions
 
+(defun jacob-set-stumpwm-theme ()
+  "Use stumpish to set stumpwm theme based on current emacs theme."
+  (interactive)
+  (let* ((foreground (face-foreground 'mode-line-inactive))
+         (background (face-background 'mode-line))
+         (border (if-let* ((attribute (face-attribute 'mode-line :box))
+                           (specified (not (eq 'unspecified attribute))))
+                     attribute
+                   background))
+         (yellow (face-foreground 'warning))
+         (red (face-foreground 'error))
+         (emphasis (face-foreground 'default)))
+    (shell-command
+     (format
+      "echo '%S' | stumpish -e eval"
+      `(jacob-setup-modeline :foreground ,foreground
+                             :background ,background
+                             :border ,border
+                             :yellow ,yellow
+                             :red ,red
+                             :emphasis ,emphasis)))))
+
 (defun jacob-ip-to-kill-ring ()
   "Copy v4 ip address to kill ring."
   (interactive)
@@ -1483,9 +1509,10 @@ will return the json data as a Lisp object."
 (defun jacob-toggle-modeline ()
   "Toggle visibility of modeline."
   (interactive)
-  (setq mode-line-format (if (null mode-line-format)
-                             jacob-mode-line-format
-                           nil)))
+  (set 'mode-line-format (eval
+                          (car
+                           (get 'mode-line-format
+                                'standard-value)))))
 
 (defun jacob-async-shell-command (command)
   "Wrapper command for (`async-shell-command' COMMAND)."
