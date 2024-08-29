@@ -149,8 +149,8 @@
 (setq initial-scratch-message (format ";; %s\n\n"
                                       (seq-random-elt jacob-welcome-messages)))
 
-;; JACOBTODO: figure out how to set this on a mode basis
-(setq parens-require-spaces nil)
+(setq parens-require-spaces nil)    ; should be t for lisps, else nil.
+
 (setq delete-pair-blink-delay 0)
 
 ;; support for files like `/etc/fstab'
@@ -264,8 +264,7 @@
 (use-package csharp-mode
   :defer t
   :config
-  ;; JACOBTODO: get rid of this when updated to a version of emacs
-  ;; with your changes to csharp mode
+  ;; JACOBTODO: include only my modifications rather than the whole data structure
   (setopt csharp-ts-mode--indent-rules
           `((c-sharp
              ((parent-is "compilation_unit") parent-bol 0)
@@ -505,9 +504,10 @@ hides this information."
 (defun jacob-elisp-config-hook-function ()
   "Configure `emacs-lisp-mode' when hook run."
   (flymake-mode 1)
-  (eldoc-mode 1))
+  (eldoc-mode 1)
+  (setq-local parens-require-spaces t))
 
-(add-hook 'emacs-lisp-mode-hook 'jacob-elisp-config-hook-function)
+(add-hook 'emacs-lisp-mode-hook #'jacob-elisp-config-hook-function)
 
 
 ;; font config
@@ -608,17 +608,20 @@ hides this information."
                                                       gcs-done))))))
 
 
-;; JACOBTODO: consider removing
-;; calendar + diary config
 
-(with-eval-after-load 'calendar
-  (setq diary-date-forms diary-european-date-forms)
-  (setq calendar-date-style 'european)
-  (setq calendar-date-display-form '((format "%02d/%02d/%04d" (string-to-number day) (string-to-number month) (string-to-number year))))
-  (setq calendar-week-start-day 1)
-  (setq calendar-mark-diary-entries-flag t)
-  (setq calendar-mark-holidays-flag t)
-  (add-hook 'calendar-today-visible-hook 'calendar-mark-today))
+(use-package calendar
+  :defer t
+  :config
+  (add-hook 'calendar-today-visible-hook 'calendar-mark-today)
+  :custom
+  (diary-date-forms diary-european-date-forms)
+  (calendar-date-style 'european)
+  (calendar-date-display-form '((if dayname
+                                    (concat dayname ", "))
+                                day "/" month "/" year))
+  (calendar-week-start-day 1)
+  (calendar-mark-diary-entries-flag t)
+  (calendar-mark-holidays-flag t))
 
 
 ;; indentation config
@@ -900,19 +903,30 @@ Useful for deleting ^M after `eglot-code-actions'."
                            ("melpa" . "https://melpa.org/packages/")))
 
 
-;; key-chord
+;; use-package-vc
 
-(unless (package-installed-p 'key-chord)
-  (package-vc-install "https://github.com/emacsorphanage/key-chord.git"))
+;; JACOBTODO: built in as of emacs v30. usage may also change
 
-(key-chord-mode 1)
+(unless (package-installed-p 'vc-use-package)
+  (package-vc-install "https://github.com/slotThe/vc-use-package"))
+(require 'vc-use-package)
+
+
+
+(use-package key-chord
+  :vc (key-chord :url "https://github.com/emacsorphanage/key-chord.git")
+  :config
+  (key-chord-mode 1))
+
+
+
+(use-package use-package-chords)
 
 
 
 (use-package avy
-  :defer t
-  :init
-  (key-chord-define-global "fj" 'avy-goto-char-timer) ; JACOBTODO: use use-package :chord keyword here (apparently built in)
+  :after use-package-chords
+  :chords (("fj" . avy-goto-char-timer))
   :config
   (defun jacob-avy-action-xref (pt)
     (save-excursion
@@ -1162,7 +1176,6 @@ Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (c
 
 (use-package vertico
   :custom
-  ;; JACOBTODO: attempt to make number of candidates equal to 1/4 of screen
   (vertico-count 25)
   :config
   (vertico-mode 1))
@@ -1360,7 +1373,6 @@ prefix argument is provided, just delete the pair characters."
               (t                                          ; delete character
                (backward-delete-char 1)))))))
 
-;; JACOBTODO: if point is at start of buffer this will error due to char before being nil
 (defun jacob-backspace-csharp (f)
   "Function for `jacob-backspace' to help with csharp.
 
@@ -1433,45 +1445,6 @@ Should work cross platform."
               (nxml-mode)
               (indent-region (point-min) (point-max))
               (buffer-substring-no-properties (point-min) (point-max))))))
-
-;; JACOBTODO: remove web request helper code, replace with either request.el, or pls.el packages.
-
-(defun jacob-web-request-helper (url &optional method headers data data-format-function data-parse)
-  "Helper function for making web requests.
-METHOD, HEADERS and DATA are for the corresponding url-request variables.
-URL is the address to send the request to.
-Returns a string containing the response.
-
-DATA-FORMAT-FUNCTION is a function that takes one argument and returns
-DATA in string form.
-
-DATA-PARSE is a symbol specifying the output of this function.  If not
-given, it will return the http reponse in string form.  If `json' it
-will return the json data as a Lisp object."
-  (require 'json)
-  (with-current-buffer (let ((url-request-method (if (null method)
-                                                     "GET"
-                                                   method))
-                             (url-request-extra-headers (if (equal data-format-function 'json-encode)
-                                                            (cons '("content-type" . "application/json") headers)
-                                                          headers))
-                             (url-request-data (if (null data-format-function)
-                                                   data
-                                                 (funcall data-format-function data))))
-                         (url-retrieve-synchronously url))
-    (goto-char (point-min))
-    (when (search-forward-regexp "Content-Type: application/[a-z+]*json" nil t)
-      (search-forward "\n\n" nil t)
-      (json-reformat-region (point) (point-max)))
-    (when (search-forward-regexp "Content-Type:.*xml" nil t)
-      (search-forward "\n\n" nil t)
-      (jacob-format-xml))
-    (goto-char (point-min))
-    (pcase data-parse
-      ('json (progn
-               (search-forward "\n\n" nil t)
-               (json-read)))
-      (_ (buffer-string)))))
 
 (defun jacob-goto-pi ()
   "Connect to raspberry pi."
