@@ -1229,12 +1229,6 @@ Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (c
 
 
 
-(use-package activities
-  :config
-  (activities-mode 1))
-
-
-
 (use-package xah-fly-keys
   :custom
   (xah-fly-use-control-key nil)
@@ -1276,28 +1270,6 @@ Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (c
 
 
 ;; personal functions
-
-(defun jacob-set-stumpwm-theme ()
-  "Use stumpish to set stumpwm theme based on current emacs theme."
-  (interactive)
-  (let* ((foreground (face-foreground 'mode-line-inactive))
-         (background (face-background 'mode-line))
-         (border (if-let* ((attribute (face-attribute 'mode-line :box))
-                           (specified (not (eq 'unspecified attribute))))
-                     attribute
-                   background))
-         (yellow (face-foreground 'warning))
-         (red (face-foreground 'error))
-         (emphasis (face-foreground 'default)))
-    (shell-command
-     (format
-      "echo '%S' | stumpish -e eval"
-      `(jacob-setup-modeline :foreground ,foreground
-                             :background ,background
-                             :border ,border
-                             :yellow ,yellow
-                             :red ,red
-                             :emphasis ,emphasis)))))
 
 (defun jacob-ip-to-kill-ring ()
   "Copy v4 ip address to kill ring."
@@ -1670,17 +1642,11 @@ For use with GitLab only."
                                           "\" ")
                                   (concat "-o merge_request.description=\""
                                           "[" mr-key "](" jira-link ")"
-                                          "\" "))))
-         (mr-link (with-temp-buffer
-                    (switch-to-buffer (current-buffer))
-                    (eshell-command command t)
-                    (goto-char (point-min))
-                    (search-forward "https")
-                    (thing-at-point 'url))))
-    (kill-new (concat mr-key "\n"
-                      mr-link "\n"
-                      jira-link))
-    (browse-url mr-link)))
+                                          "\" ")))))
+    (with-temp-buffer
+      (switch-to-buffer (current-buffer))
+      (eshell-command command t)
+      (goto-char (point-min)))))
 
 ;; JACOBTODO: make movement act like moving over words, e.g.
 
@@ -1853,7 +1819,9 @@ deleted."
     ("for" "for (■)\n{\n\n}" jacob-insert)
     ("while" "while (■)\n{\n}" jacob-insert)
     ("switch" "switch (■)\n{\n}" jacob-insert)
-    ("case" "case ■: \n\nbreak;" jacob-insert))
+    ("case" "case ■: \n\nbreak;" jacob-insert)
+    ("band" "&&")
+    ("bor" "||"))
   nil
   :parents (list jacob-comment-abbrev-table)
   :enable-function 'jacob-point-in-code-p)
