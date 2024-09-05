@@ -1113,13 +1113,13 @@ Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (c
                              :include "^*Slack"))
 
     (setq jacob-consult-slack-source
-          `(:name     "Slack"
-                      :narrow   ?s
-                      :category buffer
-                      :face     consult-buffer
-                      :history  buffer-name-history
-                      :items    ,#'jacob-consult-slack-filter
-                      :action   ,#'switch-to-buffer))
+          `( :name     "Slack"
+             :narrow   ?s
+             :category buffer
+             :face     consult-buffer
+             :history  buffer-name-history
+             :items    ,#'jacob-consult-slack-filter
+             :action   ,#'switch-to-buffer))
 
     (add-to-list 'consult-buffer-sources jacob-consult-slack-source "APPEND")))
 
@@ -1127,7 +1127,10 @@ Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (c
 
 (use-package csharp-toolbox
   :after csharp-mode
-  :vc (csharp-toolbox :url "https://github.com/lem102/csharp-toolbox.git"))
+  :vc (csharp-toolbox :url "https://github.com/lem102/csharp-toolbox.git")
+  :bind ( :map xah-fly-leader-key-map
+          ("SPC c f" . csharp-toolbox-format-statement)
+          ("SPC c t" . csharp-toolbox-run-test)))
 
 
 
@@ -2025,13 +2028,6 @@ deleted."
     (keymap-set xah-fly-leader-key-map "SPC s U" #'jacob-slack-show-all-unread)
     (keymap-set xah-fly-leader-key-map "SPC s r" #'slack-select-rooms)
     (keymap-set xah-fly-leader-key-map "SPC s k" #'jacob-slack-kill-buffers))
-
-  (defvar-keymap jacob-csharp-map
-    "f" #'jacob-format-csharp-statement
-    "t" #'jacob-csharp-run-test)
-
-  (keymap-set xah-fly-leader-key-map "SPC c f" #'jacob-format-csharp-statement)
-  (keymap-set xah-fly-leader-key-map "SPC c t" #'jacob-csharp-run-test)
 
   (keymap-set xah-fly-leader-key-map "SPC g" #'gnus)
   (keymap-set xah-fly-leader-key-map "SPC d" #'jacob-sql-connect)
