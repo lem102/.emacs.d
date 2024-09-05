@@ -1,0 +1,4 @@
+# key: var
+# name: var
+# --
+var ${1:x} = $0

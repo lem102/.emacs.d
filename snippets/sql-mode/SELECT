@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: SELECT
+# key: SELECT
+# --
+SELECT *
+FROM ${1:table}
+WHERE ${2:condition};
