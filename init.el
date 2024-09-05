@@ -43,9 +43,6 @@
 (defconst jacob-is-linux (eq system-type 'gnu/linux)
   "Is the current OS linux?")
 
-(defvar jacob-stumpwm-installed (stringp (executable-find "stumpwm"))
-  "Is stumpwm installed on the current system?")
-
 (when (file-exists-p "~/.emacs.d/environment.el")
   (load-file "~/.emacs.d/environment.el"))
 
@@ -172,7 +169,6 @@
 (with-eval-after-load 'bookmark
   (setopt bookmark-set-fringe-mark nil)
   (bookmark-store "emacs init file" '((filename . "~/.emacs.d/init.el")) nil)
-  (bookmark-store "stumpwm init file" '((filename . "~/.stumpwm.d/init.lisp")) nil)
   (bookmark-store "emacs environment file" '((filename . "~/.emacs.d/environment.el")) nil))
 
 
@@ -505,6 +501,12 @@ hides this information."
   )
 
 
+
+(use-package eldoc
+  :config
+  (global-eldoc-mode 1))
+
+
 ;; project config
 
 (with-eval-after-load 'project
@@ -540,7 +542,6 @@ hides this information."
 (defun jacob-elisp-config-hook-function ()
   "Configure `emacs-lisp-mode' when hook run."
   (flymake-mode 1)
-  (eldoc-mode 1)
   (setq-local parens-require-spaces t))
 
 (add-hook 'emacs-lisp-mode-hook #'jacob-elisp-config-hook-function)
@@ -1342,7 +1343,7 @@ Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (c
     "Function to be run in hook for `snippet-mode'."
     ;; hopefully fix weird issues which can happen in snippet-mode
     ;; buffers
-    (setopt auto-save-visited-mode nil))
+    (setq-local auto-save-visited-mode nil))
 
   (add-hook 'snippet-mode-hook 'jacob-snippet-mode-hook)
 
@@ -1770,6 +1771,11 @@ deleted."
   "Return t if outside of string or comment. Else nil."
   (not (jacob-point-in-text-p)))
 
+(defun jacob-abbrev-no-insert ()
+  "No-op function to prevent insertion of space."
+  t)
+(put 'jacob-abbrev-no-insert 'no-self-insert t)
+
 (define-abbrev-table 'text-mode-abbrev-table
   '(("i" "I")
     ("im" "I'm")
@@ -1829,8 +1835,8 @@ deleted."
 (define-abbrev-table 'csharp-ts-mode-abbrev-table
   '(("class" "" jacob-insert-class)
     ("cons" "public ■ ()\n{\n\n}" jacob-insert)
-    ("var" "var ■ = " jacob-insert)
-    ("meth" "void ■()\n{\n\n}" jacob-insert)
+    ("v" "var" t)
+    ;; ("meth" "void ■()\n{\n\n}" jacob-insert)
     ("switche" "switch\n{\n■\n}" jacob-insert)
     ("cl" "Console.WriteLine(■);" jacob-insert)
     ("prop" "public ■ { get; set; }" jacob-insert)
@@ -1862,7 +1868,7 @@ deleted."
   :enable-function 'jacob-point-in-code-p)
 
 (define-abbrev-table 'emacs-lisp-mode-abbrev-table
-  '(("up" "use-package" t)
+  '(("up" "use-package" jacob-abbrev-no-insert)
     ("d" "defun" t)
     ("ah" "add-hook" t)
     ("l" "lambda" t)
@@ -1912,7 +1918,7 @@ deleted."
     ("tuple" "Tuple")))
 
 (define-abbrev-table 'sql-mode-abbrev-table
-  '(("sel" "SELECT *\nFROM ■\nWHERE condition;" jacob-insert)
+  '(("sel" "SELECT" t)
     ("upd" "UPDATE ■\nSET x = y\nWHERE condition;" jacob-insert)
     ("del" "DELETE FROM ■\nWHERE condition;" jacob-insert)
     ("joi" "JOIN ■\nON field = field" jacob-insert)
