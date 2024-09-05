@@ -92,6 +92,12 @@
                              ))
 
 
+
+(use-package desktop
+  :config
+  (desktop-save-mode 1))
+
+
 ;; screen sharing config
 
 (define-minor-mode jacob-screen-sharing-mode
@@ -143,13 +149,14 @@
 (defvar jacob-welcome-messages '("\"A journey of a thousand miles begins with a single step.\" - 老子"
                                  "\"apex predator of grug is complexity\" - some grug"
                                  "\"Perfection is achieved, not when there is nothing more to add, but when there is nothing left to take away.\" - Antoine de Saint-Exupéry"
-                                 "\"Always listen to Jiaqi.\" - Jacob Leeming")
+                                 "\"Always listen to Jiaqi.\" - Jacob Leeming"
+                                 "\"The king wisely had the computer scientist beheaded, and they all lived happily ever after.\" - anon")
   "List of messages to display in scratch buffer.")
 
 (setq initial-scratch-message (format ";; %s\n\n"
                                       (seq-random-elt jacob-welcome-messages)))
 
-(setq parens-require-spaces nil)    ; should be t for lisps, else nil.
+(setq parens-require-spaces nil)
 
 (setq delete-pair-blink-delay 0)
 
@@ -224,6 +231,7 @@
 (line-number-mode 1)
 
 (setq mode-line-percent-position nil)
+
 
 
 (use-package vc
@@ -235,6 +243,15 @@
            vc-ignore-dir-regexp
            tramp-file-name-regexp)
    "ignore tramp files"))
+
+
+
+(use-package autoinsert
+  :config
+  (auto-insert-mode t)
+  :custom
+  (auto-insert-query nil)
+  (auto-insert-directory (locate-user-emacs-file "templates")))
 
 
 
@@ -276,8 +293,6 @@
              ((parent-is "comment") prev-adaptive-prefix 0)
              ((parent-is "namespace_declaration") parent-bol 0)
              ((parent-is "class_declaration") parent-bol 0)
-             ((parent-is "record_declaration") parent-bol 0)
-             ((parent-is "interface_declaration") parent-bol 0)
              ((parent-is "constructor_declaration") parent-bol 0)
              ((parent-is "initializer_expression") parent-bol csharp-ts-mode-indent-offset)
              ((match "{" "anonymous_object_creation_expression") parent-bol 0)
@@ -324,14 +339,20 @@
              ((parent-is "enum_body") parent-bol csharp-ts-mode-indent-offset)
              ((parent-is "arrow_function") parent-bol csharp-ts-mode-indent-offset)
              ((parent-is "parenthesized_expression") parent-bol csharp-ts-mode-indent-offset)
+             ;; what i have added
              ((parent-is "parameter_list") parent-bol csharp-ts-mode-indent-offset)
              ((parent-is "implicit_parameter_list") parent-bol csharp-ts-mode-indent-offset)
              ((parent-is "member_access_expression") parent-bol csharp-ts-mode-indent-offset)
              ((parent-is "lambda_expression") parent-bol csharp-ts-mode-indent-offset)
              ((parent-is "try_statement") parent-bol 0)
              ((parent-is "catch_clause") parent-bol 0)
+             ((parent-is "record_declaration") parent-bol 0)
+             ((parent-is "interface_declaration") parent-bol 0)
              ((parent-is "throw_expression") parent-bol csharp-ts-mode-indent-offset)
-             ((parent-is "return_statement") parent-bol csharp-ts-mode-indent-offset))))
+             ((parent-is "return_statement") parent-bol csharp-ts-mode-indent-offset)
+             ((parent-is "record_declaration") parent-bol 0)
+             ((parent-is "interface_declaration") parent-bol 0)
+             )))
 
   ;; JACOBTODO: merge into emacs core
   (nconc csharp-ts-mode--font-lock-settings
@@ -357,7 +378,19 @@
                  1
                  2))
 
-  (add-to-list 'compilation-error-regexp-alist 'jacob-dotnet-stacktrace-re))
+  (add-to-list 'compilation-error-regexp-alist 'jacob-dotnet-stacktrace-re)
+
+  (defun jacob-insert-class ()
+    "Insert a csharp class, for use in abbrev."
+    (let ((start (point)))
+      (insert (format "class %s\n{\n\n}"
+                      (file-name-base (buffer-file-name))))
+      (indent-region start (point))
+      (forward-line -1)
+      (indent-for-tab-command))
+    t)
+
+  (put 'jacob-insert-class 'no-self-insert t))
 
 (defun jacob-csharp-forward-statement ()
   "Move forward over a csharp statement."
@@ -504,8 +537,7 @@ hides this information."
 (defun jacob-elisp-config-hook-function ()
   "Configure `emacs-lisp-mode' when hook run."
   (flymake-mode 1)
-  (eldoc-mode 1)
-  (setq-local parens-require-spaces t))
+  (eldoc-mode 1))
 
 (add-hook 'emacs-lisp-mode-hook #'jacob-elisp-config-hook-function)
 
@@ -597,6 +629,18 @@ hides this information."
 ;; server config
 
 (server-start)
+
+
+
+(use-package smerge-mode
+  :defer t
+  :bind
+  (:repeat-map jacob-smerge-repeat-map
+               ("l" . #'smerge-next)
+               ("j" . #'smerge-prev)
+               ("i" . #'smerge-keep-upper)
+               ("k" . #'smerge-keep-lower)
+               ("SPC" . #'smerge-keep-all)))
 
 
 ;; time emacs startup
@@ -1281,6 +1325,27 @@ Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (c
   (jacob-xfk-define-key-in-major-mode lisp-mode-map " wk" #'sly-edit-definition))
 
 
+
+(use-package yasnippet
+  :config
+  (yas-global-mode 1)
+  (define-key yas-minor-mode-map (kbd "SPC") yas-maybe-expand)
+
+  (defun jacob-snippet-mode-hook ()
+    "Function to be run in hook for `snippet-mode'."
+    ;; hopefully fix weird issues which can happen in snippet-mode
+    ;; buffers
+    (setopt auto-save-visited-mode nil))
+
+  (add-hook 'snippet-mode-hook 'jacob-snippet-mode-hook)
+
+  (defun jacob-autoinsert-yas-expand ()
+    "Replace text in yasnippet template."
+    (yas-expand-snippet (buffer-string) (point-min) (point-max)))
+
+  (define-auto-insert "\\.cs$" [ "template.cs" jacob-autoinsert-yas-expand ]))
+
+
 
 ;; personal functions
 
@@ -1617,19 +1682,7 @@ For use with GitLab only."
                                           "[" mr-key "](" jira-link ")"
                                           "\" ")))))
     (with-temp-buffer
-      (switch-to-buffer (current-buffer))
-      (eshell-command command t)
-      (goto-char (point-min)))))
-
-;; JACOBTODO: make movement act like moving over words, e.g.
-
-;; bla bla bla ERROR
-;; ^
-
-;; for example, `jacob-next-error-or-punct' should result in this:
-
-;; bla bla bla ERROR
-;;                  ^
+      (eshell-command command t))))
 
 (defun jacob-next-error-or-punct ()
   "Wrapper command to allow moving forward by error or punctuation."
@@ -1674,6 +1727,8 @@ For use with GitLab only."
 
 
 ;; jacob-insert-config
+
+;; JACOBTODO: this is cool, but jank. look into https://github.com/minad/tempel
 
 (defun jacob-insert (&optional template)
   "Handle `jacob-insert' abbrev expansion.
@@ -1765,7 +1820,7 @@ deleted."
   :parents (list js-ts-mode-abbrev-table))
 
 (define-abbrev-table 'csharp-ts-mode-abbrev-table
-  '(("class" "class ■\n{\n\n}" jacob-insert) ; JACOBTODO: make function to guess class name based on filename
+  '(("class" "" jacob-insert-class)
     ("cons" "public ■ ()\n{\n\n}" jacob-insert)
     ("var" "var ■ = " jacob-insert)
     ("meth" "void ■()\n{\n\n}" jacob-insert)
@@ -1800,7 +1855,10 @@ deleted."
   :enable-function 'jacob-point-in-code-p)
 
 (define-abbrev-table 'emacs-lisp-mode-abbrev-table
-  '(("def" "(defun ■ ()\n)" jacob-insert)
+  '(("up" "use-package" t)
+    ("d" "defun" t)
+    ("ah" "add-hook" t)
+    ("l" "lambda" t)
     ("let" "(let ((■))\n)" jacob-insert)
     ("cond" "(cond ((■))\n)" jacob-insert)
     ("gc" "(goto-char ■)" jacob-insert)
@@ -1863,25 +1921,11 @@ deleted."
 
 ;; default keybinds that can be rebound:
 
-;; JACOBTODO: figure out how to prevent issues with packages not being
-;; installed, etc.  JACOBTODO: or, go for the simple approach: assume
-;; all packages are installed and require them at the top of the
-;; file. this way all packages will be loaded on startup.
-
 (keymap-set lisp-interaction-mode-map "C-j" #'jacob-eval-print-last-sexp)
 
 (keymap-global-unset "C-x C-c")         ; `save-buffers-kill-terminal'
 (keymap-global-unset "C-z")             ; `suspend-frame'
 (keymap-global-unset "C-x u")           ; `undo'
-
-;; JACOBTODO: how can i make this more xfk friendly?
-(with-eval-after-load 'smerge-mode
-  (defvar-keymap jacob-smerge-repeat-map
-    :repeat t
-    "n" #'smerge-next
-    "p" #'smerge-prev
-    "u" #'smerge-keep-upper
-    "l" #'smerge-keep-lower))
 
 (with-eval-after-load 'consult
   (keymap-set project-prefix-map "g" #'jacob-project-search)
