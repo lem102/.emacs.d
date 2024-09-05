@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# key: defun
+# name: defun
+# --
+(defun ${1:function} (${2:parameter})
+  "${3:documentation}"
+  ${0:(message "not implemented")})
