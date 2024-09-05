@@ -230,16 +230,19 @@
   :defer t
   :custom
   (vc-git-show-stash 0 "show 0 stashes")
-  (vc-ignore-dir-regexp
-   (format "\\(%s\\)\\|\\(%s\\)"
-           vc-ignore-dir-regexp
-           tramp-file-name-regexp)
-   "ignore tramp files"))
+  ;; (vc-ignore-dir-regexp
+  ;;  (format "\\(%s\\)\\|\\(%s\\)"
+  ;;          vc-ignore-dir-regexp
+  ;;          tramp-file-name-regexp)
+  ;;  "ignore tramp files")
+  )
 
 
 
 (use-package tramp
   :defer t
+  :config
+  (add-to-list 'tramp-remote-path 'tramp-own-remote-path)
   :custom
   (tramp-archive-enabled nil "lots of problems. for now, disable it!"))
 
@@ -552,11 +555,6 @@ hides this information."
 
   (setq org-latex-pdf-process (list "latexmk -pdf %f -shell-escape")) ; probably requires texlive
 
-  ;; for syntax highlighting in latex export. requires the minted
-  ;; latex package, and pygmentize, a python package.
-  (setq org-latex-listings 'minted)
-  (add-to-list 'org-latex-packages-alist '("newfloat" "minted"))
-
   (org-babel-do-load-languages
    'org-babel-load-languages
    '((octave . t)
@@ -571,6 +569,13 @@ hides this information."
 
   (setq org-time-stamp-custom-formats (cons "%A %d/%m/%y" "%A %d/%m/%y %H:%M"))
   (setq org-display-custom-times t))
+
+
+
+(use-package org-contrib
+  :config
+  (require 'ox-extra)
+  (ox-extras-activate '(latex-header-blocks ignore-headlines)))
 
 
 ;; pulse config
@@ -1075,6 +1080,12 @@ Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (c
 
 
 
+(use-package csharp-toolbox
+  :after csharp-mode
+  :vc (csharp-toolbox :url "https://github.com/lem102/csharp-toolbox.git"))
+
+
+
 ;; JACOBTODO: jacob-csharp package requires dape, causing it to be loaded prematurely
 (use-package dape
   :commands dape
@@ -1082,14 +1093,6 @@ Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (c
   (dape-info-hide-mode-line nil)
   (dape-buffer-window-arrangment 'right)
   :config
-  (defun jacob-select-dll ()
-    (completing-read "dll: "
-                     (seq-map (lambda (filename)
-                                (cons (file-name-nondirectory filename)
-                                      filename))
-                              (directory-files-recursively
-                               (project-root (project-current))
-                               "\\.dll"))))
 
   (push '(netcoredbg-attach-port
           modes (csharp-mode csharp-ts-mode)
@@ -1863,19 +1866,14 @@ deleted."
 
 ;; default keybinds that can be rebound:
 
-;; JACOBTODO: figure out how to prevent issues with packages not being
-;; installed, etc.  JACOBTODO: or, go for the simple approach: assume
-;; all packages are installed and require them at the top of the
-;; file. this way all packages will be loaded on startup.
-
 (keymap-set lisp-interaction-mode-map "C-j" #'jacob-eval-print-last-sexp)
 
 (keymap-global-unset "C-x C-c")         ; `save-buffers-kill-terminal'
 (keymap-global-unset "C-z")             ; `suspend-frame'
 (keymap-global-unset "C-x u")           ; `undo'
 
-;; JACOBTODO: how can i make this more xfk friendly?
 (with-eval-after-load 'smerge-mode
+  ;; JACOBTODO: how can i make this more xfk friendly?
   (defvar-keymap jacob-smerge-repeat-map
     :repeat t
     "n" #'smerge-next
