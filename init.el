@@ -1127,6 +1127,7 @@ Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (c
 
 
 (use-package csharp-toolbox
+  :demand
   :after csharp-mode
   :vc (csharp-toolbox :url "https://github.com/lem102/csharp-toolbox.git")
   :bind ( :map xah-fly-leader-key-map
@@ -1150,7 +1151,7 @@ Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (c
           command-args ["--interpreter=vscode"]
           :request "attach"
           :cwd dape-cwd-fn
-          :program jacob-select-dll
+          :program csharp-toolbox--select-dll
           :stopAtEntry t
           :processId
           (lambda ()
@@ -1918,8 +1919,8 @@ deleted."
     ("tuple" "Tuple")))
 
 (define-abbrev-table 'sql-mode-abbrev-table
-  '(("sel" "SELECT" t)
-    ("upd" "UPDATE ■\nSET x = y\nWHERE condition;" jacob-insert)
+  '(("sel" "SELECT" jacob-abbrev-no-insert)
+    ("upd" "UPDATE" jacob-abbrev-no-insert)
     ("del" "DELETE FROM ■\nWHERE condition;" jacob-insert)
     ("joi" "JOIN ■\nON field = field" jacob-insert)
     ("ins" "INSERT INTO ■ (column, column2)\nVALUES (value, value2)" jacob-insert)
