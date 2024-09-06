@@ -260,11 +260,6 @@
   (tramp-archive-enabled nil "lots of problems. for now, disable it!"))
 
 
-;; theme config
-
-(load-theme 'modus-operandi "NO-CONFIRM")
-
-
 ;; js-mode config
 
 (put 'js-indent-level 'safe-local-variable #'numberp)
@@ -537,14 +532,58 @@ hides this information."
     (add-to-list 'consult-buffer-sources jacob-consult-project-source "APPEND")))
 
 
-;; emacs-lisp-mode config
+;; abbrev config
 
-(defun jacob-elisp-config-hook-function ()
-  "Configure `emacs-lisp-mode' when hook run."
-  (flymake-mode 1)
-  (setq-local parens-require-spaces t))
+(set-default 'abbrev-mode t)
 
-(add-hook 'emacs-lisp-mode-hook #'jacob-elisp-config-hook-function)
+(setopt abbrev-suggest t)
+(setopt save-abbrevs nil)
+
+(defun jacob-point-in-text-p ()
+  "Return t if in comment or string. Else nil."
+  (let ((xsyntax-state (syntax-ppss)))
+    (or (nth 3 xsyntax-state)
+        (nth 4 xsyntax-state))))
+
+(defun jacob-point-in-code-p ()
+  "Return t if outside of string or comment. Else nil."
+  (not (jacob-point-in-text-p)))
+
+(defun jacob-abbrev-no-insert ()
+  "No-op function with `no-self-insert' property."
+  t)
+(put 'jacob-abbrev-no-insert 'no-self-insert t)
+
+(define-abbrev-table 'jacob-comment-abbrev-table
+  '(("jt" "JACOBTODO:"))
+  nil
+  :enable-function 'jacob-point-in-text-p)
+
+
+
+(use-package elisp-mode
+  :ensure nil
+  :init
+  (defun jacob-elisp-config-hook-function ()
+    "Configure `emacs-lisp-mode' when hook run."
+    (flymake-mode 1))
+  :hook (emacs-lisp-mode-hook . jacob-elisp-config-hook-function)
+  :config
+  (define-abbrev-table 'emacs-lisp-mode-abbrev-table
+    '(("up" "use-package" jacob-abbrev-no-insert)
+      ("d" "defun" jacob-abbrev-no-insert)
+      ("ah" "add-hook" jacob-abbrev-no-insert)
+      ("l" "lambda" jacob-abbrev-no-insert)
+      ("gc" "goto-char" jacob-abbrev-no-insert)
+      ("weal" "with-eval-after-load" jacob-abbrev-no-insert)
+      ("mes" "message" jacob-abbrev-no-insert)
+      ("pmi" "point-min" jacob-abbrev-no-insert)
+      ("pma" "point-max" jacob-abbrev-no-insert)
+      ("int" "(interactive)"))
+    nil
+    :parents (list jacob-comment-abbrev-table)
+    :enable-function 'jacob-point-in-code-p)
+  (message "%s" "jacobwozere"))
 
 
 ;; font config
@@ -1342,8 +1381,6 @@ Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (c
 
   (defun jacob-snippet-mode-hook ()
     "Function to be run in hook for `snippet-mode'."
-    ;; hopefully fix weird issues which can happen in snippet-mode
-    ;; buffers
     (setq-local auto-save-visited-mode nil))
 
   (add-hook 'snippet-mode-hook 'jacob-snippet-mode-hook)
@@ -1353,6 +1390,12 @@ Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (c
     (yas-expand-snippet (buffer-string) (point-min) (point-max)))
 
   (define-auto-insert "\\.cs$" [ "template.cs" jacob-autoinsert-yas-expand ]))
+
+
+
+(use-package color-theme-sanityinc-tomorrow
+  :config
+  (load-theme 'sanityinc-tomorrow-blue "NO-CONFIRM"))
 
 
 
@@ -1728,16 +1771,11 @@ For use with GitLab only."
 ;; abbrevs
 
 
-;; abbrev config
-
-(setq abbrev-suggest t)
-(set-default 'abbrev-mode t)
-(setq save-abbrevs nil)
 
 
 ;; jacob-insert-config
 
-;; JACOBTODO: this is cool, but jank. look into https://github.com/minad/tempel
+;; JACOBTODO: remove when switched to yasnippet
 
 (defun jacob-insert (&optional template)
   "Handle `jacob-insert' abbrev expansion.
@@ -1762,21 +1800,6 @@ deleted."
 
 (put 'jacob-insert 'no-self-insert t)
 
-(defun jacob-point-in-text-p ()
-  "Return t if in comment or string. Else nil."
-  (let ((xsyntax-state (syntax-ppss)))
-    (or (nth 3 xsyntax-state)
-        (nth 4 xsyntax-state))))
-
-(defun jacob-point-in-code-p ()
-  "Return t if outside of string or comment. Else nil."
-  (not (jacob-point-in-text-p)))
-
-(defun jacob-abbrev-no-insert ()
-  "No-op function to prevent insertion of space."
-  t)
-(put 'jacob-abbrev-no-insert 'no-self-insert t)
-
 (define-abbrev-table 'text-mode-abbrev-table
   '(("i" "I")
     ("im" "I'm")
@@ -1796,11 +1819,6 @@ deleted."
     ("and" "&&")
     ("ret" "return"))
   :enable-function 'jacob-point-in-code-p)
-
-(define-abbrev-table 'jacob-comment-abbrev-table
-  '(("jt" "JACOBTODO:"))
-  nil
-  :enable-function 'jacob-point-in-text-p)
 
 (define-abbrev-table 'js-ts-mode-abbrev-table
   '(("cl" "console.log(■);" jacob-insert)
@@ -1837,7 +1855,6 @@ deleted."
   '(("class" "" jacob-insert-class)
     ("cons" "public ■ ()\n{\n\n}" jacob-insert)
     ("v" "var" t)
-    ;; ("meth" "void ■()\n{\n\n}" jacob-insert)
     ("switche" "switch\n{\n■\n}" jacob-insert)
     ("cl" "Console.WriteLine(■);" jacob-insert)
     ("prop" "public ■ { get; set; }" jacob-insert)
@@ -1864,24 +1881,6 @@ deleted."
     ("case" "case ■: \n\nbreak;" jacob-insert)
     ("band" "&&")
     ("bor" "||"))
-  nil
-  :parents (list jacob-comment-abbrev-table)
-  :enable-function 'jacob-point-in-code-p)
-
-(define-abbrev-table 'emacs-lisp-mode-abbrev-table
-  '(("up" "use-package" jacob-abbrev-no-insert)
-    ("d" "defun" t)
-    ("ah" "add-hook" t)
-    ("l" "lambda" t)
-    ("let" "(let ((■))\n)" jacob-insert)
-    ("cond" "(cond ((■))\n)" jacob-insert)
-    ("gc" "(goto-char ■)" jacob-insert)
-    ("weal" "(with-eval-after-load ■)" jacob-insert)
-    ("mes" "(message \"%s\" ■)" jacob-insert)
-    ("if" "(if ■)" jacob-insert)
-    ("pmi" "(point-min)")
-    ("pma" "(point-max)")
-    ("int" "(interactive)"))
   nil
   :parents (list jacob-comment-abbrev-table)
   :enable-function 'jacob-point-in-code-p)
