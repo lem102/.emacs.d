@@ -560,30 +560,28 @@ hides this information."
   :enable-function 'jacob-point-in-text-p)
 
 
+;; elisp mode config
 
-(use-package elisp-mode
-  :ensure nil
-  :init
-  (defun jacob-elisp-config-hook-function ()
-    "Configure `emacs-lisp-mode' when hook run."
-    (flymake-mode 1))
-  :hook (emacs-lisp-mode-hook . jacob-elisp-config-hook-function)
-  :config
-  (define-abbrev-table 'emacs-lisp-mode-abbrev-table
-    '(("up" "use-package" jacob-abbrev-no-insert)
-      ("d" "defun" jacob-abbrev-no-insert)
-      ("ah" "add-hook" jacob-abbrev-no-insert)
-      ("l" "lambda" jacob-abbrev-no-insert)
-      ("gc" "goto-char" jacob-abbrev-no-insert)
-      ("weal" "with-eval-after-load" jacob-abbrev-no-insert)
-      ("mes" "message" jacob-abbrev-no-insert)
-      ("pmi" "point-min" jacob-abbrev-no-insert)
-      ("pma" "point-max" jacob-abbrev-no-insert)
-      ("int" "(interactive)"))
-    nil
-    :parents (list jacob-comment-abbrev-table)
-    :enable-function 'jacob-point-in-code-p)
-  (message "%s" "jacobwozere"))
+(defun jacob-elisp-config-hook-function ()
+  "Configure `emacs-lisp-mode' when hook run."
+  (flymake-mode 1))
+
+(add-hook 'emacs-lisp-mode-hook  #'jacob-elisp-config-hook-function)
+
+(define-abbrev-table 'emacs-lisp-mode-abbrev-table
+  '(("up" "use-package" jacob-abbrev-no-insert)
+    ("d" "defun" jacob-abbrev-no-insert)
+    ("ah" "add-hook" jacob-abbrev-no-insert)
+    ("l" "lambda" jacob-abbrev-no-insert)
+    ("gc" "goto-char" jacob-abbrev-no-insert)
+    ("weal" "with-eval-after-load" jacob-abbrev-no-insert)
+    ("mes" "message" jacob-abbrev-no-insert)
+    ("pmi" "point-min" jacob-abbrev-no-insert)
+    ("pma" "point-max" jacob-abbrev-no-insert)
+    ("int" "(interactive)"))
+  nil
+  :parents (list jacob-comment-abbrev-table)
+  :enable-function 'jacob-point-in-code-p)
 
 
 ;; font config
