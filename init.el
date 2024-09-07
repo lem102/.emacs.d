@@ -1423,9 +1423,9 @@ Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (c
   (if (eolp)
       (forward-paragraph)
     (let ((content-end (save-excursion
-                         (when (and (derived-mode-p 'prog-mode)
-                                    (comment-search-forward (line-end-position) "NOERROR"))
-                           (skip-syntax-backward "< " (line-beginning-position))
+                         (when (comment-search-forward (line-end-position) "NOERROR")
+                           (goto-char (match-beginning 0))
+                           (skip-syntax-backward " " (line-beginning-position))
                            (unless (= (point) (line-beginning-position))
                              (point))))))
       (if (or (null content-end)
