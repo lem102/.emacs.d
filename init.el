@@ -34,7 +34,7 @@
 
 ;; read environment file and variable setup
 
-(defvar jacob-font-size 12
+(defvar jacob-font-size 11
   "Font size to use.")
 
 (defconst jacob-is-windows (eq system-type 'windows-nt)
@@ -488,7 +488,6 @@ hides this information."
       (split-string (buffer-substring-no-properties (point-min) (point-max)) "\n"))))
 
 
-
 ;; flymake-mode config
 
 (with-eval-after-load 'flymake
