@@ -46,9 +46,6 @@
   (load-file "~/.emacs.d/environment.el"))
 
 
-;; mouse config
-
-(setq scroll-conservatively 101)
 
 (use-package mwheel
   :custom
@@ -57,43 +54,69 @@
                                   ((meta))
                                   ((control) . text-scale))))
 
+
+
+(use-package emacs
+  :config
+  (setq-default truncate-lines nil)
+  :custom
+  (create-lockfiles nil)
+  (history-length 1000)
+  (history-delete-duplicates t)
+  (scroll-conservatively 101)
+  (use-dialog-box nil)
+  (use-short-answers t)
+  (ring-bell-function 'ignore)
+  (truncate-partial-width-windows nil)
+  (enable-recursive-minibuffers t)
+  (completion-ignore-case t)
+  (kill-buffer-query-functions (delq 'process-kill-buffer-query-function
+                                     kill-buffer-query-functions)))
 
 
-;; user interface config
 
-(setq-default use-dialog-box nil)
-(setq use-short-answers t)
-(setq ring-bell-function 'ignore)
-(setq truncate-partial-width-windows nil)
-(setq-default truncate-lines nil)
-(setq confirm-kill-processes nil)
-(setq switch-to-buffer-obey-display-actions t)
-(setq disabled-command-function nil)
-(setq enable-recursive-minibuffers t)
-(setq blink-cursor-blinks 0)            ; make cursor blink forever
-(setq completion-ignore-case t)
+(use-package files
+  :config
+  (auto-save-visited-mode 1)
+  :custom
+  (auto-save-default nil)
+  (make-backup-files nil)
+  (backup-by-copying t)
+  (confirm-kill-processes nil)
+  (auto-save-visited-interval 2 "save file after two seconds")
+  (auto-save-visited-predicate (lambda () ; JACOBTODO: disable in hook, get rid of this
+                                 (not (equal major-mode 'message-mode)))))
 
-(setq kill-buffer-query-functions (delq 'process-kill-buffer-query-function
-                                        kill-buffer-query-functions))
+(use-package window
+  :custom
+  (switch-to-buffer-obey-display-actions t)
+  (display-buffer-alist '(
+                          ;; slack
+                          ((or (derived-mode . slack-mode)
+                               (derived-mode . lui-mode))
+                           (display-buffer-in-side-window)
+                           (side . right))
+                          ;; sql
+                          ((major-mode . sql-interactive-mode)
+                           (display-buffer-reuse-mode-window display-buffer-same-window))
+                          ;; shell
+                          ;; ("eshell\\*"
+                          ;;  (display-buffer-in-side-window)
+                          ;;  (side . bottom))
+                          )))
 
-(setq display-buffer-alist '(
-                             ;; slack
-                             ((or (derived-mode . slack-mode)
-                                  (derived-mode . lui-mode))
-                              (display-buffer-in-side-window)
-                              (side . right))
-                             ;; sql
-                             ((major-mode . sql-interactive-mode)
-                              (display-buffer-reuse-mode-window display-buffer-same-window))
-                             ;; shell
-                             ;; ("eshell\\*"
-                             ;;  (display-buffer-in-side-window)
-                             ;;  (side . bottom))
-                             ))
+(use-package frame
+  :custom
+  (blink-cursor-blinks 0 "make cursor blink forever"))
 
-
-;; desktop config
-(desktop-save-mode 1)
+(use-package novice
+  :defer
+  :custom
+  (disabled-command-function nil))
+
+(use-package desktop
+  :init
+  (desktop-save-mode 1))
 
 
 ;; screen sharing config
@@ -109,26 +132,21 @@
 
 ;; backup/saving config
 
-(setq create-lockfiles nil)
-(setq history-length 1000)
-(setq history-delete-duplicates t)
-(setq backup-by-copying t)
-(setq make-backup-files nil)
-(setq auto-save-default nil)
-(recentf-mode 1)
+(use-package recentf
+  :init
+  (recentf-mode 1))
 
-(setq savehist-file "~/.emacs.d/savehist")
-(setq savehist-save-minibuffer-history t)
-(savehist-mode 1)
+(use-package savehist
+  :init
+  (savehist-mode 1)
+  :custom
+  (savehist-save-minibuffer-history t))
 
-(setq save-place-file "~/.emacs.d/saveplace")
-(setq save-place-forget-unreadable-files t)
-(save-place-mode 1)
-
-(setq auto-save-visited-interval 2)
-(setq auto-save-visited-predicate (lambda ()
-                                    (not (equal major-mode 'message-mode))))
-(auto-save-visited-mode 1)
+(use-package saveplace
+  :init
+  (save-place-mode 1)
+  :custom
+  (save-place-forget-unreadable-files t))
 
 
 ;; misc config
@@ -562,7 +580,6 @@ hides this information."
 
 
 (use-package elisp-mode
-  :ensure nil
   :init
   (defun jacob-elisp-config-hook-function ()
     "Configure `emacs-lisp-mode' when hook run."
