@@ -9,8 +9,7 @@
 (eval-when-compile
   (require 'use-package))
 
-(setopt use-package-always-ensure t
-        use-package-hook-name-suffix nil
+(setopt use-package-hook-name-suffix nil
         use-package-enable-imenu-support t)
 
 
@@ -50,10 +49,14 @@
 ;; mouse config
 
 (setq scroll-conservatively 101)
-(setq mouse-wheel-progressive-speed nil)
-(setq mouse-wheel-scroll-amount '(10 ((shift) . hscroll)
-                                     ((meta))
-                                     ((control) . text-scale)))
+
+(use-package mwheel
+  :custom
+  (mouse-wheel-progressive-speed nil)
+  (mouse-wheel-scroll-amount '(10 ((shift) . hscroll)
+                                  ((meta))
+                                  ((control) . text-scale))))
+
 
 
 ;; user interface config
@@ -89,10 +92,8 @@
                              ))
 
 
-
-(use-package desktop
-  :config
-  (desktop-save-mode 1))
+;; desktop config
+(desktop-save-mode 1)
 
 
 ;; screen sharing config
@@ -497,9 +498,7 @@ hides this information."
 
 
 
-(use-package eldoc
-  :config
-  (global-eldoc-mode 1))
+(global-eldoc-mode 1)
 
 
 ;; project config
@@ -646,6 +645,7 @@ hides this information."
 
 
 (use-package org-contrib
+  :ensure
   :config
   (require 'ox-extra)
   (ox-extras-activate '(latex-header-blocks ignore-headlines)))
@@ -1010,11 +1010,13 @@ Useful for deleting ^M after `eglot-code-actions'."
 
 
 
-(use-package use-package-chords)
+(use-package use-package-chords
+  :ensure)
 
 
 
 (use-package avy
+  :ensure
   :after use-package-chords
   :chords (("fj" . avy-goto-char-timer))
   :config
@@ -1040,6 +1042,7 @@ Useful for deleting ^M after `eglot-code-actions'."
 
 
 (use-package apheleia
+  :ensure
   :config
   (apheleia-global-mode 1)
   (setq-default apheleia-inhibit t)     ; set `apheleia-inhibit' to
@@ -1166,9 +1169,9 @@ Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (c
 
 
 (use-package csharp-toolbox
+  :vc (csharp-toolbox :url "https://github.com/lem102/csharp-toolbox.git")
   :demand
   :after csharp-mode
-  :vc (csharp-toolbox :url "https://github.com/lem102/csharp-toolbox.git")
   :bind ( :map xah-fly-leader-key-map
           ("SPC c f" . csharp-toolbox-format-statement)
           ("SPC c t" . csharp-toolbox-run-test)))
@@ -1177,6 +1180,7 @@ Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (c
 
 ;; JACOBTODO: jacob-csharp package requires dape, causing it to be loaded prematurely
 (use-package dape
+  :ensure
   :commands dape
   :custom
   (dape-info-hide-mode-line nil)
@@ -1209,6 +1213,7 @@ Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (c
 
 
 (use-package switch-window
+  :ensure
   ;; JACOBTODO: investigate switch window finish hook to solve compilation scroll issue
   :after xah-fly-keys
   :custom
@@ -1220,6 +1225,7 @@ Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (c
 
 
 (use-package racket-mode
+  :ensure
   :hook (racket-mode-hook . racket-xp-mode))
 
 
@@ -1236,17 +1242,20 @@ Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (c
 
 
 
-(use-package ob-restclient)
+(use-package ob-restclient
+  :ensure)
 
 
 
 (use-package fsharp-mode
+  :ensure
   :defer t
   :custom
   ;; (inferior-fsharp-program "dotnet fsi --fsi-server-input-codepage:65001")
   (inferior-fsharp-program "dotnet fsi"))
 
 (use-package eglot-fsharp
+  :ensure
   :after fsharp-mode
   :custom
   (eglot-fsharp-server-install-dir nil))
@@ -1254,12 +1263,14 @@ Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (c
 
 
 (use-package purescript-mode
+  :ensure
   :defer t
   :hook (purescript-mode-hook . turn-on-purescript-indentation))
 
 
 
 (use-package orderless
+  :ensure
   :after vertico
   :custom
   (completion-styles '(orderless initials)))
@@ -1267,6 +1278,7 @@ Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (c
 
 
 (use-package vertico
+  :ensure
   :custom
   (vertico-count 25)
   :config
@@ -1275,6 +1287,7 @@ Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (c
 
 
 (use-package marginalia
+  :ensure
   :after vertico
   :config
   (marginalia-mode 1))
@@ -1282,6 +1295,7 @@ Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (c
 
 
 (use-package consult
+  :ensure
   :after xah-fly-keys
   :custom
   (completion-in-region-function 'consult-completion-in-region)
@@ -1320,6 +1334,7 @@ Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (c
 
 
 (use-package expand-region
+  :ensure
   :after xah-fly-keys
   :custom
   (expand-region-contract-fast-key "9")
@@ -1329,12 +1344,14 @@ Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (c
 
 
 (use-package sml-mode
+  :ensure
   :custom
   (sml-abbrev-skeletons nil))
 
 
 
 (use-package xah-fly-keys
+  :ensure
   :custom
   (xah-fly-use-control-key nil)
   (xah-fly-use-meta-key nil)
@@ -1353,16 +1370,19 @@ Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (c
 
 
 (use-package verb
+  :ensure
   :hook (org-mode-hook . verb-mode))
 
 
 
 (use-package web-mode
+  :ensure
   :mode "\\.cshtml\\'")
 
 
 
 (use-package sly
+  :ensure
   :after xah-fly-keys
   :config
   (sly-symbol-completion-mode 0)
@@ -1375,6 +1395,7 @@ Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (c
 
 
 (use-package yasnippet
+  :ensure
   :config
   (yas-global-mode 1)
   (define-key yas-minor-mode-map (kbd "SPC") yas-maybe-expand)
@@ -1394,6 +1415,7 @@ Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (c
 
 
 (use-package color-theme-sanityinc-tomorrow
+  :ensure
   :config
   (load-theme 'sanityinc-tomorrow-blue "NO-CONFIRM"))
 
