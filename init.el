@@ -531,56 +531,59 @@ hides this information."
     (add-to-list 'consult-buffer-sources jacob-consult-project-source "APPEND")))
 
 
-;; abbrev config
 
-(set-default 'abbrev-mode t)
+(use-package abbrev
+  :ensure nil
+  :hook (text-mode-hook prog-mode-hook)
+  :config
+  (defun jacob-point-in-text-p ()
+    "Return t if in comment or string. Else nil."
+    (let ((xsyntax-state (syntax-ppss)))
+      (or (nth 3 xsyntax-state)
+          (nth 4 xsyntax-state))))
 
-(setopt abbrev-suggest t)
-(setopt save-abbrevs nil)
+  (defun jacob-point-in-code-p ()
+    "Return t if outside of string or comment. Else nil."
+    (not (jacob-point-in-text-p)))
 
-(defun jacob-point-in-text-p ()
-  "Return t if in comment or string. Else nil."
-  (let ((xsyntax-state (syntax-ppss)))
-    (or (nth 3 xsyntax-state)
-        (nth 4 xsyntax-state))))
+  (defun jacob-abbrev-no-insert ()
+    "No-op function with `no-self-insert' property."
+    t)
+  (put 'jacob-abbrev-no-insert 'no-self-insert t)
 
-(defun jacob-point-in-code-p ()
-  "Return t if outside of string or comment. Else nil."
-  (not (jacob-point-in-text-p)))
-
-(defun jacob-abbrev-no-insert ()
-  "No-op function with `no-self-insert' property."
-  t)
-(put 'jacob-abbrev-no-insert 'no-self-insert t)
-
-(define-abbrev-table 'jacob-comment-abbrev-table
-  '(("jt" "JACOBTODO:"))
-  nil
-  :enable-function 'jacob-point-in-text-p)
+  (define-abbrev-table 'jacob-comment-abbrev-table
+    '(("jt" "JACOBTODO:"))
+    nil
+    :enable-function 'jacob-point-in-text-p)
+  
+  :custom
+  (abbrev-suggest t)
+  (save-abbrevs nil))
 
 
-;; elisp mode config
 
-(defun jacob-elisp-config-hook-function ()
-  "Configure `emacs-lisp-mode' when hook run."
-  (flymake-mode 1))
-
-(add-hook 'emacs-lisp-mode-hook  #'jacob-elisp-config-hook-function)
-
-(define-abbrev-table 'emacs-lisp-mode-abbrev-table
-  '(("up" "use-package" jacob-abbrev-no-insert)
-    ("d" "defun" jacob-abbrev-no-insert)
-    ("ah" "add-hook" jacob-abbrev-no-insert)
-    ("l" "lambda" jacob-abbrev-no-insert)
-    ("gc" "goto-char" jacob-abbrev-no-insert)
-    ("weal" "with-eval-after-load" jacob-abbrev-no-insert)
-    ("mes" "message" jacob-abbrev-no-insert)
-    ("pmi" "point-min" jacob-abbrev-no-insert)
-    ("pma" "point-max" jacob-abbrev-no-insert)
-    ("int" "(interactive)"))
-  nil
-  :parents (list jacob-comment-abbrev-table)
-  :enable-function 'jacob-point-in-code-p)
+(use-package elisp-mode
+  :ensure nil
+  :init
+  (defun jacob-elisp-config-hook-function ()
+    "Configure `emacs-lisp-mode' when hook run."
+    (flymake-mode 1))  
+  :hook (emacs-lisp-mode-hook . jacob-elisp-config-hook-function)
+  :config
+  (define-abbrev-table 'emacs-lisp-mode-abbrev-table
+    '(("up" "use-package" jacob-abbrev-no-insert)
+      ("d" "defun" jacob-abbrev-no-insert)
+      ("ah" "add-hook" jacob-abbrev-no-insert)
+      ("l" "lambda" jacob-abbrev-no-insert)
+      ("gc" "goto-char" jacob-abbrev-no-insert)
+      ("weal" "with-eval-after-load" jacob-abbrev-no-insert)
+      ("mes" "message" jacob-abbrev-no-insert)
+      ("pmi" "point-min" jacob-abbrev-no-insert)
+      ("pma" "point-max" jacob-abbrev-no-insert)
+      ("int" "(interactive)"))
+    nil
+    :parents (list jacob-comment-abbrev-table)
+    :enable-function 'jacob-point-in-code-p))
 
 
 ;; font config
@@ -643,6 +646,7 @@ hides this information."
 
 
 (use-package org-contrib
+  :ensure
   :config
   (require 'ox-extra)
   (ox-extras-activate '(latex-header-blocks ignore-headlines)))
@@ -1390,8 +1394,20 @@ Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (c
 
 
 (use-package color-theme-sanityinc-tomorrow
+  :ensure
   :config
   (load-theme 'sanityinc-tomorrow-blue "NO-CONFIRM"))
+
+
+
+(use-package gdscript-mode
+  :ensure
+  :config
+  (define-abbrev-table 'gdscript-mode-abbrev-table
+    '(("v2" "Vector2")
+      ("ret" "return"))
+    :parents (list jacob-comment-abbrev-table)
+    :enable-function 'jacob-point-in-code-p))
 
 
 
