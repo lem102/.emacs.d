@@ -6,7 +6,7 @@ workspace
 url
 .cache
 eglot-eclipse-jdt-cache
-var
+var/
 image-dired
 eshell/lastdir
 elpa/archives/gnu/archive-contents

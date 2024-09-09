@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: UPDATE
+# key: UPDATE
+# --
+UPDATE ${1:table}
+SET ${2:x} = ${3:y}
+WHERE ${0:condition};
