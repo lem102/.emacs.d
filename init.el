@@ -1065,7 +1065,15 @@ Useful for deleting ^M after `eglot-code-actions'."
   (setq-default apheleia-inhibit t)     ; set `apheleia-inhibit' to
                                         ; nil to enable
   (push '(csharpier "dotnet" "csharpier" "--write-stdout")
-        apheleia-formatters))
+        apheleia-formatters)
+  (push '(csharp-ts-mode . csharpier)
+        apheleia-mode-alist))
+
+
+
+(use-package rainbow-mode
+  :ensure
+  :hook prog-mode-hook)
 
 
 ;; combobulate config
