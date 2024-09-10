@@ -808,7 +808,7 @@ Useful for deleting ^M after `eglot-code-actions'."
     (setq-local eldoc-documentation-strategy
                 'eldoc-documentation-compose))
 
-  (add-to-list 'eglot-server-programs '((csharp-mode csharp-ts-mode) . "csharp-ls"))
+  (add-to-list 'eglot-server-programs '((csharp-mode csharp-ts-mode) . ("csharp-ls")))
 
   (add-to-list 'eglot-server-programs '(sql-mode . "sqls"))
 
