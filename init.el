@@ -54,12 +54,25 @@
                                   ((meta))
                                   ((control) . text-scale))))
 
-
-
 (use-package emacs
   :config
   (setq-default truncate-lines nil)
+  (setq-default tab-width 4) ; set default tab char's display width to 4 spaces
+
+  ;; enable emoji fonts
+  (set-fontset-font t
+                    'emoji
+                    (seq-find (lambda (font)
+                                (member font (font-family-list)))
+                              '("Symbola"
+                                "Segoe UI Emoji"
+                                "Noto Emoji"
+                                "Noto Color Emoji"
+                                "Apple Color Emoji")))
   :custom
+  (delete-by-moving-to-trash t)
+  (read-process-output-max (* 1024 1024))
+  (frame-resize-pixelwise t)
   (create-lockfiles nil)
   (history-length 1000)
   (history-delete-duplicates t)
@@ -72,8 +85,6 @@
   (completion-ignore-case t)
   (kill-buffer-query-functions (delq 'process-kill-buffer-query-function
                                      kill-buffer-query-functions)))
-
-
 
 (use-package files
   :config
@@ -103,9 +114,19 @@
                           ;; ("eshell\\*"
                           ;;  (display-buffer-in-side-window)
                           ;;  (side . bottom))
-                          )))
+                          ))
+  (split-height-threshold nil))
 
 (use-package frame
+  :config
+  (set-frame-font (format "%s-%s"
+                          (cdr (assoc-string system-type
+                                             '(("windows-nt" . "Consolas")
+                                               ("darwin" . "Menlo")
+                                               ("gnu/linux" . "DejaVu Sans Mono"))))
+                          jacob-font-size)
+                  "KEEP-SIZE"
+                  t)
   :custom
   (blink-cursor-blinks 0 "make cursor blink forever"))
 
@@ -117,20 +138,6 @@
 (use-package desktop
   :init
   (desktop-save-mode 1))
-
-
-;; screen sharing config
-
-(define-minor-mode jacob-screen-sharing-mode
-  "Minor mode for sharing screens."
-  :global t
-  :group 'jacob
-  (let ((on (if jacob-screen-sharing-mode 1 0)))
-    (global-hl-line-mode on)
-    (global-display-line-numbers-mode on)))
-
-
-;; backup/saving config
 
 (use-package recentf
   :init
@@ -148,109 +155,117 @@
   :custom
   (save-place-forget-unreadable-files t))
 
-
-;; misc config
+(use-package cus-edit
+  :custom
+  (custom-file (make-temp-file "emacs-custom-")))
 
-(add-to-list 'load-path "~/.emacs.d/local-packages/")
-(add-to-list 'load-path "~/.emacs.d/my-packages/")
+(provide 'startup)                      ; HACK
+(use-package startup
+  :hook (emacs-startup-hook . (lambda ()
+                                (message (emacs-init-time
+                                          (concat "Emacs ready in %.2f seconds "
+                                                  (format "with %d garbage collections"
+                                                          gcs-done))))))
+  :custom
+  (inhibit-startup-screen t)
+  (initial-scratch-message (format ";; %s\n\n"
+                                   (seq-random-elt '("\"A journey of a thousand miles begins with a single step.\" - 老子"
+                                                     "\"apex predator of grug is complexity\" - some grug"
+                                                     "\"Perfection is achieved, not when there is nothing more to add, but when there is nothing left to take away.\" - Antoine de Saint-Exupéry"
+                                                     "\"Always listen to Jiaqi.\" - Jacob Leeming"
+                                                     "\"The king wisely had the computer scientist beheaded, and they all lived happily ever after.\" - anon")))))
 
-;; (setq read-process-output-max (* 1024 1024))
 
-(setq custom-file (make-temp-file "emacs-custom-"))
-
-(setq inhibit-startup-screen t)
-
-(setq split-height-threshold nil)
-
-(defvar jacob-welcome-messages '("\"A journey of a thousand miles begins with a single step.\" - 老子"
-                                 "\"apex predator of grug is complexity\" - some grug"
-                                 "\"Perfection is achieved, not when there is nothing more to add, but when there is nothing left to take away.\" - Antoine de Saint-Exupéry"
-                                 "\"Always listen to Jiaqi.\" - Jacob Leeming"
-                                 "\"The king wisely had the computer scientist beheaded, and they all lived happily ever after.\" - anon")
-  "List of messages to display in scratch buffer.")
-
-(setq initial-scratch-message (format ";; %s\n\n"
-                                      (seq-random-elt jacob-welcome-messages)))
-
-(setq parens-require-spaces nil)
-
-(setq delete-pair-blink-delay 0)
+(provide 'lisp)                         ; HACK
+(use-package lisp
+  :custom
+  (parens-require-spaces nil)
+  (delete-pair-blink-delay 0))
 
 ;; support for files like `/etc/fstab'
-(require 'generic-x)
+(use-package generic-x)
 
-(setq frame-resize-pixelwise t)
-(setq save-interprogram-paste-before-kill t)
+(use-package simple
+  :init
+  (column-number-mode 0)
+  (line-number-mode 1)
+  (setq-default indent-tabs-mode nil)   ; use spaces to indent
+  :custom
+  (save-interprogram-paste-before-kill t))
 
-
-;; bookmark config
-
-(with-eval-after-load 'bookmark
-  (setopt bookmark-set-fringe-mark nil)
+(use-package bookmark
+  :defer
+  :config
   (bookmark-store "emacs init file" '((filename . "~/.emacs.d/init.el")) nil)
-  (bookmark-store "emacs environment file" '((filename . "~/.emacs.d/environment.el")) nil))
+  (bookmark-store "emacs environment file" '((filename . "~/.emacs.d/environment.el")) nil)
+  :custom
+  (bookmark-set-fringe-mark nil))
 
-
-;; unicode
+(provide 'mule-cmds)                    ; HACK
+(use-package mule-cmds
+  :init
+  (prefer-coding-system 'utf-8))
 
-(prefer-coding-system 'utf-8)
+(use-package help-at-pt
+  :init
+  (setq-default help-at-pt-display-when-idle '(flymake-diagnostic))
+  (help-at-pt-set-timer))
 
-
-;; help at point
+(use-package help
+  :config
+  (defun jacob-help-edit ()
+    "Edit variable in current help buffer."
+    (interactive)
+    (unless (equal major-mode 'help-mode)
+      (message "not in help buffer"))
+    (save-excursion
+      (goto-char (point-min))
+      (if (search-forward "Its value is " nil "NOERROR")
+          (help-fns-edit-variable)
+        (message "cannot find editable variable")))) 
+  :custom
+  (help-window-select t)
+  (help-enable-variable-value-editing t))
 
-(setq-default help-at-pt-display-when-idle '(flymake-diagnostic))
-(help-at-pt-set-timer)
+(use-package warnings
+  :custom
+  (warning-minimum-level :error))
 
-
-;; help config
-(setq help-window-select t)
-(setq help-enable-variable-value-editing t)
+(use-package subword
+  :init
+  (global-subword-mode 1))
 
-(defun jacob-help-edit ()
-  "Edit variable in current help buffer."
-  (interactive)
-  (unless (equal major-mode 'help-mode)
-    (message "not in help buffer"))
-  (save-excursion
-    (goto-char (point-min))
-    (if (search-forward "Its value is " nil "NOERROR")
-        (help-fns-edit-variable)
-      (message "cannot find editable variable"))))
+(use-package paren
+  :init
+  (show-paren-mode 1)
+  :custom
+  (show-paren-when-point-inside-paren t))
 
-
-;; warnings config
+(use-package elec-pair
+  :init
+  (electric-pair-mode 1))
 
-(setq warning-minimum-level :error)
+(use-package delsel
+  :init
+  (delete-selection-mode 1))
 
-
-;; editing config
+(use-package repeat
+  :init
+  (repeat-mode 1))
 
-(global-subword-mode 1)
+(use-package dabbrev
+  :defer
+  :custom
+  (dabbrev-case-fold-search nil)
+  (dabbrev-case-replace nil))
 
-(setq show-paren-when-point-inside-paren t)
-(show-paren-mode 1)
-
-(electric-pair-mode 1)
-
-(delete-selection-mode 1)
-
-(repeat-mode 1)
-
-(setq dabbrev-case-fold-search nil)
-(setq dabbrev-case-replace nil)
-
-
-;; modeline config
-
-(column-number-mode 0)
-(line-number-mode 1)
-
-(setq mode-line-percent-position nil)
-
-
+(provide 'bindings)                     ; HACK
+(use-package bindings
+  :custom
+  (mode-line-percent-position nil))
 
 (use-package vc
-  :defer t
+  :defer
   :custom
   (vc-git-show-stash 0 "show 0 stashes")
   ;; (vc-ignore-dir-regexp
@@ -260,39 +275,23 @@
   ;;  "ignore tramp files")
   )
 
-
-
 (use-package autoinsert
+  :defer
   :config
   (auto-insert-mode t)
   :custom
   (auto-insert-query nil)
   (auto-insert-directory (locate-user-emacs-file "templates")))
 
-
-
 (use-package tramp
-  :defer t
+  :defer
   :config
   (add-to-list 'tramp-remote-path 'tramp-own-remote-path)
   :custom
   (tramp-archive-enabled nil "lots of problems. for now, disable it!"))
 
-
-;; js-mode config
-
-(put 'js-indent-level 'safe-local-variable #'numberp)
-(setq js-indent-level 2)
-
-
-;; cc-mode config
-
-(setq-default c-basic-offset 4)
-
-
-
 (use-package csharp-mode
-  :defer t
+  :defer
   :config
   ;; JACOBTODO: include only my modifications rather than the whole data structure
   (setopt csharp-ts-mode--indent-rules
@@ -393,79 +392,67 @@
 
   (add-to-list 'compilation-error-regexp-alist 'jacob-dotnet-stacktrace-re)
 
-  (defun jacob-insert-class ()
-    "Insert a csharp class, for use in abbrev."
-    (let ((start (point)))
-      (insert (format "class %s\n{\n\n}"
-                      (file-name-base (buffer-file-name))))
-      (indent-region start (point))
-      (forward-line -1)
-      (indent-for-tab-command))
-    t)
+  (defun jacob-csharp-forward-statement ()
+    "Move forward over a csharp statement."
+    (interactive)
+    (treesit-end-of-thing "statement"))
 
-  (put 'jacob-insert-class 'no-self-insert t))
+  (defun jacob-csharp-backward-statement ()
+    "Move backward over a csharp statement."
+    (interactive)
+    (treesit-beginning-of-thing "statement"))
 
-(defun jacob-csharp-forward-statement ()
-  "Move forward over a csharp statement."
-  (interactive)
-  (treesit-end-of-thing "statement"))
+  (defun jacob-csharp-beginning-of-line-or-statement ()
+    "Move cursor to the beginning of line or previous csharp statement."
+    (interactive)
+    (let ((p (point)))
+      (if (eq last-command this-command)
+          (call-interactively 'jacob-csharp-backward-statement)
+        (back-to-indentation)
+        (when (eq p (point))
+          (beginning-of-line)))))
 
-(defun jacob-csharp-backward-statement ()
-  "Move backward over a csharp statement."
-  (interactive)
-  (treesit-beginning-of-thing "statement"))
+  (defun jacob-csharp-end-of-line-or-statement ()
+    "Move cursor to the end of line or next csharp statement."
+    (interactive)
+    (let ((p (point)))
+      (if (eq last-command this-command)
+          (call-interactively 'jacob-csharp-forward-statement)
+        (end-of-line)))))
 
-(defun jacob-csharp-beginning-of-line-or-statement ()
-  "Move cursor to the beginning of line or previous csharp statement."
-  (interactive)
-  (let ((p (point)))
-    (if (eq last-command this-command)
-        (call-interactively 'jacob-csharp-backward-statement)
-      (back-to-indentation)
-      (when (eq p (point))
-        (beginning-of-line)))))
+(use-package inf-lisp
+  :defer
+  :custom
+  (inferior-lisp-program "sbcl"))
 
-(defun jacob-csharp-end-of-line-or-statement ()
-  "Move cursor to the end of line or next csharp statement."
-  (interactive)
-  (let ((p (point)))
-    (if (eq last-command this-command)
-        (call-interactively 'jacob-csharp-forward-statement)
-      (end-of-line))))
-
-
-;; common lisp config
-
-(setq inferior-lisp-program "sbcl")
-
-
-;; dired-mode config
-
-(with-eval-after-load 'dired
-  (setq dired-recursive-copies 'always)
-  (setq dired-dwim-target t)
-  (setq delete-by-moving-to-trash t)
-
-  (require 'ls-lisp)
-  (setq ls-lisp-use-insert-directory-program nil)
-  (setq ls-lisp-dirs-first t)
-  (setq dired-listing-switches "-hal") ;; the h option needs to come first 🙃
-  (setq dired-guess-shell-alist-user '(("\\.mkv\\'" "mpv")))
-
-  (setq dired-vc-rename-file t)
-
+(use-package dired
+  :config
   (defun jacob-dired-mode-setup ()
     "Hook function for dired."
     (dired-hide-details-mode 1))
+  :hook (dired-mode-hook . jacob-dired-mode-setup)
+  :custom
+  (dired-recursive-copies 'always)
+  (dired-dwim-target t)
+  (dired-listing-switches "-hal" "the h option needs to come first 🙃")
+  (dired-guess-shell-alist-user '(("\\.mkv\\'" "mpv"))))
 
-  (add-hook 'dired-mode-hook 'jacob-dired-mode-setup))
+(use-package dired-aux
+  :after dired
+  :custom
+  (dired-vc-rename-file t))
 
-
-;; eshell config
+(use-package ls-lisp
+  :after dired
+  :custom
+  (ls-lisp-use-insert-directory-program nil)
+  (ls-lisp-dirs-first t))
 
-(with-eval-after-load 'eshell
-  (setq eshell-scroll-to-bottom-on-output t)
-
+(use-package esh-mode
+  :defer t
+  :custom
+  (eshell-scroll-to-bottom-on-output t)
+  :config
   (defun jacob-async-eshell-command ()
     "Run an async command through eshell."
     (interactive)
@@ -506,51 +493,33 @@ hides this information."
                                       (+ 2 (line-beginning-position))))
       (split-string (buffer-substring-no-properties (point-min) (point-max)) "\n"))))
 
-
-;; flymake-mode config
+(use-package esh-proc
+  :after esh-mode
+  :config
+  (when jacob-is-windows
+    (defun jacob-confirm-terminate-batch-job ()
+      "Type y and enter to terminate batch job after sending ^C."
+      (when (not (null eshell-process-list))
+        (insert "y")
+        (eshell-send-input)))
+    
+    (advice-add 'eshell-interrupt-process :after #'jacob-confirm-terminate-batch-job)))
 
-(with-eval-after-load 'flymake
-  ;; (setq flymake-mode-line-format '(flymake-mode-line-exception flymake-mode-line-counters))
-  )
+(use-package eldoc
+  :init
+  (global-eldoc-mode 1))
 
-
-
-(global-eldoc-mode 1)
-
-
-;; project config
-
-(with-eval-after-load 'project
-  (setq project-switch-commands '((project-find-file "Find file")
-                                  (jacob-project-search "Find regexp")
-                                  (project-find-dir "Find directory")
-                                  (project-vc-dir "VC-Dir")
-                                  (project-eshell "Eshell")
-                                  (project-compile "Compile"))))
-
-(with-eval-after-load 'consult
-
-  (defun jacob-consult-project-filter ()
-    (if (project-current)
-        (project-files (project-current))
-      (list)))
-
-  (defvar jacob-consult-project-source
-    `(:name     "Project"
-                :narrow   ?p
-                :category file
-                :face     consult-file
-                :history  file-name-history
-                :items    ,#'jacob-consult-project-filter
-                :action   ,#'find-file))
-
-  (unless jacob-is-windows
-    (add-to-list 'consult-buffer-sources jacob-consult-project-source "APPEND")))
-
-
+(use-package project
+  :defer
+  :custom
+  (project-switch-commands '((project-find-file "Find file")
+                             (jacob-project-search "Find regexp")
+                             (project-find-dir "Find directory")
+                             (project-vc-dir "VC-Dir")
+                             (project-eshell "Eshell")
+                             (project-compile "Compile"))))
 
 (use-package abbrev
-  :ensure nil
   :hook (text-mode-hook prog-mode-hook)
   :config
   (defun jacob-point-in-text-p ()
@@ -577,8 +546,6 @@ hides this information."
   (abbrev-suggest t)
   (save-abbrevs nil))
 
-
-
 (use-package elisp-mode
   :init
   (defun jacob-elisp-config-hook-function ()
@@ -601,102 +568,77 @@ hides this information."
     :parents (list jacob-comment-abbrev-table)
     :enable-function 'jacob-point-in-code-p))
 
-
-;; font config
-
-(set-frame-font (format "%s-%s"
-                        (cdr (assoc-string system-type
-                                           '(("windows-nt" . "Consolas")
-                                             ("darwin" . "Menlo")
-                                             ("gnu/linux" . "DejaVu Sans Mono"))))
-                        jacob-font-size)
-                "KEEP-SIZE"
-                t)
-
-;; enable emoji fonts
-(set-fontset-font t
-                  'emoji
-                  (seq-find (lambda (font)
-                              (member font (font-family-list)))
-                            '("Symbola"
-                              "Segoe UI Emoji"
-                              "Noto Emoji"
-                              "Noto Color Emoji"
-                              "Apple Color Emoji")))
-
-
-;; org config
-
-;; this rebinds key in calendar mode unless set to nil, very annoying
-(setq org-calendar-to-agenda-key nil)
-(setq org-calendar-insert-diary-entry-key nil)
-
-(with-eval-after-load 'org
+(use-package org
+  :defer
+  :config
   (defun jacob-org-babel-tangle-delete-newline ()
     "Some code to get rid of the newline org babel likes to add
-  in when it tangles into a file."
+in when it tangles into a file."
     (goto-char (point-max))
     (delete-trailing-whitespace)
     (backward-delete-char 1)
     (save-buffer))
-
-  (add-hook 'org-babel-post-tangle-hook 'jacob-org-babel-tangle-delete-newline)
-
-  (setq org-latex-pdf-process (list "latexmk -pdf %f -shell-escape")) ; probably requires texlive
 
   (org-babel-do-load-languages
    'org-babel-load-languages
    '((octave . t)
      (sql . t)
      (js . t)))
+  :hook (org-babel-post-tangle-hook . jacob-org-babel-tangle-delete-newline)
+  :custom
+  (org-startup-folded t)
+  (org-tags-column 0)
+  (org-time-stamp-custom-formats (cons "%A %d/%m/%y" "%A %d/%m/%y %H:%M"))
+  (org-display-custom-times t))
 
-  (setq org-src-preserve-indentation t)
-  (setq org-confirm-babel-evaluate (lambda (lang body)
-                                     (not (string= lang "restclient"))))
-  (setq org-startup-folded t)
-  (setq org-tags-column 0)
+(use-package org-src
+  :after org
+  :custom
+  (org-src-preserve-indentation t))
 
-  (setq org-time-stamp-custom-formats (cons "%A %d/%m/%y" "%A %d/%m/%y %H:%M"))
-  (setq org-display-custom-times t))
+(use-package org-compat
+  :after org
+  :custom
+  (org-calendar-to-agenda-key nil "don't bind calendar key")
+  (org-calendar-insert-diary-entry-key nil "don't bind calendar key"))
 
-
+(use-package ox-latex
+  :after org
+  :custom
+  (org-latex-pdf-process (list "latexmk -pdf %f -shell-escape") "probably requires texlive"))
 
 (use-package org-contrib
-  :ensure
+  :after org
   :config
   (require 'ox-extra)
   (ox-extras-activate '(latex-header-blocks ignore-headlines)))
 
-
-;; pulse config
+(use-package pulse
+  :defer
+  :init
+  (defun jacob-pulse-line (&rest _)
+    "Pulse the current line."
+    (pulse-momentary-highlight-region (save-excursion
+                                        (back-to-indentation)
+                                        (point))
+                                      (line-end-position)))
 
-(defun jacob-pulse-line (&rest _)
-  "Pulse the current line."
-  (pulse-momentary-highlight-region (save-excursion
-                                      (back-to-indentation)
-                                      (point))
-                                    (line-end-position)))
+  (dolist (command '(
+                     recenter-top-bottom
+                     scroll-up-command
+                     scroll-down-command
+                     other-window
+                     xref-find-definitions
+                     xref-pop-marker-stack
+                     isearch-done
+                     ))
+    (advice-add command :after #'jacob-pulse-line)))
 
-(dolist (command '(
-                   recenter-top-bottom
-                   scroll-up-command
-                   scroll-down-command
-                   other-window
-                   xref-find-definitions
-                   xref-pop-marker-stack
-                   isearch-done
-                   ))
-  (advice-add command :after #'jacob-pulse-line))
-
-
-;; server config
-
-(server-start)
-
-
+(use-package server
+  :config
+  (server-start))
 
 (use-package smerge-mode
-  :defer t
   :bind
   (:repeat-map jacob-smerge-repeat-map
                ("l" . #'smerge-next)
@@ -705,21 +647,9 @@ hides this information."
                ("k" . #'smerge-keep-lower)
                ("SPC" . #'smerge-keep-all)))
 
-
-;; time emacs startup
-
-(add-hook 'emacs-startup-hook
-          (lambda ()
-            (message (emacs-init-time (concat "Emacs ready in %.2f seconds "
-                                              (format "with %d garbage collections"
-                                                      gcs-done))))))
-
-
-
 (use-package calendar
-  :defer t
-  :config
-  (add-hook 'calendar-today-visible-hook 'calendar-mark-today)
+  :defer
+  :hook (calendar-today-visible-hook . calendar-mark-today)
   :custom
   (diary-date-forms diary-european-date-forms)
   (calendar-date-style 'european)
@@ -730,62 +660,25 @@ hides this information."
   (calendar-mark-diary-entries-flag t)
   (calendar-mark-holidays-flag t))
 
-
-;; indentation config
+(provide 'indent)                       ; HACK
+(use-package indent
+  :config
+  (setq-default tab-always-indent 'complete) ; make tab key call indent command or insert tab character, depending on cursor position
+  )
 
-;; use spaces to indent
-(setq-default indent-tabs-mode nil)
-;; set default tab char's display width to 4 spaces
-(setq-default tab-width 4)
-;; make tab key call indent command or insert tab character, depending on cursor position
-(setq-default tab-always-indent 'complete)
-
-(defun jacob-indent-with-major-mode ()
-  "Indent buffer using current major mode.
-Designed for use in on-save hook in certain programming languages modes."
-  (unless (ignore-errors smerge-mode)
-    (cond ((seq-contains-p '(
-                             ;; csharp-tree-sitter-mode
-                             ;; typescript-react-mode
-                             java-mode
-                             sml-mode)
-                           major-mode
-                           'string=)
-           (indent-region (point-min) (point-max)))
-          ((seq-contains-p '(emacs-lisp-mode
-                             racket-mode
-                             clojure-mode)
-                           major-mode)
-           (lisp-indent-region (point-min) (point-max))))))
-
-(add-hook 'before-save-hook 'jacob-indent-with-major-mode)
-
-
-;; microsoft windows config
-
-(when jacob-is-windows
-  (defun jacob-confirm-terminate-batch-job ()
-    "Type y and enter to terminate batch job after sending ^C."
-    (when (not (null eshell-process-list))
-      (insert "y")
-      (eshell-send-input)))
-
-  (advice-add 'eshell-interrupt-process :after #'jacob-confirm-terminate-batch-job)
-
-  (setopt find-program "C:/Program Files (x86)/GnuWin32/bin/find.exe"))
-
-
+(use-package grep
+  :defer
+  :config
+  (when jacob-is-windows
+    (setopt find-program "C:/Program Files (x86)/GnuWin32/bin/find.exe")))
 
 (use-package winner
   :after xah-fly-keys
-  :demand
   :config
   (winner-mode 1)
   :bind ( :map xah-fly-command-map
           ("1" . winner-undo)
           ("2" . winner-redo)))
-
-
 
 (use-package sql
   :commands jacob-sql-connect
@@ -823,117 +716,101 @@ Intended as before advice for `sql-send-paragraph'."
   (advice-add #'sql-send-paragraph :before #'jacob-sqli-end-of-buffer)
 
   (jacob-xfk-define-key-in-major-mode sql-mode-map " ,d" #'sql-send-paragraph)
-  :hook (sql-interactive-mode-hook . jacob-sql-interactive-mode-hook))
+  :hook (sql-interactive-mode-hook . jacob-sql-interactive-mode-hook)
+  :bind ( :map xah-fly-leader-key-map
+          ("SPC d" . jacob-sql-connect)))
 
-
-;; docview config
-
-(with-eval-after-load 'doc-view-mode
-
+(use-package doc-view
+  :hook (doc-view-mode-hook . jacob-doc-view-hook)
+  :config
   (defun jacob-doc-view-hook ()
     "hook function for doc view mode"
     (auto-revert-mode 1))
 
-  (add-hook 'doc-view-mode-hook 'jacob-doc-view-hook)
-
   (when jacob-is-windows
     ;; To get these, install miktex.
-    (setq doc-view-ghostscript-program "mgs.exe")
-    (setq doc-view-pdf->png-converter-function 'doc-view-pdf->png-converter-ghostscript)
-    (setq doc-view-pdftotext-program "miktex-pdftotext.exe")
-    (setq doc-view-dvipdfm-program "dvipdfm.exe")
+    (setopt doc-view-ghostscript-program "mgs.exe")
+    (setopt doc-view-pdf->png-converter-function 'doc-view-pdf->png-converter-ghostscript)
+    (setopt doc-view-pdftotext-program "miktex-pdftotext.exe")
+    (setopt doc-view-dvipdfm-program "dvipdfm.exe")
     ;; To get this, install LibreOffice.
-    (setq doc-view-odf->pdf-converter-program "soffice.exe")
-    (setq doc-view-odf->pdf-converter-function 'doc-view-odf->pdf-converter-soffice)))
+    (setopt doc-view-odf->pdf-converter-program "soffice.exe")
+    (setopt doc-view-odf->pdf-converter-function 'doc-view-odf->pdf-converter-soffice))
 
-
-;; compilation mode config
+  (jacob-xfk-define-key-in-major-mode doc-view-mode-map "l" 'doc-view-next-page)
+  (jacob-xfk-define-key-in-major-mode doc-view-mode-map "j" 'doc-view-previous-page))
 
-(setq compilation-always-kill t)
-(setq compilation-scroll-output t)
+(use-package compile
+  :hook (compilation-filter-hook . ansi-color-compilation-filter)
+  :custom
+  (compilation-always-kill t)
+  (compilation-scroll-output 'first-error))
 
-(add-hook 'compilation-filter-hook 'ansi-color-compilation-filter)
+(use-package treesit
+  ;; strategy for adopting tree-sitter:
+  ;; on linux, use the auto build stuff included in emacs
+  ;; on windows, grab the .dlls from a bundle
+  :defer
+  :config
+  (when jacob-is-linux
+    (setopt treesit-language-source-alist '((c-sharp "https://github.com/tree-sitter/tree-sitter-c-sharp" "master" "src")
+                                            (javascript "https://github.com/tree-sitter/tree-sitter-javascript" "master" "src")
+                                            (typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src")
+                                            (tsx "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src")
+                                            (yaml "https://github.com/ikatyang/tree-sitter-yaml")))
+    (setopt treesit-load-name-override-list '((c-sharp "libtree-sitter-csharp" "tree_sitter_c_sharp"))))
+  :custom
+  (major-mode-remap-alist '((csharp-mode . csharp-ts-mode)
+                            (javascript-mode . js-ts-mode)))
+  (treesit-font-lock-level 4 "max level of fontification"))
 
-
-;; treesit config
+(use-package eglot
+  :hook (((java-mode-hook csharp-ts-mode-hook) . eglot-ensure)
+         (eglot-managed-mode-hook . jacob-eglot-hook-function))
+  :config
+  ;; JACOBTODO: function that can smartly decide between jumping to
+  ;; definition or implementation (`xref-find-definitions' vs
+  ;; `eglot-find-implementation')
 
-;; strategy for adopting tree-sitter:
-;; on linux, use the auto build stuff included in emacs
-;; on windows, grab the .dlls from a bundle
-
-(when jacob-is-linux
-  (setq treesit-language-source-alist '((c-sharp "https://github.com/tree-sitter/tree-sitter-c-sharp" "master" "src")
-                                        (javascript "https://github.com/tree-sitter/tree-sitter-javascript" "master" "src")
-                                        (typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src")
-                                        (tsx "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src")
-                                        (yaml "https://github.com/ikatyang/tree-sitter-yaml")))
-  (setq treesit-load-name-override-list '((c-sharp "libtree-sitter-csharp" "tree_sitter_c_sharp"))))
-
-(setq major-mode-remap-alist '((csharp-mode . csharp-ts-mode)
-                               (javascript-mode . js-ts-mode)))
-(setq treesit-font-lock-level 4)      ; max level of fontification
-
-
-;; eglot config
-
-;; JACOBTODO: function that can smartly decide between jumping to
-;; definition or implementation (`xref-find-definitions' vs
-;; `eglot-find-implementation')
-
-;; WIP
-(defun jacob-go-definition ()
-  "If not in an eglot buffer, do regular xref stuff.
+  ;; WIP
+  (defun jacob-go-definition ()
+    "If not in an eglot buffer, do regular xref stuff.
 
 Otherwise, go to implementation. If already at implementation go
 to definition."
-  (interactive)
-  (if (not eglot--managed-mode)
-      (call-interactively #'xref-find-definitions)
-    (let ((start-buffer (current-buffer)))
-      (ignore-errors
-        (eglot-find-implementation))
-      (when (eq start-buffer (current-buffer))
-        ;; JACOBTODO: won't work, this just takes us to the current
-        ;; method. if language server implemented go to declaration
-        ;; something might be possible.
-        (call-interactively #'xref-find-definitions)))))
+    (interactive)
+    (if (not eglot--managed-mode)
+        (call-interactively #'xref-find-definitions)
+      (let ((start-buffer (current-buffer)))
+        (ignore-errors
+          (eglot-find-implementation))
+        (when (eq start-buffer (current-buffer))
+          ;; JACOBTODO: won't work, this just takes us to the current
+          ;; method. if language server implemented go to declaration
+          ;; something might be possible.
+          (call-interactively #'xref-find-definitions)))))
 
-(setq eglot-ignored-server-capabilities '(:documentOnTypeFormattingProvider))
-
-(defun jacob-remove-ret-character-from-buffer (&rest _)
-  "Remove all occurances of ^M from the buffer.
+  (defun jacob-remove-ret-character-from-buffer (&rest _)
+    "Remove all occurances of ^M from the buffer.
 
 Useful for deleting ^M after `eglot-code-actions'."
-  (save-excursion
-    (goto-char (point-min))
-    (while (search-forward (char-to-string 13) nil t)
-      (replace-match ""))))
+    (save-excursion
+      (goto-char (point-min))
+      (while (search-forward (char-to-string 13) nil t)
+        (replace-match ""))))
 
-(advice-add 'eglot-code-actions :after #'jacob-remove-ret-character-from-buffer)
-(advice-add 'eglot-rename :after #'jacob-remove-ret-character-from-buffer)
+  (advice-add 'eglot-code-actions :after #'jacob-remove-ret-character-from-buffer)
+  (advice-add 'eglot-rename :after #'jacob-remove-ret-character-from-buffer)
 
-(add-hook 'eglot-managed-mode-hook
-          #'(lambda ()
-              (eglot-inlay-hints-mode 0)
-              (setq-local eldoc-documentation-strategy
-                          'eldoc-documentation-compose)))
+  (defun jacob-eglot-hook-function ()
+    "Hook function for `eglot-managed-mode'."
+    (eglot-inlay-hints-mode 0)
+    (setq-local eldoc-documentation-strategy
+                'eldoc-documentation-compose))
 
-(add-hook 'java-mode-hook 'eglot-ensure)
-(add-hook 'csharp-ts-mode-hook 'eglot-ensure)
+  (add-to-list 'eglot-server-programs '((csharp-mode csharp-ts-mode) . "csharp-ls"))
 
-(add-hook 'fsharp-mode-hook (lambda ()
-                              (when jacob-is-linux
-                                (require 'eglot-fsharp)
-                                (eglot-ensure))))
-(with-eval-after-load 'eglot
-  (add-to-list 'eglot-server-programs `((csharp-mode csharp-ts-mode) . ,(eglot-alternatives
-                                                                         '(("csharp-ls")
-                                                                           ("OmniSharp" "-lsp")
-                                                                           ("Microsoft.CodeAnalysis.LanguageServer"
-                                                                            "--logLevel=Information"
-                                                                            "--extensionLogDirectory=/home/jacobl/dev/roslynLSP/logs/")))))
-
-  (add-to-list 'eglot-server-programs '(sql-mode . ("sqls")))
+  (add-to-list 'eglot-server-programs '(sql-mode . "sqls"))
 
   (add-to-list 'eglot-server-programs `((js-mode
                                          js-ts-mode
@@ -949,6 +826,7 @@ Useful for deleting ^M after `eglot-code-actions'."
   (eglot--code-action eglot-code-action-organize-imports-ts "source.organizeImports.ts")
   (eglot--code-action eglot-code-action-add-missing-imports-ts "source.addMissingImports.ts")
 
+  ;; JACOBTODO: is this still required?
   (defun eglot--format-markup (markup)
     "Format MARKUP according to LSP's spec."
     (pcase-let ((`(,string ,mode)
@@ -966,35 +844,47 @@ Useful for deleting ^M after `eglot-code-actions'."
 	          (message-log-max nil))
           (ignore-errors (delay-mode-hooks (funcall mode))))
         (font-lock-ensure)
-        (string-trim (buffer-string))))))
+        (string-trim (buffer-string)))))
+  :custom
+  (eglot-ignored-server-capabilities '(:documentOnTypeFormattingProvider)))
 
-
-;; typescript config
+(use-package typescript-ts-mode
+  ;; JACOBTODO: would it be simpler to use `tsx-ts-mode' for all
+  ;; typescript/javascript shenanigans?
+  :mode (("\\.ts\\'" . typescript-ts-mode)
+         ("\\.tsx\\'" . tsx-ts-mode)))
 
-(add-to-list 'auto-mode-alist '("\\.ts\\'" . typescript-ts-mode))
-(add-to-list 'auto-mode-alist '("\\.tsx\\'" . tsx-ts-mode))
+(use-package message
+  :defer
+  :custom
+  (message-send-mail-function 'smtpmail-send-it))
 
-
-;; message config
-
-(with-eval-after-load 'message
-  (setq message-send-mail-function 'smtpmail-send-it))
-
-
-;; gnus config
-
-(with-eval-after-load 'gnus
-  (setq gnus-use-full-window t)
-  (setq gnus-always-read-dribble-file t)
-  (add-hook 'gnus-after-getting-new-news-hook 'gnus-notifications)
-
+(use-package gnus
+  :defer
+  :hook ((gnus-after-getting-new-news-hook . gnus-notifications)
+         (gnus-group-mode-hook . gnus-topic-mode)
+         (gnus-started-hook . jacob-gnus-hook-function))
+  :custom
+  (gnus-use-full-window t)
+  (gnus-always-read-dribble-file t)
+  :config
   (defun jacob-gnus-hook-function ()
     "Hook function to be used with a gnus hook."
     (gnus-demon-add-handler 'gnus-demon-scan-news 2 t))
 
-  (add-hook 'gnus-started-hook 'jacob-gnus-hook-function)
+  (jacob-xfk-define-key-in-major-mode gnus-group-mode-map "q" #'gnus-group-exit)
+  (jacob-xfk-define-key-in-major-mode gnus-group-mode-map "i" #'gnus-group-prev-group)
+  (jacob-xfk-define-key-in-major-mode gnus-group-mode-map "k" #'gnus-group-next-group)
+  (jacob-xfk-define-key-in-major-mode gnus-group-mode-map "g" #'gnus-group-get-new-news)
 
-  (add-hook 'gnus-group-mode-hook 'gnus-topic-mode))
+  (with-eval-after-load 'gnus-topic
+    (jacob-xfk-define-key-in-major-mode gnus-topic-mode-map "s" #'gnus-topic-select-group))
+
+  (jacob-xfk-define-key-in-major-mode gnus-summary-mode-map "q" #'gnus-summary-exit)
+  (jacob-xfk-define-key-in-major-mode gnus-summary-mode-map "i" #'gnus-summary-prev-article)
+  (jacob-xfk-define-key-in-major-mode gnus-summary-mode-map "k" #'gnus-summary-next-article)
+  (jacob-xfk-define-key-in-major-mode gnus-summary-mode-map "j" #'gnus-summary-prev-page)
+  (jacob-xfk-define-key-in-major-mode gnus-summary-mode-map "l" #'gnus-summary-next-page))
 
 
 
@@ -1022,13 +912,16 @@ Useful for deleting ^M after `eglot-code-actions'."
 
 (use-package key-chord
   :vc (key-chord :url "https://github.com/emacsorphanage/key-chord.git")
+  :demand
   :config
   (key-chord-mode 1))
 
 
 
 (use-package use-package-chords
-  :ensure)
+  :ensure
+  :after key-chord
+  :demand)
 
 
 
@@ -1296,10 +1189,10 @@ Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (c
 
 (use-package vertico
   :ensure
+  :init
+  (vertico-mode 1)
   :custom
-  (vertico-count 25)
-  :config
-  (vertico-mode 1))
+  (vertico-count 25))
 
 
 
@@ -1341,12 +1234,30 @@ Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (c
                       nil))))
       (lambda (action candidate)
         (funcall orig-state action (funcall filter action cand)))))
-  :bind ( :map xah-fly-leader-key-map
-          ("v" . consult-yank-from-kill-ring)
-          ("f" . consult-buffer)
-          ("ij" . consult-recent-file)
-          ("es" . consult-line)
-          ("ku" . consult-goto-line)))
+
+  (defun jacob-consult-project-filter ()
+    (if (project-current)
+        (project-files (project-current))
+      (list)))
+
+  (defvar jacob-consult-project-source
+    `(:name     "Project"
+                :narrow   ?p
+                :category file
+                :face     consult-file
+                :history  file-name-history
+                :items    ,#'jacob-consult-project-filter
+                :action   ,#'find-file))
+
+  (unless jacob-is-windows
+    (add-to-list 'consult-buffer-sources jacob-consult-project-source "APPEND"))
+  :bind (("M-g i" . consult-imenu) 
+         :map xah-fly-leader-key-map
+         ("v" . consult-yank-from-kill-ring)
+         ("f" . consult-buffer)
+         ("ij" . consult-recent-file)
+         ("es" . consult-line)
+         ("ku" . consult-goto-line)))
 
 
 
@@ -1369,6 +1280,7 @@ Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (c
 
 (use-package xah-fly-keys
   :ensure
+  :demand
   :custom
   (xah-fly-use-control-key nil)
   (xah-fly-use-meta-key nil)
@@ -1382,7 +1294,19 @@ Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (c
     (define-key major-mode-keymap
                 (vector 'remap
                         (lookup-key xah-fly-command-map key))
-                command)))
+                command))
+
+  (keymap-unset xah-fly-leader-key-map "SPC")
+
+  ;; JACOBTODO: gnus is loaded at start in vanilla emacs. when we bind
+  ;; the key below it complains that SPC is not a prefix key, i.e. it
+  ;; is bound to a command. how can i put the below line in the xfk
+  ;; use-package?
+  ;; (keymap-unset xah-fly-leader-key-map "SPC")
+  ;; even with this, we do not seem to get the keybind...
+  
+  :bind ( :map xah-fly-leader-key-map
+          ("SPC g" . gnus)))
 
 
 
@@ -1450,6 +1374,35 @@ Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (c
 
 
 ;; personal functions
+
+(defun jacob-indent-with-major-mode ()
+  "Indent buffer using current major mode.
+Designed for use in on-save hook in certain programming languages modes."
+  ;; JACOBTODO: replace with per-mode on-save hook
+  (unless (ignore-errors smerge-mode)
+    (cond ((seq-contains-p '(
+                             ;; csharp-tree-sitter-mode
+                             ;; typescript-react-mode
+                             java-mode
+                             sml-mode)
+                           major-mode
+                           'string=)
+           (indent-region (point-min) (point-max)))
+          ((seq-contains-p '(emacs-lisp-mode
+                             racket-mode
+                             clojure-mode)
+                           major-mode)
+           (lisp-indent-region (point-min) (point-max))))))
+
+(add-hook 'before-save-hook 'jacob-indent-with-major-mode)
+
+(define-minor-mode jacob-screen-sharing-mode
+  "Minor mode for sharing screens."
+  :global t
+  :group 'jacob
+  (let ((on (if jacob-screen-sharing-mode 1 0)))
+    (global-hl-line-mode on)
+    (global-display-line-numbers-mode on)))
 
 (defun jacob-ip-to-kill-ring ()
   "Copy v4 ip address to kill ring."
@@ -1719,8 +1672,6 @@ point."
              (current-buffer))
     (error (message "Invalid expression")
            (insert (current-kill 0)))))
-
-(require 'jacob-long-time-autoloads)
 
 (defun jacob-bookmark-jump-to-url (bookmark)
   "Open link stored in the filename property of BOOKMARK in browser."
@@ -1992,7 +1943,7 @@ deleted."
 
 (with-eval-after-load 'consult
   (keymap-set project-prefix-map "g" #'jacob-project-search)
-  (keymap-global-set "M-g i" #'consult-imenu))
+  )
 
 
 ;; macros
@@ -2066,8 +2017,6 @@ deleted."
   (let ((map minibuffer-local-completion-map))
     (define-key map "SPC" 'self-insert-command))
 
-  (keymap-unset xah-fly-leader-key-map "SPC")
-
   (keymap-set xah-fly-leader-key-map "SPC e e" #'eglot)
 
   (with-eval-after-load 'eglot
@@ -2084,9 +2033,6 @@ deleted."
     (keymap-set xah-fly-leader-key-map "SPC s U" #'jacob-slack-show-all-unread)
     (keymap-set xah-fly-leader-key-map "SPC s r" #'slack-select-rooms)
     (keymap-set xah-fly-leader-key-map "SPC s k" #'jacob-slack-kill-buffers))
-
-  (keymap-set xah-fly-leader-key-map "SPC g" #'gnus)
-  (keymap-set xah-fly-leader-key-map "SPC d" #'jacob-sql-connect)
 
   (let ((map dired-mode-map))
     (jacob-xfk-define-key-in-major-mode map "q" 'quit-window)
@@ -2146,11 +2092,6 @@ deleted."
       (jacob-xfk-define-key-in-major-mode map "." 'calendar-goto-today)
       (jacob-xfk-define-key-in-major-mode map "t" 'calendar-set-mark)))
 
-  (with-eval-after-load 'doc-view
-    (let ((map doc-view-mode-map))
-      (jacob-xfk-define-key-in-major-mode map "l" 'doc-view-next-page)
-      (jacob-xfk-define-key-in-major-mode map "j" 'doc-view-previous-page)))
-
   (with-eval-after-load 'diff-mode
     (let ((map diff-mode-map))
       (jacob-xfk-define-key-in-major-mode map "q" #'quit-window)
@@ -2166,21 +2107,6 @@ deleted."
 
   (with-eval-after-load 'vc-git
     (jacob-xfk-define-key-in-major-mode vc-git-log-view-mode-map "q" #'quit-window))
-
-  (with-eval-after-load 'gnus
-    (jacob-xfk-define-key-in-major-mode gnus-group-mode-map "q" #'gnus-group-exit)
-    (jacob-xfk-define-key-in-major-mode gnus-group-mode-map "i" #'gnus-group-prev-group)
-    (jacob-xfk-define-key-in-major-mode gnus-group-mode-map "k" #'gnus-group-next-group)
-    (jacob-xfk-define-key-in-major-mode gnus-group-mode-map "g" #'gnus-group-get-new-news)
-
-    (with-eval-after-load 'gnus-topic
-      (jacob-xfk-define-key-in-major-mode gnus-topic-mode-map "s" #'gnus-topic-select-group))
-
-    (jacob-xfk-define-key-in-major-mode gnus-summary-mode-map "q" #'gnus-summary-exit)
-    (jacob-xfk-define-key-in-major-mode gnus-summary-mode-map "i" #'gnus-summary-prev-article)
-    (jacob-xfk-define-key-in-major-mode gnus-summary-mode-map "k" #'gnus-summary-next-article)
-    (jacob-xfk-define-key-in-major-mode gnus-summary-mode-map "j" #'gnus-summary-prev-page)
-    (jacob-xfk-define-key-in-major-mode gnus-summary-mode-map "l" #'gnus-summary-next-page))
 
   (with-eval-after-load 'help
     (jacob-xfk-define-key-in-major-mode help-mode-map "q" #'quit-window)
