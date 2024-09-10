@@ -1,6 +1,7 @@
 # -*- mode: snippet -*-
 # name: if
 # key: if
+# condition: (jacob-point-in-code-p)
 # --
 if (${1:true})
 {
