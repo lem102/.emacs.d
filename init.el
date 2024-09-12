@@ -494,7 +494,6 @@
   (dired-vc-rename-file t))
 
 (use-package ls-lisp
-  :defer
   :custom
   (ls-lisp-use-insert-directory-program nil)
   (ls-lisp-dirs-first t))
@@ -607,6 +606,8 @@ hides this information."
   (define-abbrev-table 'emacs-lisp-mode-abbrev-table
     '(("up" "use-package" jacob-abbrev-no-insert)
       ("d" "defun" jacob-abbrev-no-insert)
+      ("p" "point" jacob-abbrev-no-insert)
+      ("point" "(point)" jacob-abbrev-no-insert)
       ("ah" "add-hook" jacob-abbrev-no-insert)
       ("l" "lambda" jacob-abbrev-no-insert)
       ("gc" "goto-char" jacob-abbrev-no-insert)
@@ -1038,7 +1039,18 @@ Useful for deleting ^M after `eglot-code-actions'."
   (push '(csharpier "dotnet" "csharpier" "--write-stdout")
         apheleia-formatters)
   (push '(csharp-ts-mode . csharpier)
-        apheleia-mode-alist))
+        apheleia-mode-alist)
+
+  (defun jacob-apheleia-advice (original-function &rest args)
+    "Advice function for `apheleia-format-after-save'. If point is in
+a yasnippet field, do not format the buffer."
+    (unless (or (seq-find (lambda (overlay)
+                            (overlay-get overlay 'yas--snippet))
+                          (overlays-at (point)))
+                (minibuffer-window-active-p (car (window-list))))
+      (apply original-function args)))
+
+  (advice-add #'apheleia-format-buffer :around #'jacob-apheleia-advice))
 
 
 
