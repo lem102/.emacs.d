@@ -681,7 +681,6 @@ in when it tangles into a file."
           ("2" . winner-redo)))
 
 (use-package sql
-  :commands jacob-sql-connect
   :config
   (defun jacob-sql-connect (connection &optional buf-name)
     "Wrapper for sql connect to set postgres password."
@@ -716,6 +715,17 @@ Intended as before advice for `sql-send-paragraph'."
   (advice-add #'sql-send-paragraph :before #'jacob-sqli-end-of-buffer)
 
   (jacob-xfk-define-key-in-major-mode sql-mode-map " ,d" #'sql-send-paragraph)
+
+  (define-abbrev-table 'sql-mode-abbrev-table
+    '(("sel" "SELECT" jacob-abbrev-no-insert)
+      ("upd" "UPDATE" jacob-abbrev-no-insert)
+      ("del" "DELETE FROM ■\nWHERE condition;" jacob-insert)
+      ("joi" "JOIN ■\nON field = field" jacob-insert)
+      ("ins" "INSERT INTO ■ (column, column2)\nVALUES (value, value2)" jacob-insert)
+      ("ord" "ORDER BY")
+      ("gro" "GROUP BY")
+      ("and" "AND")
+      ("as" "AS")))
   :hook (sql-interactive-mode-hook . jacob-sql-interactive-mode-hook)
   :bind ( :map xah-fly-leader-key-map
           ("SPC d" . jacob-sql-connect)))
@@ -744,7 +754,7 @@ Intended as before advice for `sql-send-paragraph'."
   :hook (compilation-filter-hook . ansi-color-compilation-filter)
   :custom
   (compilation-always-kill t)
-  (compilation-scroll-output 'first-error))
+  (compilation-scroll-output t))
 
 (use-package treesit
   ;; strategy for adopting tree-sitter:
@@ -860,10 +870,7 @@ Useful for deleting ^M after `eglot-code-actions'."
   (message-send-mail-function 'smtpmail-send-it))
 
 (use-package gnus
-  :defer
-  :hook ((gnus-after-getting-new-news-hook . gnus-notifications)
-         (gnus-group-mode-hook . gnus-topic-mode)
-         (gnus-started-hook . jacob-gnus-hook-function))
+  :hook (gnus-started-hook . jacob-gnus-hook-function)
   :custom
   (gnus-use-full-window t)
   (gnus-always-read-dribble-file t)
@@ -885,6 +892,14 @@ Useful for deleting ^M after `eglot-code-actions'."
   (jacob-xfk-define-key-in-major-mode gnus-summary-mode-map "k" #'gnus-summary-next-article)
   (jacob-xfk-define-key-in-major-mode gnus-summary-mode-map "j" #'gnus-summary-prev-page)
   (jacob-xfk-define-key-in-major-mode gnus-summary-mode-map "l" #'gnus-summary-next-page))
+
+(use-package gnus-topic
+  :after gnus
+  :hook (gnus-group-mode-hook . gnus-topic-mode))
+
+(use-package gnus-topic
+  :after gnus
+  :hook (gnus-after-getting-new-news-hook . gnus-notifications)) 
 
 
 
@@ -1925,17 +1940,6 @@ deleted."
     ("effect" "Effect")
     ("list" "List")
     ("tuple" "Tuple")))
-
-(define-abbrev-table 'sql-mode-abbrev-table
-  '(("sel" "SELECT" jacob-abbrev-no-insert)
-    ("upd" "UPDATE" jacob-abbrev-no-insert)
-    ("del" "DELETE FROM ■\nWHERE condition;" jacob-insert)
-    ("joi" "JOIN ■\nON field = field" jacob-insert)
-    ("ins" "INSERT INTO ■ (column, column2)\nVALUES (value, value2)" jacob-insert)
-    ("ord" "ORDER BY")
-    ("gro" "GROUP BY")
-    ("and" "AND")
-    ("as" "AS")))
 
 
 
