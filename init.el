@@ -45,6 +45,8 @@
 (when (file-exists-p "~/.emacs.d/environment.el")
   (load-file "~/.emacs.d/environment.el"))
 
+(defvar-keymap jacob-xfk-map)
+
 
 
 (use-package mwheel
@@ -681,8 +683,8 @@ in when it tangles into a file."
           ("2" . winner-redo)))
 
 (use-package sql
-  :commands jacob-sql-connect
-  :config
+  :after xah-fly-keys
+  :init
   (defun jacob-sql-connect (connection &optional buf-name)
     "Wrapper for sql connect to set postgres password."
     (interactive
@@ -697,7 +699,8 @@ in when it tangles into a file."
                                     (assoc-string connection
                                                   sql-connection-alist
                                                   t)))))
-      (sql-connect connection buf-name)))
+      (sql-connect connection buf-name)))  
+  :config
   (defun jacob-sql-interactive-mode-hook ()
     "Custom interactive SQL mode behaviours.
 
@@ -717,8 +720,8 @@ Intended as before advice for `sql-send-paragraph'."
 
   (jacob-xfk-define-key-in-major-mode sql-mode-map " ,d" #'sql-send-paragraph)
   :hook (sql-interactive-mode-hook . jacob-sql-interactive-mode-hook)
-  :bind ( :map xah-fly-leader-key-map
-          ("SPC d" . jacob-sql-connect)))
+  :bind ( :map jacob-xfk-map
+          ("d" . jacob-sql-connect)))
 
 (use-package doc-view
   :hook (doc-view-mode-hook . jacob-doc-view-hook)
@@ -846,7 +849,13 @@ Useful for deleting ^M after `eglot-code-actions'."
         (font-lock-ensure)
         (string-trim (buffer-string)))))
   :custom
-  (eglot-ignored-server-capabilities '(:documentOnTypeFormattingProvider)))
+  (eglot-ignored-server-capabilities '(:documentOnTypeFormattingProvider))
+  :bind ( :map jacob-xfk-map
+          ("e e" . eglot)
+          ("e a" . eglot-code-actions)
+          ("e r" . eglot-rename)
+          ("e i" . eglot-find-implementation)
+          ("e R" . eglot-reconnect)))
 
 (use-package typescript-ts-mode
   ;; JACOBTODO: would it be simpler to use `tsx-ts-mode' for all
@@ -860,7 +869,7 @@ Useful for deleting ^M after `eglot-code-actions'."
   (message-send-mail-function 'smtpmail-send-it))
 
 (use-package gnus
-  :defer
+  :after xah-fly-keys
   :hook ((gnus-after-getting-new-news-hook . gnus-notifications)
          (gnus-group-mode-hook . gnus-topic-mode)
          (gnus-started-hook . jacob-gnus-hook-function))
@@ -884,7 +893,10 @@ Useful for deleting ^M after `eglot-code-actions'."
   (jacob-xfk-define-key-in-major-mode gnus-summary-mode-map "i" #'gnus-summary-prev-article)
   (jacob-xfk-define-key-in-major-mode gnus-summary-mode-map "k" #'gnus-summary-next-article)
   (jacob-xfk-define-key-in-major-mode gnus-summary-mode-map "j" #'gnus-summary-prev-page)
-  (jacob-xfk-define-key-in-major-mode gnus-summary-mode-map "l" #'gnus-summary-next-page))
+  (jacob-xfk-define-key-in-major-mode gnus-summary-mode-map "l" #'gnus-summary-next-page)
+
+  :bind ( :map jacob-xfk-map
+          ("g" . gnus)))
 
 
 
@@ -1080,11 +1092,10 @@ Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (c
 
 (use-package csharp-toolbox
   :vc (csharp-toolbox :url "https://github.com/lem102/csharp-toolbox.git")
-  :demand
   :after csharp-mode
-  :bind ( :map xah-fly-leader-key-map
-          ("SPC c f" . csharp-toolbox-format-statement)
-          ("SPC c t" . csharp-toolbox-run-test)))
+  :bind ( :map jacob-xfk-map
+          ("c f" . csharp-toolbox-format-statement)
+          ("c t" . csharp-toolbox-run-test)))
 
 
 
@@ -1289,24 +1300,14 @@ Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (c
   (xah-fly-keys 1)
 
   ;; FIXME: keys that are not already bound will not work for jacob-xfk-define-key-in-major-mode
-  (defun jacob-xfk-define-key-in-major-mode (major-mode-keymap key command)
-    "In MAJOR-MODE-KEYMAP bind KEY to COMMAND only when in xfk command mode."
-    (define-key major-mode-keymap
+  (defun jacob-xfk-define-key-in-major-mode (keymap key command)
+    "In KEYMAP bind KEY to COMMAND only when in xfk command mode."
+    (define-key keymap
                 (vector 'remap
                         (lookup-key xah-fly-command-map key))
                 command))
 
-  (keymap-unset xah-fly-leader-key-map "SPC")
-
-  ;; JACOBTODO: gnus is loaded at start in vanilla emacs. when we bind
-  ;; the key below it complains that SPC is not a prefix key, i.e. it
-  ;; is bound to a command. how can i put the below line in the xfk
-  ;; use-package?
-  ;; (keymap-unset xah-fly-leader-key-map "SPC")
-  ;; even with this, we do not seem to get the keybind...
-  
-  :bind ( :map xah-fly-leader-key-map
-          ("SPC g" . gnus)))
+  (keymap-set xah-fly-leader-key-map "SPC" jacob-xfk-map))
 
 
 
@@ -2017,22 +2018,14 @@ deleted."
   (let ((map minibuffer-local-completion-map))
     (define-key map "SPC" 'self-insert-command))
 
-  (keymap-set xah-fly-leader-key-map "SPC e e" #'eglot)
-
-  (with-eval-after-load 'eglot
-    (keymap-set xah-fly-leader-key-map "SPC e a" #'eglot-code-actions)
-    (keymap-set xah-fly-leader-key-map "SPC e r" #'eglot-rename)
-    (keymap-set xah-fly-leader-key-map "SPC e i" #'eglot-find-implementation)
-    (keymap-set xah-fly-leader-key-map "SPC e R" #'eglot-reconnect))
-
   (when (package-installed-p 'slack)
-    (keymap-set xah-fly-leader-key-map "SPC s s" #'slack-start))
+    (keymap-set jacob-xfk-map "s s" #'slack-start))
 
   (with-eval-after-load 'slack
-    (keymap-set xah-fly-leader-key-map "SPC s u" #'jacob-slack-show-unread)
-    (keymap-set xah-fly-leader-key-map "SPC s U" #'jacob-slack-show-all-unread)
-    (keymap-set xah-fly-leader-key-map "SPC s r" #'slack-select-rooms)
-    (keymap-set xah-fly-leader-key-map "SPC s k" #'jacob-slack-kill-buffers))
+    (keymap-set jacob-xfk-map "s u" #'jacob-slack-show-unread)
+    (keymap-set jacob-xfk-map "s U" #'jacob-slack-show-all-unread)
+    (keymap-set jacob-xfk-map "s r" #'slack-select-rooms)
+    (keymap-set jacob-xfk-map "s k" #'jacob-slack-kill-buffers))
 
   (let ((map dired-mode-map))
     (jacob-xfk-define-key-in-major-mode map "q" 'quit-window)
