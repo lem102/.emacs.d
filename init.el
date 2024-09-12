@@ -494,7 +494,6 @@
   (dired-vc-rename-file t))
 
 (use-package ls-lisp
-  :defer
   :custom
   (ls-lisp-use-insert-directory-program nil)
   (ls-lisp-dirs-first t))
@@ -607,6 +606,8 @@ hides this information."
   (define-abbrev-table 'emacs-lisp-mode-abbrev-table
     '(("up" "use-package" jacob-abbrev-no-insert)
       ("d" "defun" jacob-abbrev-no-insert)
+      ("p" "point" jacob-abbrev-no-insert)
+      ("point" "(point)" jacob-abbrev-no-insert)
       ("ah" "add-hook" jacob-abbrev-no-insert)
       ("l" "lambda" jacob-abbrev-no-insert)
       ("gc" "goto-char" jacob-abbrev-no-insert)
@@ -768,6 +769,17 @@ Intended as before advice for `sql-send-paragraph'."
   (advice-add #'sql-send-paragraph :before #'jacob-sqli-end-of-buffer)
 
   (jacob-xfk-define-key-in-major-mode sql-mode-map " ,d" #'sql-send-paragraph)
+
+  (define-abbrev-table 'sql-mode-abbrev-table
+    '(("sel" "SELECT" jacob-abbrev-no-insert)
+      ("upd" "UPDATE" jacob-abbrev-no-insert)
+      ("del" "DELETE FROM ■\nWHERE condition;" jacob-insert)
+      ("joi" "JOIN ■\nON field = field" jacob-insert)
+      ("ins" "INSERT INTO ■ (column, column2)\nVALUES (value, value2)" jacob-insert)
+      ("ord" "ORDER BY")
+      ("gro" "GROUP BY")
+      ("and" "AND")
+      ("as" "AS")))
   :hook (sql-interactive-mode-hook . jacob-sql-interactive-mode-hook)
   :bind ( :map jacob-xfk-map
           ("d" . jacob-sql-connect)))
@@ -796,7 +808,7 @@ Intended as before advice for `sql-send-paragraph'."
   :hook (compilation-filter-hook . ansi-color-compilation-filter)
   :custom
   (compilation-always-kill t)
-  (compilation-scroll-output 'first-error))
+  (compilation-scroll-output t))
 
 (use-package treesit
   ;; strategy for adopting tree-sitter:
@@ -860,7 +872,7 @@ Useful for deleting ^M after `eglot-code-actions'."
     (setq-local eldoc-documentation-strategy
                 'eldoc-documentation-compose))
 
-  (add-to-list 'eglot-server-programs '((csharp-mode csharp-ts-mode) . "csharp-ls"))
+  (add-to-list 'eglot-server-programs '((csharp-mode csharp-ts-mode) . ("csharp-ls")))
 
   (add-to-list 'eglot-server-programs '(sql-mode . "sqls"))
 
@@ -945,6 +957,14 @@ Useful for deleting ^M after `eglot-code-actions'."
   :bind ( :map jacob-xfk-map
           ("g" . gnus)))
 
+(use-package gnus-topic
+  :after gnus
+  :hook (gnus-group-mode-hook . gnus-topic-mode))
+
+(use-package gnus-topic
+  :after gnus
+  :hook (gnus-after-getting-new-news-hook . gnus-notifications)) 
+
 
 
 ;; package configuration
@@ -1003,7 +1023,18 @@ Useful for deleting ^M after `eglot-code-actions'."
   (push '(csharpier "dotnet" "csharpier" "--write-stdout")
         apheleia-formatters)
   (push '(csharp-ts-mode . csharpier)
-        apheleia-mode-alist))
+        apheleia-mode-alist)
+
+  (defun jacob-apheleia-advice (original-function &rest args)
+    "Advice function for `apheleia-format-after-save'. If point is in
+a yasnippet field, do not format the buffer."
+    (unless (or (seq-find (lambda (overlay)
+                            (overlay-get overlay 'yas--snippet))
+                          (overlays-at (point)))
+                (minibuffer-window-active-p (car (window-list))))
+      (apply original-function args)))
+
+  (advice-add #'apheleia-format-buffer :around #'jacob-apheleia-advice))
 
 (use-package rainbow-mode
   :ensure
@@ -1910,17 +1941,6 @@ deleted."
     ("effect" "Effect")
     ("list" "List")
     ("tuple" "Tuple")))
-
-(define-abbrev-table 'sql-mode-abbrev-table
-  '(("sel" "SELECT" jacob-abbrev-no-insert)
-    ("upd" "UPDATE" jacob-abbrev-no-insert)
-    ("del" "DELETE FROM ■\nWHERE condition;" jacob-insert)
-    ("joi" "JOIN ■\nON field = field" jacob-insert)
-    ("ins" "INSERT INTO ■ (column, column2)\nVALUES (value, value2)" jacob-insert)
-    ("ord" "ORDER BY")
-    ("gro" "GROUP BY")
-    ("and" "AND")
-    ("as" "AS")))
 
 
 
