@@ -469,18 +469,18 @@
     "Hook function for dired."
     (dired-hide-details-mode 1))
 
-  (jacob-xfk-define-key-in-major-mode dired-mode-map "q" 'quit-window)
-  (jacob-xfk-define-key-in-major-mode dired-mode-map "i" 'dired-previous-line)
-  (jacob-xfk-define-key-in-major-mode dired-mode-map "k" 'dired-next-line)
-  (jacob-xfk-define-key-in-major-mode dired-mode-map "s" 'dired-find-file)
-  (jacob-xfk-define-key-in-major-mode dired-mode-map "e" 'dired-mark)
-  (jacob-xfk-define-key-in-major-mode dired-mode-map "r" 'dired-unmark)
+  (jacob-xfk-define-key-in-major-mode dired-mode-map "q" #'quit-window)
+  (jacob-xfk-define-key-in-major-mode dired-mode-map "i" #'dired-previous-line)
+  (jacob-xfk-define-key-in-major-mode dired-mode-map "k" #'dired-next-line)
+  (jacob-xfk-define-key-in-major-mode dired-mode-map "s" #'dired-find-file)
+  (jacob-xfk-define-key-in-major-mode dired-mode-map "e" #'dired-mark)
+  (jacob-xfk-define-key-in-major-mode dired-mode-map "r" #'dired-unmark)
   (jacob-xfk-define-key-in-major-mode dired-mode-map "g" #'revert-buffer)
-  (jacob-xfk-define-key-in-major-mode dired-mode-map "x" 'dired-do-rename)
-  (jacob-xfk-define-key-in-major-mode dired-mode-map "c" 'dired-do-copy)
-  (jacob-xfk-define-key-in-major-mode dired-mode-map "d" 'dired-do-delete) ; we skip the "flag, delete" process as files are sent to system bin on deletion
-  (jacob-xfk-define-key-in-major-mode dired-mode-map "u" 'dired-up-directory)
-  (jacob-xfk-define-key-in-major-mode dired-mode-map "j" 'dired-goto-file)
+  (jacob-xfk-define-key-in-major-mode dired-mode-map "x" #'dired-do-rename)
+  (jacob-xfk-define-key-in-major-mode dired-mode-map "c" #'dired-do-copy)
+  (jacob-xfk-define-key-in-major-mode dired-mode-map "d" #'dired-do-delete) ; we skip the "flag, delete" process as files are sent to system bin on deletion
+  (jacob-xfk-define-key-in-major-mode dired-mode-map "u" #'dired-up-directory)
+  (jacob-xfk-define-key-in-major-mode dired-mode-map "j" #'dired-goto-file)
   :hook (dired-mode-hook . jacob-dired-mode-setup)
   :custom
   (dired-recursive-copies 'always)
@@ -949,40 +949,25 @@ Useful for deleting ^M after `eglot-code-actions'."
 
 ;; package configuration
 
-;; for most packages installing from latest is fine. for special
-;; cases, use package-vc
+(use-package package
+  :custom
+  (package-archives '(("GNU" . "https://elpa.gnu.org/packages/")
+                      ("non-GNU" . "https://elpa.nongnu.org/nongnu/")
+                      ("melpa" . "https://melpa.org/packages/"))))
 
-(require 'package)
-
-(setopt package-archives '(("GNU" . "https://elpa.gnu.org/packages/")
-                           ("non-GNU" . "https://elpa.nongnu.org/nongnu/")
-                           ("melpa" . "https://melpa.org/packages/")))
-
-
-;; use-package-vc
-
-;; JACOBTODO: built in as of emacs v30. usage may also change
-
-(unless (package-installed-p 'vc-use-package)
-  (package-vc-install "https://github.com/slotThe/vc-use-package"))
-(require 'vc-use-package)
-
-
+(use-package vc-use-package
+  :preface
+  (unless (package-installed-p 'vc-use-package)
+    (package-vc-install "https://github.com/slotThe/vc-use-package")))
 
 (use-package key-chord
   :vc (key-chord :url "https://github.com/emacsorphanage/key-chord.git")
-  :demand
   :config
   (key-chord-mode 1))
 
-
-
 (use-package use-package-chords
   :ensure
-  :after key-chord
-  :demand)
-
-
+  :after key-chord)
 
 (use-package avy
   :ensure
@@ -1008,142 +993,106 @@ Useful for deleting ^M after `eglot-code-actions'."
                         (?z . avy-action-zap-to-char)
                         (?. . jacob-avy-action-xref))))
 
-
-
 (use-package apheleia
   :ensure
   :config
   (apheleia-global-mode 1)
   (setq-default apheleia-inhibit t)     ; set `apheleia-inhibit' to
                                         ; nil to enable
+  ;; JACOBTODO: how does add-to-list work?
   (push '(csharpier "dotnet" "csharpier" "--write-stdout")
         apheleia-formatters)
   (push '(csharp-ts-mode . csharpier)
         apheleia-mode-alist))
 
-
-
 (use-package rainbow-mode
   :ensure
   :hook prog-mode-hook)
 
-
-;; combobulate config
-(unless (package-installed-p 'combobulate)
-  (package-vc-install "https://github.com/lem102/combobulate.git"))
+(use-package eglot-booster
+  :if jacob-is-linux
+  :vc (eglot-booster :url "https://github.com/jdtsmith/eglot-booster")
+  :after eglot
+  :config
+  (eglot-booster-mode 1))
 
-(with-eval-after-load 'combobulate
-  (setq combobulate-key-prefix "C-o o"))
-
-(add-hook 'typescript-ts-mode-hook #'combobulate-mode)
-
-
-;; eglot-booster config
-
-(unless jacob-is-windows
-  (with-eval-after-load 'eglot
-    (unless (package-installed-p 'eglot-booster)
-      (package-vc-install "https://github.com/jdtsmith/eglot-booster"))
-
-    (eglot-booster-mode 1)))
-
-
-;; slack config
-
-(unless (package-installed-p 'slack)
-  (package-vc-install '(slack . (:url "https://github.com/lem102/emacs-slack.git"))))
-
-(defun jacob-slack-modeline-formatter (alist)
-  "Hide the slack modeline if there are no notifications.
+(use-package slack
+  ;; JACOBTODO: use a better fork
+  :vc (slack :url "https://github.com/lem102/emacs-slack.git")
+  :config
+  (defun jacob-slack-modeline-formatter (alist)
+    "Hide the slack modeline if there are no notifications.
 
 Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (channel . (has-unreads . mention-count)))))"
-  (if (seq-find (lambda (team)
-                  (seq-find (lambda (room-type)
-                              (car (cdr room-type)))
-                            (cdr team)))
-                alist)
-      (slack-default-modeline-formatter alist)
-    ""))
+    (if (seq-find (lambda (team)
+                    (seq-find (lambda (room-type)
+                                (car (cdr room-type)))
+                              (cdr team)))
+                  alist)
+        (slack-default-modeline-formatter alist)
+      ""))
 
-(defun jacob-slack-show-unread ()
-  "Open an unread slack message."
-  (interactive)
-  (let* ((team (slack-team-select))
-         (rooms (seq-filter #'(lambda (room)
-                                (slack-room-has-unread-p room team))
-                            (append (slack-team-ims team)
-                                    (slack-team-groups team)
-                                    (slack-team-channels team)))))
-    (if (null rooms)
-        (message "no unread slack messages")
-      (slack-room-display (seq-first rooms) team))))
+  (defun jacob-slack-show-unread ()
+    "Open an unread slack message."
+    (interactive)
+    (let* ((team (slack-team-select))
+           (rooms (seq-filter #'(lambda (room)
+                                  (slack-room-has-unread-p room team))
+                              (append (slack-team-ims team)
+                                      (slack-team-groups team)
+                                      (slack-team-channels team)))))
+      (if (null rooms)
+          (message "no unread slack messages")
+        (slack-room-display (seq-first rooms) team))))
 
-(defun jacob-slack-kill-buffers ()
-  "Kill all slack message buffers."
-  (interactive)
-  (kill-some-buffers
-   (seq-filter (lambda (b)
-                 (seq-contains-p
-                  '(slack-message-buffer-mode
-                    slack-thread-message-buffer-mode
-                    slack-file-info-buffer-mode)
-                  (buffer-local-value 'major-mode b)))
-               (buffer-list))))
+  (defun jacob-slack-kill-buffers ()
+    "Kill all slack message buffers."
+    (interactive)
+    (kill-some-buffers
+     (seq-filter (lambda (b)
+                   (seq-contains-p
+                    '(slack-message-buffer-mode
+                      slack-thread-message-buffer-mode
+                      slack-file-info-buffer-mode)
+                    (buffer-local-value 'major-mode b)))
+                 (buffer-list))))
 
-(defun jacob-slack-show-all-unread ()
-  "Show all unread messages."
-  (interactive)
-  (let* ((team (slack-team-select))
-         (rooms (seq-filter #'(lambda (room)
-                                (slack-room-has-unread-p room team))
-                            (append (slack-team-ims team)
-                                    (slack-team-groups team)
-                                    (slack-team-channels team)))))
-    (if (null rooms)
-        (message "no unread slack messages")
-      (dolist (room rooms)
-        (slack-room-display room team)))))
-
-(with-eval-after-load 'slack
-  (setq slack-enable-global-mode-string t)
-  (setq slack-buffer-emojify t)
-  (setq slack-prefer-current-team t)
-  (setq slack-thread-also-send-to-room nil)
-
-  (setq alert-default-style 'notifications)
-
-  (setq lui-fill-type nil)
-  (setq lui-time-stamp-position 0)
-  (setq lui-time-stamp-format "%a %b %e %H:%M")
+  (defun jacob-slack-show-all-unread ()
+    "Show all unread messages."
+    (interactive)
+    (let* ((team (slack-team-select))
+           (rooms (seq-filter #'(lambda (room)
+                                  (slack-room-has-unread-p room team))
+                              (append (slack-team-ims team)
+                                      (slack-team-groups team)
+                                      (slack-team-channels team)))))
+      (if (null rooms)
+          (message "no unread slack messages")
+        (dolist (room rooms)
+          (slack-room-display room team)))))
 
   (defun jacob-slack-hook-function ()
     "Function to be run in slack mode hooks."
     (toggle-word-wrap 1))
-
-  (add-hook 'slack-message-buffer-mode-hook 'jacob-slack-hook-function)
-  (add-hook 'slack-thread-message-buffer-mode-hook 'jacob-slack-hook-function)
-
-  (setq slack-modeline-formatter #'jacob-slack-modeline-formatter)
-
-  (with-eval-after-load 'consult
-
-    (defun jacob-consult-slack-filter ()
-      (consult--buffer-query :sort 'visibility
-                             :as #'buffer-name
-                             :include "^*Slack"))
-
-    (setq jacob-consult-slack-source
-          `( :name     "Slack"
-             :narrow   ?s
-             :category buffer
-             :face     consult-buffer
-             :history  buffer-name-history
-             :items    ,#'jacob-consult-slack-filter
-             :action   ,#'switch-to-buffer))
-
-    (add-to-list 'consult-buffer-sources jacob-consult-slack-source "APPEND")))
-
-
+  
+  :hook ((slack-message-buffer-mode-hook . jacob-slack-hook-function)
+         (slack-thread-message-buffer-mode-hook . jacob-slack-hook-function))
+  :custom
+  (slack-enable-global-mode-string t)
+  (slack-buffer-emojify t)
+  (slack-prefer-current-team t)
+  (slack-thread-also-send-to-room nil)
+  (alert-default-style 'notifications)
+  (lui-fill-type nil)
+  (lui-time-stamp-position 0)
+  (lui-time-stamp-format "%a %b %e %H:%M")
+  (slack-modeline-formatter #'jacob-slack-modeline-formatter)
+  :bind ( :map jacob-xfk-map
+          ("s s" . slack-start)
+          ("s u" . jacob-slack-show-unread)
+          ("s U" . jacob-slack-show-all-unread)
+          ("s r" . slack-select-rooms)
+          ("s k" . jacob-slack-kill-buffers)))
 
 (use-package csharp-toolbox
   :vc (csharp-toolbox :url "https://github.com/lem102/csharp-toolbox.git")
@@ -1152,12 +1101,8 @@ Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (c
           ("c f" . csharp-toolbox-format-statement)
           ("c t" . csharp-toolbox-run-test)))
 
-
-
-;; JACOBTODO: jacob-csharp package requires dape, causing it to be loaded prematurely
 (use-package dape
   :ensure
-  :commands dape
   :custom
   (dape-info-hide-mode-line nil)
   (dape-buffer-window-arrangment 'right)
@@ -2065,14 +2010,7 @@ deleted."
   (let ((map minibuffer-local-completion-map))
     (define-key map "SPC" 'self-insert-command))
 
-  (when (package-installed-p 'slack)
-    (keymap-set jacob-xfk-map "s s" #'slack-start))
-
-  (with-eval-after-load 'slack
-    (keymap-set jacob-xfk-map "s u" #'jacob-slack-show-unread)
-    (keymap-set jacob-xfk-map "s U" #'jacob-slack-show-all-unread)
-    (keymap-set jacob-xfk-map "s r" #'slack-select-rooms)
-    (keymap-set jacob-xfk-map "s k" #'jacob-slack-kill-buffers))
+  
 
   (let ((map occur-mode-map))
     (jacob-xfk-define-key-in-major-mode map "q" 'quit-window)
