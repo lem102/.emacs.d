@@ -45,7 +45,19 @@
 (when (file-exists-p "~/.emacs.d/environment.el")
   (load-file "~/.emacs.d/environment.el"))
 
+
+;; xfk utils
+
 (defvar-keymap jacob-xfk-map)
+
+(defun jacob-xfk-define-key-in-major-mode (keymap key command)
+  "In KEYMAP bind KEY to COMMAND only when in xfk command mode."
+  ;; FIXME: keys that are not already bound will not work for jacob-xfk-define-key-in-major-mode
+  (with-eval-after-load 'xah-fly-keys
+    (define-key keymap
+                (vector 'remap
+                        (lookup-key xah-fly-command-map key))
+                command)))
 
 
 
@@ -277,12 +289,35 @@
   ;;  "ignore tramp files")
   )
 
+(use-package vc-git
+  :defer
+  :config
+  (jacob-xfk-define-key-in-major-mode vc-git-log-view-mode-map "q" #'quit-window))
+
+(use-package vc-dir
+  :defer
+  :config
+  (jacob-xfk-define-key-in-major-mode vc-dir-mode-map "q" 'quit-window)
+  (jacob-xfk-define-key-in-major-mode vc-dir-mode-map "g" 'revert-buffer)
+  (jacob-xfk-define-key-in-major-mode vc-dir-mode-map "i" 'vc-dir-previous-line)
+  (jacob-xfk-define-key-in-major-mode vc-dir-mode-map "k" 'vc-dir-next-line)
+  (jacob-xfk-define-key-in-major-mode vc-dir-mode-map "o" 'vc-dir-next-directory)
+  (jacob-xfk-define-key-in-major-mode vc-dir-mode-map "u" 'vc-dir-previous-directory)
+  (jacob-xfk-define-key-in-major-mode vc-dir-mode-map "s" 'vc-dir-find-file)
+  (jacob-xfk-define-key-in-major-mode vc-dir-mode-map "e" 'vc-dir-mark)
+  (jacob-xfk-define-key-in-major-mode vc-dir-mode-map "r" 'vc-dir-unmark)
+  (jacob-xfk-define-key-in-major-mode vc-dir-mode-map "v" 'vc-next-action)
+  (jacob-xfk-define-key-in-major-mode vc-dir-mode-map "p" 'vc-push)
+  (jacob-xfk-define-key-in-major-mode vc-dir-mode-map "P" 'jacob-git-push-set-upstream)
+  (jacob-xfk-define-key-in-major-mode vc-dir-mode-map "=" 'vc-diff)
+  (jacob-xfk-define-key-in-major-mode vc-dir-mode-map "x" #'vc-dir-hide-up-to-date))
+
 (use-package autoinsert
   :defer
   :config
   (auto-insert-mode t)
   :custom
-  (auto-insert-query nil)
+  (auto-insert-query t)
   (auto-insert-directory (locate-user-emacs-file "templates")))
 
 (use-package tramp
@@ -428,10 +463,24 @@
   (inferior-lisp-program "sbcl"))
 
 (use-package dired
+  :defer
   :config
   (defun jacob-dired-mode-setup ()
     "Hook function for dired."
     (dired-hide-details-mode 1))
+
+  (jacob-xfk-define-key-in-major-mode dired-mode-map "q" 'quit-window)
+  (jacob-xfk-define-key-in-major-mode dired-mode-map "i" 'dired-previous-line)
+  (jacob-xfk-define-key-in-major-mode dired-mode-map "k" 'dired-next-line)
+  (jacob-xfk-define-key-in-major-mode dired-mode-map "s" 'dired-find-file)
+  (jacob-xfk-define-key-in-major-mode dired-mode-map "e" 'dired-mark)
+  (jacob-xfk-define-key-in-major-mode dired-mode-map "r" 'dired-unmark)
+  (jacob-xfk-define-key-in-major-mode dired-mode-map "g" #'revert-buffer)
+  (jacob-xfk-define-key-in-major-mode dired-mode-map "x" 'dired-do-rename)
+  (jacob-xfk-define-key-in-major-mode dired-mode-map "c" 'dired-do-copy)
+  (jacob-xfk-define-key-in-major-mode dired-mode-map "d" 'dired-do-delete) ; we skip the "flag, delete" process as files are sent to system bin on deletion
+  (jacob-xfk-define-key-in-major-mode dired-mode-map "u" 'dired-up-directory)
+  (jacob-xfk-define-key-in-major-mode dired-mode-map "j" 'dired-goto-file)
   :hook (dired-mode-hook . jacob-dired-mode-setup)
   :custom
   (dired-recursive-copies 'always)
@@ -440,12 +489,12 @@
   (dired-guess-shell-alist-user '(("\\.mkv\\'" "mpv"))))
 
 (use-package dired-aux
-  :after dired
+  :defer
   :custom
   (dired-vc-rename-file t))
 
 (use-package ls-lisp
-  :after dired
+  :defer
   :custom
   (ls-lisp-use-insert-directory-program nil)
   (ls-lisp-dirs-first t))
@@ -869,7 +918,6 @@ Useful for deleting ^M after `eglot-code-actions'."
   (message-send-mail-function 'smtpmail-send-it))
 
 (use-package gnus
-  :after xah-fly-keys
   :hook ((gnus-after-getting-new-news-hook . gnus-notifications)
          (gnus-group-mode-hook . gnus-topic-mode)
          (gnus-started-hook . jacob-gnus-hook-function))
@@ -894,7 +942,6 @@ Useful for deleting ^M after `eglot-code-actions'."
   (jacob-xfk-define-key-in-major-mode gnus-summary-mode-map "k" #'gnus-summary-next-article)
   (jacob-xfk-define-key-in-major-mode gnus-summary-mode-map "j" #'gnus-summary-prev-page)
   (jacob-xfk-define-key-in-major-mode gnus-summary-mode-map "l" #'gnus-summary-next-page)
-
   :bind ( :map jacob-xfk-map
           ("g" . gnus)))
 
@@ -1306,15 +1353,7 @@ Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (c
   :config
   (xah-fly-keys-set-layout "qwerty")
   (xah-fly-keys 1)
-
-  ;; FIXME: keys that are not already bound will not work for jacob-xfk-define-key-in-major-mode
-  (defun jacob-xfk-define-key-in-major-mode (keymap key command)
-    "In KEYMAP bind KEY to COMMAND only when in xfk command mode."
-    (define-key keymap
-                (vector 'remap
-                        (lookup-key xah-fly-command-map key))
-                command))
-
+  
   (keymap-set xah-fly-leader-key-map "SPC" jacob-xfk-map))
 
 
@@ -2035,40 +2074,10 @@ deleted."
     (keymap-set jacob-xfk-map "s r" #'slack-select-rooms)
     (keymap-set jacob-xfk-map "s k" #'jacob-slack-kill-buffers))
 
-  (let ((map dired-mode-map))
-    (jacob-xfk-define-key-in-major-mode map "q" 'quit-window)
-    (jacob-xfk-define-key-in-major-mode map "i" 'dired-previous-line)
-    (jacob-xfk-define-key-in-major-mode map "k" 'dired-next-line)
-    (jacob-xfk-define-key-in-major-mode map "s" 'dired-find-file)
-    (jacob-xfk-define-key-in-major-mode map "e" 'dired-mark)
-    (jacob-xfk-define-key-in-major-mode map "r" 'dired-unmark)
-    (jacob-xfk-define-key-in-major-mode map "g" #'revert-buffer)
-    (jacob-xfk-define-key-in-major-mode map "x" 'dired-do-rename)
-    (jacob-xfk-define-key-in-major-mode map "c" 'dired-do-copy)
-    (jacob-xfk-define-key-in-major-mode map "d" 'dired-do-delete) ; we skip the "flag, delete" process as files are sent to system bin on deletion
-    (jacob-xfk-define-key-in-major-mode map "u" 'dired-up-directory)
-    (jacob-xfk-define-key-in-major-mode map "j" 'dired-goto-file))
-
   (let ((map occur-mode-map))
     (jacob-xfk-define-key-in-major-mode map "q" 'quit-window)
     (jacob-xfk-define-key-in-major-mode map "i" 'previous-error-no-select)
     (jacob-xfk-define-key-in-major-mode map "k" 'next-error-no-select))
-
-  (with-eval-after-load 'vc-dir
-    (jacob-xfk-define-key-in-major-mode vc-dir-mode-map "q" 'quit-window)
-    (jacob-xfk-define-key-in-major-mode vc-dir-mode-map "g" 'revert-buffer)
-    (jacob-xfk-define-key-in-major-mode vc-dir-mode-map "i" 'vc-dir-previous-line)
-    (jacob-xfk-define-key-in-major-mode vc-dir-mode-map "k" 'vc-dir-next-line)
-    (jacob-xfk-define-key-in-major-mode vc-dir-mode-map "o" 'vc-dir-next-directory)
-    (jacob-xfk-define-key-in-major-mode vc-dir-mode-map "u" 'vc-dir-previous-directory)
-    (jacob-xfk-define-key-in-major-mode vc-dir-mode-map "s" 'vc-dir-find-file)
-    (jacob-xfk-define-key-in-major-mode vc-dir-mode-map "e" 'vc-dir-mark)
-    (jacob-xfk-define-key-in-major-mode vc-dir-mode-map "r" 'vc-dir-unmark)
-    (jacob-xfk-define-key-in-major-mode vc-dir-mode-map "v" 'vc-next-action)
-    (jacob-xfk-define-key-in-major-mode vc-dir-mode-map "p" 'vc-push)
-    (jacob-xfk-define-key-in-major-mode vc-dir-mode-map "P" 'jacob-git-push-set-upstream)
-    (jacob-xfk-define-key-in-major-mode vc-dir-mode-map "=" 'vc-diff)
-    (jacob-xfk-define-key-in-major-mode vc-dir-mode-map "x" #'vc-dir-hide-up-to-date))
 
   (with-eval-after-load 'info
     (let ((map Info-mode-map))
@@ -2105,9 +2114,6 @@ deleted."
     (let ((map vc-annotate-mode-map))
       (jacob-xfk-define-key-in-major-mode map "q" #'quit-window)
       (jacob-xfk-define-key-in-major-mode map "g" #'revert-buffer)))
-
-  (with-eval-after-load 'vc-git
-    (jacob-xfk-define-key-in-major-mode vc-git-log-view-mode-map "q" #'quit-window))
 
   (with-eval-after-load 'help
     (jacob-xfk-define-key-in-major-mode help-mode-map "q" #'quit-window)
