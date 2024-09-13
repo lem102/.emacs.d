@@ -1064,7 +1064,7 @@ Useful for deleting ^M after `eglot-code-actions'."
   :after gnus
   :hook (gnus-group-mode-hook . gnus-topic-mode))
 
-(use-package gnus-topic
+(use-package gnus-notifications
   :after gnus
   :hook (gnus-after-getting-new-news-hook . gnus-notifications))
 
