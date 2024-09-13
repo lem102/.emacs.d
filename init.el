@@ -61,7 +61,35 @@
 
 
 
+(use-package abbrev
+  :hook (text-mode-hook prog-mode-hook)
+  :config
+  (defun jacob-point-in-text-p ()
+    "Return t if in comment or string. Else nil."
+    (let ((xsyntax-state (syntax-ppss)))
+      (or (nth 3 xsyntax-state)
+          (nth 4 xsyntax-state))))
+
+  (defun jacob-point-in-code-p ()
+    "Return t if outside of string or comment. Else nil."
+    (not (jacob-point-in-text-p)))
+
+  (defun jacob-abbrev-no-insert ()
+    "No-op function with `no-self-insert' property."
+    t)
+  (put 'jacob-abbrev-no-insert 'no-self-insert t)
+
+  (define-abbrev-table 'jacob-comment-abbrev-table
+    '(("jt" "JACOBTODO:"))
+    nil
+    :enable-function 'jacob-point-in-text-p)
+  
+  :custom
+  (abbrev-suggest t)
+  (save-abbrevs nil))
+
 (use-package mwheel
+  :defer
   :custom
   (mouse-wheel-progressive-speed nil)
   (mouse-wheel-scroll-amount '(10 ((shift) . hscroll)
@@ -83,6 +111,11 @@
                                 "Noto Emoji"
                                 "Noto Color Emoji"
                                 "Apple Color Emoji")))
+
+  (keymap-global-unset "C-x C-c")         ; `save-buffers-kill-terminal'
+  (keymap-global-unset "C-z")             ; `suspend-frame'
+  (keymap-global-unset "C-x u")           ; `undo'
+
   :custom
   (delete-by-moving-to-trash t)
   (read-process-output-max (* 1024 1024))
@@ -113,6 +146,14 @@
                                  (not (equal major-mode 'message-mode)))))
 
 (use-package window
+  :config
+  ;; JACOBTODO: convert to newer syntax
+  (defvar jacob-recenter-repeat-map
+    (let ((map (make-sparse-keymap)))
+      (define-key map "p" 'recenter-top-bottom)
+      map))
+
+  (put 'recenter-top-bottom 'repeat-map 'jacob-recenter-repeat-map)
   :custom
   (switch-to-buffer-obey-display-actions t)
   (display-buffer-alist '(
@@ -194,7 +235,24 @@
 (use-package lisp
   :custom
   (parens-require-spaces nil)
-  (delete-pair-blink-delay 0))
+  (delete-pair-blink-delay 0)
+  (insert-pair-alist (append insert-pair-alist
+                             '((?k ?\( ?\))
+                               (?l ?\[ ?\])
+                               (?j ?\{ ?\})
+                               (?u ?\" ?\")
+                               (?i ?\' ?\')
+                               (?h ?\< ?\>)))))
+
+(use-package lisp-mode
+  :defer
+  :after abbrev
+  :config
+  (define-abbrev-table 'lisp-mode-abbrev-table
+    '()
+    nil
+    :parents (list jacob-comment-abbrev-table)
+    :enable-function 'jacob-point-in-code-p))
 
 ;; support for files like `/etc/fstab'
 (use-package generic-x)
@@ -217,15 +275,27 @@
 
 (provide 'mule-cmds)                    ; HACK
 (use-package mule-cmds
-  :init
+  :defer
+  :config
   (prefer-coding-system 'utf-8))
 
-(use-package help-at-pt
-  :init
-  (setq-default help-at-pt-display-when-idle '(flymake-diagnostic))
-  (help-at-pt-set-timer))
-
 (use-package help
+  :defer
+  :custom
+  (help-window-select t)
+  (help-enable-variable-value-editing t))
+
+(use-package help-mode
+  :defer
+  :config
+  (jacob-xfk-define-key-in-major-mode help-mode-map "q" #'quit-window)
+  (jacob-xfk-define-key-in-major-mode help-mode-map "e" #'help-go-back)
+  (jacob-xfk-define-key-in-major-mode help-mode-map "r" #'jacob-go-forward)
+  (jacob-xfk-define-key-in-major-mode help-mode-map "g" #'revert-buffer)
+  (jacob-xfk-define-key-in-major-mode help-mode-map "s" #'help-view-source))
+
+(use-package help-fns
+  :defer
   :config
   (defun jacob-help-edit ()
     "Edit variable in current help buffer."
@@ -236,35 +306,42 @@
       (goto-char (point-min))
       (if (search-forward "Its value is " nil "NOERROR")
           (help-fns-edit-variable)
-        (message "cannot find editable variable")))) 
-  :custom
-  (help-window-select t)
-  (help-enable-variable-value-editing t))
+        (message "cannot find editable variable"))))
+
+  (jacob-xfk-define-key-in-major-mode help-mode-map "w" #'jacob-help-edit))
+
+(use-package help-at-pt
+  :defer
+  :after flymake
+  :config
+  (setq-default help-at-pt-display-when-idle '(flymake-diagnostic))
+  (help-at-pt-set-timer))
 
 (use-package warnings
+  :defer
   :custom
   (warning-minimum-level :error))
 
 (use-package subword
-  :init
+  :config
   (global-subword-mode 1))
 
 (use-package paren
-  :init
+  :config
   (show-paren-mode 1)
   :custom
   (show-paren-when-point-inside-paren t))
 
 (use-package elec-pair
-  :init
+  :config
   (electric-pair-mode 1))
 
 (use-package delsel
-  :init
+  :config
   (delete-selection-mode 1))
 
 (use-package repeat
-  :init
+  :config
   (repeat-mode 1))
 
 (use-package dabbrev
@@ -297,19 +374,19 @@
 (use-package vc-dir
   :defer
   :config
-  (jacob-xfk-define-key-in-major-mode vc-dir-mode-map "q" 'quit-window)
-  (jacob-xfk-define-key-in-major-mode vc-dir-mode-map "g" 'revert-buffer)
-  (jacob-xfk-define-key-in-major-mode vc-dir-mode-map "i" 'vc-dir-previous-line)
-  (jacob-xfk-define-key-in-major-mode vc-dir-mode-map "k" 'vc-dir-next-line)
-  (jacob-xfk-define-key-in-major-mode vc-dir-mode-map "o" 'vc-dir-next-directory)
-  (jacob-xfk-define-key-in-major-mode vc-dir-mode-map "u" 'vc-dir-previous-directory)
-  (jacob-xfk-define-key-in-major-mode vc-dir-mode-map "s" 'vc-dir-find-file)
-  (jacob-xfk-define-key-in-major-mode vc-dir-mode-map "e" 'vc-dir-mark)
-  (jacob-xfk-define-key-in-major-mode vc-dir-mode-map "r" 'vc-dir-unmark)
-  (jacob-xfk-define-key-in-major-mode vc-dir-mode-map "v" 'vc-next-action)
-  (jacob-xfk-define-key-in-major-mode vc-dir-mode-map "p" 'vc-push)
-  (jacob-xfk-define-key-in-major-mode vc-dir-mode-map "P" 'jacob-git-push-set-upstream)
-  (jacob-xfk-define-key-in-major-mode vc-dir-mode-map "=" 'vc-diff)
+  (jacob-xfk-define-key-in-major-mode vc-dir-mode-map "q" #'quit-window)
+  (jacob-xfk-define-key-in-major-mode vc-dir-mode-map "g" #'revert-buffer)
+  (jacob-xfk-define-key-in-major-mode vc-dir-mode-map "i" #'vc-dir-previous-line)
+  (jacob-xfk-define-key-in-major-mode vc-dir-mode-map "k" #'vc-dir-next-line)
+  (jacob-xfk-define-key-in-major-mode vc-dir-mode-map "o" #'vc-dir-next-directory)
+  (jacob-xfk-define-key-in-major-mode vc-dir-mode-map "u" #'vc-dir-previous-directory)
+  (jacob-xfk-define-key-in-major-mode vc-dir-mode-map "s" #'vc-dir-find-file)
+  (jacob-xfk-define-key-in-major-mode vc-dir-mode-map "e" #'vc-dir-mark)
+  (jacob-xfk-define-key-in-major-mode vc-dir-mode-map "r" #'vc-dir-unmark)
+  (jacob-xfk-define-key-in-major-mode vc-dir-mode-map "v" #'vc-next-action)
+  (jacob-xfk-define-key-in-major-mode vc-dir-mode-map "p" #'vc-push)
+  (jacob-xfk-define-key-in-major-mode vc-dir-mode-map "P" #'jacob-git-push-set-upstream)
+  (jacob-xfk-define-key-in-major-mode vc-dir-mode-map "=" #'vc-diff)
   (jacob-xfk-define-key-in-major-mode vc-dir-mode-map "x" #'vc-dir-hide-up-to-date))
 
 (use-package autoinsert
@@ -455,7 +532,31 @@
     (let ((p (point)))
       (if (eq last-command this-command)
           (call-interactively 'jacob-csharp-forward-statement)
-        (end-of-line)))))
+        (end-of-line))))
+
+  (defun jacob-backspace-csharp (f)
+    "Function for `jacob-backspace' to help with csharp.
+
+Figure out if the `<' or `>' before point is part of a
+`type_argument_list', and delete accordingly. F is used to
+perform the deletion."
+    (when (or (= (char-before) ?<)
+              (= (char-before) ?>))
+      (let ((node-parent (save-excursion
+                           (backward-char)
+                           (treesit-node-type
+                            (treesit-node-parent
+                             (treesit-node-at (point)))))))
+        (when (string= node-parent "type_argument_list")
+          (let ((table (copy-syntax-table csharp-mode-syntax-table)))
+            (modify-syntax-entry ?< "(>" table)
+            (modify-syntax-entry ?> ")>" table)
+            (with-syntax-table table
+              (if (= (char-before) ?<)
+                  (backward-char)
+                (backward-sexp))
+              (funcall f)))
+          t)))))
 
 (use-package inf-lisp
   :defer
@@ -569,38 +670,12 @@ hides this information."
                              (project-eshell "Eshell")
                              (project-compile "Compile"))))
 
-(use-package abbrev
-  :hook (text-mode-hook prog-mode-hook)
-  :config
-  (defun jacob-point-in-text-p ()
-    "Return t if in comment or string. Else nil."
-    (let ((xsyntax-state (syntax-ppss)))
-      (or (nth 3 xsyntax-state)
-          (nth 4 xsyntax-state))))
-
-  (defun jacob-point-in-code-p ()
-    "Return t if outside of string or comment. Else nil."
-    (not (jacob-point-in-text-p)))
-
-  (defun jacob-abbrev-no-insert ()
-    "No-op function with `no-self-insert' property."
-    t)
-  (put 'jacob-abbrev-no-insert 'no-self-insert t)
-
-  (define-abbrev-table 'jacob-comment-abbrev-table
-    '(("jt" "JACOBTODO:"))
-    nil
-    :enable-function 'jacob-point-in-text-p)
-  
-  :custom
-  (abbrev-suggest t)
-  (save-abbrevs nil))
-
 (use-package elisp-mode
   :init
   (defun jacob-elisp-config-hook-function ()
     "Configure `emacs-lisp-mode' when hook run."
-    (flymake-mode 1))  
+    (flymake-mode 1)
+    (add-hook 'before-save-hook 'jacob-indent-buffer nil "LOCAL"))
   :hook (emacs-lisp-mode-hook . jacob-elisp-config-hook-function)
   :config
   (define-abbrev-table 'emacs-lisp-mode-abbrev-table
@@ -618,7 +693,9 @@ hides this information."
       ("int" "(interactive)"))
     nil
     :parents (list jacob-comment-abbrev-table)
-    :enable-function 'jacob-point-in-code-p))
+    :enable-function 'jacob-point-in-code-p)
+  :bind ( :map lisp-interaction-mode-map
+          ("C-j" . jacob-eval-print-last-sexp)))
 
 (use-package org
   :defer
@@ -806,6 +883,8 @@ Intended as before advice for `sql-send-paragraph'."
 
 (use-package compile
   :hook (compilation-filter-hook . ansi-color-compilation-filter)
+  :config
+  (jacob-xfk-define-key-in-major-mode compilation-mode-map "g" #'recompile)
   :custom
   (compilation-always-kill t)
   (compilation-scroll-output t))
@@ -963,9 +1042,8 @@ Useful for deleting ^M after `eglot-code-actions'."
 
 (use-package gnus-topic
   :after gnus
-  :hook (gnus-after-getting-new-news-hook . gnus-notifications)) 
+  :hook (gnus-after-getting-new-news-hook . gnus-notifications))
 
-
 
 ;; package configuration
 
@@ -1026,8 +1104,9 @@ Useful for deleting ^M after `eglot-code-actions'."
         apheleia-mode-alist)
 
   (defun jacob-apheleia-advice (original-function &rest args)
-    "Advice function for `apheleia-format-after-save'. If point is in
-a yasnippet field, do not format the buffer."
+    "Advice function for `apheleia-format-buffer'. If point is in
+a yasnippet field or the minibuffer is active, do not format the
+buffer."
     (unless (or (seq-find (lambda (overlay)
                             (overlay-get overlay 'yas--snippet))
                           (overlays-at (point)))
@@ -1162,8 +1241,6 @@ Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (c
               (cdr (assoc selection collection)))))
         dape-configs))
 
-
-
 (use-package switch-window
   :ensure
   ;; JACOBTODO: investigate switch window finish hook to solve compilation scroll issue
@@ -1174,16 +1251,11 @@ Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (c
   :bind ( :map xah-fly-command-map
           ("," . switch-window)))
 
-
-
 (use-package racket-mode
   :ensure
   :hook (racket-mode-hook . racket-xp-mode))
 
-
-;; auctex config (weird)
-
-(use-package tex
+(use-package tex                        ; auctex is weird
   :ensure auctex
   :mode ("\\.tex\\$" . latex-mode)
   :config
@@ -1192,18 +1264,14 @@ Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (c
   (setq-default japanese-TeX-error-messages nil)
   (TeX-global-PDF-mode 0))
 
-
-
 (use-package ob-restclient
+  ;; JACOBTODO: remove
   :ensure)
-
-
 
 (use-package fsharp-mode
   :ensure
-  :defer t
+  :defer
   :custom
-  ;; (inferior-fsharp-program "dotnet fsi --fsi-server-input-codepage:65001")
   (inferior-fsharp-program "dotnet fsi"))
 
 (use-package eglot-fsharp
@@ -1212,22 +1280,10 @@ Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (c
   :custom
   (eglot-fsharp-server-install-dir nil))
 
-
-
 (use-package purescript-mode
   :ensure
-  :defer t
+  :defer
   :hook (purescript-mode-hook . turn-on-purescript-indentation))
-
-
-
-(use-package orderless
-  :ensure
-  :after vertico
-  :custom
-  (completion-styles '(orderless initials)))
-
-
 
 (use-package vertico
   :ensure
@@ -1236,7 +1292,11 @@ Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (c
   :custom
   (vertico-count 25))
 
-
+(use-package orderless
+  :ensure
+  :after vertico
+  :custom
+  (completion-styles '(orderless initials)))
 
 (use-package marginalia
   :ensure
@@ -1244,11 +1304,9 @@ Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (c
   :config
   (marginalia-mode 1))
 
-
-
 (use-package consult
   :ensure
-  :after xah-fly-keys
+  :after xah-fly-keys vertico
   :custom
   (completion-in-region-function 'consult-completion-in-region)
   (xref-show-xrefs-function 'consult-xref)
@@ -1299,9 +1357,9 @@ Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (c
          ("f" . consult-buffer)
          ("ij" . consult-recent-file)
          ("es" . consult-line)
-         ("ku" . consult-goto-line)))
-
-
+         ("ku" . consult-goto-line)
+         :map project-prefix-map
+         ("g" . jacob-project-search)))
 
 (use-package expand-region
   :ensure
@@ -1311,14 +1369,11 @@ Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (c
   :bind ( :map xah-fly-command-map
           ("8" . er/expand-region)))
 
-
-
 (use-package sml-mode
   :ensure
+  :defer
   :custom
   (sml-abbrev-skeletons nil))
-
-
 
 (use-package xah-fly-keys
   :ensure
@@ -1330,21 +1385,144 @@ Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (c
   (xah-fly-keys-set-layout "qwerty")
   (xah-fly-keys 1)
   
-  (keymap-set xah-fly-leader-key-map "SPC" jacob-xfk-map))
+  (keymap-set xah-fly-leader-key-map "SPC" jacob-xfk-map)
+  (keymap-set xah-fly-leader-key-map "e p" project-prefix-map)
 
-
+  (defvar-local jacob-backspace-function nil
+    "Called by `jacob-backspace' if non-nil.")
+
+  (defun jacob-backspace ()
+    "DWIM backspace command.
+
+If character to the left is a pair character as determined by
+`insert-pair-alist', kill from the pair to its match. If the
+prefix argument is provided, just delete the pair characters."
+    (interactive)
+    (undo-boundary)
+    (if (region-active-p)
+        (delete-active-region)
+      (when (= 1 (point))
+        (user-error "Beginning of buffer"))
+      (let ((char-class (char-syntax (char-before)))
+            (f (if current-prefix-arg
+                   #'delete-pair
+                 #'kill-sexp)))
+        (unless (ignore-errors
+                  (funcall jacob-backspace-function f))
+          (cond ((= ?\" char-class)                         ; string
+                 (if (nth 3 (syntax-ppss))
+                     (backward-char)
+                   (backward-sexp))
+                 (funcall f))
+                ((= ?\( char-class)                         ; delete from start of pair
+                 (backward-char)
+                 (funcall f))
+                ((= ?\) char-class)                         ; delete from end of pair
+                 (backward-sexp)
+                 (funcall f))
+                (t                                          ; delete character
+                 (backward-delete-char 1)))))))
+
+  (defun jacob-next-error-or-punct ()
+    "Wrapper command to allow moving forward by error or punctuation."
+    (interactive)
+    (if flymake-mode
+        (flymake-goto-next-error 1 nil t)
+      (xah-forward-punct)))
+
+  (defun jacob-previous-error-or-punct ()
+    "Wrapper command to allow moving backward by error or punctuation."
+    (interactive)
+    (if flymake-mode
+        (flymake-goto-prev-error 1 nil t)
+      (xah-backward-punct)))
+
+  (defun jacob-beginning-of-line ()
+    "Go to indentation, line start, backward paragraph."
+    (interactive)
+    (cond ((bolp)
+           (backward-paragraph))
+          ((= (save-excursion
+                (back-to-indentation)
+                (point))
+              (point))
+           (move-beginning-of-line 1))
+          (t
+           (back-to-indentation))))
+
+  (defun jacob-end-of-line ()
+    "Go to content end, line end, forward paragraph."
+    (interactive)
+    (if (eolp)
+        (forward-paragraph)
+      (let ((content-end (save-excursion
+                           (when (comment-search-forward (line-end-position) "NOERROR")
+                             (goto-char (match-beginning 0))
+                             (skip-syntax-backward " " (line-beginning-position))
+                             (unless (= (point) (line-beginning-position))
+                               (point))))))
+        (if (or (null content-end)
+                (= content-end (point)))
+            (move-end-of-line 1)
+          (goto-char content-end)))))
+
+  (defun jacob-kill-line ()
+    "If region is active, kill it. Otherwise:
+
+If point is at the beginning of the line, kill the whole line.
+
+If point is at the end of the line, kill until the beginning of the line.
+
+Otherwise, kill from point to the end of the line."
+    (interactive)
+    (cond ((region-active-p)
+           (call-interactively #'kill-region))
+          ((bolp)
+           (kill-whole-line))
+          ((eolp)
+           (kill-line 0))
+          (t
+           (kill-line))))
+
+  :bind-keymap (("<f7>" . xah-fly-leader-key-map))
+  :bind (("M-SPC" . xah-fly-command-mode-activate)
+         :map xah-fly-command-map
+         ("'" . jacob-format-words)
+         ("-" . jacob-previous-error-or-punct)
+         ("4" . other-window-prefix)
+         ("9" . jacob-swap-visible-buffers)
+         (";" . jacob-end-of-line)
+         ("=" . jacob-next-error-or-punct)
+         ("d" . jacob-backspace)
+         ("s" . jacob-return-macro)
+         ("h" . jacob-beginning-of-line)
+         ("x" . jacob-kill-line)
+         :map xah-fly-insert-map
+         ("M-SPC" . xah-fly-command-mode-activate)
+         :map xah-fly-leader-key-map
+         ("/b" . vc-switch-branch)
+         ("/c" . vc-create-branch)
+         ("/x" . jacob-git-pull-master-new-branch) ; JACOBTODO: consider removing
+         ("dh" . insert-pair)
+         ("di" . insert-pair)
+         ("dj" . insert-pair)
+         ("dk" . insert-pair)
+         ("dl" . insert-pair)
+         ("du" . insert-pair)
+         ("l3" . jacob-async-shell-command)
+         ("l8" . modus-themes-toggle)
+         ("la" . global-text-scale-adjust)
+         ("u" . kill-current-buffer)
+         ("wj" . xref-find-references)
+         (",n" . jacob-eval-and-replace)))
 
 (use-package verb
   :ensure
   :hook (org-mode-hook . verb-mode))
 
-
-
 (use-package web-mode
   :ensure
   :mode "\\.cshtml\\'")
-
-
 
 (use-package sly
   :ensure
@@ -1357,19 +1535,16 @@ Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (c
   (jacob-xfk-define-key-in-major-mode lisp-mode-map " ,e" #'sly-eval-buffer)
   (jacob-xfk-define-key-in-major-mode lisp-mode-map " wk" #'sly-edit-definition))
 
-
-
 (use-package yasnippet
   :ensure
+  :hook (snippet-mode-hook . jacob-snippet-mode-hook)
   :config
   (yas-global-mode 1)
-  (define-key yas-minor-mode-map (kbd "SPC") yas-maybe-expand)
+  (keymap-set yas-minor-mode-map "SPC" yas-maybe-expand)
 
   (defun jacob-snippet-mode-hook ()
     "Function to be run in hook for `snippet-mode'."
     (setq-local auto-save-visited-mode nil))
-
-  (add-hook 'snippet-mode-hook 'jacob-snippet-mode-hook)
 
   (defun jacob-autoinsert-yas-expand ()
     "Replace text in yasnippet template."
@@ -1377,17 +1552,14 @@ Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (c
 
   (define-auto-insert "\\.cs$" [ "template.cs" jacob-autoinsert-yas-expand ]))
 
-
-
 (use-package color-theme-sanityinc-tomorrow
   :ensure
   :config
   (load-theme 'sanityinc-tomorrow-blue "NO-CONFIRM"))
 
-
-
 (use-package gdscript-mode
   :ensure
+  :defer
   :config
   (define-abbrev-table 'gdscript-mode-abbrev-table
     '(("v2" "Vector2")
@@ -1396,29 +1568,12 @@ Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (c
     :enable-function 'jacob-point-in-code-p))
 
 
-
 ;; personal functions
 
-(defun jacob-indent-with-major-mode ()
-  "Indent buffer using current major mode.
-Designed for use in on-save hook in certain programming languages modes."
-  ;; JACOBTODO: replace with per-mode on-save hook
+(defun jacob-indent-buffer ()
+  "Indent whole buffer. Designed for use in `before-save-hook'."
   (unless (ignore-errors smerge-mode)
-    (cond ((seq-contains-p '(
-                             ;; csharp-tree-sitter-mode
-                             ;; typescript-react-mode
-                             java-mode
-                             sml-mode)
-                           major-mode
-                           'string=)
-           (indent-region (point-min) (point-max)))
-          ((seq-contains-p '(emacs-lisp-mode
-                             racket-mode
-                             clojure-mode)
-                           major-mode)
-           (lisp-indent-region (point-min) (point-max))))))
-
-(add-hook 'before-save-hook 'jacob-indent-with-major-mode)
+    (indent-region (point-min) (point-max))))
 
 (define-minor-mode jacob-screen-sharing-mode
   "Minor mode for sharing screens."
@@ -1434,112 +1589,6 @@ Designed for use in on-save hook in certain programming languages modes."
   (kill-new (with-temp-buffer (shell-command "curl --silent -4 ifconfig.me"
                                              t)
                               (buffer-string))))
-
-(defun jacob-beginning-of-line ()
-  "Go to indentation, line start, backward paragraph."
-  (interactive)
-  (cond ((bolp)
-         (backward-paragraph))
-        ((= (save-excursion
-              (back-to-indentation)
-              (point))
-            (point))
-         (move-beginning-of-line 1))
-        (t
-         (back-to-indentation))))
-
-(defun jacob-end-of-line ()
-  "Go to content end, line end, forward paragraph."
-  (interactive)
-  (if (eolp)
-      (forward-paragraph)
-    (let ((content-end (save-excursion
-                         (when (comment-search-forward (line-end-position) "NOERROR")
-                           (goto-char (match-beginning 0))
-                           (skip-syntax-backward " " (line-beginning-position))
-                           (unless (= (point) (line-beginning-position))
-                             (point))))))
-      (if (or (null content-end)
-              (= content-end (point)))
-          (move-end-of-line 1)
-        (goto-char content-end)))))
-
-(defun jacob-kill-line ()
-  "If region is active, kill it. Otherwise:
-
-If point is at the beginning of the line, kill the whole line.
-
-If point is at the end of the line, kill until the beginning of the line.
-
-Otherwise, kill from point to the end of the line."
-  (interactive)
-  (cond ((region-active-p)
-         (call-interactively #'kill-region))
-        ((bolp)
-         (kill-whole-line))
-        ((eolp)
-         (kill-line 0))
-        (t
-         (kill-line))))
-
-(defvar-local jacob-backspace-function nil
-  "Called by `jacob-backspace' if non-nil.")
-
-(defun jacob-backspace ()
-  "DWIM backspace command.
-
-If character to the left is a pair character as determined by
-`insert-pair-alist', kill from the pair to its match. If the
-prefix argument is provided, just delete the pair characters."
-  (interactive)
-  (undo-boundary)
-  (if (region-active-p)
-      (delete-active-region)
-    (when (= 1 (point))
-      (user-error "Beginning of buffer"))
-    (let ((char-class (char-syntax (char-before)))
-          (f (if current-prefix-arg
-                 #'delete-pair
-               #'kill-sexp)))
-      (unless (ignore-errors
-                (funcall jacob-backspace-function f))
-        (cond ((= ?\" char-class)                         ; string
-               (if (nth 3 (syntax-ppss))
-                   (backward-char)
-                 (backward-sexp))
-               (funcall f))
-              ((= ?\( char-class)                         ; delete from start of pair
-               (backward-char)
-               (funcall f))
-              ((= ?\) char-class)                         ; delete from end of pair
-               (backward-sexp)
-               (funcall f))
-              (t                                          ; delete character
-               (backward-delete-char 1)))))))
-
-(defun jacob-backspace-csharp (f)
-  "Function for `jacob-backspace' to help with csharp.
-
-Figure out if the `<' or `>' before point is part of a
-`type_argument_list', and delete accordingly. F is used to
-perform the deletion."
-  (when (or (= (char-before) ?<)
-            (= (char-before) ?>))
-    (let ((node-parent (save-excursion
-                         (backward-char)
-                         (treesit-node-type
-                          (treesit-node-parent
-                           (treesit-node-at (point)))))))
-      (when (string= node-parent "type_argument_list")
-        (let ((table (copy-syntax-table csharp-mode-syntax-table)))
-          (modify-syntax-entry ?< "(>" table)
-          (modify-syntax-entry ?> ")>" table)
-          (with-syntax-table table
-            (if (= (char-before) ?<)
-                (backward-char)
-              (backward-sexp))
-            (funcall f)))
-        t))))
 
 (defun jacob-random-init ()
   "Go to a random place in init file."
@@ -1561,14 +1610,6 @@ perform the deletion."
     (forward-line)
     (indent-pp-sexp t)))
 
-(defun jacob-system-free-space ()
-  "Display free space on system storage.
-Should work cross platform."
-  (interactive)
-  (shell-command (pcase system-type
-                   ('gnu/linux "df -h")
-                   ('windows-nt "powershell -Command Get-Volume"))))
-
 (defun jacob-alist-to-form-data (alist)
   "Convert ALIST to form-data for http request."
   (mapconcat (lambda (x)
@@ -1576,32 +1617,15 @@ Should work cross platform."
              alist
              "&"))
 
-(defun jacob-format-xml ()
-  "Format xml on current line."
-  (insert (let ((input (prog1
-                           (buffer-substring-no-properties (line-beginning-position) (line-end-position))
-                         (delete-region (line-beginning-position) (line-end-position)))))
-            (with-temp-buffer
-              (insert input)
-              (goto-char (point-min))
-              (while (search-forward-regexp "\>[ \\t]*\<" nil t)
-                (backward-char) (insert "\n"))
-              (nxml-mode)
-              (indent-region (point-min) (point-max))
-              (buffer-substring-no-properties (point-min) (point-max))))))
-
-(defun jacob-goto-pi ()
-  "Connect to raspberry pi."
-  (interactive)
-  (find-file jacob-raspberry-pi-connection-string))
-
 (defun jacob-toggle-modeline ()
   "Toggle visibility of modeline."
   (interactive)
-  (set 'mode-line-format (eval
-                          (car
-                           (get 'mode-line-format
-                                'standard-value)))))
+  (if mode-line-format
+      (setq mode-line-format nil)
+    (set 'mode-line-format (eval
+                            (car
+                             (get 'mode-line-format
+                                  'standard-value))))))
 
 (defun jacob-async-shell-command (command)
   "Wrapper command for (`async-shell-command' COMMAND)."
@@ -1715,17 +1739,6 @@ Otherwise, display error message."
         (other-window 1))
     (message "More/less than 2 windows in frame.")))
 
-(defun jacob-clear-highlighted-regex ()
-  "Remove all highlighting."
-  (interactive)
-  (unhighlight-regexp t))
-
-(defun jacob-npm-project-p ()
-  "Return non-nil if current project is an npm project."
-  (seq-find (lambda (x)
-              (string= x "package.json"))
-            (directory-files (project-root (project-current)))))
-
 (defun jacob-git-push-set-upstream ()
   "Push current git branch to new upstream branch."
   (interactive)
@@ -1761,19 +1774,7 @@ For use with GitLab only."
     (with-temp-buffer
       (eshell-command command t))))
 
-(defun jacob-next-error-or-punct ()
-  "Wrapper command to allow moving forward by error or punctuation."
-  (interactive)
-  (if flymake-mode
-      (flymake-goto-next-error 1 nil t)
-    (xah-forward-punct)))
 
-(defun jacob-previous-error-or-punct ()
-  "Wrapper command to allow moving backward by error or punctuation."
-  (interactive)
-  (if flymake-mode
-      (flymake-goto-prev-error 1 nil t)
-    (xah-backward-punct)))
 
 (defun jacob-gitlab-link-at-point ()
   "Create a gitlab link for the line of code at point."
@@ -1792,12 +1793,8 @@ For use with GitLab only."
     (message "%s" link)))
 
 
-
 ;; abbrevs
 
-
-
-
 ;; jacob-insert-config
 
 ;; JACOBTODO: remove when switched to yasnippet
@@ -1832,18 +1829,6 @@ deleted."
     ("dont" "don't")
     ("its" "it's")
     ("havent" "haven't")))
-
-(define-abbrev-table 'common-c-abbrev-table
-  '(("lt" "<")
-    ("gt" ">")
-    ("lte" "<=")
-    ("gte" ">=")
-    ("eq" "==")
-    ("neq" "!=")
-    ("or" "||")
-    ("and" "&&")
-    ("ret" "return"))
-  :enable-function 'jacob-point-in-code-p)
 
 (define-abbrev-table 'js-ts-mode-abbrev-table
   '(("cl" "console.log(■);" jacob-insert)
@@ -1910,24 +1895,6 @@ deleted."
   :parents (list jacob-comment-abbrev-table)
   :enable-function 'jacob-point-in-code-p)
 
-(define-abbrev-table 'lisp-mode-abbrev-table
-  '()
-  nil
-  :parents (list jacob-comment-abbrev-table)
-  :enable-function 'jacob-point-in-code-p)
-
-(define-abbrev-table 'go-mode-abbrev-table
-  '(("pl" "fmt.Println(■)" jacob-insert)
-    ("pf" "fmt.Printf(■)" jacob-insert)
-    ("fun" "func ■()\n{\n\n}" jacob-insert)
-    ("for" "for ■\n{\n\n}" jacob-insert)
-    ("forr" "for i, v := range ■\n{\n\n}" jacob-insert)
-    ("if" "if ■\n{\n\n}" jacob-insert)
-    ("struct" "struct\n{\n\n}" jacob-insert)
-    ("ass" ":="))
-  nil
-  :parents (list common-c-abbrev-table))
-
 (define-abbrev-table 'purescript-mode-abbrev-table
   '(("fa" "∀")
     ("ar" "->")
@@ -1943,24 +1910,13 @@ deleted."
     ("tuple" "Tuple")))
 
 
-
 ;; keybindings
-
-;; default keybinds that can be rebound:
-
-(keymap-set lisp-interaction-mode-map "C-j" #'jacob-eval-print-last-sexp)
-
-(keymap-global-unset "C-x C-c")         ; `save-buffers-kill-terminal'
-(keymap-global-unset "C-z")             ; `suspend-frame'
-(keymap-global-unset "C-x u")           ; `undo'
-
-(with-eval-after-load 'consult
-  (keymap-set project-prefix-map "g" #'jacob-project-search)
-  )
 
 
 ;; macros
 
+;; JACOBTODO: can i do something like bind key to return key instead
+;; of this?
 (fset 'jacob-return-macro [return])
 
 
@@ -1968,69 +1924,8 @@ deleted."
 
 (with-eval-after-load 'xah-fly-keys
 
-  (global-set-key (kbd "<f7>") 'xah-fly-leader-key-map)
-
-  (define-key global-map (kbd "M-SPC") 'xah-fly-command-mode-activate)
-
-  (define-key xah-fly-command-map "h" #'jacob-beginning-of-line)
-  (define-key xah-fly-command-map ";" #'jacob-end-of-line)
-  (define-key xah-fly-command-map "s" #'jacob-return-macro)
-  (define-key xah-fly-command-map "d" #'jacob-backspace)
-  ;; (define-key xah-fly-command-map "4" 'other-window-prefix)
-  (define-key xah-fly-command-map "9" 'jacob-swap-visible-buffers)
-  (define-key xah-fly-command-map "'" 'jacob-format-words)
-  (define-key xah-fly-insert-map (kbd "M-SPC") 'xah-fly-command-mode-activate)
-
-  (define-key xah-fly-command-map (kbd "=") 'jacob-next-error-or-punct)
-  (define-key xah-fly-command-map (kbd "-") 'jacob-previous-error-or-punct)
-
-  (define-key xah-fly-leader-key-map "u" 'kill-current-buffer)
-
-  ;; (define-key map "P" 'jacob-git-push-set-upstream)
-
-  (let ((map project-prefix-map))
-    (define-key map "g" 'jacob-project-search))
-
-  (define-key xah-fly-leader-key-map ",n" 'jacob-eval-and-replace)
-
-  (define-key xah-fly-leader-key-map "ep" project-prefix-map)
-
-  (define-key xah-fly-leader-key-map "l3" 'jacob-async-shell-command)
-  (define-key xah-fly-leader-key-map "l8" 'modus-themes-toggle)
-  (define-key xah-fly-leader-key-map "la" 'global-text-scale-adjust)
-
-  (define-key xah-fly-leader-key-map "/c" 'vc-create-branch)
-  (define-key xah-fly-leader-key-map "/b" 'vc-switch-branch)
-  (define-key xah-fly-leader-key-map "/x" 'jacob-git-pull-master-new-branch)
-
-  (define-key xah-fly-leader-key-map "wj" 'xref-find-references)
-
-  (setq insert-pair-alist (append insert-pair-alist
-                                  '((?k ?\( ?\))
-                                    (?l ?\[ ?\])
-                                    (?j ?\{ ?\})
-                                    (?u ?\" ?\")
-                                    (?i ?\' ?\')
-                                    (?h ?\< ?\>))))
-
-  (define-key xah-fly-leader-key-map "dk" 'insert-pair)
-  (define-key xah-fly-leader-key-map "dl" 'insert-pair)
-  (define-key xah-fly-leader-key-map "dj" 'insert-pair)
-  (define-key xah-fly-leader-key-map "du" 'insert-pair)
-  (define-key xah-fly-leader-key-map "di" 'insert-pair)
-  (define-key xah-fly-leader-key-map "dh" 'insert-pair)
-
-  (defvar jacob-recenter-repeat-map
-    (let ((map (make-sparse-keymap)))
-      (define-key map "p" 'recenter-top-bottom)
-      map))
-
-  (put 'recenter-top-bottom 'repeat-map 'jacob-recenter-repeat-map)
-
   (let ((map minibuffer-local-completion-map))
     (define-key map "SPC" 'self-insert-command))
-
-  
 
   (let ((map occur-mode-map))
     (jacob-xfk-define-key-in-major-mode map "q" 'quit-window)
@@ -2073,16 +1968,7 @@ deleted."
       (jacob-xfk-define-key-in-major-mode map "q" #'quit-window)
       (jacob-xfk-define-key-in-major-mode map "g" #'revert-buffer)))
 
-  (with-eval-after-load 'help
-    (jacob-xfk-define-key-in-major-mode help-mode-map "q" #'quit-window)
-    (jacob-xfk-define-key-in-major-mode help-mode-map "e" #'help-go-back)
-    (jacob-xfk-define-key-in-major-mode help-mode-map "r" #'jacob-go-forward)
-    (jacob-xfk-define-key-in-major-mode help-mode-map "w" #'jacob-help-edit)
-    (jacob-xfk-define-key-in-major-mode help-mode-map "g" #'revert-buffer)
-    (jacob-xfk-define-key-in-major-mode help-mode-map "s" #'help-view-source))
-
-  (with-eval-after-load 'compile
-    (jacob-xfk-define-key-in-major-mode compilation-mode-map "g" #'recompile))
+  
 
   (with-eval-after-load 'csharp-mode
     (let ((map csharp-ts-mode-map))
