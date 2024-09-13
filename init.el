@@ -64,6 +64,25 @@
 (use-package abbrev
   :hook (text-mode-hook prog-mode-hook)
   :config
+
+  (defun jacob-setup-abbrev-table (table abbrevs &rest properties)
+    "Setup an abbrev table.
+Clear the abbrev TABLE.  Then populate it with ABBREVS.  Finally,
+set the PROPERTIES of TABLE."
+    ;; JACOBTODO: use this function instead of `define-abbrev-table'.
+    ;; JACOBTODO: overwrite parents? 🤔
+    (clear-abbrev-table table)
+    (dolist (abbrev abbrevs)
+      (apply #'define-abbrev table abbrev))
+    ;; stolen from abbrev.el itself
+    (while (consp properties)
+      (unless (cdr properties)
+        (error "Missing value for property %S"
+               (car properties)))
+      (abbrev-table-put table
+                        (pop properties)
+                        (pop properties))))
+
   (defun jacob-point-in-text-p ()
     "Return t if in comment or string. Else nil."
     (let ((xsyntax-state (syntax-ppss)))
@@ -248,11 +267,17 @@
   :defer
   :after abbrev
   :config
-  (define-abbrev-table 'lisp-mode-abbrev-table
-    '()
-    nil
-    :parents (list jacob-comment-abbrev-table)
-    :enable-function 'jacob-point-in-code-p))
+  
+  ;; (define-abbrev-table 'lisp-mode-abbrev-table
+  ;;   '()
+  ;;   nil
+  ;;   :parents (list jacob-comment-abbrev-table)
+  ;;   :enable-function 'jacob-point-in-code-p)
+  (jacob-setup-abbrev-table lisp-mode-abbrev-table
+                            nil
+                            :parents (list jacob-comment-abbrev-table)
+                            :enable-function 'jacob-point-in-code-p)
+  )
 
 ;; support for files like `/etc/fstab'
 (use-package generic-x)
@@ -678,22 +703,21 @@ hides this information."
     (add-hook 'before-save-hook 'jacob-indent-buffer nil "LOCAL"))
   :hook (emacs-lisp-mode-hook . jacob-elisp-config-hook-function)
   :config
-  (define-abbrev-table 'emacs-lisp-mode-abbrev-table
-    '(("up" "use-package" jacob-abbrev-no-insert)
-      ("d" "defun" jacob-abbrev-no-insert)
-      ("p" "point" jacob-abbrev-no-insert)
-      ("point" "(point)" jacob-abbrev-no-insert)
-      ("ah" "add-hook" jacob-abbrev-no-insert)
-      ("l" "lambda" jacob-abbrev-no-insert)
-      ("gc" "goto-char" jacob-abbrev-no-insert)
-      ("weal" "with-eval-after-load" jacob-abbrev-no-insert)
-      ("mes" "message" jacob-abbrev-no-insert)
-      ("pmi" "point-min" jacob-abbrev-no-insert)
-      ("pma" "point-max" jacob-abbrev-no-insert)
-      ("int" "(interactive)"))
-    nil
-    :parents (list jacob-comment-abbrev-table)
-    :enable-function 'jacob-point-in-code-p)
+  (jacob-setup-abbrev-table emacs-lisp-mode-abbrev-table
+                            '(("up" "use-package" jacob-abbrev-no-insert)
+                              ("d" "defun" jacob-abbrev-no-insert)
+                              ("p" "point" jacob-abbrev-no-insert)
+                              ("point" "(point)" jacob-abbrev-no-insert)
+                              ("ah" "add-hook" jacob-abbrev-no-insert)
+                              ("l" "lambda" jacob-abbrev-no-insert)
+                              ("gc" "goto-char" jacob-abbrev-no-insert)
+                              ("weal" "with-eval-after-load" jacob-abbrev-no-insert)
+                              ("mes" "message" jacob-abbrev-no-insert)
+                              ("pmi" "point-min" jacob-abbrev-no-insert)
+                              ("pma" "point-max" jacob-abbrev-no-insert)
+                              ("int" "(interactive)"))
+                            :parents (list jacob-comment-abbrev-table)
+                            :enable-function 'jacob-point-in-code-p)
   :bind ( :map lisp-interaction-mode-map
           ("C-j" . jacob-eval-print-last-sexp)))
 
