@@ -1893,8 +1893,7 @@ deleted."
   :parents (list js-ts-mode-abbrev-table))
 
 (define-abbrev-table 'csharp-ts-mode-abbrev-table
-  '(("class" "" jacob-insert-class)
-    ("cons" "public ■ ()\n{\n\n}" jacob-insert)
+  '(("cons" "public ■ ()\n{\n\n}" jacob-insert)
     ("v" "var" jacob-abbrev-no-insert)
     ("switche" "switch\n{\n■\n}" jacob-insert)
     ("cl" "Console.WriteLine(■);" jacob-insert)
