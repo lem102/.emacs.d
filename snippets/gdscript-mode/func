@@ -3,4 +3,4 @@
 # key: func
 # --
 func ${1:name}(${2:arguments}) -> ${3:void}:
-    $0
+	$0

@@ -1614,7 +1614,8 @@ Otherwise, kill from point to the end of the line."
   :defer
   :config
   (jacob-setup-abbrev-table gdscript-mode-abbrev-table
-                            '(("v" "var")
+                            '(("v" "var" jacob-abbrev-no-insert)
+                              ("c" "const" jacob-abbrev-no-insert)
                               ("v2" "Vector2")
                               ("ret" "return"))
                             :parents (list jacob-comment-abbrev-table)
