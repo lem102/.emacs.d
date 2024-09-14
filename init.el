@@ -62,15 +62,16 @@
 
 
 (use-package abbrev
-  :hook (text-mode-hook prog-mode-hook)
+  :hook (text-mode-hook prog-mode-hook comint-mode)
   :config
-
   (defun jacob-setup-abbrev-table (table abbrevs &rest properties)
     "Setup an abbrev table.
 Clear the abbrev TABLE.  Then populate it with ABBREVS.  Finally,
 set the PROPERTIES of TABLE."
     ;; JACOBTODO: use this function instead of `define-abbrev-table'.
-    ;; JACOBTODO: overwrite parents? 🤔
+    ;; JACOBTODO: overwrite parents? 🤔 I think yes, you could use
+    ;; `abbrev-table-get' to get the original property and combine
+    ;; them in arguments
     (clear-abbrev-table table)
     (dolist (abbrev abbrevs)
       (apply #'define-abbrev table abbrev))
@@ -1888,14 +1889,14 @@ deleted."
 (define-abbrev-table 'csharp-ts-mode-abbrev-table
   '(("class" "" jacob-insert-class)
     ("cons" "public ■ ()\n{\n\n}" jacob-insert)
-    ("v" "var" t)
+    ("v" "var" jacob-abbrev-no-insert)
     ("switche" "switch\n{\n■\n}" jacob-insert)
     ("cl" "Console.WriteLine(■);" jacob-insert)
     ("prop" "public ■ { get; set; }" jacob-insert)
     ("field" "private ■ _" jacob-insert)
-    ("jwe" "Console.WriteLine(\"jacobwozere\");" t)
+    ("jwe" "Console.WriteLine(\"jacobwozere\");" jacob-abbrev-no-insert)
     ;; JACOBTODO: cant insert tostring inside interpolated string thing e.g. $"bla bla {variable.tostr}" won't work
-    ("tostr" "ToString()" t)
+    ("tostr" "ToString()" jacob-abbrev-no-insert)
     ("iia" "It.IsAny<■>()" jacob-insert)
     ("az" "async")
     ("ns" "namespace")
