@@ -828,7 +828,7 @@ in when it tangles into a file."
 
 (use-package winner
   :after xah-fly-keys
-  :config
+  :init
   (winner-mode 1)
   :bind ( :map xah-fly-command-map
           ("1" . winner-undo)
