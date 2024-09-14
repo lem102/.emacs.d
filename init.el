@@ -1592,11 +1592,12 @@ Otherwise, kill from point to the end of the line."
   :ensure
   :defer
   :config
-  (define-abbrev-table 'gdscript-mode-abbrev-table
-    '(("v2" "Vector2")
-      ("ret" "return"))
-    :parents (list jacob-comment-abbrev-table)
-    :enable-function 'jacob-point-in-code-p))
+  (jacob-setup-abbrev-table gdscript-mode-abbrev-table
+                            '(("v" "var")
+                              ("v2" "Vector2")
+                              ("ret" "return"))
+                            :parents (list jacob-comment-abbrev-table)
+                            :enable-function 'jacob-point-in-code-p))
 
 
 ;; personal functions
