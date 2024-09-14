@@ -1230,7 +1230,9 @@ Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (c
           ("s k" . jacob-slack-kill-buffers)))
 
 (use-package csharp-toolbox
+  ;; JACOBTODO: can i make this use ssh?
   :vc (csharp-toolbox :url "https://github.com/lem102/csharp-toolbox.git")
+  ;; JACOBTODO: how should i load this properly? 🤔
   :after csharp-mode
   :bind ( :map jacob-xfk-map
           ("c f" . csharp-toolbox-format-statement)
@@ -1545,6 +1547,9 @@ Otherwise, kill from point to the end of the line."
   :ensure
   :hook (org-mode-hook . verb-mode))
 
+(use-package impostman
+  :defer)
+
 (use-package web-mode
   :ensure
   :mode "\\.cshtml\\'")
@@ -1562,6 +1567,7 @@ Otherwise, kill from point to the end of the line."
 
 (use-package yasnippet
   :ensure
+  :demand
   :hook (snippet-mode-hook . jacob-snippet-mode-hook)
   :config
   (yas-global-mode 1)
