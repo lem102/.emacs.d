@@ -582,7 +582,27 @@ perform the deletion."
                   (backward-char)
                 (backward-sexp))
               (funcall f)))
-          t)))))
+          t))))
+
+  (jacob-setup-abbrev-table csharp-ts-mode-abbrev-table
+                            ;; JACOBTODO: cant insert abbrevs inside interpolated strings
+                            '(("v" "var" jacob-abbrev-no-insert)
+                              ("tostr" "ToString()" jacob-abbrev-no-insert)
+                              ("jwe" "Console.WriteLine(\"jacobwozere\");" jacob-abbrev-no-insert)
+                              ("az" "async")
+                              ("ns" "namespace")
+                              ("xgon" "x => x")
+                              ("ro" "readonly")
+                              ("nuguid" "Guid.NewGuid()")
+                              ("pri" "private")
+                              ("pub" "public")
+                              ("sta" "static")
+                              ("ret" "return")
+                              ("eq" "==")
+                              ("band" "&&")
+                              ("bor" "||"))
+                            :parents (list jacob-comment-abbrev-table)
+                            :enable-function 'jacob-point-in-code-p))
 
 (use-package inf-lisp
   :defer
@@ -1893,39 +1913,6 @@ deleted."
   nil
   nil
   :parents (list js-ts-mode-abbrev-table))
-
-(define-abbrev-table 'csharp-ts-mode-abbrev-table
-  '(("cons" "public ■ ()\n{\n\n}" jacob-insert)
-    ("v" "var" jacob-abbrev-no-insert)
-    ("switche" "switch\n{\n■\n}" jacob-insert)
-    ("cl" "Console.WriteLine(■);" jacob-insert)
-    ("prop" "public ■ { get; set; }" jacob-insert)
-    ("field" "private ■ _" jacob-insert)
-    ("jwe" "Console.WriteLine(\"jacobwozere\");" jacob-abbrev-no-insert)
-    ;; JACOBTODO: cant insert tostring inside interpolated string thing e.g. $"bla bla {variable.tostr}" won't work
-    ("tostr" "ToString()" jacob-abbrev-no-insert)
-    ("iia" "It.IsAny<■>()" jacob-insert)
-    ("az" "async")
-    ("ns" "namespace")
-    ("xgon" "x => x")
-    ("ro" "readonly")
-    ("nuguid" "Guid.NewGuid()")
-    ("pri" "private")
-    ("pub" "public")
-    ("sta" "static")
-    ("ret" "return")
-    ("eq" "==")
-    ("fun" "(■) => " jacob-insert)
-    ("if" "if (■)\n{\n\n}" jacob-insert)
-    ("for" "for (■)\n{\n\n}" jacob-insert)
-    ("while" "while (■)\n{\n}" jacob-insert)
-    ("switch" "switch (■)\n{\n}" jacob-insert)
-    ("case" "case ■: \n\nbreak;" jacob-insert)
-    ("band" "&&")
-    ("bor" "||"))
-  nil
-  :parents (list jacob-comment-abbrev-table)
-  :enable-function 'jacob-point-in-code-p)
 
 (define-abbrev-table 'purescript-mode-abbrev-table
   '(("fa" "∀")
