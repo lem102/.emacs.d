@@ -718,7 +718,8 @@ hides this information."
                               ("pma" "point-max" jacob-abbrev-no-insert)
                               ("int" "(interactive)"))
                             :parents (list jacob-comment-abbrev-table)
-                            :enable-function 'jacob-point-in-code-p)
+                            :enable-function 'jacob-point-in-code-p
+                            :regexp "\\(^\\|[\s\t)]\\)\\(?1:[[:alpha:]-]+\\)")
   :bind ( :map lisp-interaction-mode-map
           ("C-j" . jacob-eval-print-last-sexp)))
 
