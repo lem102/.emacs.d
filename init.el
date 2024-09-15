@@ -721,7 +721,8 @@ hides this information."
   (defun jacob-elisp-config-hook-function ()
     "Configure `emacs-lisp-mode' when hook run."
     (flymake-mode 1)
-    (add-hook 'before-save-hook 'jacob-indent-buffer nil "LOCAL"))
+    (add-hook 'before-save-hook 'jacob-indent-buffer nil "LOCAL")
+    (setq-local yas-key-syntaxes '("w_")))
   :hook (emacs-lisp-mode-hook . jacob-elisp-config-hook-function)
   :config
   (jacob-setup-abbrev-table emacs-lisp-mode-abbrev-table
