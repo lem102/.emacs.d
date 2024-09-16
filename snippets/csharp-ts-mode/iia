@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: iia
+# key: iia
+# --
+It.IsAny<${1:string}>()

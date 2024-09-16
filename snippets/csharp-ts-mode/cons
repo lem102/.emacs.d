@@ -1,0 +1,7 @@
+# key: cons
+# name: cons
+# --
+public ${1:Name}($2)
+{
+    $0
+}
