@@ -53,7 +53,6 @@
 
 
 (use-package abbrev
-  :diminish
   :hook (text-mode-hook prog-mode-hook comint-mode)
   :config
   (defun jacob-setup-abbrev-table (table abbrevs &rest properties)
@@ -332,7 +331,6 @@ set the PROPERTIES of TABLE."
   (warning-minimum-level :error))
 
 (use-package subword
-  :diminish
   :config
   (global-subword-mode 1))
 
@@ -672,11 +670,7 @@ hides this information."
     
     (advice-add 'eshell-interrupt-process :after #'jacob-confirm-terminate-batch-job)))
 
-(use-package diminish :ensure)
-
 (use-package eldoc
-  ;; JACOBTODO: why does eldoc mode line come back after loading eglot?
-  :diminish eldoc-mode
   :init
   (global-eldoc-mode 1))
 
@@ -1107,7 +1101,6 @@ Useful for deleting ^M after `eglot-code-actions'."
                         (?. . jacob-avy-action-xref))))
 
 (use-package apheleia
-  :diminish
   :ensure
   :config
   (apheleia-global-mode 1)
@@ -1132,7 +1125,6 @@ buffer."
   (advice-add #'apheleia-format-buffer :around #'jacob-apheleia-advice))
 
 (use-package rainbow-mode
-  :diminish
   :ensure
   :hook prog-mode-hook)
 
@@ -1601,7 +1593,6 @@ Otherwise, kill from point to the end of the line."
   (jacob-xfk-define-key-in-major-mode lisp-mode-map " wk" #'sly-edit-definition))
 
 (use-package yasnippet
-  :diminish yas-minor-mode
   :ensure
   :demand
   :hook (snippet-mode-hook . jacob-snippet-mode-hook)
