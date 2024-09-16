@@ -50,15 +50,6 @@
 
 (defvar-keymap jacob-xfk-map)
 
-(defun jacob-xfk-define-key-in-major-mode (keymap key command)
-  "In KEYMAP bind KEY to COMMAND only when in xfk command mode."
-  ;; FIXME: keys that are not already bound will not work for jacob-xfk-define-key-in-major-mode
-  (with-eval-after-load 'xah-fly-keys
-    (define-key keymap
-                (vector 'remap
-                        (lookup-key xah-fly-command-map key))
-                command)))
-
 
 
 (use-package abbrev
@@ -311,15 +302,6 @@ set the PROPERTIES of TABLE."
   (help-window-select t)
   (help-enable-variable-value-editing t))
 
-(use-package help-mode
-  :defer
-  :config
-  (jacob-xfk-define-key-in-major-mode help-mode-map "q" #'quit-window)
-  (jacob-xfk-define-key-in-major-mode help-mode-map "e" #'help-go-back)
-  (jacob-xfk-define-key-in-major-mode help-mode-map "r" #'jacob-go-forward)
-  (jacob-xfk-define-key-in-major-mode help-mode-map "g" #'revert-buffer)
-  (jacob-xfk-define-key-in-major-mode help-mode-map "s" #'help-view-source))
-
 (use-package help-fns
   :defer
   :config
@@ -431,7 +413,7 @@ set the PROPERTIES of TABLE."
   (tramp-archive-enabled nil "lots of problems. for now, disable it!"))
 
 (use-package csharp-mode
-  :defer
+  :hook (csharp-ts-mode-hook . jacob-csharp-ts-hook-function)
   :config
   ;; JACOBTODO: include only my modifications rather than the whole data structure
   (setopt csharp-ts-mode--indent-rules
@@ -521,8 +503,6 @@ set the PROPERTIES of TABLE."
     (setq treesit-defun-type-regexp "\\(method\\|constructor\\|field\\)_declaration")
     (setq jacob-backspace-function #'jacob-backspace-csharp))
 
-  (add-hook 'csharp-ts-mode-hook 'jacob-csharp-ts-hook-function)
-
   (add-to-list 'compilation-error-regexp-alist-alist
                '(jacob-dotnet-stacktrace-re
                  "   at [^
@@ -610,24 +590,10 @@ perform the deletion."
   (inferior-lisp-program "sbcl"))
 
 (use-package dired
-  :defer
   :config
   (defun jacob-dired-mode-setup ()
     "Hook function for dired."
     (dired-hide-details-mode 1))
-
-  (jacob-xfk-define-key-in-major-mode dired-mode-map "q" #'quit-window)
-  (jacob-xfk-define-key-in-major-mode dired-mode-map "i" #'dired-previous-line)
-  (jacob-xfk-define-key-in-major-mode dired-mode-map "k" #'dired-next-line)
-  (jacob-xfk-define-key-in-major-mode dired-mode-map "s" #'dired-find-file)
-  (jacob-xfk-define-key-in-major-mode dired-mode-map "e" #'dired-mark)
-  (jacob-xfk-define-key-in-major-mode dired-mode-map "r" #'dired-unmark)
-  (jacob-xfk-define-key-in-major-mode dired-mode-map "g" #'revert-buffer)
-  (jacob-xfk-define-key-in-major-mode dired-mode-map "x" #'dired-do-rename)
-  (jacob-xfk-define-key-in-major-mode dired-mode-map "c" #'dired-do-copy)
-  (jacob-xfk-define-key-in-major-mode dired-mode-map "d" #'dired-do-delete) ; we skip the "flag, delete" process as files are sent to system bin on deletion
-  (jacob-xfk-define-key-in-major-mode dired-mode-map "u" #'dired-up-directory)
-  (jacob-xfk-define-key-in-major-mode dired-mode-map "j" #'dired-goto-file)
   :hook (dired-mode-hook . jacob-dired-mode-setup)
   :custom
   (dired-recursive-copies 'always)
@@ -637,16 +603,19 @@ perform the deletion."
 
 (use-package dired-aux
   :defer
+  :after dired
   :custom
   (dired-vc-rename-file t))
 
 (use-package ls-lisp
+  :defer
+  :after dired
   :custom
   (ls-lisp-use-insert-directory-program nil)
   (ls-lisp-dirs-first t))
 
 (use-package esh-mode
-  :defer t
+  :defer
   :custom
   (eshell-scroll-to-bottom-on-output t)
   :config
@@ -745,7 +714,6 @@ hides this information."
           ("C-j" . jacob-eval-print-last-sexp)))
 
 (use-package org
-  :defer
   :config
   (defun jacob-org-babel-tangle-delete-newline ()
     "Some code to get rid of the newline org babel likes to add
@@ -824,7 +792,6 @@ in when it tangles into a file."
                ("SPC" . #'smerge-keep-all)))
 
 (use-package calendar
-  :defer
   :hook (calendar-today-visible-hook . calendar-mark-today)
   :custom
   (diary-date-forms diary-european-date-forms)
@@ -930,8 +897,6 @@ Intended as before advice for `sql-send-paragraph'."
 
 (use-package compile
   :hook (compilation-filter-hook . ansi-color-compilation-filter)
-  :config
-  (jacob-xfk-define-key-in-major-mode compilation-mode-map "g" #'recompile)
   :custom
   (compilation-always-kill t)
   (compilation-scroll-output t))
@@ -1331,8 +1296,21 @@ Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (c
 
 (use-package purescript-mode
   :ensure
-  :defer
-  :hook (purescript-mode-hook . turn-on-purescript-indentation))
+  :hook (purescript-mode-hook . turn-on-purescript-indentation)
+  :config
+  (jacob-setup-abbrev-table purescript-mode-abbrev-table
+                            '(("fa" "∀")
+                              ("ar" "->")
+                              ("nil" "Nil")
+                              ("maybe" "Maybe")
+                              ("unit" "Unit")
+                              ("int" "Int")
+                              ("boolean" "Boolean")
+                              ("nothing" "Nothing")
+                              ("just" "Just")
+                              ("effect" "Effect")
+                              ("list" "List")
+                              ("tuple" "Tuple"))))
 
 (use-package vertico
   :ensure
@@ -1533,6 +1511,22 @@ Otherwise, kill from point to the end of the line."
           (t
            (kill-line))))
 
+  (defun jacob-xfk-define-key-in-major-mode (keymap key command)
+    "In KEYMAP bind KEY to COMMAND only when in xfk command mode."
+    ;; FIXME: keys that are not already bound will not work for jacob-xfk-define-key-in-major-mode
+    (define-key keymap
+                (vector 'remap
+                        (lookup-key xah-fly-command-map key))
+                command))
+
+  (jacob-xfk-define-key-in-major-mode help-mode-map "q" #'quit-window)
+  (jacob-xfk-define-key-in-major-mode help-mode-map "e" #'help-go-back)
+  (jacob-xfk-define-key-in-major-mode help-mode-map "r" #'help-go-forward)
+  (jacob-xfk-define-key-in-major-mode help-mode-map "g" #'revert-buffer)
+  (jacob-xfk-define-key-in-major-mode help-mode-map "s" #'help-view-source)
+
+  (jacob-xfk-define-key-in-major-mode compilation-mode-map "g" #'recompile)
+
   :bind-keymap (("<f7>" . xah-fly-leader-key-map))
   :bind (("M-SPC" . xah-fly-command-mode-activate)
          :map xah-fly-command-map
@@ -1565,11 +1559,25 @@ Otherwise, kill from point to the end of the line."
          ("wj" . xref-find-references)
          (",n" . jacob-eval-and-replace)))
 
+(jacob-xfk-define-key-in-major-mode dired-mode-map "q" #'quit-window)
+(jacob-xfk-define-key-in-major-mode dired-mode-map "i" #'dired-previous-line)
+(jacob-xfk-define-key-in-major-mode dired-mode-map "k" #'dired-next-line)
+(jacob-xfk-define-key-in-major-mode dired-mode-map "s" #'dired-find-file)
+(jacob-xfk-define-key-in-major-mode dired-mode-map "e" #'dired-mark)
+(jacob-xfk-define-key-in-major-mode dired-mode-map "r" #'dired-unmark)
+(jacob-xfk-define-key-in-major-mode dired-mode-map "g" #'revert-buffer)
+(jacob-xfk-define-key-in-major-mode dired-mode-map "x" #'dired-do-rename)
+(jacob-xfk-define-key-in-major-mode dired-mode-map "c" #'dired-do-copy)
+(jacob-xfk-define-key-in-major-mode dired-mode-map "d" #'dired-do-delete) ; we skip the "flag, delete" process as files are sent to system bin on deletion
+(jacob-xfk-define-key-in-major-mode dired-mode-map "u" #'dired-up-directory)
+(jacob-xfk-define-key-in-major-mode dired-mode-map "j" #'dired-goto-file)
+
 (use-package verb
   :ensure
   :hook (org-mode-hook . verb-mode))
 
 (use-package impostman
+  :ensure
   :defer)
 
 (use-package web-mode
@@ -1603,7 +1611,42 @@ Otherwise, kill from point to the end of the line."
     "Replace text in yasnippet template."
     (yas-expand-snippet (buffer-string) (point-min) (point-max)))
 
-  (define-auto-insert "\\.cs$" [ "template.cs" jacob-autoinsert-yas-expand ]))
+  ;; JACOBTODO: move to csharp use package
+  (define-auto-insert "\\.cs$" [ "template.cs" jacob-autoinsert-yas-expand ])
+
+  (defun jacob-yas-camel-case (input)
+    "Convert INPUT to camel case e.g. apple banana -> appleBanana.
+For use in yasnippets."
+    (let* ((space-at-end (if (string-match-p " $" input) " " ""))
+           (words (split-string input))
+           (capitalised-words (seq-reduce (lambda (previous current)
+                                            (concat previous (capitalize current)))
+                                          (cdr words)
+                                          (car words))))
+      (concat capitalised-words space-at-end)))
+
+  (defun jacob-yas-pascal-case (input)
+    "Convert INPUT to pascal case e.g. apple banana -> AppleBanana.
+For use in yasnippets."
+    (let* ((space-at-end (if (string-match-p " $" input)
+                             " "
+                           ""))
+           (words (split-string input))
+           (capitalised-words (seq-reduce (lambda (previous current)
+                                            (concat previous (capitalize current)))
+                                          words
+                                          "")))
+      (concat capitalised-words space-at-end)))
+
+  (defun jacob-yas-snake-case (input)
+    "Convert INPUT to snake case e.g. apple banana -> apple_banana.
+For use in yasnippets."
+    (string-replace " " "_" input))
+
+  (defun jacob-yas-kebab-case (input)
+    "Convert INPUT to kebab case e.g. apple banana -> apple_banana.
+For use in yasnippets."
+    (string-replace " " "-" input)))
 
 (use-package color-theme-sanityinc-tomorrow
   :ensure
@@ -1633,7 +1676,6 @@ Otherwise, kill from point to the end of the line."
 (define-minor-mode jacob-screen-sharing-mode
   "Minor mode for sharing screens."
   :global t
-  :group 'jacob
   (let ((on (if jacob-screen-sharing-mode 1 0)))
     (global-hl-line-mode on)
     (global-display-line-numbers-mode on)))
@@ -1915,20 +1957,6 @@ deleted."
   nil
   nil
   :parents (list js-ts-mode-abbrev-table))
-
-(define-abbrev-table 'purescript-mode-abbrev-table
-  '(("fa" "∀")
-    ("ar" "->")
-    ("nil" "Nil")
-    ("maybe" "Maybe")
-    ("unit" "Unit")
-    ("int" "Int")
-    ("boolean" "Boolean")
-    ("nothing" "Nothing")
-    ("just" "Just")
-    ("effect" "Effect")
-    ("list" "List")
-    ("tuple" "Tuple")))
 
 
 ;; keybindings
