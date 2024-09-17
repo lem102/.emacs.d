@@ -1579,7 +1579,9 @@ Otherwise, kill from point to the end of the line."
 
 (use-package verb
   :ensure
-  :hook (org-mode-hook . verb-mode))
+  :hook (org-mode-hook . verb-mode)
+  :config
+  (jacob-xfk-define-key-in-major-mode verb-response-body-mode-map "q" #'quit-window))
 
 (use-package impostman
   :ensure
