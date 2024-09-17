@@ -302,8 +302,22 @@ set the PROPERTIES of TABLE."
   (help-window-select t)
   (help-enable-variable-value-editing t))
 
+(use-package help-mode
+  :defer
+  :after xah-fly-keys
+  :hook (help-mode-hook . jacob-help-mode-hook-function)
+  :config
+  (defun jacob-help-mode-hook-function ()
+    "Function for running in `help-mode-hook'."
+    (jacob-xfk-define-key-in-major-mode help-mode-map "s" #'help-view-source))
+  (jacob-xfk-define-key-in-major-mode help-mode-map "q" #'quit-window)
+  (jacob-xfk-define-key-in-major-mode help-mode-map "e" #'help-go-back)
+  (jacob-xfk-define-key-in-major-mode help-mode-map "r" #'help-go-forward)
+  (jacob-xfk-define-key-in-major-mode help-mode-map "g" #'revert-buffer))
+
 (use-package help-fns
   :defer
+  :after xah-fly-keys
   :config
   (defun jacob-help-edit ()
     "Edit variable in current help buffer."
@@ -315,7 +329,6 @@ set the PROPERTIES of TABLE."
       (if (search-forward "Its value is " nil "NOERROR")
           (help-fns-edit-variable)
         (message "cannot find editable variable"))))
-
   (jacob-xfk-define-key-in-major-mode help-mode-map "w" #'jacob-help-edit))
 
 (use-package help-at-pt
@@ -590,10 +603,24 @@ perform the deletion."
   (inferior-lisp-program "sbcl"))
 
 (use-package dired
+  :after xah-fly-keys
   :config
   (defun jacob-dired-mode-setup ()
-    "Hook function for dired."
-    (dired-hide-details-mode 1))
+    "Setup `dired-mode'."
+    (dired-hide-details-mode 1)
+    (jacob-xfk-define-key-in-major-mode dired-mode-map "s" #'dired-find-file)
+    (jacob-xfk-define-key-in-major-mode dired-mode-map "d" #'dired-do-delete) ; we skip the "flag, delete" process as files are sent to system bin on deletion
+    )
+  (jacob-xfk-define-key-in-major-mode dired-mode-map "q" #'quit-window)
+  (jacob-xfk-define-key-in-major-mode dired-mode-map "i" #'dired-previous-line)
+  (jacob-xfk-define-key-in-major-mode dired-mode-map "k" #'dired-next-line)
+  (jacob-xfk-define-key-in-major-mode dired-mode-map "e" #'dired-mark)
+  (jacob-xfk-define-key-in-major-mode dired-mode-map "r" #'dired-unmark)
+  (jacob-xfk-define-key-in-major-mode dired-mode-map "g" #'revert-buffer)
+  (jacob-xfk-define-key-in-major-mode dired-mode-map "x" #'dired-do-rename)
+  (jacob-xfk-define-key-in-major-mode dired-mode-map "c" #'dired-do-copy)
+  (jacob-xfk-define-key-in-major-mode dired-mode-map "u" #'dired-up-directory)
+  (jacob-xfk-define-key-in-major-mode dired-mode-map "j" #'dired-goto-file)
   :hook (dired-mode-hook . jacob-dired-mode-setup)
   :custom
   (dired-recursive-copies 'always)
@@ -860,16 +887,17 @@ Intended as before advice for `sql-send-paragraph'."
 
   (jacob-xfk-define-key-in-major-mode sql-mode-map " ,d" #'sql-send-paragraph)
 
-  (define-abbrev-table 'sql-mode-abbrev-table
-    '(("sel" "SELECT" jacob-abbrev-no-insert)
-      ("upd" "UPDATE" jacob-abbrev-no-insert)
-      ("del" "DELETE FROM ■\nWHERE condition;" jacob-insert)
-      ("joi" "JOIN ■\nON field = field" jacob-insert)
-      ("ins" "INSERT INTO ■ (column, column2)\nVALUES (value, value2)" jacob-insert)
-      ("ord" "ORDER BY")
-      ("gro" "GROUP BY")
-      ("and" "AND")
-      ("as" "AS")))
+  (jacob-setup-abbrev-table sql-mode-abbrev-table
+                            '(("sel" "SELECT" jacob-abbrev-no-insert)
+                              ("upd" "UPDATE" jacob-abbrev-no-insert)
+                              ("del" "DELETE FROM ■\nWHERE condition;" jacob-insert)
+                              ("joi" "JOIN ■\nON field = field" jacob-insert)
+                              ("ins" "INSERT INTO ■ (column, column2)\nVALUES (value, value2)" jacob-insert)
+                              ("ord" "ORDER BY")
+                              ("gro" "GROUP BY")
+                              ("and" "AND")
+                              ("as" "AS"))
+                            :parents (list jacob-comment-abbrev-table))
   :hook (sql-interactive-mode-hook . jacob-sql-interactive-mode-hook)
   :bind ( :map jacob-xfk-map
           ("d" . jacob-sql-connect)))
@@ -1405,6 +1433,21 @@ Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (c
   :custom
   (xah-fly-use-control-key nil)
   (xah-fly-use-meta-key nil)
+  :init
+  (defun jacob-xfk-define-key-in-major-mode (keymap key command)
+    "In KEYMAP bind KEY to COMMAND only when in xfk command mode."
+    ;; FIXME: keys that are not already bound will not work for jacob-xfk-define-key-in-major-mode
+    
+    ;; This is a big HACK, because it's time sensitive. It works by
+    ;; rebinding a key already bound to something in
+    ;; `xah-fly-command-map', but if that key is rebound to something
+    ;; else later, it will break the keybinding set up by this
+    ;; function. To fix this issue with further hacks, run this
+    ;; function in the hook for the major mode.
+    (define-key keymap
+                (vector 'remap
+                        (lookup-key xah-fly-command-map key))
+                command))
   :config
   (xah-fly-keys-set-layout "qwerty")
   (xah-fly-keys 1)
@@ -1508,19 +1551,7 @@ Otherwise, kill from point to the end of the line."
           (t
            (kill-line))))
 
-  (defun jacob-xfk-define-key-in-major-mode (keymap key command)
-    "In KEYMAP bind KEY to COMMAND only when in xfk command mode."
-    ;; FIXME: keys that are not already bound will not work for jacob-xfk-define-key-in-major-mode
-    (define-key keymap
-                (vector 'remap
-                        (lookup-key xah-fly-command-map key))
-                command))
-
-  (jacob-xfk-define-key-in-major-mode help-mode-map "q" #'quit-window)
-  (jacob-xfk-define-key-in-major-mode help-mode-map "e" #'help-go-back)
-  (jacob-xfk-define-key-in-major-mode help-mode-map "r" #'help-go-forward)
-  (jacob-xfk-define-key-in-major-mode help-mode-map "g" #'revert-buffer)
-  (jacob-xfk-define-key-in-major-mode help-mode-map "s" #'help-view-source)
+  (fset 'jacob-return-macro [return])
 
   (jacob-xfk-define-key-in-major-mode compilation-mode-map "g" #'recompile)
 
@@ -1555,19 +1586,6 @@ Otherwise, kill from point to the end of the line."
          ("u" . kill-current-buffer)
          ("wj" . xref-find-references)
          (",n" . jacob-eval-and-replace)))
-
-(jacob-xfk-define-key-in-major-mode dired-mode-map "q" #'quit-window)
-(jacob-xfk-define-key-in-major-mode dired-mode-map "i" #'dired-previous-line)
-(jacob-xfk-define-key-in-major-mode dired-mode-map "k" #'dired-next-line)
-(jacob-xfk-define-key-in-major-mode dired-mode-map "s" #'dired-find-file)
-(jacob-xfk-define-key-in-major-mode dired-mode-map "e" #'dired-mark)
-(jacob-xfk-define-key-in-major-mode dired-mode-map "r" #'dired-unmark)
-(jacob-xfk-define-key-in-major-mode dired-mode-map "g" #'revert-buffer)
-(jacob-xfk-define-key-in-major-mode dired-mode-map "x" #'dired-do-rename)
-(jacob-xfk-define-key-in-major-mode dired-mode-map "c" #'dired-do-copy)
-(jacob-xfk-define-key-in-major-mode dired-mode-map "d" #'dired-do-delete) ; we skip the "flag, delete" process as files are sent to system bin on deletion
-(jacob-xfk-define-key-in-major-mode dired-mode-map "u" #'dired-up-directory)
-(jacob-xfk-define-key-in-major-mode dired-mode-map "j" #'dired-goto-file)
 
 (use-package verb
   :ensure
@@ -1960,10 +1978,6 @@ deleted."
 
 
 ;; macros
-
-;; JACOBTODO: can i do something like bind key to return key instead
-;; of this?
-(fset 'jacob-return-macro [return])
 
 
 ;; xah-fly-keys keybindings
