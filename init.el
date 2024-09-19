@@ -12,6 +12,32 @@
 (setopt use-package-hook-name-suffix nil
         use-package-enable-imenu-support t)
 
+(defmacro jacob-define-hook-function (hook &rest body)
+  "Define function with BODY and bind it to HOOK."
+  (let* ((hook-name (symbol-name hook))
+         (function-name (intern (concat "jacob-" hook-name "-function"))))
+    `(progn
+       (defun ,function-name ()
+         ,(format "Auto-generated hook function for `%s'." hook-name)
+         ,@body)
+       (add-hook ',hook #',function-name))))
+
+(add-to-list 'use-package-keywords :jacob-hook "APPEND")
+
+;; The auto generated function we are adding to the hook is not from
+;; the package so we can safely imply deferred loading with this.
+(add-to-list 'use-package-deferring-keywords :jacob-hook "APPEND")
+
+(defun use-package-normalize/:jacob-hook (name keyword args)
+  (car args))
+
+(defun use-package-handler/:jacob-hook (name _keyword args rest state)
+  ;; i don't really know what i'm doing here 👍
+  (use-package-concat
+   (use-package-process-keywords name rest state)
+   `((with-eval-after-load ',name
+       (jacob-define-hook-function ,(car args) ,@(cdr args))))))
+
 
 
 ;; garbage collection
@@ -305,18 +331,14 @@ set the PROPERTIES of TABLE."
 (use-package help-mode
   :defer
   :after xah-fly-keys
-  :hook (help-mode-hook . jacob-help-mode-hook-function)
-  :config
-  (defun jacob-help-mode-hook-function ()
-    "Function for running in `help-mode-hook'."
-    (jacob-xfk-define-key-in-major-mode help-mode-map "s" #'help-view-source))
-  (jacob-xfk-define-key-in-major-mode help-mode-map "q" #'quit-window)
-  (jacob-xfk-define-key-in-major-mode help-mode-map "e" #'help-go-back)
-  (jacob-xfk-define-key-in-major-mode help-mode-map "r" #'help-go-forward)
-  (jacob-xfk-define-key-in-major-mode help-mode-map "g" #'revert-buffer))
+  :jacob-hook (help-mode-hook (jacob-xfk-local-key "s" #'help-view-source)
+                              (jacob-xfk-local-key "q" #'quit-window)
+                              (jacob-xfk-local-key "e" #'help-go-back)
+                              (jacob-xfk-local-key "r" #'help-go-forward)
+                              (jacob-xfk-local-key "g" #'revert-buffer)))
 
 (use-package help-fns
-  :defer
+  :jacob-hook (help-mode-hook (jacob-xfk-local-key "w" #'jacob-help-edit))
   :after xah-fly-keys
   :config
   (defun jacob-help-edit ()
@@ -328,8 +350,7 @@ set the PROPERTIES of TABLE."
       (goto-char (point-min))
       (if (search-forward "Its value is " nil "NOERROR")
           (help-fns-edit-variable)
-        (message "cannot find editable variable"))))
-  (jacob-xfk-define-key-in-major-mode help-mode-map "w" #'jacob-help-edit))
+        (message "cannot find editable variable")))))
 
 (use-package help-at-pt
   :defer
@@ -380,35 +401,30 @@ set the PROPERTIES of TABLE."
   :defer
   :custom
   (vc-git-show-stash 0 "show 0 stashes")
-  ;; (vc-ignore-dir-regexp
-  ;;  (format "\\(%s\\)\\|\\(%s\\)"
-  ;;          vc-ignore-dir-regexp
-  ;;          tramp-file-name-regexp)
-  ;;  "ignore tramp files")
-  )
+  (vc-ignore-dir-regexp
+   (format "\\(%s\\)\\|\\(%s\\)"
+           vc-ignore-dir-regexp
+           tramp-file-name-regexp)
+   "ignore tramp files"))
 
 (use-package vc-git
-  :defer
-  :config
-  (jacob-xfk-define-key-in-major-mode vc-git-log-view-mode-map "q" #'quit-window))
+  :jacob-hook (vc-git-log-view-mode-hook (jacob-xfk-local-key "q" #'quit-window)))
 
 (use-package vc-dir
-  :defer
-  :config
-  (jacob-xfk-define-key-in-major-mode vc-dir-mode-map "q" #'quit-window)
-  (jacob-xfk-define-key-in-major-mode vc-dir-mode-map "g" #'revert-buffer)
-  (jacob-xfk-define-key-in-major-mode vc-dir-mode-map "i" #'vc-dir-previous-line)
-  (jacob-xfk-define-key-in-major-mode vc-dir-mode-map "k" #'vc-dir-next-line)
-  (jacob-xfk-define-key-in-major-mode vc-dir-mode-map "o" #'vc-dir-next-directory)
-  (jacob-xfk-define-key-in-major-mode vc-dir-mode-map "u" #'vc-dir-previous-directory)
-  (jacob-xfk-define-key-in-major-mode vc-dir-mode-map "s" #'vc-dir-find-file)
-  (jacob-xfk-define-key-in-major-mode vc-dir-mode-map "e" #'vc-dir-mark)
-  (jacob-xfk-define-key-in-major-mode vc-dir-mode-map "r" #'vc-dir-unmark)
-  (jacob-xfk-define-key-in-major-mode vc-dir-mode-map "v" #'vc-next-action)
-  (jacob-xfk-define-key-in-major-mode vc-dir-mode-map "p" #'vc-push)
-  (jacob-xfk-define-key-in-major-mode vc-dir-mode-map "P" #'jacob-git-push-set-upstream)
-  (jacob-xfk-define-key-in-major-mode vc-dir-mode-map "=" #'vc-diff)
-  (jacob-xfk-define-key-in-major-mode vc-dir-mode-map "x" #'vc-dir-hide-up-to-date))
+  :jacob-hook (vc-dir-mode-hook (jacob-xfk-local-key "q" #'quit-window)
+                                (jacob-xfk-local-key "g" #'revert-buffer)
+                                (jacob-xfk-local-key "i" #'vc-dir-previous-line)
+                                (jacob-xfk-local-key "k" #'vc-dir-next-line)
+                                (jacob-xfk-local-key "o" #'vc-dir-next-directory)
+                                (jacob-xfk-local-key "u" #'vc-dir-previous-directory)
+                                (jacob-xfk-local-key "s" #'vc-dir-find-file)
+                                (jacob-xfk-local-key "e" #'vc-dir-mark)
+                                (jacob-xfk-local-key "r" #'vc-dir-unmark)
+                                (jacob-xfk-local-key "v" #'vc-next-action)
+                                (jacob-xfk-local-key "p" #'vc-push)
+                                (jacob-xfk-local-key "P" #'jacob-git-push-set-upstream)
+                                (jacob-xfk-local-key "=" #'vc-diff)
+                                (jacob-xfk-local-key "x" #'vc-dir-hide-up-to-date)))
 
 (use-package autoinsert
   :defer
@@ -604,24 +620,19 @@ perform the deletion."
 
 (use-package dired
   :after xah-fly-keys
-  :config
-  (defun jacob-dired-mode-setup ()
-    "Setup `dired-mode'."
-    (dired-hide-details-mode 1)
-    (jacob-xfk-define-key-in-major-mode dired-mode-map "s" #'dired-find-file)
-    (jacob-xfk-define-key-in-major-mode dired-mode-map "d" #'dired-do-delete) ; we skip the "flag, delete" process as files are sent to system bin on deletion
-    )
-  (jacob-xfk-define-key-in-major-mode dired-mode-map "q" #'quit-window)
-  (jacob-xfk-define-key-in-major-mode dired-mode-map "i" #'dired-previous-line)
-  (jacob-xfk-define-key-in-major-mode dired-mode-map "k" #'dired-next-line)
-  (jacob-xfk-define-key-in-major-mode dired-mode-map "e" #'dired-mark)
-  (jacob-xfk-define-key-in-major-mode dired-mode-map "r" #'dired-unmark)
-  (jacob-xfk-define-key-in-major-mode dired-mode-map "g" #'revert-buffer)
-  (jacob-xfk-define-key-in-major-mode dired-mode-map "x" #'dired-do-rename)
-  (jacob-xfk-define-key-in-major-mode dired-mode-map "c" #'dired-do-copy)
-  (jacob-xfk-define-key-in-major-mode dired-mode-map "u" #'dired-up-directory)
-  (jacob-xfk-define-key-in-major-mode dired-mode-map "j" #'dired-goto-file)
-  :hook (dired-mode-hook . jacob-dired-mode-setup)
+  :jacob-hook (dired-mode-hook (dired-hide-details-mode 1)
+                               (jacob-xfk-local-key "s" #'dired-find-file)
+                               (jacob-xfk-local-key "d" #'dired-do-delete) ; we skip the "flag, delete" process as files are sent to system bin on deletion
+                               (jacob-xfk-local-key "q" #'quit-window)
+                               (jacob-xfk-local-key "i" #'dired-previous-line)
+                               (jacob-xfk-local-key "k" #'dired-next-line)
+                               (jacob-xfk-local-key "e" #'dired-mark)
+                               (jacob-xfk-local-key "r" #'dired-unmark)
+                               (jacob-xfk-local-key "g" #'revert-buffer)
+                               (jacob-xfk-local-key "x" #'dired-do-rename)
+                               (jacob-xfk-local-key "c" #'dired-do-copy)
+                               (jacob-xfk-local-key "u" #'dired-up-directory)
+                               (jacob-xfk-local-key "j" #'dired-goto-file))
   :custom
   (dired-recursive-copies 'always)
   (dired-dwim-target t)
@@ -735,7 +746,7 @@ hides this information."
                               ("int" "(interactive)"))
                             :parents (list jacob-comment-abbrev-table)
                             :enable-function 'jacob-point-in-code-p
-                            :regexp "\\(^\\|[\s\t)]\\)\\(?1:[[:alpha:]-]+\\)")
+                            :regexp "\\(^\\|[\s\t()]\\)\\(?1:[[:alpha:]-]+\\)")
   :bind ( :map lisp-interaction-mode-map
           ("C-j" . jacob-eval-print-last-sexp)))
 
@@ -1048,38 +1059,35 @@ Useful for deleting ^M after `eglot-code-actions'."
   (message-send-mail-function 'smtpmail-send-it))
 
 (use-package gnus
-  :hook ((gnus-started-hook . jacob-gnus-hook-function))
+  :jacob-hook (gnus-started-hook (gnus-demon-add-handler 'gnus-demon-scan-news 2 t))
   :custom
   (gnus-use-full-window t)
   (gnus-always-read-dribble-file t)
-  :config
-  (defun jacob-gnus-hook-function ()
-    "Hook function to be used with a gnus hook."
-    (gnus-demon-add-handler 'gnus-demon-scan-news 2 t))
-
-  (jacob-xfk-define-key-in-major-mode gnus-group-mode-map "q" #'gnus-group-exit)
-  (jacob-xfk-define-key-in-major-mode gnus-group-mode-map "i" #'gnus-group-prev-group)
-  (jacob-xfk-define-key-in-major-mode gnus-group-mode-map "k" #'gnus-group-next-group)
-  (jacob-xfk-define-key-in-major-mode gnus-group-mode-map "g" #'gnus-group-get-new-news)
-
-  (with-eval-after-load 'gnus-topic
-    (jacob-xfk-define-key-in-major-mode gnus-topic-mode-map "s" #'gnus-topic-select-group))
-
-  (jacob-xfk-define-key-in-major-mode gnus-summary-mode-map "q" #'gnus-summary-exit)
-  (jacob-xfk-define-key-in-major-mode gnus-summary-mode-map "i" #'gnus-summary-prev-article)
-  (jacob-xfk-define-key-in-major-mode gnus-summary-mode-map "k" #'gnus-summary-next-article)
-  (jacob-xfk-define-key-in-major-mode gnus-summary-mode-map "j" #'gnus-summary-prev-page)
-  (jacob-xfk-define-key-in-major-mode gnus-summary-mode-map "l" #'gnus-summary-next-page)
   :bind ( :map jacob-xfk-map
           ("g" . gnus)))
 
-(use-package gnus-topic
-  :after gnus
-  :hook (gnus-group-mode-hook . gnus-topic-mode))
+(use-package gnus-group
+  :jacob-hook (gnus-group-mode-hook (jacob-xfk-local-key "q" #'gnus-group-exit)
+                                    (jacob-xfk-local-key "i" #'gnus-group-prev-group)
+                                    (jacob-xfk-local-key "k" #'gnus-group-next-group)
+                                    (jacob-xfk-local-key "g" #'gnus-group-get-new-news)))
 
 (use-package gnus-notifications
-  :after gnus
   :hook (gnus-after-getting-new-news-hook . gnus-notifications))
+
+(use-package gnus-sum
+  :jacob-hook (gnus-summary-mode-hook (jacob-xfk-local-key "q" #'gnus-summary-exit)
+                                      (jacob-xfk-local-key "i" #'gnus-summary-prev-article)
+                                      (jacob-xfk-local-key "k" #'gnus-summary-next-article)
+                                      (jacob-xfk-local-key "j" #'gnus-summary-prev-page)
+                                      (jacob-xfk-local-key "l" #'gnus-summary-next-page)))
+
+(use-package gnus-topic
+  :hook (gnus-group-mode-hook . gnus-topic-mode)
+  :config
+  (defun jacob-gnus-topic-mode-hook-function ()
+    "Hook function to be used with `gnus-topic-mode-hook'."
+    (jacob-xfk-local-key "s" #'gnus-topic-select-group)))
 
 
 ;; package configuration
@@ -1155,6 +1163,12 @@ buffer."
 (use-package rainbow-mode
   :ensure
   :hook prog-mode-hook)
+
+(use-package esup
+  :ensure
+  :defer
+  :custom
+  (esup-depth 0))
 
 (use-package eglot-booster
   :if jacob-is-linux
@@ -1444,10 +1458,19 @@ Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (c
     ;; else later, it will break the keybinding set up by this
     ;; function. To fix this issue with further hacks, run this
     ;; function in the hook for the major mode.
+    (declare (obsolete jacob-xfk-local-key nil))
     (define-key keymap
                 (vector 'remap
                         (lookup-key xah-fly-command-map key))
                 command))
+
+  (defun jacob-xfk-local-key (key command)
+    "Bind KEY buffer locally to COMMAND in xfk command mode."
+    ;; FIXME: keys that are not already bound will not work for jacob-xfk-define-key-in-major-mode
+    (keymap-local-set (format "<remap> <%s>"
+                              (keymap-lookup xah-fly-command-map
+                                             key))
+                      command))
   :config
   (xah-fly-keys-set-layout "qwerty")
   (xah-fly-keys 1)
