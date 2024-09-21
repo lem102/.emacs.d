@@ -608,6 +608,7 @@ perform the deletion."
                               ("sta" "static")
                               ("ret" "return")
                               ("eq" "==")
+                              ("neq" "!=")
                               ("band" "&&")
                               ("bor" "||"))
                             :parents (list jacob-comment-abbrev-table)
@@ -1262,7 +1263,8 @@ Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (c
   :after csharp-mode
   :bind ( :map jacob-xfk-map
           ("c f" . csharp-toolbox-format-statement)
-          ("c t" . csharp-toolbox-run-test)))
+          ("c t" . csharp-toolbox-run-test)
+          ("c a" . csharp-toolbox-toggle-async)))
 
 (use-package dape
   :ensure
