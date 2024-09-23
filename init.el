@@ -744,7 +744,8 @@ hides this information."
                               ("mes" "message" jacob-abbrev-no-insert)
                               ("pmi" "point-min" jacob-abbrev-no-insert)
                               ("pma" "point-max" jacob-abbrev-no-insert)
-                              ("int" "(interactive)"))
+                              ("int" "(interactive)")
+                              ("se" "save-excursion" jacob-abbrev-no-insert))
                             :parents (list jacob-comment-abbrev-table)
                             :enable-function 'jacob-point-in-code-p
                             :regexp "\\(^\\|[\s\t()]\\)\\(?1:[[:alpha:]-]+\\)")
@@ -1357,6 +1358,7 @@ Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (c
   :ensure
   :init
   (vertico-mode 1)
+  (vertico-mouse-mode 1)
   :custom
   (vertico-count 25))
 
