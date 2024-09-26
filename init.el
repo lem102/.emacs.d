@@ -229,7 +229,11 @@ set the PROPERTIES of TABLE."
 
 (use-package desktop
   :init
-  (desktop-save-mode 1))
+  (desktop-save-mode 1)
+  :config
+  (add-to-list 'desktop-minor-mode-table '(treesit-explore-mode nil))
+  :custom
+  (desktop-restore-eager 5))
 
 (use-package recentf
   :init
@@ -750,7 +754,9 @@ hides this information."
                             :enable-function 'jacob-point-in-code-p
                             :regexp "\\(^\\|[\s\t()]\\)\\(?1:[[:alpha:]-]+\\)")
   :bind ( :map lisp-interaction-mode-map
-          ("C-j" . jacob-eval-print-last-sexp)))
+          ("C-j" . jacob-eval-print-last-sexp))
+  :custom
+  (elisp-flymake-byte-compile-load-path load-path))
 
 (use-package org
   :config
@@ -910,7 +916,8 @@ Intended as before advice for `sql-send-paragraph'."
                               ("gro" "GROUP BY")
                               ("and" "AND")
                               ("as" "AS"))
-                            :parents (list jacob-comment-abbrev-table))
+                            :parents (list jacob-comment-abbrev-table)
+                            :enable-function 'jacob-point-in-code-p)
   :hook (sql-interactive-mode-hook . jacob-sql-interactive-mode-hook)
   :bind ( :map jacob-xfk-map
           ("d" . jacob-sql-connect)))
@@ -1265,7 +1272,9 @@ Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (c
   :bind ( :map jacob-xfk-map
           ("c f" . csharp-toolbox-format-statement)
           ("c t" . csharp-toolbox-run-test)
-          ("c a" . csharp-toolbox-toggle-async)))
+          ("c a" . csharp-toolbox-toggle-async)
+          ("c n" . csharp-toolbox-guess-namespace)
+          ("c ;" . csharp-toolbox-wd40)))
 
 (use-package dape
   :ensure
