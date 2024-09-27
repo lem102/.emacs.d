@@ -333,16 +333,15 @@ set the PROPERTIES of TABLE."
   (help-enable-variable-value-editing t))
 
 (use-package help-mode
-  :defer
-  :after xah-fly-keys
+  :after xah-fly-keys help-fns
   :jacob-hook (help-mode-hook (jacob-xfk-local-key "s" #'help-view-source)
                               (jacob-xfk-local-key "q" #'quit-window)
                               (jacob-xfk-local-key "e" #'help-go-back)
                               (jacob-xfk-local-key "r" #'help-go-forward)
-                              (jacob-xfk-local-key "g" #'revert-buffer)))
+                              (jacob-xfk-local-key "g" #'revert-buffer)
+                              (jacob-xfk-local-key "w" #'jacob-help-edit)))
 
 (use-package help-fns
-  :jacob-hook (help-mode-hook (jacob-xfk-local-key "w" #'jacob-help-edit))
   :after xah-fly-keys
   :config
   (defun jacob-help-edit ()
