@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: new
+# key: new
+# --
+new ${1:Type$(jacob-yas-csharp-type yas-text)}

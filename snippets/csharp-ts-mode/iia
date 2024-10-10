@@ -2,4 +2,4 @@
 # name: iia
 # key: iia
 # --
-It.IsAny<${1:string}>()
+It.IsAny<${1:string$(jacob-yas-csharp-type yas-text)}>()
