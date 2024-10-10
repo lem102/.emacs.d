@@ -609,6 +609,8 @@ perform the deletion."
                               ("pri" "private")
                               ("pub" "public")
                               ("sta" "static")
+                              ("req" "required")
+                              ("gs" "{ get; set; }" jacob-abbrev-no-insert)
                               ("ret" "return")
                               ("eq" "==")
                               ("neq" "!=")
@@ -1680,15 +1682,60 @@ For use in yasnippets."
   (defun jacob-yas-pascal-case (input)
     "Convert INPUT to pascal case e.g. apple banana -> AppleBanana.
 For use in yasnippets."
-    (let* ((space-at-end (if (string-match-p " $" input)
+    (let ((space-at-end (if (string-match-p " $" input)
+                            " "
+                          "")))
+      (with-temp-buffer
+        (insert input)
+        (goto-char (point-min))
+        (subword-mode 1)
+        (while (not (= (point) (point-max)))
+          (call-interactively #'capitalize-word))
+        (goto-char (point-min))
+        (while (search-forward " " nil "NOERROR")
+          (replace-match ""))
+        (goto-char (point-max))
+        (insert space-at-end)
+        (buffer-substring-no-properties (point-min) (point-max)))))
+
+  (defun jacob-yas-csharp-type (input)
+    "Convert word/s in INPUT to a csharp type.
+
+e.g.
+\"string\" -> string
+\"int\" -> int
+...
+\"apple banana\" -> AppleBanana
+\"apple,banana citrus.\" -> Apple<BananaCitrus>
+
+\"string apple\" -> StringApple
+
+\"apple,banana.\" -> Apple<Banana>
+\"apple,string.\" -> Apple<string>
+
+For use in yasnippets."
+    (let* ((input "apple,banana citrus,string.. ")
+           (primitive-types '("string" "int" "bool" "long" "double" "float" "decimal" "void"))
+           (space-at-end (if (string-match-p " $" input)
                              " "
                            ""))
-           (words (split-string input))
-           (capitalised-words (seq-reduce (lambda (previous current)
-                                            (concat previous (capitalize current)))
-                                          words
-                                          "")))
-      (concat capitalised-words space-at-end)))
+           (trimmed-input (string-trim input))
+           (words (split-string trimmed-input "[ ,.]"))
+           (separators (seq-filter (lambda (char)
+                                     (seq-contains-p '(?  ?, ?.)
+                                                     char))
+                                   trimmed-input)))
+      (concat (cl-loop for word in words
+                       for separator-list = separators then (cdr separator-list)
+                       for separator = (car separator-list)
+                       concat (concat (if (seq-contains-p primitive-types word)
+                                          word
+                                        (capitalize word))
+                                      (pcase separator
+                                        (?   "")
+                                        (?,  "<")
+                                        (?.  ">"))))
+              space-at-end)))
 
   (defun jacob-yas-snake-case (input)
     "Convert INPUT to snake case e.g. apple banana -> apple_banana.
@@ -1716,6 +1763,10 @@ For use in yasnippets."
                               ("ret" "return"))
                             :parents (list jacob-comment-abbrev-table)
                             :enable-function 'jacob-point-in-code-p))
+
+(use-package highlight-defined
+  :ensure t
+  :hook (emacs-lisp-mode-hook . highlight-defined-mode))
 
 
 ;; personal functions
