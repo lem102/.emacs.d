@@ -6,8 +6,7 @@
 
 ;; use package
 
-(eval-when-compile
-  (require 'use-package))
+(require 'use-package)
 
 (setopt use-package-hook-name-suffix nil
         use-package-enable-imenu-support t)
@@ -149,6 +148,14 @@ set the PROPERTIES of TABLE."
                                 "Noto Color Emoji"
                                 "Apple Color Emoji")))
 
+  (add-to-list 'default-frame-alist
+               `(font . ,(format "%s-%s"
+                                 (cdr (assoc-string system-type
+                                                    '(("windows-nt" . "Consolas")
+                                                      ("darwin" . "Menlo")
+                                                      ("gnu/linux" . "DejaVu Sans Mono"))))
+                                 jacob-font-size)))
+
   (keymap-global-unset "C-x C-c")         ; `save-buffers-kill-terminal'
   (keymap-global-unset "C-z")             ; `suspend-frame'
   (keymap-global-unset "C-x u")           ; `undo'
@@ -210,15 +217,6 @@ set the PROPERTIES of TABLE."
   (split-height-threshold nil))
 
 (use-package frame
-  :config
-  (set-frame-font (format "%s-%s"
-                          (cdr (assoc-string system-type
-                                             '(("windows-nt" . "Consolas")
-                                               ("darwin" . "Menlo")
-                                               ("gnu/linux" . "DejaVu Sans Mono"))))
-                          jacob-font-size)
-                  "KEEP-SIZE"
-                  t)
   :custom
   (blink-cursor-blinks 0 "make cursor blink forever"))
 
@@ -334,7 +332,9 @@ set the PROPERTIES of TABLE."
 
 (use-package help-mode
   :after xah-fly-keys help-fns
-  :jacob-hook (help-mode-hook (jacob-xfk-local-key "s" #'help-view-source)
+  :config
+  (jacob-define-hook-function help-mode-hook
+                              (jacob-xfk-local-key "s" #'help-view-source)
                               (jacob-xfk-local-key "q" #'quit-window)
                               (jacob-xfk-local-key "e" #'help-go-back)
                               (jacob-xfk-local-key "r" #'help-go-forward)
@@ -1172,12 +1172,6 @@ buffer."
   :ensure
   :hook prog-mode-hook)
 
-(use-package esup
-  :ensure
-  :defer
-  :custom
-  (esup-depth 0))
-
 (use-package eglot-booster
   :if jacob-is-linux
   :vc (eglot-booster :url "https://github.com/jdtsmith/eglot-booster")
@@ -1639,6 +1633,7 @@ Otherwise, kill from point to the end of the line."
 (use-package sly
   :ensure
   :after xah-fly-keys
+  :jacob-hook (sly-db-hook (jacob-xfk-local-key "q" #'sly-db-quit))
   :config
   (sly-symbol-completion-mode 0)
 
