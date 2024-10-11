@@ -1742,11 +1742,6 @@ For use in yasnippets."
 For use in yasnippets."
     (string-replace " " "-" input)))
 
-(use-package color-theme-sanityinc-tomorrow
-  :ensure
-  :config
-  (load-theme 'sanityinc-tomorrow-blue "NO-CONFIRM"))
-
 (use-package gdscript-mode
   :ensure
   :defer
