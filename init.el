@@ -231,7 +231,8 @@ set the PROPERTIES of TABLE."
   :config
   (add-to-list 'desktop-minor-mode-table '(treesit-explore-mode nil))
   :custom
-  (desktop-restore-eager 5))
+  (desktop-restore-eager 5)
+  (desktop-lazy-verbose nil))
 
 (use-package recentf
   :init
@@ -1703,6 +1704,16 @@ For use in yasnippets."
 For use in yasnippets."
     (string-replace " " "-" input)))
 
+(use-package aas
+  :ensure
+  :hook (emacs-lisp-mode-hook . aas-activate-for-major-mode)
+  :config
+  (aas-set-snippets 'emacs-lisp-mode
+    :cond #'jacob-point-in-code-p
+    "pmi" "(point-min)"
+    "pma" "(point-max)"
+    "gc" '(yas "(goto-char $0)")))
+
 (use-package gdscript-mode
   :ensure
   :defer
@@ -1718,6 +1729,11 @@ For use in yasnippets."
 (use-package highlight-defined
   :ensure t
   :hook (emacs-lisp-mode-hook . highlight-defined-mode))
+
+(use-package lisp-extra-font-lock
+  :ensure
+  :config
+  (lisp-extra-font-lock-global-mode 1))
 
 
 ;; personal functions
