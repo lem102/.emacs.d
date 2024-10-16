@@ -2,4 +2,4 @@
 # name: prop
 # key: prop
 # --
-public ${1:string$(jacob-yas-camel-case yas-text)} ${2:X$(jacob-yas-pascal-case yas-text)} { get; set; }
+public ${1:string} ${2:X$(jacob-yas-pascal-case yas-text)} { get; set; }

@@ -1159,17 +1159,16 @@ Useful for deleting ^M after `eglot-code-actions'."
   (push '(csharp-ts-mode . csharpier)
         apheleia-mode-alist)
 
-  (defun jacob-apheleia-advice (original-function &rest args)
-    "Advice function for `apheleia-format-buffer'. If point is in
+  (defun jacob-apheleia-skip-function ()
+    "Function for `apheleia-skip-functions'. If point is in
 a yasnippet field or the minibuffer is active, do not format the
 buffer."
-    (unless (or (seq-find (lambda (overlay)
-                            (overlay-get overlay 'yas--snippet))
-                          (overlays-at (point)))
-                (minibuffer-window-active-p (car (window-list))))
-      (apply original-function args)))
-
-  (advice-add #'apheleia-format-buffer :around #'jacob-apheleia-advice))
+    (or (seq-find (lambda (overlay)
+                    (overlay-get overlay 'yas--snippet))
+                  (overlays-at (point)))
+        (minibuffer-window-active-p (car (window-list)))))
+  
+  (add-to-list 'apheleia-skip-functions #'jacob-apheleia-skip-function))
 
 (use-package rainbow-mode
   :ensure
@@ -1706,13 +1705,19 @@ For use in yasnippets."
 
 (use-package aas
   :ensure
-  :hook (emacs-lisp-mode-hook . aas-activate-for-major-mode)
+  :hook ((emacs-lisp-mode-hook csharp-ts-mode-hook) . aas-activate-for-major-mode)
   :config
   (aas-set-snippets 'emacs-lisp-mode
     :cond #'jacob-point-in-code-p
     "pmi" "(point-min)"
     "pma" "(point-max)"
-    "gc" '(yas "(goto-char $0)")))
+    "gc" '(yas "(goto-char $0)"))
+  (aas-set-snippets 'csharp-ts-mode
+    :cond #'jacob-point-in-code-p
+    "nuid" "Guid.NewGuid()"
+    "var" '(yas "var ${1:x$(jacob-yas-camel-case yas-text)} = $0")
+    "pub" "public"
+    "az" "async"))
 
 (use-package gdscript-mode
   :ensure
@@ -2044,8 +2049,8 @@ deleted."
 
   (let ((map occur-mode-map))
     (jacob-xfk-define-key-in-major-mode map "q" 'quit-window)
-    (jacob-xfk-define-key-in-major-mode map "i" 'previous-error-no-select)
-    (jacob-xfk-define-key-in-major-mode map "k" 'next-error-no-select))
+    (jacob-xfk-define-key-in-major-mode map "i" 'occur-prev)
+    (jacob-xfk-define-key-in-major-mode map "k" 'occur-next))
 
   (with-eval-after-load 'info
     (let ((map Info-mode-map))

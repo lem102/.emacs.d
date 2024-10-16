@@ -1,7 +1,7 @@
 # key: meth
 # name: method
 # --
-${1:public} ${2:void$(jacob-yas-csharp-type yas-text)} ${3:MethodName$(jacob-yas-pascal-case yas-text)}($4)
+${1:public} ${2:void} ${3:MethodName$(jacob-yas-pascal-case yas-text)}($4)
 {
     $0
 }
