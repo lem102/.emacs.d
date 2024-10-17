@@ -1717,7 +1717,26 @@ For use in yasnippets."
     "nuid" "Guid.NewGuid()"
     "var" '(yas "var ${1:x$(jacob-yas-camel-case yas-text)} = $0")
     "pub" "public"
-    "az" "async"))
+    ";az" "async"
+    "awt" "await"))
+
+(use-package electric-case
+  :ensure
+  :hook (csharp-ts-mode-hook . electric-case-csharp-init)
+  :config
+  (defun jacob-csharp-electric-case-criteria (start end)
+    "Function for `electric-case' for usage in csharp.
+Arguments are word START and END."
+    (when (not (member (buffer-substring start end)
+                       '("boolean" "char" "byte" "short" "int" "long" "float" "double" "void" "var")))
+      (let ((properties (text-properties-at start)))
+        (cond ((member (char-before start) '(?\( ?_ ? ))
+               'camel)
+              (t 'ucamel)))))
+
+  (defun electric-case-csharp-init ()
+    (electric-case-mode 1)
+    (setq electric-case-criteria #'jacob-csharp-electric-case-criteria)))
 
 (use-package gdscript-mode
   :ensure
