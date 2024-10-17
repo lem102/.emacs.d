@@ -1705,7 +1705,7 @@ For use in yasnippets."
 
 (use-package aas
   :ensure
-  :hook ((emacs-lisp-mode-hook csharp-ts-mode-hook) . aas-activate-for-major-mode)
+  :hook ((emacs-lisp-mode-hook csharp-ts-mode-hook gdscript-mode-hook) . aas-activate-for-major-mode)
   :config
   (aas-set-snippets 'emacs-lisp-mode
     :cond #'jacob-point-in-code-p
@@ -1717,7 +1717,11 @@ For use in yasnippets."
     "nuid" "Guid.NewGuid()"
     "var" '(yas "var ${1:x$(jacob-yas-camel-case yas-text)} = $0")
     "pub" "public"
-    "az" "async"))
+    "az" "async")
+  (aas-set-snippets 'gdscript-mode
+    :cond #'jacob-point-in-code-p
+    "v2" "Vector2"
+    "var" '(yas "var ${1:x$(jacob-yas-snake-case yas-text)} = $0")))
 
 (use-package gdscript-mode
   :ensure
@@ -1729,7 +1733,8 @@ For use in yasnippets."
                               ("v2" "Vector2")
                               ("ret" "return"))
                             :parents (list jacob-comment-abbrev-table)
-                            :enable-function 'jacob-point-in-code-p))
+                            :enable-function 'jacob-point-in-code-p)
+  (push '(gdscript-mode "localhost" 6008) eglot-server-programs))
 
 (use-package highlight-defined
   :ensure t
