@@ -961,7 +961,8 @@ Intended as before advice for `sql-send-paragraph'."
                                             (javascript "https://github.com/tree-sitter/tree-sitter-javascript" "master" "src")
                                             (typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src")
                                             (tsx "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src")
-                                            (yaml "https://github.com/ikatyang/tree-sitter-yaml")))
+                                            (yaml "https://github.com/ikatyang/tree-sitter-yaml")
+                                            (gdscript "https://github.com/PrestonKnopp/tree-sitter-gdscript")))
     (setopt treesit-load-name-override-list '((c-sharp "libtree-sitter-csharp" "tree_sitter_c_sharp"))))
   :custom
   (major-mode-remap-alist '((csharp-mode . csharp-ts-mode)
@@ -1718,30 +1719,38 @@ For use in yasnippets."
     "var" '(yas "var ${1:x$(jacob-yas-camel-case yas-text)} = $0")
     "pub" "public"
     ";az" "async"
-"awt" "await")
-(aas-set-snippets 'gdscript-mode
+    "awt" "await")
+  (aas-set-snippets 'gdscript-mode
     :cond #'jacob-point-in-code-p
     "v2" "Vector2"
     "var" '(yas "var ${1:x$(jacob-yas-snake-case yas-text)} = $0")))
 
 (use-package electric-case
   :ensure
-  :hook (csharp-ts-mode-hook . electric-case-csharp-init)
+  :hook ((csharp-ts-mode-hook . electric-case-csharp-init)
+         (gdscript-ts-mode-hook . electric-case-gdscript-init))
   :config
   (defun jacob-csharp-electric-case-criteria (start end)
     "Function for `electric-case' for usage in csharp.
 Arguments are word START and END."
-    (when (not (member (buffer-substring start end)
-                       '("boolean" "char" "byte" "short" "int" "long" "float" "double" "void" "var")))
-      (let ((properties (text-properties-at start)))
-        (cond ((member (char-before start) '(?\( ?_ ? ))
-               'camel)
-              (t 'ucamel)))))
+    (unless (member (buffer-substring start end)
+                    '("bool" "char" "byte" "short" "int" "long" "float" "double" "void" "var"))
+      (cond ((member (char-before start) '(?\( ?_ ? ))
+             'camel)
+            (t 'ucamel))))
 
   (defun electric-case-csharp-init ()
     (electric-case-mode 1)
-    (setq electric-case-criteria #'jacob-csharp-electric-case-criteria)))
->>>>>>> b5dc003ffd6d6d6bf80e74a751c14a9c8dee3795
+    (setq electric-case-criteria #'jacob-csharp-electric-case-criteria))
+
+  (defun jacob-gdscript-electric-case-criteria (_start _end)
+    "Function for `electric-case' for usage in gdscript.
+Arguments are word START and END."
+    'snake)
+
+  (defun electric-case-gdscript-init ()
+    (electric-case-mode 1)
+    (setq electric-case-criteria #'jacob-gdscript-electric-case-criteria)))
 
 (use-package gdscript-mode
   :ensure
@@ -1757,7 +1766,7 @@ Arguments are word START and END."
   (push '(gdscript-mode "localhost" 6008) eglot-server-programs))
 
 (use-package highlight-defined
-  :ensure t
+  :ensure
   :hook (emacs-lisp-mode-hook . highlight-defined-mode))
 
 (use-package lisp-extra-font-lock
