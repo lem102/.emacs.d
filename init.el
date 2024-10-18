@@ -1733,11 +1733,17 @@ For use in yasnippets."
   (defun jacob-csharp-electric-case-criteria (start end)
     "Function for `electric-case' for usage in csharp.
 Arguments are word START and END."
-    (unless (member (buffer-substring start end)
-                    '("bool" "char" "byte" "short" "int" "long" "float" "double" "void" "var"))
-      (cond ((member (char-before start) '(?\( ?_ ? ))
-             'camel)
-            (t 'ucamel))))
+    (unless (or (member (buffer-substring start end)
+                        '("bool" "char" "byte" "int" "short" "long" "float" "double"
+                          "void" "var" "new"))
+                (member 'font-lock-string-face (text-properties-at start))
+                (member 'font-lock-comment-face (text-properties-at start)))
+      (cond ((member 'font-lock-type-face (text-properties-at start))
+             'ucamel)
+            ((member (char-after end) '(?\( ?{))
+             'ucamel)
+            ((member (char-before start) '(?{ ?\( ?_ ? ))
+             'camel))))
 
   (defun electric-case-csharp-init ()
     (electric-case-mode 1)
