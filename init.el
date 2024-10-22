@@ -1101,6 +1101,10 @@ Useful for deleting ^M after `eglot-code-actions'."
     "Hook function to be used with `gnus-topic-mode-hook'."
     (jacob-xfk-local-key "s" #'gnus-topic-select-group)))
 
+(use-package nxml-mode
+  :mode (("\\.csproj\\'" . nxml-mode)
+         ("Directory.Packages.props" . nxml-mode)))
+
 
 ;; package configuration
 
@@ -1734,19 +1738,22 @@ For use in yasnippets."
     "Function for `electric-case' for usage in csharp.
 Arguments are word START and END."
     (unless (or (member (buffer-substring start end)
-                        '("bool" "char" "byte" "int" "short" "long" "float" "double"
+                        '("bool" "char" "string" "byte" "int" "short" "long" "float" "double"
                           "void" "var" "new"))
                 (member 'font-lock-string-face (text-properties-at start))
                 (member 'font-lock-comment-face (text-properties-at start)))
       (cond ((member 'font-lock-type-face (text-properties-at start))
              'ucamel)
-            ((member (char-after end) '(?\( ?{))
+            ((member (char-after end) '(?\( ?{ ?< ?>))
+             'ucamel)
+            ((member (char-before start) '(?< ?.))
              'ucamel)
             ((member (char-before start) '(?{ ?\( ?_ ? ))
              'camel))))
 
   (defun electric-case-csharp-init ()
     (electric-case-mode 1)
+    (setq electric-case-max-iteration 2)
     (setq electric-case-criteria #'jacob-csharp-electric-case-criteria))
 
   (defun jacob-gdscript-electric-case-criteria (_start _end)
