@@ -305,7 +305,7 @@ set the PROPERTIES of TABLE."
 
 (use-package simple
   :init
-  (column-number-mode 0)
+  (column-number-mode 1)
   (line-number-mode 1)
   (setq-default indent-tabs-mode nil)   ; use spaces to indent
   :custom
@@ -1617,7 +1617,7 @@ Otherwise, kill from point to the end of the line."
          ("dl" . insert-pair)
          ("du" . insert-pair)
          ("l3" . jacob-async-shell-command)
-         ("l8" . modus-themes-toggle)
+         ;; ("l8" . modus-themes-toggle)
          ("la" . global-text-scale-adjust)
          ("u" . kill-current-buffer)
          ("wj" . xref-find-references)
@@ -1723,47 +1723,14 @@ For use in yasnippets."
     "var" '(yas "var ${1:x$(jacob-yas-camel-case yas-text)} = $0")
     "pub" "public"
     ";az" "async"
-    "awt" "await")
+    ";aw" "await")
   (aas-set-snippets 'gdscript-mode
     :cond #'jacob-point-in-code-p
     "v2" "Vector2"
     "var" '(yas "var ${1:x$(jacob-yas-snake-case yas-text)} = $0")))
 
-(use-package electric-case
-  :ensure
-  :hook ((csharp-ts-mode-hook . electric-case-csharp-init)
-         (gdscript-ts-mode-hook . electric-case-gdscript-init))
-  :config
-  (defun jacob-csharp-electric-case-criteria (start end)
-    "Function for `electric-case' for usage in csharp.
-Arguments are word START and END."
-    (unless (or (member (buffer-substring start end)
-                        '("bool" "char" "string" "byte" "int" "short" "long" "float" "double"
-                          "void" "var" "new"))
-                (member 'font-lock-string-face (text-properties-at start))
-                (member 'font-lock-comment-face (text-properties-at start)))
-      (cond ((member 'font-lock-type-face (text-properties-at start))
-             'ucamel)
-            ((member (char-after end) '(?\( ?{ ?< ?>))
-             'ucamel)
-            ((member (char-before start) '(?< ?.))
-             'ucamel)
-            ((member (char-before start) '(?{ ?\( ?_ ? ))
-             'camel))))
-
-  (defun electric-case-csharp-init ()
-    (electric-case-mode 1)
-    (setq electric-case-max-iteration 2)
-    (setq electric-case-criteria #'jacob-csharp-electric-case-criteria))
-
-  (defun jacob-gdscript-electric-case-criteria (_start _end)
-    "Function for `electric-case' for usage in gdscript.
-Arguments are word START and END."
-    'snake)
-
-  (defun electric-case-gdscript-init ()
-    (electric-case-mode 1)
-    (setq electric-case-criteria #'jacob-gdscript-electric-case-criteria)))
+(use-package gptel
+  :ensure)
 
 (use-package gdscript-mode
   :ensure
@@ -2145,6 +2112,9 @@ deleted."
 
   (with-eval-after-load 'js
     (jacob-xfk-define-key-in-major-mode js-ts-mode-map " ,c" #'recompile))
+
+  (with-eval-after-load 'csharp-mode
+    (jacob-xfk-define-key-in-major-mode csharp-ts-mode-map " ,c" #'recompile))
 
   (with-eval-after-load 'typescript-ts-mode
     (jacob-xfk-define-key-in-major-mode typescript-ts-mode-map " ,c" #'recompile)))
