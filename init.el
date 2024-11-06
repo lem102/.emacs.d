@@ -13,6 +13,7 @@
 
 (defmacro jacob-define-hook-function (hook &rest body)
   "Define function with BODY and bind it to HOOK."
+  (declare (indent defun))
   (let* ((hook-name (symbol-name hook))
          (function-name (intern (concat "jacob-" hook-name "-function"))))
     `(progn
@@ -268,7 +269,8 @@ set the PROPERTIES of TABLE."
                                                      "\"apex predator of grug is complexity\" - some grug"
                                                      "\"Perfection is achieved, not when there is nothing more to add, but when there is nothing left to take away.\" - Antoine de Saint-Exupéry"
                                                      "\"Always listen to Jiaqi.\" - Jacob Leeming"
-                                                     "\"The king wisely had the computer scientist beheaded, and they all lived happily ever after.\" - anon")))))
+                                                     "\"The king wisely had the computer scientist beheaded, and they all lived happily ever after.\" - anon"
+                                                     "\"Success is going from failure to failure without losing your enthusiasm.\" - Winston Churchill (maybe)")))))
 
 
 (provide 'lisp)                         ; HACK
@@ -335,12 +337,12 @@ set the PROPERTIES of TABLE."
   :after xah-fly-keys help-fns
   :config
   (jacob-define-hook-function help-mode-hook
-                              (jacob-xfk-local-key "s" #'help-view-source)
-                              (jacob-xfk-local-key "q" #'quit-window)
-                              (jacob-xfk-local-key "e" #'help-go-back)
-                              (jacob-xfk-local-key "r" #'help-go-forward)
-                              (jacob-xfk-local-key "g" #'revert-buffer)
-                              (jacob-xfk-local-key "w" #'jacob-help-edit)))
+    (jacob-xfk-local-key "s" #'help-view-source)
+    (jacob-xfk-local-key "q" #'quit-window)
+    (jacob-xfk-local-key "e" #'help-go-back)
+    (jacob-xfk-local-key "r" #'help-go-forward)
+    (jacob-xfk-local-key "g" #'revert-buffer)
+    (jacob-xfk-local-key "w" #'jacob-help-edit)))
 
 (use-package help-fns
   :after xah-fly-keys
@@ -1108,6 +1110,17 @@ Useful for deleting ^M after `eglot-code-actions'."
 
 ;; package configuration
 
+(defvar jacob-require-already-refreshed nil
+  "If nil, haven't refreshed packages with `jacob-require' yet.")
+
+(defun jacob-require (package)
+  "Ensure PACKAGE is installed, then `require' it."
+  (unless (package-installed-p package)
+    (unless jacob-require-already-refreshed
+      (package-refresh-contents))
+    (package-install package))
+  (require package))
+
 (use-package package
   :custom
   (package-archives '(("GNU" . "https://elpa.gnu.org/packages/")
@@ -1637,17 +1650,20 @@ Otherwise, kill from point to the end of the line."
   :ensure
   :mode "\\.cshtml\\'")
 
-(use-package sly
-  :ensure
-  :after xah-fly-keys
-  :jacob-hook (sly-db-hook (jacob-xfk-local-key "q" #'sly-db-quit))
-  :config
-  (sly-symbol-completion-mode 0)
+(jacob-require 'sly)
 
-  (jacob-xfk-define-key-in-major-mode lisp-mode-map " ,m" #'sly-eval-last-expression)
-  (jacob-xfk-define-key-in-major-mode lisp-mode-map " ,d" #'sly-eval-defun)
-  (jacob-xfk-define-key-in-major-mode lisp-mode-map " ,e" #'sly-eval-buffer)
-  (jacob-xfk-define-key-in-major-mode lisp-mode-map " wk" #'sly-edit-definition))
+(jacob-define-hook-function sly-db-hook
+  (jacob-xfk-local-key "q" #'sly-db-quit))
+
+(sly-symbol-completion-mode 0)
+
+(jacob-xfk-define-key-in-major-mode lisp-mode-map " ,m" #'sly-eval-last-expression)
+(jacob-xfk-define-key-in-major-mode lisp-mode-map " ,d" #'sly-compile-defun)
+(jacob-xfk-define-key-in-major-mode lisp-mode-map " ,e" #'sly-eval-buffer)
+(jacob-xfk-define-key-in-major-mode lisp-mode-map " wk" #'sly-edit-definition)
+
+(use-package sql-indent
+  :ensure)
 
 (use-package yasnippet
   :ensure
