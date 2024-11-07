@@ -32,7 +32,11 @@
 
 If VC is provided, it is passed to `package-vc-install' to install the
 package rather than using `package-install'."
-  (if (require package nil "NOERROR")
+  (if (or
+       ;; these files do not `provide' a feature and therefore cannot be `require'd
+       (member package '(startup lisp mule-cmds bindings indent))
+       (featurep package)
+       (require package nil "NOERROR"))
       package
     (if vc
         (unless (package-installed-p package)
@@ -239,31 +243,27 @@ set the PROPERTIES of TABLE."
   :custom
   (custom-file (make-temp-file "emacs-custom-")))
 
-(provide 'startup)                      ; HACK
-(use-package startup
-  :custom
-  (inhibit-startup-screen t)
-  (initial-scratch-message (format ";; %s\n\n"
-                                   (seq-random-elt '("\"A journey of a thousand miles begins with a single step.\" - 老子"
-                                                     "\"apex predator of grug is complexity\" - some grug"
-                                                     "\"Perfection is achieved, not when there is nothing more to add, but when there is nothing left to take away.\" - Antoine de Saint-Exupéry"
-                                                     "\"Always listen to Jiaqi.\" - Jacob Leeming"
-                                                     "\"The king wisely had the computer scientist beheaded, and they all lived happily ever after.\" - anon"
-                                                     "\"Success is going from failure to failure without losing your enthusiasm.\" - Winston Churchill (maybe)")))))
+(jacob-require 'startup)
+(setopt inhibit-startup-screen t
+        initial-scratch-message (format ";; %s\n\n"
+                                        (seq-random-elt
+                                         '("\"A journey of a thousand miles begins with a single step.\" - 老子"
+                                           "\"apex predator of grug is complexity\" - some grug"
+                                           "\"Perfection is achieved, not when there is nothing more to add, but when there is nothing left to take away.\" - Antoine de Saint-Exupéry"
+                                           "\"Always listen to Jiaqi.\" - Jacob Leeming"
+                                           "\"The king wisely had the computer scientist beheaded, and they all lived happily ever after.\" - anon"
+                                           "\"Success is going from failure to failure without losing your enthusiasm.\" - Winston Churchill (maybe)"))))
 
-
-(provide 'lisp)                         ; HACK
-(use-package lisp
-  :custom
-  (parens-require-spaces nil)
-  (delete-pair-blink-delay 0)
-  (insert-pair-alist (append insert-pair-alist
-                             '((?k ?\( ?\))
-                               (?l ?\[ ?\])
-                               (?j ?\{ ?\})
-                               (?u ?\" ?\")
-                               (?i ?\' ?\')
-                               (?h ?\< ?\>)))))
+(jacob-require 'lisp)
+(setopt parens-require-spaces nil
+        delete-pair-blink-delay 0
+        insert-pair-alist (append insert-pair-alist
+                                  '((?k ?\( ?\))
+                                    (?l ?\[ ?\])
+                                    (?j ?\{ ?\})
+                                    (?u ?\" ?\")
+                                    (?i ?\' ?\')
+                                    (?h ?\< ?\>))))
 
 (jacob-require 'lisp-mode)
 (jacob-setup-abbrev-table lisp-mode-abbrev-table
