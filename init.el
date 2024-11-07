@@ -32,6 +32,7 @@
 
 If VC is provided, it is passed to `package-vc-install' to install the
 package rather than using `package-install'."
+  
   (if (or
        ;; these files do not `provide' a feature and therefore cannot be `require'd
        (member package '(startup lisp mule-cmds bindings indent))
@@ -137,13 +138,13 @@ set the PROPERTIES of TABLE."
                       (pop properties))))
 
 (defun jacob-point-in-text-p ()
-  "Return t if in comment or string. Else nil."
+  "Return t if in comment or string.  Else nil."
   (let ((xsyntax-state (syntax-ppss)))
     (or (nth 3 xsyntax-state)
         (nth 4 xsyntax-state))))
 
 (defun jacob-point-in-code-p ()
-  "Return t if outside of string or comment. Else nil."
+  "Return t if outside of string or comment.  Else nil."
   (not (jacob-point-in-text-p)))
 
 (defun jacob-abbrev-no-insert ()
@@ -290,72 +291,53 @@ set the PROPERTIES of TABLE."
   :custom
   (bookmark-set-fringe-mark nil))
 
-(provide 'mule-cmds)                    ; HACK
-(use-package mule-cmds
-  :defer
-  :config
-  (prefer-coding-system 'utf-8))
+(jacob-require 'mule-cmds)
+(prefer-coding-system 'utf-8)
 
-(use-package help
-  :defer
-  :custom
-  (help-window-select t)
-  (help-enable-variable-value-editing t))
+(jacob-require 'help)
+(setopt help-window-select t
+        help-enable-variable-value-editing t)
 
-(use-package help-mode
-  :after xah-fly-keys help-fns
-  :config
-  (jacob-define-hook-function help-mode-hook
-    (jacob-xfk-local-key "s" #'help-view-source)
-    (jacob-xfk-local-key "q" #'quit-window)
-    (jacob-xfk-local-key "e" #'help-go-back)
-    (jacob-xfk-local-key "r" #'help-go-forward)
-    (jacob-xfk-local-key "g" #'revert-buffer)
-    (jacob-xfk-local-key "w" #'jacob-help-edit)))
+(jacob-require 'help-fns)
+(defun jacob-help-edit ()
+  "Edit variable in current help buffer."
+  (interactive)
+  (unless (equal major-mode 'help-mode)
+    (message "not in help buffer"))
+  (save-excursion
+    (goto-char (point-min))
+    (if (search-forward "Its value is " nil "NOERROR")
+        (help-fns-edit-variable)
+      (message "cannot find editable variable"))))
 
-(use-package help-fns
-  :after xah-fly-keys
-  :config
-  (defun jacob-help-edit ()
-    "Edit variable in current help buffer."
-    (interactive)
-    (unless (equal major-mode 'help-mode)
-      (message "not in help buffer"))
-    (save-excursion
-      (goto-char (point-min))
-      (if (search-forward "Its value is " nil "NOERROR")
-          (help-fns-edit-variable)
-        (message "cannot find editable variable")))))
+(jacob-require 'help-mode)
+(jacob-define-hook-function help-mode-hook
+  (jacob-xfk-local-key "s" #'help-view-source)
+  (jacob-xfk-local-key "q" #'quit-window)
+  (jacob-xfk-local-key "e" #'help-go-back)
+  (jacob-xfk-local-key "r" #'help-go-forward)
+  (jacob-xfk-local-key "g" #'revert-buffer)
+  (jacob-xfk-local-key "w" #'jacob-help-edit))
 
-(use-package help-at-pt
-  :defer
-  :after flymake
-  :config
-  (setq-default help-at-pt-display-when-idle '(flymake-diagnostic))
-  (help-at-pt-set-timer))
+(jacob-require 'help-at-pt)
+(setq-default help-at-pt-display-when-idle '(flymake-diagnostic))
+(help-at-pt-set-timer)
 
-(use-package warnings
-  :defer
-  :custom
-  (warning-minimum-level :error))
+(jacob-require 'warnings)
+(setopt warning-minimum-level :error)
 
-(use-package subword
-  :config
-  (global-subword-mode 1))
+(jacob-require 'subword)
+(global-subword-mode 1)
 
-(use-package paren
-  :config
-  (show-paren-mode 1)
-  :custom
-  (show-paren-when-point-inside-paren t))
+(jacob-require 'paren)
+(show-paren-mode 1)
+(setopt show-paren-when-point-inside-paren t)
 
-(use-package elec-pair
-  :config
-  (electric-pair-mode 1))
+(jacob-require 'elec-pair)
+(electric-pair-mode 1)
 
-(use-package delsel
-  :config
-  (delete-selection-mode 1))
+(jacob-require 'delsel)
+(delete-selection-mode 1)
 
 (use-package repeat
   :config
@@ -541,10 +523,9 @@ set the PROPERTIES of TABLE."
   (defun jacob-csharp-end-of-line-or-statement ()
     "Move cursor to the end of line or next csharp statement."
     (interactive)
-    (let ((p (point)))
-      (if (eq last-command this-command)
-          (call-interactively 'jacob-csharp-forward-statement)
-        (end-of-line))))
+    (if (eq last-command this-command)
+        (call-interactively 'jacob-csharp-forward-statement)
+      (end-of-line)))
 
   (defun jacob-backspace-csharp (f)
     "Function for `jacob-backspace' to help with csharp.
@@ -880,7 +861,7 @@ in when it tangles into a file."
   "DWIM backspace command.
 
 If character to the left is a pair character as determined by
-`insert-pair-alist', kill from the pair to its match. If the
+`insert-pair-alist', kill from the pair to its match.  If the
 prefix argument is provided, just delete the pair characters."
   (interactive)
   (undo-boundary)
@@ -952,7 +933,7 @@ prefix argument is provided, just delete the pair characters."
         (goto-char content-end)))))
 
 (defun jacob-kill-line ()
-  "If region is active, kill it. Otherwise:
+  "If region is active, kill it.  Otherwise:
 
 If point is at the beginning of the line, kill the whole line.
 
@@ -1027,7 +1008,7 @@ Otherwise, kill from point to the end of the line."
                                     (assoc-string connection
                                                   sql-connection-alist
                                                   t)))))
-      (sql-connect connection buf-name)))  
+      (sql-connect connection buf-name)))
   :config
   (defun jacob-sql-interactive-mode-hook ()
     "Custom interactive SQL mode behaviours.
@@ -1042,7 +1023,7 @@ See `sql-interactive-mode-hook' and `sql-product-alist'."
 
 Intended as before advice for `sql-send-paragraph'."
     (with-current-buffer sql-buffer
-      (end-of-buffer)))
+      (goto-char (point-max))))
 
   (advice-add #'sql-send-paragraph :before #'jacob-sqli-end-of-buffer)
 
@@ -1243,6 +1224,7 @@ Useful for deleting ^M after `eglot-code-actions'."
 (jacob-require 'avy)
 
 (defun jacob-avy-action-xref (pt)
+  "Call `xref-find-definitions' at PT."
   (save-excursion
     (goto-char pt)
     (call-interactively #'xref-find-definitions))
@@ -1422,7 +1404,7 @@ buffer."
 
   (unless jacob-is-windows
     (add-to-list 'consult-buffer-sources jacob-consult-project-source "APPEND"))
-  :bind (("M-g i" . consult-imenu) 
+  :bind (("M-g i" . consult-imenu)
          :map xah-fly-leader-key-map
          ("v" . consult-yank-from-kill-ring)
          ("f" . consult-buffer)
@@ -1575,7 +1557,7 @@ For use in yasnippets."
 ;; personal functions
 
 (defun jacob-indent-buffer ()
-  "Indent whole buffer. Designed for use in `before-save-hook'."
+  "Indent whole buffer.  Designed for use in `before-save-hook'."
   (unless (ignore-errors smerge-mode)
     (indent-region (point-min) (point-max))))
 
