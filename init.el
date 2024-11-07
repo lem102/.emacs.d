@@ -20,6 +20,36 @@
 (when (file-exists-p "~/.emacs.d/environment.el")
   (load-file "~/.emacs.d/environment.el"))
 
+
+
+(require 'package)
+
+(defvar jacob-require-already-refreshed nil
+  "If nil, haven't refreshed packages with `jacob-require' yet.")
+
+(defun jacob-require (package &optional vc)
+  "Ensure PACKAGE is installed, then `require' it.
+
+If VC is provided, it is passed to `package-vc-install' to install the
+package rather than using `package-install'."
+  (if (require package nil "NOERROR")
+      package
+    (if vc
+        (unless (package-installed-p package)
+          (package-vc-install vc))
+      (unless (package-installed-p package)
+        (unless jacob-require-already-refreshed
+          (package-refresh-contents)
+          (setq jacob-require-already-refreshed t))
+        (package-install package)))
+    (require package)))
+
+(setopt package-archives '(("GNU" . "https://elpa.gnu.org/packages/")
+                           ("non-GNU" . "https://elpa.nongnu.org/nongnu/")
+                           ("melpa" . "https://melpa.org/packages/")))
+
+
+
 ;; enable emoji fonts
 (set-fontset-font t
                   'emoji
@@ -383,8 +413,9 @@ set the PROPERTIES of TABLE."
            tramp-file-name-regexp)
    "ignore tramp files"))
 
-(use-package vc-git
-  :jacob-hook (vc-git-log-view-mode-hook (jacob-xfk-local-key "q" #'quit-window)))
+(jacob-require 'vc-git)
+(jacob-define-hook-function vc-git-log-view-mode-hook
+  (jacob-xfk-local-key "q" #'quit-window))
 
 (use-package vc-dir
   :jacob-hook (vc-dir-mode-hook (jacob-xfk-local-key "q" #'quit-window)
@@ -687,7 +718,7 @@ hides this information."
     
     (advice-add 'eshell-interrupt-process :after #'jacob-confirm-terminate-batch-job)))
 
-(require 'eldoc)
+(jacob-require 'eldoc)
 (global-eldoc-mode 1)
 
 (use-package project
@@ -709,7 +740,7 @@ hides this information."
     (setq-local yas-key-syntaxes '("w_")))
   :hook (emacs-lisp-mode-hook . jacob-elisp-config-hook-function)
   :config
-  (add-to-list 'lisp-imenu-generic-expression '(nil "^(\\(jacob-\\)*require \\(.+\\))" 2))
+  (add-to-list 'lisp-imenu-generic-expression '("Packages" "^(\\(jacob-\\)*require '\\([a-z-]+\\)" 2))
   (jacob-setup-abbrev-table emacs-lisp-mode-abbrev-table
                             '(("up" "use-package" jacob-abbrev-no-insert)
                               ("d" "defun" jacob-abbrev-no-insert)
@@ -1071,47 +1102,17 @@ Useful for deleting ^M after `eglot-code-actions'."
   :mode (("\\.csproj\\'" . nxml-mode)
          ("Directory.Packages.props" . nxml-mode)))
 
-
-;; package configuration
+(jacob-require 'key-chord)
+(key-chord-mode 1)
 
-(defvar jacob-require-already-refreshed nil
-  "If nil, haven't refreshed packages with `jacob-require' yet.")
-
-(defun jacob-require (package)
-  "Ensure PACKAGE is installed, then `require' it."
-  (unless (package-installed-p package)
-    (unless jacob-require-already-refreshed
-      (package-refresh-contents)
-      (setq jacob-require-already-refreshed t))
-    (package-install package))
-  (require package))
-
-(use-package package
-  :custom
-  (package-archives '(("GNU" . "https://elpa.gnu.org/packages/")
-                      ("non-GNU" . "https://elpa.nongnu.org/nongnu/")
-                      ("melpa" . "https://melpa.org/packages/"))))
-
-(use-package vc-use-package
-  :preface
-  (unless (package-installed-p 'vc-use-package)
-    (package-vc-install "https://github.com/slotThe/vc-use-package")))
-
-(use-package key-chord
-  :vc (key-chord :url "https://github.com/emacsorphanage/key-chord.git")
-  :config
-  (key-chord-mode 1))
-
-(jacob-require 'use-package-chords)
+(setopt xah-fly-use-control-key nil
+        xah-fly-use-meta-key nil) ; must be set before requiring `xah-fly-keys'
 
 (jacob-require 'xah-fly-keys)
 
-(setopt xah-fly-use-control-key nil
-        xah-fly-use-meta-key nil)
-
 (defun jacob-xfk-define-key-in-major-mode (keymap key command)
   "In KEYMAP bind KEY to COMMAND only when in xfk command mode."
-  ;; FIXME: keys that are not already bound will not work for jacob-xfk-define-key-in-major-mode
+  ;; FIXME: keys that are not already bound will not work for `jacob-xfk-define-key-in-major-mode'
   
   ;; This is a big HACK, because it's time sensitive. It works by
   ;; rebinding a key already bound to something in
@@ -1278,36 +1279,34 @@ Otherwise, kill from point to the end of the line."
 
 (jacob-xfk-define-key-in-major-mode compilation-mode-map "g" #'recompile)
 
-(use-package avy
-  :ensure
-  :after use-package-chords
-  :chords (("fj" . avy-goto-char-timer))
-  :config
-  (defun jacob-avy-action-xref (pt)
-    (save-excursion
-      (goto-char pt)
-      (call-interactively #'xref-find-definitions))
-    (select-window
-     (cdr (ring-ref avy-ring 0)))
-    t)
-  :custom
-  (avy-keys '(?a ?s ?d ?f ?g ?h ?j ?l ?\;))
-  (avy-dispatch-alist '((?y . avy-action-yank)
-                        (?k . avy-action-kill-stay)
-                        (?K . avy-action-kill-move)
-                        (?t . avy-action-teleport)
-                        (?m . avy-action-mark)
-                        (?w . avy-action-copy)
-                        (?i . avy-action-ispell)
-                        (?z . avy-action-zap-to-char)
-                        (?. . jacob-avy-action-xref))))
+(jacob-require 'avy)
+
+(defun jacob-avy-action-xref (pt)
+  (save-excursion
+    (goto-char pt)
+    (call-interactively #'xref-find-definitions))
+  (select-window
+   (cdr (ring-ref avy-ring 0)))
+  t)
+
+(setopt avy-keys '(?a ?s ?d ?f ?g ?h ?j ?l ?\;)
+        avy-dispatch-alist '((?y . avy-action-yank)
+                             (?k . avy-action-kill-stay)
+                             (?K . avy-action-kill-move)
+                             (?t . avy-action-teleport)
+                             (?m . avy-action-mark)
+                             (?w . avy-action-copy)
+                             (?i . avy-action-ispell)
+                             (?z . avy-action-zap-to-char)
+                             (?. . jacob-avy-action-xref)))
+
+(key-chord-define-global "fj" #'avy-goto-char-timer)
 
 (use-package apheleia
   :ensure
   :config
   (apheleia-global-mode 1)
-  (setq-default apheleia-inhibit t)     ; set `apheleia-inhibit' to
-                                        ; nil to enable
+  (setq-default apheleia-inhibit t) ; set `apheleia-inhibit' to nil to enable
   ;; JACOBTODO: how does add-to-list work?
   (push '(csharpier "dotnet" "csharpier" "--write-stdout")
         apheleia-formatters)
@@ -1325,106 +1324,20 @@ buffer."
   
   (add-to-list 'apheleia-skip-functions #'jacob-apheleia-skip-function))
 
-(use-package rainbow-mode
-  :ensure
-  :hook prog-mode-hook)
+(jacob-require 'rainbow-mode)
+(add-hook 'prog-mode-hook #'rainbow-mode)
 
-(use-package eglot-booster
-  :if jacob-is-linux
-  :vc (eglot-booster :url "https://github.com/jdtsmith/eglot-booster")
-  :after eglot
-  :config
-  (eglot-booster-mode 1))
+(jacob-require 'eglot-booster "https://github.com/jdtsmith/eglot-booster")
+(eglot-booster-mode 1)
 
-(use-package slack
-  ;; JACOBTODO: use a better fork
-  :vc (slack :url "https://github.com/lem102/emacs-slack.git")
-  :config
-  (defun jacob-slack-modeline-formatter (alist)
-    "Hide the slack modeline if there are no notifications.
-
-Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (channel . (has-unreads . mention-count)))))"
-    (if (seq-find (lambda (team)
-                    (seq-find (lambda (room-type)
-                                (car (cdr room-type)))
-                              (cdr team)))
-                  alist)
-        (slack-default-modeline-formatter alist)
-      ""))
-
-  (defun jacob-slack-show-unread ()
-    "Open an unread slack message."
-    (interactive)
-    (let* ((team (slack-team-select))
-           (rooms (seq-filter #'(lambda (room)
-                                  (slack-room-has-unread-p room team))
-                              (append (slack-team-ims team)
-                                      (slack-team-groups team)
-                                      (slack-team-channels team)))))
-      (if (null rooms)
-          (message "no unread slack messages")
-        (slack-room-display (seq-first rooms) team))))
-
-  (defun jacob-slack-kill-buffers ()
-    "Kill all slack message buffers."
-    (interactive)
-    (kill-some-buffers
-     (seq-filter (lambda (b)
-                   (seq-contains-p
-                    '(slack-message-buffer-mode
-                      slack-thread-message-buffer-mode
-                      slack-file-info-buffer-mode)
-                    (buffer-local-value 'major-mode b)))
-                 (buffer-list))))
-
-  (defun jacob-slack-show-all-unread ()
-    "Show all unread messages."
-    (interactive)
-    (let* ((team (slack-team-select))
-           (rooms (seq-filter #'(lambda (room)
-                                  (slack-room-has-unread-p room team))
-                              (append (slack-team-ims team)
-                                      (slack-team-groups team)
-                                      (slack-team-channels team)))))
-      (if (null rooms)
-          (message "no unread slack messages")
-        (dolist (room rooms)
-          (slack-room-display room team)))))
-
-  (defun jacob-slack-hook-function ()
-    "Function to be run in slack mode hooks."
-    (toggle-word-wrap 1))
-  
-  :hook ((slack-message-buffer-mode-hook . jacob-slack-hook-function)
-         (slack-thread-message-buffer-mode-hook . jacob-slack-hook-function))
-  :custom
-  (slack-enable-global-mode-string t)
-  (slack-buffer-emojify t)
-  (slack-prefer-current-team t)
-  (slack-thread-also-send-to-room nil)
-  (alert-default-style 'notifications)
-  (lui-fill-type nil)
-  (lui-time-stamp-position 0)
-  (lui-time-stamp-format "%a %b %e %H:%M")
-  (slack-modeline-formatter #'jacob-slack-modeline-formatter)
-  :bind ( :map jacob-xfk-map
-          ("s s" . slack-start)
-          ("s u" . jacob-slack-show-unread)
-          ("s U" . jacob-slack-show-all-unread)
-          ("s r" . slack-select-rooms)
-          ("s k" . jacob-slack-kill-buffers)))
-
-(use-package csharp-toolbox
-  ;; JACOBTODO: can i make this use ssh?
-  :vc (csharp-toolbox :url "https://github.com/lem102/csharp-toolbox.git")
-  ;; JACOBTODO: how should i load this properly? 🤔
-  :after csharp-mode
-  :bind ( :map jacob-xfk-map
-          ("c f" . csharp-toolbox-format-statement)
-          ("c t" . csharp-toolbox-run-test)
-          ("c a" . csharp-toolbox-toggle-async)
-          ("c n" . csharp-toolbox-guess-namespace)
-          ("c ;" . csharp-toolbox-wd40)))
+(jacob-require 'csharp-toolbox "https://github.com/lem102/csharp-toolbox.git")
+;; JACOBTODO: can i make this use ssh?
+;; JACOBTODO: how should i load this properly? 🤔
+(keymap-set jacob-xfk-map "c f" #'csharp-toolbox-format-statement)
+(keymap-set jacob-xfk-map "c t" #'csharp-toolbox-run-test)
+(keymap-set jacob-xfk-map "c a" #'csharp-toolbox-toggle-async)
+(keymap-set jacob-xfk-map "c n" #'csharp-toolbox-guess-namespace)
+(keymap-set jacob-xfk-map "c ;" #'csharp-toolbox-wd40)
 
 (use-package dape
   :ensure
@@ -1466,10 +1379,6 @@ Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (c
   :bind ( :map xah-fly-command-map
           ("," . switch-window)))
 
-(use-package racket-mode
-  :ensure
-  :hook (racket-mode-hook . racket-xp-mode))
-
 (use-package tex                        ; auctex is weird
   :ensure auctex
   :mode ("\\.tex\\$" . latex-mode)
@@ -1479,19 +1388,11 @@ Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (c
   (setq-default japanese-TeX-error-messages nil)
   (TeX-global-PDF-mode 0))
 
-(jacob-require 'ob-restclient) ; JACOBTODO: obsoleted by verb. delete when not using anymore.
+(jacob-require 'fsharp-mode)
+(setopt inferior-fsharp-program "dotnet fsi")
 
-(use-package fsharp-mode
-  :ensure
-  :defer
-  :custom
-  (inferior-fsharp-program "dotnet fsi"))
-
-(use-package eglot-fsharp
-  :ensure
-  :after fsharp-mode
-  :custom
-  (eglot-fsharp-server-install-dir nil))
+(jacob-require 'eglot-fsharp)
+(setopt eglot-fsharp-server-install-dir nil)
 
 (use-package vertico
   :ensure
@@ -1589,12 +1490,6 @@ Element in ALIST is  '((team-name . ((thread . (has-unreads . mention-count)) (c
   :hook (org-mode-hook . verb-mode)
   :config
   (jacob-xfk-define-key-in-major-mode verb-response-body-mode-map "q" #'quit-window))
-
-(jacob-require 'impostman)
-
-(use-package web-mode
-  :ensure
-  :mode "\\.cshtml\\'")
 
 (jacob-require 'sly)
 
