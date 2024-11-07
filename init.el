@@ -107,22 +107,6 @@ package rather than using `package-install'."
          ,@body)
        (add-hook ',hook #',function-name))))
 
-(add-to-list 'use-package-keywords :jacob-hook "APPEND")
-
-;; The auto generated function we are adding to the hook is not from
-;; the package so we can safely imply deferred loading with this.
-(add-to-list 'use-package-deferring-keywords :jacob-hook "APPEND")
-
-(defun use-package-normalize/:jacob-hook (name keyword args)
-  (car args))
-
-(defun use-package-handler/:jacob-hook (name _keyword args rest state)
-  ;; i don't really know what i'm doing here 👍
-  (use-package-concat
-   (use-package-process-keywords name rest state)
-   `((with-eval-after-load ',name
-       (jacob-define-hook-function ,(car args) ,@(cdr args))))))
-
 (require 'abbrev)
 
 (add-hook 'text-mode-hook 'abbrev-mode)
@@ -286,21 +270,11 @@ set the PROPERTIES of TABLE."
                                (?i ?\' ?\')
                                (?h ?\< ?\>)))))
 
-(use-package lisp-mode
-  :defer
-  :after abbrev
-  :config
-  
-  ;; (define-abbrev-table 'lisp-mode-abbrev-table
-  ;;   '()
-  ;;   nil
-  ;;   :parents (list jacob-comment-abbrev-table)
-  ;;   :enable-function 'jacob-point-in-code-p)
-  (jacob-setup-abbrev-table lisp-mode-abbrev-table
-                            nil
-                            :parents (list jacob-comment-abbrev-table)
-                            :enable-function 'jacob-point-in-code-p)
-  )
+(jacob-require 'lisp-mode)
+(jacob-setup-abbrev-table lisp-mode-abbrev-table
+                          nil
+                          :parents (list jacob-comment-abbrev-table)
+                          :enable-function 'jacob-point-in-code-p)
 
 ;; support for files like `/etc/fstab'
 (use-package generic-x)
@@ -417,21 +391,22 @@ set the PROPERTIES of TABLE."
 (jacob-define-hook-function vc-git-log-view-mode-hook
   (jacob-xfk-local-key "q" #'quit-window))
 
-(use-package vc-dir
-  :jacob-hook (vc-dir-mode-hook (jacob-xfk-local-key "q" #'quit-window)
-                                (jacob-xfk-local-key "g" #'revert-buffer)
-                                (jacob-xfk-local-key "i" #'vc-dir-previous-line)
-                                (jacob-xfk-local-key "k" #'vc-dir-next-line)
-                                (jacob-xfk-local-key "o" #'vc-dir-next-directory)
-                                (jacob-xfk-local-key "u" #'vc-dir-previous-directory)
-                                (jacob-xfk-local-key "s" #'vc-dir-find-file)
-                                (jacob-xfk-local-key "e" #'vc-dir-mark)
-                                (jacob-xfk-local-key "r" #'vc-dir-unmark)
-                                (jacob-xfk-local-key "v" #'vc-next-action)
-                                (jacob-xfk-local-key "p" #'vc-push)
-                                (jacob-xfk-local-key "P" #'jacob-git-push-set-upstream)
-                                (jacob-xfk-local-key "=" #'vc-diff)
-                                (jacob-xfk-local-key "x" #'vc-dir-hide-up-to-date)))
+(jacob-require 'vc-dir)
+(jacob-define-hook-function vc-dir-mode-hook
+  (jacob-xfk-local-key "q" #'quit-window)
+  (jacob-xfk-local-key "g" #'revert-buffer)
+  (jacob-xfk-local-key "i" #'vc-dir-previous-line)
+  (jacob-xfk-local-key "k" #'vc-dir-next-line)
+  (jacob-xfk-local-key "o" #'vc-dir-next-directory)
+  (jacob-xfk-local-key "u" #'vc-dir-previous-directory)
+  (jacob-xfk-local-key "s" #'vc-dir-find-file)
+  (jacob-xfk-local-key "e" #'vc-dir-mark)
+  (jacob-xfk-local-key "r" #'vc-dir-unmark)
+  (jacob-xfk-local-key "v" #'vc-next-action)
+  (jacob-xfk-local-key "p" #'vc-push)
+  (jacob-xfk-local-key "P" #'jacob-git-push-set-upstream)
+  (jacob-xfk-local-key "=" #'vc-diff)
+  (jacob-xfk-local-key "x" #'vc-dir-hide-up-to-date))
 
 (use-package autoinsert
   :defer
@@ -623,31 +598,29 @@ perform the deletion."
                             :parents (list jacob-comment-abbrev-table)
                             :enable-function 'jacob-point-in-code-p))
 
-(use-package inf-lisp
-  :defer
-  :custom
-  (inferior-lisp-program "sbcl"))
+(jacob-require 'inf-lisp)
+(setopt inferior-lisp-program "sbcl")
 
-(use-package dired
-  :after xah-fly-keys
-  :jacob-hook (dired-mode-hook (dired-hide-details-mode 1)
-                               (jacob-xfk-local-key "s" #'dired-find-file)
-                               (jacob-xfk-local-key "d" #'dired-do-delete) ; we skip the "flag, delete" process as files are sent to system bin on deletion
-                               (jacob-xfk-local-key "q" #'quit-window)
-                               (jacob-xfk-local-key "i" #'dired-previous-line)
-                               (jacob-xfk-local-key "k" #'dired-next-line)
-                               (jacob-xfk-local-key "e" #'dired-mark)
-                               (jacob-xfk-local-key "r" #'dired-unmark)
-                               (jacob-xfk-local-key "g" #'revert-buffer)
-                               (jacob-xfk-local-key "x" #'dired-do-rename)
-                               (jacob-xfk-local-key "c" #'dired-do-copy)
-                               (jacob-xfk-local-key "u" #'dired-up-directory)
-                               (jacob-xfk-local-key "j" #'dired-goto-file))
-  :custom
-  (dired-recursive-copies 'always)
-  (dired-dwim-target t)
-  (dired-listing-switches "-hal" "the h option needs to come first 🙃")
-  (dired-guess-shell-alist-user '(("\\.mkv\\'" "mpv"))))
+(jacob-require 'dired)
+(jacob-define-hook-function dired-mode-hook
+  (dired-hide-details-mode 1)
+  (jacob-xfk-local-key "s" #'dired-find-file)
+  (jacob-xfk-local-key "d" #'dired-do-delete) ; we skip the "flag, delete" process as files are sent to system bin on deletion
+  (jacob-xfk-local-key "q" #'quit-window)
+  (jacob-xfk-local-key "i" #'dired-previous-line)
+  (jacob-xfk-local-key "k" #'dired-next-line)
+  (jacob-xfk-local-key "e" #'dired-mark)
+  (jacob-xfk-local-key "r" #'dired-unmark)
+  (jacob-xfk-local-key "g" #'revert-buffer)
+  (jacob-xfk-local-key "x" #'dired-do-rename)
+  (jacob-xfk-local-key "c" #'dired-do-copy)
+  (jacob-xfk-local-key "u" #'dired-up-directory)
+  (jacob-xfk-local-key "j" #'dired-goto-file))
+
+(setopt dired-recursive-copies 'always
+        dired-dwim-target t
+        dired-listing-switches "-hal" ;; the h option needs to come first 🙃
+        dired-guess-shell-alist-user '(("\\.mkv\\'" "mpv")))
 
 (use-package dired-aux
   :defer
@@ -873,6 +846,180 @@ in when it tangles into a file."
           ("1" . winner-undo)
           ("2" . winner-redo)))
 
+(setopt xah-fly-use-control-key nil
+        xah-fly-use-meta-key nil) ; must be set before requiring `xah-fly-keys'
+
+(jacob-require 'xah-fly-keys)
+
+(defun jacob-xfk-define-key-in-major-mode (keymap key command)
+  "In KEYMAP bind KEY to COMMAND only when in xfk command mode."
+  ;; FIXME: keys that are not already bound will not work for `jacob-xfk-define-key-in-major-mode'
+  
+  ;; This is a big HACK, because it's time sensitive. It works by
+  ;; rebinding a key already bound to something in
+  ;; `xah-fly-command-map', but if that key is rebound to something
+  ;; else later, it will break the keybinding set up by this
+  ;; function. To fix this issue with further hacks, run this
+  ;; function in the hook for the major mode.
+  (declare (obsolete jacob-xfk-local-key nil))
+  (define-key keymap
+              (vector 'remap
+                      (lookup-key xah-fly-command-map key))
+              command))
+
+(defun jacob-xfk-local-key (key command)
+  "Bind KEY buffer locally to COMMAND in xfk command mode."
+  ;; FIXME: keys that are not already bound will not work for jacob-xfk-define-key-in-major-mode
+  (keymap-local-set (format "<remap> <%s>"
+                            (keymap-lookup xah-fly-command-map
+                                           key))
+                    command))
+
+(xah-fly-keys-set-layout "qwerty")
+(xah-fly-keys 1)
+
+(defvar-keymap jacob-xfk-map)
+
+(keymap-set xah-fly-leader-key-map "SPC" jacob-xfk-map)
+(keymap-set xah-fly-leader-key-map "e p" project-prefix-map)
+
+(defvar-local jacob-backspace-function nil
+  "Called by `jacob-backspace' if non-nil.")
+
+(defun jacob-backspace ()
+  "DWIM backspace command.
+
+If character to the left is a pair character as determined by
+`insert-pair-alist', kill from the pair to its match. If the
+prefix argument is provided, just delete the pair characters."
+  (interactive)
+  (undo-boundary)
+  (if (region-active-p)
+      (delete-active-region)
+    (when (= 1 (point))
+      (user-error "Beginning of buffer"))
+    (let ((char-class (char-syntax (char-before)))
+          (f (if current-prefix-arg
+                 #'delete-pair
+               #'kill-sexp)))
+      (unless (ignore-errors
+                (funcall jacob-backspace-function f))
+        (cond ((= ?\" char-class)                         ; string
+               (if (nth 3 (syntax-ppss))
+                   (backward-char)
+                 (backward-sexp))
+               (funcall f))
+              ((= ?\( char-class)                         ; delete from start of pair
+               (backward-char)
+               (funcall f))
+              ((= ?\) char-class)                         ; delete from end of pair
+               (backward-sexp)
+               (funcall f))
+              (t                                          ; delete character
+               (backward-delete-char 1)))))))
+
+(defun jacob-next-error-or-punct ()
+  "Wrapper command to allow moving forward by error or punctuation."
+  (interactive)
+  (if flymake-mode
+      (flymake-goto-next-error 1 nil t)
+    (xah-forward-punct)))
+
+(defun jacob-previous-error-or-punct ()
+  "Wrapper command to allow moving backward by error or punctuation."
+  (interactive)
+  (if flymake-mode
+      (flymake-goto-prev-error 1 nil t)
+    (xah-backward-punct)))
+
+(defun jacob-beginning-of-line ()
+  "Go to indentation, line start, backward paragraph."
+  (interactive)
+  (cond ((bolp)
+         (backward-paragraph))
+        ((= (save-excursion
+              (back-to-indentation)
+              (point))
+            (point))
+         (move-beginning-of-line 1))
+        (t
+         (back-to-indentation))))
+
+(defun jacob-end-of-line ()
+  "Go to content end, line end, forward paragraph."
+  (interactive)
+  (if (eolp)
+      (forward-paragraph)
+    (let ((content-end (save-excursion
+                         (when (comment-search-forward (line-end-position) "NOERROR")
+                           (goto-char (match-beginning 0))
+                           (skip-syntax-backward " " (line-beginning-position))
+                           (unless (= (point) (line-beginning-position))
+                             (point))))))
+      (if (or (null content-end)
+              (= content-end (point)))
+          (move-end-of-line 1)
+        (goto-char content-end)))))
+
+(defun jacob-kill-line ()
+  "If region is active, kill it. Otherwise:
+
+If point is at the beginning of the line, kill the whole line.
+
+If point is at the end of the line, kill until the beginning of the line.
+
+Otherwise, kill from point to the end of the line."
+  (interactive)
+  (cond ((region-active-p)
+         (call-interactively #'kill-region))
+        ((bolp)
+         (kill-whole-line))
+        ((eolp)
+         (kill-line 0))
+        (t
+         (kill-line))))
+
+(fset 'jacob-return-macro [return])
+
+(keymap-global-set "<f7>" #'xah-fly-leader-key-map)
+
+(keymap-global-set "M-SPC" #'xah-fly-command-mode-activate)
+
+(keymap-set xah-fly-command-map "'" #'jacob-format-words)
+(keymap-set xah-fly-command-map "-" #'jacob-previous-error-or-punct)
+(keymap-set xah-fly-command-map "4" #'other-window-prefix)
+(keymap-set xah-fly-command-map "9" #'jacob-swap-visible-buffers)
+(keymap-set xah-fly-command-map ";" #'jacob-end-of-line)
+(keymap-set xah-fly-command-map "=" #'jacob-next-error-or-punct)
+(keymap-set xah-fly-command-map "d" #'jacob-backspace)
+(keymap-set xah-fly-command-map "s" #'jacob-return-macro)
+(keymap-set xah-fly-command-map "h" #'jacob-beginning-of-line)
+(keymap-set xah-fly-command-map "x" #'jacob-kill-line)
+
+(keymap-set xah-fly-insert-map "M-SPC" #'xah-fly-command-mode-activate)
+
+(keymap-set xah-fly-leader-key-map "/ b" #'vc-switch-branch)
+(keymap-set xah-fly-leader-key-map "/ c" #'vc-create-branch)
+(keymap-set xah-fly-leader-key-map "d h" #'insert-pair)
+(keymap-set xah-fly-leader-key-map "d i" #'insert-pair)
+(keymap-set xah-fly-leader-key-map "d j" #'insert-pair)
+(keymap-set xah-fly-leader-key-map "d k" #'insert-pair)
+(keymap-set xah-fly-leader-key-map "d l" #'insert-pair)
+(keymap-set xah-fly-leader-key-map "d u" #'insert-pair)
+(keymap-set xah-fly-leader-key-map "l 3" #'jacob-async-shell-command)
+(keymap-set xah-fly-leader-key-map "l a" #'global-text-scale-adjust)
+(keymap-set xah-fly-leader-key-map "u" #'kill-current-buffer)
+(keymap-set xah-fly-leader-key-map "w j" #'xref-find-references)
+(keymap-set xah-fly-leader-key-map ", n" #'jacob-eval-and-replace)
+
+(require 'compile)
+(add-hook 'compilation-filter-hook 'ansi-color-compilation-filter)
+
+(setopt compilation-always-kill t
+        compilation-scroll-output t)
+
+(jacob-xfk-define-key-in-major-mode compilation-mode-map "g" #'recompile)
+
 (use-package sql
   :after xah-fly-keys
   :init
@@ -1067,29 +1214,32 @@ Useful for deleting ^M after `eglot-code-actions'."
   :custom
   (message-send-mail-function 'smtpmail-send-it))
 
-(use-package gnus
-  :jacob-hook (gnus-started-hook (gnus-demon-add-handler 'gnus-demon-scan-news 2 t))
-  :custom
-  (gnus-use-full-window t)
-  (gnus-always-read-dribble-file t)
-  :bind ( :map jacob-xfk-map
-          ("g" . gnus)))
+(jacob-require 'gnus)
+(jacob-define-hook-function gnus-started-hook
+  (gnus-demon-add-handler 'gnus-demon-scan-news 2 t))
 
-(use-package gnus-group
-  :jacob-hook (gnus-group-mode-hook (jacob-xfk-local-key "q" #'gnus-group-exit)
-                                    (jacob-xfk-local-key "i" #'gnus-group-prev-group)
-                                    (jacob-xfk-local-key "k" #'gnus-group-next-group)
-                                    (jacob-xfk-local-key "g" #'gnus-group-get-new-news)))
+(setopt gnus-use-full-window t
+        gnus-always-read-dribble-file t)
+
+(keymap-set jacob-xfk-map "g" #'gnus)
+
+(jacob-require 'gnus-group)
+(jacob-define-hook-function gnus-group-mode-hook
+  (jacob-xfk-local-key "q" #'gnus-group-exit)
+  (jacob-xfk-local-key "i" #'gnus-group-prev-group)
+  (jacob-xfk-local-key "k" #'gnus-group-next-group)
+  (jacob-xfk-local-key "g" #'gnus-group-get-new-news))
 
 (use-package gnus-notifications
   :hook (gnus-after-getting-new-news-hook . gnus-notifications))
 
-(use-package gnus-sum
-  :jacob-hook (gnus-summary-mode-hook (jacob-xfk-local-key "q" #'gnus-summary-exit)
-                                      (jacob-xfk-local-key "i" #'gnus-summary-prev-article)
-                                      (jacob-xfk-local-key "k" #'gnus-summary-next-article)
-                                      (jacob-xfk-local-key "j" #'gnus-summary-prev-page)
-                                      (jacob-xfk-local-key "l" #'gnus-summary-next-page)))
+(jacob-require 'gnus-sum)
+(jacob-define-hook-function gnus-summary-mode-hook
+  (jacob-xfk-local-key "q" #'gnus-summary-exit)
+  (jacob-xfk-local-key "i" #'gnus-summary-prev-article)
+  (jacob-xfk-local-key "k" #'gnus-summary-next-article)
+  (jacob-xfk-local-key "j" #'gnus-summary-prev-page)
+  (jacob-xfk-local-key "l" #'gnus-summary-next-page))
 
 (use-package gnus-topic
   :hook (gnus-group-mode-hook . gnus-topic-mode)
@@ -1104,180 +1254,6 @@ Useful for deleting ^M after `eglot-code-actions'."
 
 (jacob-require 'key-chord)
 (key-chord-mode 1)
-
-(setopt xah-fly-use-control-key nil
-        xah-fly-use-meta-key nil) ; must be set before requiring `xah-fly-keys'
-
-(jacob-require 'xah-fly-keys)
-
-(defun jacob-xfk-define-key-in-major-mode (keymap key command)
-  "In KEYMAP bind KEY to COMMAND only when in xfk command mode."
-  ;; FIXME: keys that are not already bound will not work for `jacob-xfk-define-key-in-major-mode'
-  
-  ;; This is a big HACK, because it's time sensitive. It works by
-  ;; rebinding a key already bound to something in
-  ;; `xah-fly-command-map', but if that key is rebound to something
-  ;; else later, it will break the keybinding set up by this
-  ;; function. To fix this issue with further hacks, run this
-  ;; function in the hook for the major mode.
-  (declare (obsolete jacob-xfk-local-key nil))
-  (define-key keymap
-              (vector 'remap
-                      (lookup-key xah-fly-command-map key))
-              command))
-
-(defun jacob-xfk-local-key (key command)
-  "Bind KEY buffer locally to COMMAND in xfk command mode."
-  ;; FIXME: keys that are not already bound will not work for jacob-xfk-define-key-in-major-mode
-  (keymap-local-set (format "<remap> <%s>"
-                            (keymap-lookup xah-fly-command-map
-                                           key))
-                    command))
-
-(xah-fly-keys-set-layout "qwerty")
-(xah-fly-keys 1)
-
-(defvar-keymap jacob-xfk-map)
-
-(keymap-set xah-fly-leader-key-map "SPC" jacob-xfk-map)
-(keymap-set xah-fly-leader-key-map "e p" project-prefix-map)
-
-(defvar-local jacob-backspace-function nil
-  "Called by `jacob-backspace' if non-nil.")
-
-(defun jacob-backspace ()
-  "DWIM backspace command.
-
-If character to the left is a pair character as determined by
-`insert-pair-alist', kill from the pair to its match. If the
-prefix argument is provided, just delete the pair characters."
-  (interactive)
-  (undo-boundary)
-  (if (region-active-p)
-      (delete-active-region)
-    (when (= 1 (point))
-      (user-error "Beginning of buffer"))
-    (let ((char-class (char-syntax (char-before)))
-          (f (if current-prefix-arg
-                 #'delete-pair
-               #'kill-sexp)))
-      (unless (ignore-errors
-                (funcall jacob-backspace-function f))
-        (cond ((= ?\" char-class)                         ; string
-               (if (nth 3 (syntax-ppss))
-                   (backward-char)
-                 (backward-sexp))
-               (funcall f))
-              ((= ?\( char-class)                         ; delete from start of pair
-               (backward-char)
-               (funcall f))
-              ((= ?\) char-class)                         ; delete from end of pair
-               (backward-sexp)
-               (funcall f))
-              (t                                          ; delete character
-               (backward-delete-char 1)))))))
-
-(defun jacob-next-error-or-punct ()
-  "Wrapper command to allow moving forward by error or punctuation."
-  (interactive)
-  (if flymake-mode
-      (flymake-goto-next-error 1 nil t)
-    (xah-forward-punct)))
-
-(defun jacob-previous-error-or-punct ()
-  "Wrapper command to allow moving backward by error or punctuation."
-  (interactive)
-  (if flymake-mode
-      (flymake-goto-prev-error 1 nil t)
-    (xah-backward-punct)))
-
-(defun jacob-beginning-of-line ()
-  "Go to indentation, line start, backward paragraph."
-  (interactive)
-  (cond ((bolp)
-         (backward-paragraph))
-        ((= (save-excursion
-              (back-to-indentation)
-              (point))
-            (point))
-         (move-beginning-of-line 1))
-        (t
-         (back-to-indentation))))
-
-(defun jacob-end-of-line ()
-  "Go to content end, line end, forward paragraph."
-  (interactive)
-  (if (eolp)
-      (forward-paragraph)
-    (let ((content-end (save-excursion
-                         (when (comment-search-forward (line-end-position) "NOERROR")
-                           (goto-char (match-beginning 0))
-                           (skip-syntax-backward " " (line-beginning-position))
-                           (unless (= (point) (line-beginning-position))
-                             (point))))))
-      (if (or (null content-end)
-              (= content-end (point)))
-          (move-end-of-line 1)
-        (goto-char content-end)))))
-
-(defun jacob-kill-line ()
-  "If region is active, kill it. Otherwise:
-
-If point is at the beginning of the line, kill the whole line.
-
-If point is at the end of the line, kill until the beginning of the line.
-
-Otherwise, kill from point to the end of the line."
-  (interactive)
-  (cond ((region-active-p)
-         (call-interactively #'kill-region))
-        ((bolp)
-         (kill-whole-line))
-        ((eolp)
-         (kill-line 0))
-        (t
-         (kill-line))))
-
-(fset 'jacob-return-macro [return])
-
-(keymap-global-set "<f7>" #'xah-fly-leader-key-map)
-
-(keymap-global-set "M-SPC" #'xah-fly-command-mode-activate)
-
-(keymap-set xah-fly-command-map "'" #'jacob-format-words)
-(keymap-set xah-fly-command-map "-" #'jacob-previous-error-or-punct)
-(keymap-set xah-fly-command-map "4" #'other-window-prefix)
-(keymap-set xah-fly-command-map "9" #'jacob-swap-visible-buffers)
-(keymap-set xah-fly-command-map ";" #'jacob-end-of-line)
-(keymap-set xah-fly-command-map "=" #'jacob-next-error-or-punct)
-(keymap-set xah-fly-command-map "d" #'jacob-backspace)
-(keymap-set xah-fly-command-map "s" #'jacob-return-macro)
-(keymap-set xah-fly-command-map "h" #'jacob-beginning-of-line)
-(keymap-set xah-fly-command-map "x" #'jacob-kill-line)
-
-(keymap-set xah-fly-insert-map "M-SPC" #'xah-fly-command-mode-activate)
-
-(keymap-set xah-fly-leader-key-map "/ b" #'vc-switch-branch)
-(keymap-set xah-fly-leader-key-map "/ c" #'vc-create-branch)
-(keymap-set xah-fly-leader-key-map "d h" #'insert-pair)
-(keymap-set xah-fly-leader-key-map "d i" #'insert-pair)
-(keymap-set xah-fly-leader-key-map "d j" #'insert-pair)
-(keymap-set xah-fly-leader-key-map "d k" #'insert-pair)
-(keymap-set xah-fly-leader-key-map "d l" #'insert-pair)
-(keymap-set xah-fly-leader-key-map "d u" #'insert-pair)
-(keymap-set xah-fly-leader-key-map "l 3" #'jacob-async-shell-command)
-(keymap-set xah-fly-leader-key-map "l a" #'global-text-scale-adjust)
-(keymap-set xah-fly-leader-key-map "u" #'kill-current-buffer)
-(keymap-set xah-fly-leader-key-map "w j" #'xref-find-references)
-(keymap-set xah-fly-leader-key-map ", n" #'jacob-eval-and-replace)
-
-(require 'compile)
-(add-hook 'compilation-filter-hook 'ansi-color-compilation-filter)
-
-(setopt compilation-always-kill t
-        compilation-scroll-output t)
-
-(jacob-xfk-define-key-in-major-mode compilation-mode-map "g" #'recompile)
 
 (jacob-require 'avy)
 
