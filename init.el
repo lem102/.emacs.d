@@ -241,11 +241,6 @@ set the PROPERTIES of TABLE."
 
 (provide 'startup)                      ; HACK
 (use-package startup
-  :hook (emacs-startup-hook . (lambda ()
-                                (message (emacs-init-time
-                                          (concat "Emacs ready in %.2f seconds "
-                                                  (format "with %d garbage collections"
-                                                          gcs-done))))))
   :custom
   (inhibit-startup-screen t)
   (initial-scratch-message (format ";; %s\n\n"
@@ -619,20 +614,15 @@ perform the deletion."
 
 (setopt dired-recursive-copies 'always
         dired-dwim-target t
-        dired-listing-switches "-hal" ;; the h option needs to come first 🙃
+        dired-listing-switches "-hal" ; the h option needs to come first 🙃
         dired-guess-shell-alist-user '(("\\.mkv\\'" "mpv")))
 
-(use-package dired-aux
-  :defer
-  :after dired
-  :custom
-  (dired-vc-rename-file t))
+(jacob-require 'dired-aux)
+(setopt dired-vc-rename-file t)
 
-(use-package ls-lisp
-  :after dired
-  :custom
-  (ls-lisp-use-insert-directory-program nil)
-  (ls-lisp-dirs-first t))
+(jacob-require 'ls-lisp)
+(setopt ls-lisp-use-insert-directory-program nil
+        ls-lisp-dirs-first t)
 
 (use-package esh-mode
   :defer
@@ -1094,27 +1084,22 @@ Intended as before advice for `sql-send-paragraph'."
   (jacob-xfk-define-key-in-major-mode doc-view-mode-map "l" 'doc-view-next-page)
   (jacob-xfk-define-key-in-major-mode doc-view-mode-map "j" 'doc-view-previous-page))
 
-(use-package treesit
-  ;; strategy for adopting tree-sitter:
-  ;; on linux, use the auto build stuff included in emacs
-  ;; on windows, grab the .dlls from a bundle
-  :defer
-  :config
-  (when jacob-is-linux
-    (setopt treesit-language-source-alist '((c-sharp "https://github.com/tree-sitter/tree-sitter-c-sharp" "master" "src")
-                                            (javascript "https://github.com/tree-sitter/tree-sitter-javascript" "master" "src")
-                                            (typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src")
-                                            (tsx "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src")
-                                            (yaml "https://github.com/ikatyang/tree-sitter-yaml")
-                                            (gdscript "https://github.com/PrestonKnopp/tree-sitter-gdscript")))
-    (setopt treesit-load-name-override-list '((c-sharp "libtree-sitter-csharp" "tree_sitter_c_sharp"))))
-  :custom
-  (major-mode-remap-alist '((csharp-mode . csharp-ts-mode)
-                            (javascript-mode . js-ts-mode)))
-  (treesit-font-lock-level 4 "max level of fontification"))
+;; JACOBTODO: when next messing with treesit libraries, swap to
+;; `treesit-auto'.
+(jacob-require 'treesit)
+(setopt treesit-language-source-alist '((c-sharp "https://github.com/tree-sitter/tree-sitter-c-sharp" "master" "src")
+                                        (javascript "https://github.com/tree-sitter/tree-sitter-javascript" "master" "src")
+                                        (typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src")
+                                        (tsx "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src")
+                                        (yaml "https://github.com/ikatyang/tree-sitter-yaml")
+                                        (gdscript "https://github.com/PrestonKnopp/tree-sitter-gdscript"))
+        treesit-load-name-override-list '((c-sharp "libtree-sitter-csharp" "tree_sitter_c_sharp"))
+        major-mode-remap-alist '((csharp-mode . csharp-ts-mode)
+                                 (javascript-mode . js-ts-mode))
+        treesit-font-lock-level 4)      ; max level of fontification
 
 (use-package eglot
-  :hook (((java-mode-hook csharp-ts-mode-hook) . eglot-ensure)
+  :hook ((csharp-ts-mode-hook . eglot-ensure)
          (eglot-managed-mode-hook . jacob-eglot-hook-function))
   :config
   ;; JACOBTODO: function that can smartly decide between jumping to
