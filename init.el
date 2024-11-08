@@ -1,4 +1,4 @@
-;;; init.el --- Jacob's main init file. -*-lexical-binding: t; eval: (flymake-mode 0)-*-
+;;; init.el --- Jacob's main init file. -*-lexical-binding: t-*-
 ;;; Commentary:
 ;;; Code:
 
@@ -20,6 +20,28 @@
 (when (file-exists-p "~/.emacs.d/environment.el")
   (load-file "~/.emacs.d/environment.el"))
 
+;; startup
+(setopt inhibit-startup-screen t
+        initial-scratch-message (format ";; %s\n\n"
+                                        (seq-random-elt
+                                         '("\"A journey of a thousand miles begins with a single step.\" - 老子"
+                                           "\"apex predator of grug is complexity\" - some grug"
+                                           "\"Perfection is achieved, not when there is nothing more to add, but when there is nothing left to take away.\" - Antoine de Saint-Exupéry"
+                                           "\"Always listen to Jiaqi.\" - Jacob Leeming"
+                                           "\"The king wisely had the computer scientist beheaded, and they all lived happily ever after.\" - anon"
+                                           "\"Success is going from failure to failure without losing your enthusiasm.\" - Winston Churchill (maybe)"))))
+
+;; lisp
+(setopt parens-require-spaces nil
+        delete-pair-blink-delay 0
+        insert-pair-alist (append insert-pair-alist
+                                  '((?k ?\( ?\))
+                                    (?l ?\[ ?\])
+                                    (?j ?\{ ?\})
+                                    (?u ?\" ?\")
+                                    (?i ?\' ?\')
+                                    (?h ?\< ?\>))))
+
 
 
 (require 'package)
@@ -27,27 +49,27 @@
 (defvar jacob-require-already-refreshed nil
   "If nil, haven't refreshed packages with `jacob-require' yet.")
 
-(defun jacob-require (package &optional vc)
-  "Ensure PACKAGE is installed, then `require' it.
+(defun jacob-ensure-installed (package vc)
+  "Ensure PACKAGE is installed.
 
-If VC is provided, it is passed to `package-vc-install' to install the
-package rather than using `package-install'."
-  
-  (if (or
-       ;; these files do not `provide' a feature and therefore cannot be `require'd
-       (member package '(startup lisp mule-cmds bindings indent))
-       (featurep package)
-       (require package nil "NOERROR"))
-      package
+If VC is provided, it is passed to `package-vc-install' to
+install the package rather than using `package-install'."
+  (unless (and (require package nil "NOERROR")
+               (package-installed-p package))
     (if vc
-        (unless (package-installed-p package)
-          (package-vc-install vc))
-      (unless (package-installed-p package)
-        (unless jacob-require-already-refreshed
-          (package-refresh-contents)
-          (setq jacob-require-already-refreshed t))
-        (package-install package)))
-    (require package)))
+        (package-vc-install vc)
+      (unless jacob-require-already-refreshed
+        (package-refresh-contents)
+        (setq jacob-require-already-refreshed t))
+      (package-install package))))
+
+(defmacro jacob-require (package &optional vc)
+  "Ensure the PACKAGE is installed, then `require' it.
+
+VC is used in `jacob-ensure-installed'."
+  `(progn
+     (jacob-ensure-installed ,package ,vc)
+     (require ,package)))
 
 (setopt package-archives '(("GNU" . "https://elpa.gnu.org/packages/")
                            ("non-GNU" . "https://elpa.nongnu.org/nongnu/")
@@ -244,29 +266,7 @@ set the PROPERTIES of TABLE."
   :custom
   (custom-file (make-temp-file "emacs-custom-")))
 
-(jacob-require 'startup)
-(setopt inhibit-startup-screen t
-        initial-scratch-message (format ";; %s\n\n"
-                                        (seq-random-elt
-                                         '("\"A journey of a thousand miles begins with a single step.\" - 老子"
-                                           "\"apex predator of grug is complexity\" - some grug"
-                                           "\"Perfection is achieved, not when there is nothing more to add, but when there is nothing left to take away.\" - Antoine de Saint-Exupéry"
-                                           "\"Always listen to Jiaqi.\" - Jacob Leeming"
-                                           "\"The king wisely had the computer scientist beheaded, and they all lived happily ever after.\" - anon"
-                                           "\"Success is going from failure to failure without losing your enthusiasm.\" - Winston Churchill (maybe)"))))
-
-(jacob-require 'lisp)
-(setopt parens-require-spaces nil
-        delete-pair-blink-delay 0
-        insert-pair-alist (append insert-pair-alist
-                                  '((?k ?\( ?\))
-                                    (?l ?\[ ?\])
-                                    (?j ?\{ ?\})
-                                    (?u ?\" ?\")
-                                    (?i ?\' ?\')
-                                    (?h ?\< ?\>))))
-
-(jacob-require 'lisp-mode)
+(require 'lisp-mode)
 (jacob-setup-abbrev-table lisp-mode-abbrev-table
                           nil
                           :parents (list jacob-comment-abbrev-table)
@@ -283,6 +283,7 @@ set the PROPERTIES of TABLE."
   :custom
   (save-interprogram-paste-before-kill t))
 
+(require 'bookmark)
 (use-package bookmark
   :defer
   :config
@@ -291,531 +292,10 @@ set the PROPERTIES of TABLE."
   :custom
   (bookmark-set-fringe-mark nil))
 
-(jacob-require 'mule-cmds)
+;; (require 'mule-cmds)
 (prefer-coding-system 'utf-8)
 
-(jacob-require 'help)
-(setopt help-window-select t
-        help-enable-variable-value-editing t)
-
-(jacob-require 'help-fns)
-(defun jacob-help-edit ()
-  "Edit variable in current help buffer."
-  (interactive)
-  (unless (equal major-mode 'help-mode)
-    (message "not in help buffer"))
-  (save-excursion
-    (goto-char (point-min))
-    (if (search-forward "Its value is " nil "NOERROR")
-        (help-fns-edit-variable)
-      (message "cannot find editable variable"))))
-
-(jacob-require 'help-mode)
-(jacob-define-hook-function help-mode-hook
-  (jacob-xfk-local-key "s" #'help-view-source)
-  (jacob-xfk-local-key "q" #'quit-window)
-  (jacob-xfk-local-key "e" #'help-go-back)
-  (jacob-xfk-local-key "r" #'help-go-forward)
-  (jacob-xfk-local-key "g" #'revert-buffer)
-  (jacob-xfk-local-key "w" #'jacob-help-edit))
-
-(jacob-require 'help-at-pt)
-(setq-default help-at-pt-display-when-idle '(flymake-diagnostic))
-(help-at-pt-set-timer)
-
-(jacob-require 'warnings)
-(setopt warning-minimum-level :error)
-
-(jacob-require 'subword)
-(global-subword-mode 1)
-
-(jacob-require 'paren)
-(show-paren-mode 1)
-(setopt show-paren-when-point-inside-paren t)
-
-(jacob-require 'elec-pair)
-(electric-pair-mode 1)
-
-(jacob-require 'delsel)
-(delete-selection-mode 1)
-
-(use-package repeat
-  :config
-  (repeat-mode 1))
-
-(use-package dabbrev
-  :defer
-  :custom
-  (dabbrev-case-fold-search nil)
-  (dabbrev-case-replace nil))
-
-(provide 'bindings)                     ; HACK
-(use-package bindings
-  :custom
-  (mode-line-percent-position nil))
-
-(use-package vc
-  :defer
-  :custom
-  (vc-git-show-stash 0 "show 0 stashes")
-  (vc-ignore-dir-regexp
-   (format "\\(%s\\)\\|\\(%s\\)"
-           vc-ignore-dir-regexp
-           tramp-file-name-regexp)
-   "ignore tramp files"))
-
-(jacob-require 'vc-git)
-(jacob-define-hook-function vc-git-log-view-mode-hook
-  (jacob-xfk-local-key "q" #'quit-window))
-
-(jacob-require 'vc-dir)
-(jacob-define-hook-function vc-dir-mode-hook
-  (jacob-xfk-local-key "q" #'quit-window)
-  (jacob-xfk-local-key "g" #'revert-buffer)
-  (jacob-xfk-local-key "i" #'vc-dir-previous-line)
-  (jacob-xfk-local-key "k" #'vc-dir-next-line)
-  (jacob-xfk-local-key "o" #'vc-dir-next-directory)
-  (jacob-xfk-local-key "u" #'vc-dir-previous-directory)
-  (jacob-xfk-local-key "s" #'vc-dir-find-file)
-  (jacob-xfk-local-key "e" #'vc-dir-mark)
-  (jacob-xfk-local-key "r" #'vc-dir-unmark)
-  (jacob-xfk-local-key "v" #'vc-next-action)
-  (jacob-xfk-local-key "p" #'vc-push)
-  (jacob-xfk-local-key "P" #'jacob-git-push-set-upstream)
-  (jacob-xfk-local-key "=" #'vc-diff)
-  (jacob-xfk-local-key "x" #'vc-dir-hide-up-to-date))
-
-(use-package autoinsert
-  :defer
-  :config
-  (auto-insert-mode t)
-  :custom
-  (auto-insert-query t)
-  (auto-insert-directory (locate-user-emacs-file "templates")))
-
-(use-package tramp
-  :defer
-  :config
-  (add-to-list 'tramp-remote-path 'tramp-own-remote-path)
-  :custom
-  (tramp-archive-enabled nil "lots of problems. for now, disable it!"))
-
-(use-package csharp-mode
-  :hook (csharp-ts-mode-hook . jacob-csharp-ts-hook-function)
-  :config
-  ;; JACOBTODO: include only my modifications rather than the whole data structure
-  (setopt csharp-ts-mode--indent-rules
-          `((c-sharp
-             ((parent-is "compilation_unit") parent-bol 0)
-             ((node-is "}") parent-bol 0)
-             ((node-is ")") parent-bol 0)
-             ((node-is "]") parent-bol 0)
-             ((and (parent-is "comment") c-ts-common-looking-at-star)
-              c-ts-common-comment-start-after-first-star -1)
-             ((parent-is "comment") prev-adaptive-prefix 0)
-             ((parent-is "namespace_declaration") parent-bol 0)
-             ((parent-is "class_declaration") parent-bol 0)
-             ((parent-is "constructor_declaration") parent-bol 0)
-             ((parent-is "initializer_expression") parent-bol csharp-ts-mode-indent-offset)
-             ((match "{" "anonymous_object_creation_expression") parent-bol 0)
-             ((parent-is "anonymous_object_creation_expression") parent-bol csharp-ts-mode-indent-offset)
-             ((match "{" "object_creation_expression") parent-bol 0)
-             ((parent-is "object_creation_expression") parent-bol 0)
-             ((parent-is "method_declaration") parent-bol 0)
-             ((parent-is "enum_declaration") parent-bol 0)
-             ((parent-is "operator_declaration") parent-bol 0)
-             ((parent-is "field_declaration") parent-bol 0)
-             ((parent-is "struct_declaration") parent-bol 0)
-             ((parent-is "declaration_list") parent-bol csharp-ts-mode-indent-offset)
-             ((parent-is "argument_list") parent-bol csharp-ts-mode-indent-offset)
-             ((parent-is "interpolation") parent-bol csharp-ts-mode-indent-offset)
-             ((parent-is "binary_expression") parent 0)
-             ((parent-is "block") parent-bol csharp-ts-mode-indent-offset)
-             ((parent-is "local_function_statement") parent-bol 0)
-             ((match "block" "if_statement") parent-bol 0)
-             ((match "else" "if_statement") parent-bol 0)
-             ((parent-is "if_statement") parent-bol csharp-ts-mode-indent-offset)
-             ((parent-is "for_statement") parent-bol 0)
-             ((parent-is "for_each_statement") parent-bol 0)
-             ((parent-is "while_statement") parent-bol 0)
-             ((match "{" "switch_expression") parent-bol 0)
-             ((parent-is "switch_statement") parent-bol 0)
-             ((parent-is "switch_body") parent-bol csharp-ts-mode-indent-offset)
-             ((parent-is "switch_section") parent-bol csharp-ts-mode-indent-offset)
-             ((parent-is "switch_expression") parent-bol csharp-ts-mode-indent-offset)
-             ((parent-is "case_statement") parent-bol 0)
-             ((parent-is "do_statement") parent-bol 0)
-             ((parent-is "equals_value_clause") parent-bol csharp-ts-mode-indent-offset)
-             ((parent-is "ternary_expression") parent-bol csharp-ts-mode-indent-offset)
-             ((parent-is "conditional_expression") parent-bol csharp-ts-mode-indent-offset)
-             ((parent-is "statement_block") parent-bol csharp-ts-mode-indent-offset)
-             ((parent-is "type_arguments") parent-bol csharp-ts-mode-indent-offset)
-             ((parent-is "variable_declarator") parent-bol csharp-ts-mode-indent-offset)
-             ((parent-is "arguments") parent-bol csharp-ts-mode-indent-offset)
-             ((parent-is "array") parent-bol csharp-ts-mode-indent-offset)
-             ((parent-is "formal_parameters") parent-bol csharp-ts-mode-indent-offset)
-             ((parent-is "template_substitution") parent-bol csharp-ts-mode-indent-offset)
-             ((parent-is "object_pattern") parent-bol csharp-ts-mode-indent-offset)
-             ((parent-is "object") parent-bol csharp-ts-mode-indent-offset)
-             ((parent-is "object_type") parent-bol csharp-ts-mode-indent-offset)
-             ((parent-is "enum_body") parent-bol csharp-ts-mode-indent-offset)
-             ((parent-is "arrow_function") parent-bol csharp-ts-mode-indent-offset)
-             ((parent-is "parenthesized_expression") parent-bol csharp-ts-mode-indent-offset)
-             ;; what i have added
-             ((parent-is "parameter_list") parent-bol csharp-ts-mode-indent-offset)
-             ((parent-is "implicit_parameter_list") parent-bol csharp-ts-mode-indent-offset)
-             ((parent-is "member_access_expression") parent-bol csharp-ts-mode-indent-offset)
-             ((parent-is "lambda_expression") parent-bol csharp-ts-mode-indent-offset)
-             ((parent-is "try_statement") parent-bol 0)
-             ((parent-is "catch_clause") parent-bol 0)
-             ((parent-is "record_declaration") parent-bol 0)
-             ((parent-is "interface_declaration") parent-bol 0)
-             ((parent-is "throw_expression") parent-bol csharp-ts-mode-indent-offset)
-             ((parent-is "return_statement") parent-bol csharp-ts-mode-indent-offset)
-             ((parent-is "record_declaration") parent-bol 0)
-             ((parent-is "interface_declaration") parent-bol 0)
-             )))
-
-  ;; JACOBTODO: merge into emacs core
-  (nconc csharp-ts-mode--font-lock-settings
-         (treesit-font-lock-rules
-          :language 'c-sharp
-          :feature 'property
-          :override t
-          `((property_declaration
-             type: (generic_name name: (identifier) @font-lock-type-face)
-             name: (identifier) @font-lock-variable-name-face))))
-  
-  (defun jacob-csharp-ts-hook-function ()
-    "Set vars in csharp-ts-mode buffer."
-    (setq treesit-defun-type-regexp "\\(method\\|constructor\\|field\\)_declaration")
-    (setq jacob-backspace-function #'jacob-backspace-csharp))
-
-  (add-to-list 'compilation-error-regexp-alist-alist
-               '(jacob-dotnet-stacktrace-re
-                 "   at [^
-]+ in \\(.+\\):line \\([[:digit:]]+\\)"
-                 1
-                 2))
-
-  (add-to-list 'compilation-error-regexp-alist 'jacob-dotnet-stacktrace-re)
-
-  (defun jacob-csharp-forward-statement ()
-    "Move forward over a csharp statement."
-    (interactive)
-    (treesit-end-of-thing "statement"))
-
-  (defun jacob-csharp-backward-statement ()
-    "Move backward over a csharp statement."
-    (interactive)
-    (treesit-beginning-of-thing "statement"))
-
-  (defun jacob-csharp-beginning-of-line-or-statement ()
-    "Move cursor to the beginning of line or previous csharp statement."
-    (interactive)
-    (let ((p (point)))
-      (if (eq last-command this-command)
-          (call-interactively 'jacob-csharp-backward-statement)
-        (back-to-indentation)
-        (when (eq p (point))
-          (beginning-of-line)))))
-
-  (defun jacob-csharp-end-of-line-or-statement ()
-    "Move cursor to the end of line or next csharp statement."
-    (interactive)
-    (if (eq last-command this-command)
-        (call-interactively 'jacob-csharp-forward-statement)
-      (end-of-line)))
-
-  (defun jacob-backspace-csharp (f)
-    "Function for `jacob-backspace' to help with csharp.
-
-Figure out if the `<' or `>' before point is part of a
-`type_argument_list', and delete accordingly. F is used to
-perform the deletion."
-    (when (or (= (char-before) ?<)
-              (= (char-before) ?>))
-      (let ((node-parent (save-excursion
-                           (backward-char)
-                           (treesit-node-type
-                            (treesit-node-parent
-                             (treesit-node-at (point)))))))
-        (when (string= node-parent "type_argument_list")
-          (let ((table (copy-syntax-table csharp-mode-syntax-table)))
-            (modify-syntax-entry ?< "(>" table)
-            (modify-syntax-entry ?> ")>" table)
-            (with-syntax-table table
-              (if (= (char-before) ?<)
-                  (backward-char)
-                (backward-sexp))
-              (funcall f)))
-          t))))
-
-  (jacob-setup-abbrev-table csharp-ts-mode-abbrev-table
-                            ;; JACOBTODO: cant insert abbrevs inside interpolated strings
-                            '(("v" "var" jacob-abbrev-no-insert)
-                              ("tostr" "ToString()" jacob-abbrev-no-insert)
-                              ("jwe" "Console.WriteLine(\"jacobwozere\");" jacob-abbrev-no-insert)
-                              ("az" "async")
-                              ("ns" "namespace")
-                              ("xgon" "x => x")
-                              ("ro" "readonly")
-                              ("nuguid" "Guid.NewGuid()")
-                              ("pri" "private")
-                              ("pub" "public")
-                              ("sta" "static")
-                              ("req" "required")
-                              ("gs" "{ get; set; }" jacob-abbrev-no-insert)
-                              ("ret" "return")
-                              ("eq" "==")
-                              ("neq" "!=")
-                              ("band" "&&")
-                              ("bor" "||"))
-                            :parents (list jacob-comment-abbrev-table)
-                            :enable-function 'jacob-point-in-code-p))
-
-(jacob-require 'inf-lisp)
-(setopt inferior-lisp-program "sbcl")
-
-(jacob-require 'dired)
-(jacob-define-hook-function dired-mode-hook
-  (dired-hide-details-mode 1)
-  (jacob-xfk-local-key "s" #'dired-find-file)
-  (jacob-xfk-local-key "d" #'dired-do-delete) ; we skip the "flag, delete" process as files are sent to system bin on deletion
-  (jacob-xfk-local-key "q" #'quit-window)
-  (jacob-xfk-local-key "i" #'dired-previous-line)
-  (jacob-xfk-local-key "k" #'dired-next-line)
-  (jacob-xfk-local-key "e" #'dired-mark)
-  (jacob-xfk-local-key "r" #'dired-unmark)
-  (jacob-xfk-local-key "g" #'revert-buffer)
-  (jacob-xfk-local-key "x" #'dired-do-rename)
-  (jacob-xfk-local-key "c" #'dired-do-copy)
-  (jacob-xfk-local-key "u" #'dired-up-directory)
-  (jacob-xfk-local-key "j" #'dired-goto-file))
-
-(setopt dired-recursive-copies 'always
-        dired-dwim-target t
-        dired-listing-switches "-hal" ; the h option needs to come first 🙃
-        dired-guess-shell-alist-user '(("\\.mkv\\'" "mpv")))
-
-(jacob-require 'dired-aux)
-(setopt dired-vc-rename-file t)
-
-(jacob-require 'ls-lisp)
-(setopt ls-lisp-use-insert-directory-program nil
-        ls-lisp-dirs-first t)
-
-(use-package esh-mode
-  :defer
-  :custom
-  (eshell-scroll-to-bottom-on-output t)
-  :config
-  (defun jacob-async-eshell-command ()
-    "Run an async command through eshell."
-    (interactive)
-    (let* ((command (read-from-minibuffer "Emacs shell command: "))
-           (dir (if (project-current)
-                    (project-root (project-current))
-                  default-directory))
-           (buffer-name (concat "*" dir ":" command "*")))
-      (kill-buffer buffer-name)
-      (eshell-command (concat command " &"))
-      (with-current-buffer (get-buffer "*Eshell Async Command Output*")
-        (rename-buffer buffer-name))))
-
-  (defun pcomplete/gco ()
-    (pcomplete-here* (jacob-git-get-branches)))
-
-  (defun pcomplete/grh ()
-    (pcomplete-here* (jacob-git-get-branches t)))
-
-  (defun jacob-git-get-branches (&optional display-origin)
-    "Get git branches for current repo.
-
-Non-nil DISPLAY-ORIGIN displays whether a branch is from origin, nil
-hides this information."
-    (with-temp-buffer
-      (insert (shell-command-to-string "git branch -a"))
-      (backward-delete-char 1)            ; delete rouge newline at end
-      (goto-char (point-min))
-      (flush-lines "->")
-      (while (re-search-forward (if display-origin
-                                    "remotes/"
-                                  "remotes/origin/")
-                                nil
-                                t)
-        (replace-match ""))
-      (delete-rectangle (point-min) (progn
-                                      (goto-char (point-max))
-                                      (+ 2 (line-beginning-position))))
-      (split-string (buffer-substring-no-properties (point-min) (point-max)) "\n"))))
-
-(use-package esh-proc
-  :after esh-mode
-  :config
-  (when jacob-is-windows
-    (defun jacob-confirm-terminate-batch-job ()
-      "Type y and enter to terminate batch job after sending ^C."
-      (when (not (null eshell-process-list))
-        (insert "y")
-        (eshell-send-input)))
-    
-    (advice-add 'eshell-interrupt-process :after #'jacob-confirm-terminate-batch-job)))
-
-(jacob-require 'eldoc)
-(global-eldoc-mode 1)
-
-(use-package project
-  :defer
-  :custom
-  (project-switch-commands '((project-find-file "Find file")
-                             (jacob-project-search "Find regexp")
-                             (project-find-dir "Find directory")
-                             (project-vc-dir "VC-Dir")
-                             (project-eshell "Eshell")
-                             (project-compile "Compile"))))
-
-(use-package elisp-mode
-  :init
-  (defun jacob-elisp-config-hook-function ()
-    "Configure `emacs-lisp-mode' when hook run."
-    (flymake-mode 1)
-    (add-hook 'before-save-hook 'jacob-indent-buffer nil "LOCAL")
-    (setq-local yas-key-syntaxes '("w_")))
-  :hook (emacs-lisp-mode-hook . jacob-elisp-config-hook-function)
-  :config
-  (add-to-list 'lisp-imenu-generic-expression '("Packages" "^(\\(jacob-\\)*require '\\([a-z-]+\\)" 2))
-  (jacob-setup-abbrev-table emacs-lisp-mode-abbrev-table
-                            '(("up" "use-package" jacob-abbrev-no-insert)
-                              ("d" "defun" jacob-abbrev-no-insert)
-                              ("p" "point" jacob-abbrev-no-insert)
-                              ("point" "(point)" jacob-abbrev-no-insert)
-                              ("ah" "add-hook" jacob-abbrev-no-insert)
-                              ("l" "lambda" jacob-abbrev-no-insert)
-                              ("gc" "goto-char" jacob-abbrev-no-insert)
-                              ("weal" "with-eval-after-load" jacob-abbrev-no-insert)
-                              ("mes" "message" jacob-abbrev-no-insert)
-                              ("pmi" "point-min" jacob-abbrev-no-insert)
-                              ("pma" "point-max" jacob-abbrev-no-insert)
-                              ("int" "(interactive)")
-                              ("se" "save-excursion" jacob-abbrev-no-insert))
-                            :parents (list jacob-comment-abbrev-table)
-                            :enable-function 'jacob-point-in-code-p
-                            :regexp "\\(^\\|[\s\t()]\\)\\(?1:[[:alpha:]-]+\\)")
-  :bind ( :map lisp-interaction-mode-map
-          ("C-j" . jacob-eval-print-last-sexp))
-  :custom
-  (elisp-flymake-byte-compile-load-path load-path))
-
-(use-package org
-  :config
-  (defun jacob-org-babel-tangle-delete-newline ()
-    "Some code to get rid of the newline org babel likes to add
-in when it tangles into a file."
-    (goto-char (point-max))
-    (delete-trailing-whitespace)
-    (backward-delete-char 1)
-    (save-buffer))
-
-  (org-babel-do-load-languages
-   'org-babel-load-languages
-   '((octave . t)
-     (sql . t)
-     (js . t)))
-  :hook (org-babel-post-tangle-hook . jacob-org-babel-tangle-delete-newline)
-  :custom
-  (org-startup-folded t)
-  (org-tags-column 0)
-  (org-time-stamp-custom-formats (cons "%A %d/%m/%y" "%A %d/%m/%y %H:%M"))
-  (org-display-custom-times t))
-
-(use-package org-src
-  :after org
-  :custom
-  (org-src-preserve-indentation t))
-
-(use-package org-compat
-  :after org
-  :custom
-  (org-calendar-to-agenda-key nil "don't bind calendar key")
-  (org-calendar-insert-diary-entry-key nil "don't bind calendar key"))
-
-(use-package ox-latex
-  :after org
-  :custom
-  (org-latex-pdf-process (list "latexmk -pdf %f -shell-escape") "probably requires texlive"))
-
-(use-package org-contrib
-  :after org
-  :config
-  (require 'ox-extra)
-  (ox-extras-activate '(latex-header-blocks ignore-headlines)))
-
-(use-package pulse
-  :defer
-  :init
-  (defun jacob-pulse-line (&rest _)
-    "Pulse the current line."
-    (pulse-momentary-highlight-region (save-excursion
-                                        (back-to-indentation)
-                                        (point))
-                                      (line-end-position)))
-
-  (dolist (command '(
-                     recenter-top-bottom
-                     scroll-up-command
-                     scroll-down-command
-                     other-window
-                     xref-find-definitions
-                     xref-pop-marker-stack
-                     isearch-done
-                     ))
-    (advice-add command :after #'jacob-pulse-line)))
-
-(use-package server
-  :config
-  (server-start))
-
-(use-package smerge-mode
-  :bind
-  (:repeat-map jacob-smerge-repeat-map
-               ("l" . #'smerge-next)
-               ("j" . #'smerge-prev)
-               ("i" . #'smerge-keep-upper)
-               ("k" . #'smerge-keep-lower)
-               ("SPC" . #'smerge-keep-all)))
-
-(use-package calendar
-  :hook (calendar-today-visible-hook . calendar-mark-today)
-  :custom
-  (diary-date-forms diary-european-date-forms)
-  (calendar-date-style 'european)
-  (calendar-date-display-form '((if dayname
-                                    (concat dayname ", "))
-                                day "/" month "/" year))
-  (calendar-week-start-day 1)
-  (calendar-mark-diary-entries-flag t)
-  (calendar-mark-holidays-flag t))
-
-(provide 'indent)                       ; HACK
-(use-package indent
-  :config
-  (setq-default tab-always-indent 'complete) ; make tab key call indent command or insert tab character, depending on cursor position
-  )
-
-(use-package grep
-  :defer
-  :config
-  (when jacob-is-windows
-    (setopt find-program "C:/Program Files (x86)/GnuWin32/bin/find.exe")))
-
-(use-package winner
-  :after xah-fly-keys
-  :init
-  (winner-mode 1)
-  :bind ( :map xah-fly-command-map
-          ("1" . winner-undo)
-          ("2" . winner-redo)))
+(require 'flymake)
 
 (setopt xah-fly-use-control-key nil
         xah-fly-use-meta-key nil) ; must be set before requiring `xah-fly-keys'
@@ -950,7 +430,8 @@ Otherwise, kill from point to the end of the line."
         (t
          (kill-line))))
 
-(fset 'jacob-return-macro [return])
+(defalias 'jacob-return-macro
+  (kmacro "<return>"))
 
 (keymap-global-set "<f7>" #'xah-fly-leader-key-map)
 
@@ -982,6 +463,520 @@ Otherwise, kill from point to the end of the line."
 (keymap-set xah-fly-leader-key-map "u" #'kill-current-buffer)
 (keymap-set xah-fly-leader-key-map "w j" #'xref-find-references)
 (keymap-set xah-fly-leader-key-map ", n" #'jacob-eval-and-replace)
+
+(require 'help)
+(setopt help-window-select t
+        help-enable-variable-value-editing t)
+
+(require 'help-fns)
+(defun jacob-help-edit ()
+  "Edit variable in current help buffer."
+  (interactive)
+  (unless (equal major-mode 'help-mode)
+    (message "not in help buffer"))
+  (save-excursion
+    (goto-char (point-min))
+    (if (search-forward "Its value is " nil "NOERROR")
+        (help-fns-edit-variable)
+      (message "cannot find editable variable"))))
+
+(require 'help-mode)
+(jacob-define-hook-function help-mode-hook
+  (jacob-xfk-local-key "s" #'help-view-source)
+  (jacob-xfk-local-key "q" #'quit-window)
+  (jacob-xfk-local-key "e" #'help-go-back)
+  (jacob-xfk-local-key "r" #'help-go-forward)
+  (jacob-xfk-local-key "g" #'revert-buffer)
+  (jacob-xfk-local-key "w" #'jacob-help-edit))
+
+(require 'help-at-pt)
+(setq-default help-at-pt-display-when-idle '(flymake-diagnostic))
+(help-at-pt-set-timer)
+
+(require 'warnings)
+(setopt warning-minimum-level :error)
+
+(require 'subword)
+(global-subword-mode 1)
+
+(require 'paren)
+(show-paren-mode 1)
+(setopt show-paren-when-point-inside-paren t)
+
+(require 'elec-pair)
+(electric-pair-mode 1)
+
+(require 'delsel)
+(delete-selection-mode 1)
+
+(use-package repeat
+  :config
+  (repeat-mode 1))
+
+(use-package dabbrev
+  :defer
+  :custom
+  (dabbrev-case-fold-search nil)
+  (dabbrev-case-replace nil))
+
+(provide 'bindings)                     ; HACK
+(use-package bindings
+  :custom
+  (mode-line-percent-position nil))
+
+(use-package vc
+  :defer
+  :custom
+  (vc-git-show-stash 0 "show 0 stashes")
+  (vc-ignore-dir-regexp
+   (format "\\(%s\\)\\|\\(%s\\)"
+           vc-ignore-dir-regexp
+           tramp-file-name-regexp)
+   "ignore tramp files"))
+
+(require 'vc-git)
+(jacob-define-hook-function vc-git-log-view-mode-hook
+  (jacob-xfk-local-key "q" #'quit-window))
+
+(require 'vc-dir)
+(jacob-define-hook-function vc-dir-mode-hook
+  (jacob-xfk-local-key "q" #'quit-window)
+  (jacob-xfk-local-key "g" #'revert-buffer)
+  (jacob-xfk-local-key "i" #'vc-dir-previous-line)
+  (jacob-xfk-local-key "k" #'vc-dir-next-line)
+  (jacob-xfk-local-key "o" #'vc-dir-next-directory)
+  (jacob-xfk-local-key "u" #'vc-dir-previous-directory)
+  (jacob-xfk-local-key "s" #'vc-dir-find-file)
+  (jacob-xfk-local-key "e" #'vc-dir-mark)
+  (jacob-xfk-local-key "r" #'vc-dir-unmark)
+  (jacob-xfk-local-key "v" #'vc-next-action)
+  (jacob-xfk-local-key "p" #'vc-push)
+  (jacob-xfk-local-key "P" #'jacob-git-push-set-upstream)
+  (jacob-xfk-local-key "=" #'vc-diff)
+  (jacob-xfk-local-key "x" #'vc-dir-hide-up-to-date))
+
+(use-package autoinsert
+  :defer
+  :config
+  (auto-insert-mode t)
+  :custom
+  (auto-insert-query t)
+  (auto-insert-directory (locate-user-emacs-file "templates")))
+
+(use-package tramp
+  :defer
+  :config
+  (add-to-list 'tramp-remote-path 'tramp-own-remote-path)
+  :custom
+  (tramp-archive-enabled nil "lots of problems. for now, disable it!"))
+
+(require 'csharp-mode)
+
+(defun jacob-csharp-forward-statement ()
+  "Move forward over a csharp statement."
+  (interactive)
+  (treesit-end-of-thing "statement"))
+
+(defun jacob-csharp-backward-statement ()
+  "Move backward over a csharp statement."
+  (interactive)
+  (treesit-beginning-of-thing "statement"))
+
+(defun jacob-csharp-beginning-of-line-or-statement ()
+  "Move cursor to the beginning of line or previous csharp statement."
+  (interactive)
+  (let ((p (point)))
+    (if (eq last-command this-command)
+        (call-interactively 'jacob-csharp-backward-statement)
+      (back-to-indentation)
+      (when (eq p (point))
+        (beginning-of-line)))))
+
+(defun jacob-csharp-end-of-line-or-statement ()
+  "Move cursor to the end of line or next csharp statement."
+  (interactive)
+  (if (eq last-command this-command)
+      (call-interactively 'jacob-csharp-forward-statement)
+    (end-of-line)))
+
+(defun jacob-backspace-csharp (f)
+  "Function for `jacob-backspace' to help with csharp.
+
+Figure out if the `<' or `>' before point is part of a
+`type_argument_list', and delete accordingly.  F is a function
+which performs the deletion."
+  (when (or (= (char-before) ?<)
+            (= (char-before) ?>))
+    (let ((node-parent (save-excursion
+                         (backward-char)
+                         (treesit-node-type
+                          (treesit-node-parent
+                           (treesit-node-at (point)))))))
+      (when (string= node-parent "type_argument_list")
+        (let ((table (copy-syntax-table csharp-mode-syntax-table)))
+          (modify-syntax-entry ?< "(>" table)
+          (modify-syntax-entry ?> ")>" table)
+          (with-syntax-table table
+            (if (= (char-before) ?<)
+                (backward-char)
+              (backward-sexp))
+            (funcall f)))
+        t))))
+
+;; JACOBTODO: include only my modifications rather than the whole data structure
+(setopt csharp-ts-mode--indent-rules
+        '((c-sharp
+           ((parent-is "compilation_unit") parent-bol 0)
+           ((node-is "}") parent-bol 0)
+           ((node-is ")") parent-bol 0)
+           ((node-is "]") parent-bol 0)
+           ((and (parent-is "comment") c-ts-common-looking-at-star)
+            c-ts-common-comment-start-after-first-star -1)
+           ((parent-is "comment") prev-adaptive-prefix 0)
+           ((parent-is "namespace_declaration") parent-bol 0)
+           ((parent-is "class_declaration") parent-bol 0)
+           ((parent-is "constructor_declaration") parent-bol 0)
+           ((parent-is "initializer_expression") parent-bol csharp-ts-mode-indent-offset)
+           ((match "{" "anonymous_object_creation_expression") parent-bol 0)
+           ((parent-is "anonymous_object_creation_expression") parent-bol csharp-ts-mode-indent-offset)
+           ((match "{" "object_creation_expression") parent-bol 0)
+           ((parent-is "object_creation_expression") parent-bol 0)
+           ((parent-is "method_declaration") parent-bol 0)
+           ((parent-is "enum_declaration") parent-bol 0)
+           ((parent-is "operator_declaration") parent-bol 0)
+           ((parent-is "field_declaration") parent-bol 0)
+           ((parent-is "struct_declaration") parent-bol 0)
+           ((parent-is "declaration_list") parent-bol csharp-ts-mode-indent-offset)
+           ((parent-is "argument_list") parent-bol csharp-ts-mode-indent-offset)
+           ((parent-is "interpolation") parent-bol csharp-ts-mode-indent-offset)
+           ((parent-is "binary_expression") parent 0)
+           ((parent-is "block") parent-bol csharp-ts-mode-indent-offset)
+           ((parent-is "local_function_statement") parent-bol 0)
+           ((match "block" "if_statement") parent-bol 0)
+           ((match "else" "if_statement") parent-bol 0)
+           ((parent-is "if_statement") parent-bol csharp-ts-mode-indent-offset)
+           ((parent-is "for_statement") parent-bol 0)
+           ((parent-is "for_each_statement") parent-bol 0)
+           ((parent-is "while_statement") parent-bol 0)
+           ((match "{" "switch_expression") parent-bol 0)
+           ((parent-is "switch_statement") parent-bol 0)
+           ((parent-is "switch_body") parent-bol csharp-ts-mode-indent-offset)
+           ((parent-is "switch_section") parent-bol csharp-ts-mode-indent-offset)
+           ((parent-is "switch_expression") parent-bol csharp-ts-mode-indent-offset)
+           ((parent-is "case_statement") parent-bol 0)
+           ((parent-is "do_statement") parent-bol 0)
+           ((parent-is "equals_value_clause") parent-bol csharp-ts-mode-indent-offset)
+           ((parent-is "ternary_expression") parent-bol csharp-ts-mode-indent-offset)
+           ((parent-is "conditional_expression") parent-bol csharp-ts-mode-indent-offset)
+           ((parent-is "statement_block") parent-bol csharp-ts-mode-indent-offset)
+           ((parent-is "type_arguments") parent-bol csharp-ts-mode-indent-offset)
+           ((parent-is "variable_declarator") parent-bol csharp-ts-mode-indent-offset)
+           ((parent-is "arguments") parent-bol csharp-ts-mode-indent-offset)
+           ((parent-is "array") parent-bol csharp-ts-mode-indent-offset)
+           ((parent-is "formal_parameters") parent-bol csharp-ts-mode-indent-offset)
+           ((parent-is "template_substitution") parent-bol csharp-ts-mode-indent-offset)
+           ((parent-is "object_pattern") parent-bol csharp-ts-mode-indent-offset)
+           ((parent-is "object") parent-bol csharp-ts-mode-indent-offset)
+           ((parent-is "object_type") parent-bol csharp-ts-mode-indent-offset)
+           ((parent-is "enum_body") parent-bol csharp-ts-mode-indent-offset)
+           ((parent-is "arrow_function") parent-bol csharp-ts-mode-indent-offset)
+           ((parent-is "parenthesized_expression") parent-bol csharp-ts-mode-indent-offset)
+           ;; what i have added
+           ((parent-is "parameter_list") parent-bol csharp-ts-mode-indent-offset)
+           ((parent-is "implicit_parameter_list") parent-bol csharp-ts-mode-indent-offset)
+           ((parent-is "member_access_expression") parent-bol csharp-ts-mode-indent-offset)
+           ((parent-is "lambda_expression") parent-bol csharp-ts-mode-indent-offset)
+           ((parent-is "try_statement") parent-bol 0)
+           ((parent-is "catch_clause") parent-bol 0)
+           ((parent-is "record_declaration") parent-bol 0)
+           ((parent-is "interface_declaration") parent-bol 0)
+           ((parent-is "throw_expression") parent-bol csharp-ts-mode-indent-offset)
+           ((parent-is "return_statement") parent-bol csharp-ts-mode-indent-offset)
+           ((parent-is "record_declaration") parent-bol 0)
+           ((parent-is "interface_declaration") parent-bol 0)
+           )))
+
+;; JACOBTODO: merge into emacs core
+(nconc csharp-ts-mode--font-lock-settings
+       (treesit-font-lock-rules
+        :language 'c-sharp
+        :feature 'property
+        :override t
+        `((property_declaration
+           type: (generic_name name: (identifier) @font-lock-type-face)
+           name: (identifier) @font-lock-variable-name-face))))
+
+(add-to-list 'compilation-error-regexp-alist-alist
+             '(jacob-dotnet-stacktrace-re
+               "   at [^
+]+ in \\(.+\\):line \\([[:digit:]]+\\)"
+               1
+               2))
+
+(add-to-list 'compilation-error-regexp-alist 'jacob-dotnet-stacktrace-re)
+
+(jacob-define-hook-function csharp-ts-mode-hook
+  (setq treesit-defun-type-regexp "\\(method\\|constructor\\|field\\)_declaration")
+  (setq jacob-backspace-function #'jacob-backspace-csharp))
+
+(jacob-setup-abbrev-table csharp-ts-mode-abbrev-table
+                          ;; JACOBTODO: cant insert abbrevs inside interpolated strings
+                          '(("v" "var" jacob-abbrev-no-insert)
+                            ("tostr" "ToString()" jacob-abbrev-no-insert)
+                            ("jwe" "Console.WriteLine(\"jacobwozere\");" jacob-abbrev-no-insert)
+                            ("az" "async")
+                            ("ns" "namespace")
+                            ("xgon" "x => x")
+                            ("ro" "readonly")
+                            ("nuguid" "Guid.NewGuid()")
+                            ("pri" "private")
+                            ("pub" "public")
+                            ("sta" "static")
+                            ("req" "required")
+                            ("gs" "{ get; set; }" jacob-abbrev-no-insert)
+                            ("ret" "return")
+                            ("eq" "==")
+                            ("neq" "!=")
+                            ("band" "&&")
+                            ("bor" "||"))
+                          :parents (list jacob-comment-abbrev-table)
+                          :enable-function 'jacob-point-in-code-p)
+
+(require 'inf-lisp)
+(setopt inferior-lisp-program "sbcl")
+
+(require 'dired)
+(jacob-define-hook-function dired-mode-hook
+  (dired-hide-details-mode 1)
+  (jacob-xfk-local-key "s" #'dired-find-file)
+  (jacob-xfk-local-key "d" #'dired-do-delete) ; we skip the "flag, delete" process as files are sent to system bin on deletion
+  (jacob-xfk-local-key "q" #'quit-window)
+  (jacob-xfk-local-key "i" #'dired-previous-line)
+  (jacob-xfk-local-key "k" #'dired-next-line)
+  (jacob-xfk-local-key "e" #'dired-mark)
+  (jacob-xfk-local-key "r" #'dired-unmark)
+  (jacob-xfk-local-key "g" #'revert-buffer)
+  (jacob-xfk-local-key "x" #'dired-do-rename)
+  (jacob-xfk-local-key "c" #'dired-do-copy)
+  (jacob-xfk-local-key "u" #'dired-up-directory)
+  (jacob-xfk-local-key "j" #'dired-goto-file))
+
+(setopt dired-recursive-copies 'always
+        dired-dwim-target t
+        dired-listing-switches "-hal" ; the h option needs to come first 🙃
+        dired-guess-shell-alist-user '(("\\.mkv\\'" "mpv")))
+
+(require 'dired-aux)
+(setopt dired-vc-rename-file t)
+
+(require 'ls-lisp)
+(setopt ls-lisp-use-insert-directory-program nil
+        ls-lisp-dirs-first t)
+
+(require 'esh-mode)
+
+(setopt eshell-scroll-to-bottom-on-output t)
+
+(defun jacob-async-eshell-command ()
+  "Run an async command through eshell."
+  (interactive)
+  (let* ((command (read-from-minibuffer "Emacs shell command: "))
+         (dir (if (project-current)
+                  (project-root (project-current))
+                default-directory))
+         (buffer-name (concat "*" dir ":" command "*")))
+    (kill-buffer buffer-name)
+    (eshell-command (concat command " &"))
+    (with-current-buffer (get-buffer "*Eshell Async Command Output*")
+      (rename-buffer buffer-name))))
+
+(defun jacob-git-get-branches (&optional display-origin)
+  "Get git branches for current repo.
+
+Non-nil DISPLAY-ORIGIN displays whether a branch is from origin, nil
+hides this information."
+  (with-temp-buffer
+    (insert (shell-command-to-string "git branch -a"))
+    (backward-delete-char 1)            ; delete rouge newline at end
+    (goto-char (point-min))
+    (flush-lines "->")
+    (while (re-search-forward (if display-origin
+                                  "remotes/"
+                                "remotes/origin/")
+                              nil
+                              t)
+      (replace-match ""))
+    (delete-rectangle (point-min) (progn
+                                    (goto-char (point-max))
+                                    (+ 2 (line-beginning-position))))
+    (split-string (buffer-substring-no-properties (point-min) (point-max)) "\n")))
+
+(defun pcomplete/gco ()
+  "Completion for the gco alias on git branches."
+  (pcomplete-here* (jacob-git-get-branches)))
+
+(defun pcomplete/grh ()
+  "Completion for the grh alias on git branches."
+  (pcomplete-here* (jacob-git-get-branches t)))
+
+(require 'esh-proc)
+
+(defun jacob-confirm-terminate-batch-job ()
+  "Type y and enter to terminate batch job after sending ^C."
+  (when (not (null eshell-process-list))
+    (insert "y")
+    (eshell-send-input)))
+
+(when jacob-is-windows
+  (advice-add 'eshell-interrupt-process :after #'jacob-confirm-terminate-batch-job))
+
+(require 'eldoc)
+(global-eldoc-mode 1)
+
+(use-package project
+  :defer
+  :custom
+  (project-switch-commands '((project-find-file "Find file")
+                             (jacob-project-search "Find regexp")
+                             (project-find-dir "Find directory")
+                             (project-vc-dir "VC-Dir")
+                             (project-eshell "Eshell")
+                             (project-compile "Compile"))))
+
+(use-package elisp-mode
+  :init
+  (defun jacob-elisp-config-hook-function ()
+    "Configure `emacs-lisp-mode' when hook run."
+    (flymake-mode 1)
+    (add-hook 'before-save-hook 'jacob-indent-buffer nil "LOCAL")
+    (setq-local yas-key-syntaxes '("w_")))
+  :hook (emacs-lisp-mode-hook . jacob-elisp-config-hook-function)
+  :config
+  (add-to-list 'lisp-imenu-generic-expression '("Features" "^(\\(jacob-\\)*require '\\([a-z-]+\\)" 2))
+  (jacob-setup-abbrev-table emacs-lisp-mode-abbrev-table
+                            '(("up" "use-package" jacob-abbrev-no-insert)
+                              ("d" "defun" jacob-abbrev-no-insert)
+                              ("p" "point" jacob-abbrev-no-insert)
+                              ("point" "(point)" jacob-abbrev-no-insert)
+                              ("ah" "add-hook" jacob-abbrev-no-insert)
+                              ("l" "lambda" jacob-abbrev-no-insert)
+                              ("gc" "goto-char" jacob-abbrev-no-insert)
+                              ("weal" "with-eval-after-load" jacob-abbrev-no-insert)
+                              ("mes" "message" jacob-abbrev-no-insert)
+                              ("pmi" "point-min" jacob-abbrev-no-insert)
+                              ("pma" "point-max" jacob-abbrev-no-insert)
+                              ("int" "(interactive)")
+                              ("se" "save-excursion" jacob-abbrev-no-insert))
+                            :parents (list jacob-comment-abbrev-table)
+                            :enable-function 'jacob-point-in-code-p
+                            :regexp "\\(^\\|[\s\t()]\\)\\(?1:[[:alpha:]-]+\\)")
+  :bind ( :map lisp-interaction-mode-map
+          ("C-j" . jacob-eval-print-last-sexp))
+  :custom
+  (elisp-flymake-byte-compile-load-path load-path))
+
+(require 'org)
+
+(defun jacob-org-babel-tangle-delete-whitespace ()
+  "Get rid of the whitespace at the end of the buffer."
+  (goto-char (point-max))
+  (delete-trailing-whitespace)
+  (backward-delete-char 1)
+  (save-buffer))
+
+(add-hook 'org-babel-post-tangle-hook 'jacob-org-babel-tangle-delete-whitespace)
+
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ '((octave . t)
+   (sql . t)
+   (js . t)))
+
+(setopt org-startup-folded t
+        org-tags-column 0
+        org-time-stamp-custom-formats (cons "%A %d/%m/%y" "%A %d/%m/%y %H:%M")
+        org-display-custom-times t)
+
+(require 'org-src)
+
+(setopt org-src-preserve-indentation t)
+
+(require 'org-compat)
+(setopt org-calendar-to-agenda-key nil  ; don't bind calendar key
+        org-calendar-insert-diary-entry-key nil) ; don't bind calendar key
+
+(require 'ox-latex)
+
+(setopt org-latex-pdf-process (list "latexmk -pdf %f -shell-escape")) ; probably requires texlive
+
+(require 'ox-extra)
+
+(ox-extras-activate '(latex-header-blocks ignore-headlines))
+
+(require 'pulse)
+
+(defun jacob-pulse-line (&rest _)
+  "Pulse the current line."
+  (pulse-momentary-highlight-region (save-excursion
+                                      (back-to-indentation)
+                                      (point))
+                                    (line-end-position)))
+
+(dolist (command '(
+                   recenter-top-bottom
+                   scroll-up-command
+                   scroll-down-command
+                   other-window
+                   xref-find-definitions
+                   xref-pop-marker-stack
+                   isearch-done
+                   ))
+  (advice-add command :after #'jacob-pulse-line))
+
+(use-package server
+  :config
+  (server-start))
+
+(use-package smerge-mode
+  :bind
+  (:repeat-map jacob-smerge-repeat-map
+               ("l" . #'smerge-next)
+               ("j" . #'smerge-prev)
+               ("i" . #'smerge-keep-upper)
+               ("k" . #'smerge-keep-lower)
+               ("SPC" . #'smerge-keep-all)))
+
+(use-package calendar
+  :hook (calendar-today-visible-hook . calendar-mark-today)
+  :custom
+  (diary-date-forms diary-european-date-forms)
+  (calendar-date-style 'european)
+  (calendar-date-display-form '((if dayname
+                                    (concat dayname ", "))
+                                day "/" month "/" year))
+  (calendar-week-start-day 1)
+  (calendar-mark-diary-entries-flag t)
+  (calendar-mark-holidays-flag t))
+
+(provide 'indent)                       ; HACK
+(use-package indent
+  :config
+  (setq-default tab-always-indent 'complete) ; make tab key call indent command or insert tab character, depending on cursor position
+  )
+
+(use-package grep
+  :defer
+  :config
+  (when jacob-is-windows
+    (setopt find-program "C:/Program Files (x86)/GnuWin32/bin/find.exe")))
+
+(use-package winner
+  :after xah-fly-keys
+  :init
+  (winner-mode 1)
+  :bind ( :map xah-fly-command-map
+          ("1" . winner-undo)
+          ("2" . winner-redo)))
 
 (require 'compile)
 (add-hook 'compilation-filter-hook 'ansi-color-compilation-filter)
@@ -1067,7 +1062,7 @@ Intended as before advice for `sql-send-paragraph'."
 
 ;; JACOBTODO: when next messing with treesit libraries, swap to
 ;; `treesit-auto'.
-(jacob-require 'treesit)
+(require 'treesit)
 (setopt treesit-language-source-alist '((c-sharp "https://github.com/tree-sitter/tree-sitter-c-sharp" "master" "src")
                                         (javascript "https://github.com/tree-sitter/tree-sitter-javascript" "master" "src")
                                         (typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src")
@@ -1180,7 +1175,7 @@ Useful for deleting ^M after `eglot-code-actions'."
   :custom
   (message-send-mail-function 'smtpmail-send-it))
 
-(jacob-require 'gnus)
+(require 'gnus)
 (jacob-define-hook-function gnus-started-hook
   (gnus-demon-add-handler 'gnus-demon-scan-news 2 t))
 
@@ -1189,7 +1184,7 @@ Useful for deleting ^M after `eglot-code-actions'."
 
 (keymap-set jacob-xfk-map "g" #'gnus)
 
-(jacob-require 'gnus-group)
+(require 'gnus-group)
 (jacob-define-hook-function gnus-group-mode-hook
   (jacob-xfk-local-key "q" #'gnus-group-exit)
   (jacob-xfk-local-key "i" #'gnus-group-prev-group)
@@ -1199,7 +1194,7 @@ Useful for deleting ^M after `eglot-code-actions'."
 (use-package gnus-notifications
   :hook (gnus-after-getting-new-news-hook . gnus-notifications))
 
-(jacob-require 'gnus-sum)
+(require 'gnus-sum)
 (jacob-define-hook-function gnus-summary-mode-hook
   (jacob-xfk-local-key "q" #'gnus-summary-exit)
   (jacob-xfk-local-key "i" #'gnus-summary-prev-article)
@@ -1919,4 +1914,5 @@ deleted."
     (jacob-xfk-define-key-in-major-mode typescript-ts-mode-map " ,c" #'recompile)))
 
 (provide 'init)
+
 ;;; init.el ends here
