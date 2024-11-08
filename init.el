@@ -430,6 +430,13 @@ Otherwise, kill from point to the end of the line."
         (t
          (kill-line))))
 
+(defun jacob-kill-paragraph ()
+  "Move to the beginning of the paragraph, then kill it."
+  (interactive)
+  (forward-paragraph)
+  (backward-paragraph)
+  (kill-paragraph 1))
+
 (defalias 'jacob-return-macro
   (kmacro "<return>"))
 
@@ -444,8 +451,9 @@ Otherwise, kill from point to the end of the line."
 (keymap-set xah-fly-command-map ";" #'jacob-end-of-line)
 (keymap-set xah-fly-command-map "=" #'jacob-next-error-or-punct)
 (keymap-set xah-fly-command-map "d" #'jacob-backspace)
-(keymap-set xah-fly-command-map "s" #'jacob-return-macro)
+(keymap-set xah-fly-command-map "g" #'jacob-kill-paragraph)
 (keymap-set xah-fly-command-map "h" #'jacob-beginning-of-line)
+(keymap-set xah-fly-command-map "s" #'jacob-return-macro)
 (keymap-set xah-fly-command-map "x" #'jacob-kill-line)
 
 (keymap-set xah-fly-insert-map "M-SPC" #'xah-fly-command-mode-activate)
@@ -958,11 +966,10 @@ hides this information."
   (calendar-mark-diary-entries-flag t)
   (calendar-mark-holidays-flag t))
 
-(provide 'indent)                       ; HACK
-(use-package indent
-  :config
-  (setq-default tab-always-indent 'complete) ; make tab key call indent command or insert tab character, depending on cursor position
-  )
+
+;; indent
+;; make tab key call indent command or insert tab character, depending on cursor position
+(setq-default tab-always-indent 'complete)
 
 (use-package grep
   :defer
@@ -979,12 +986,13 @@ hides this information."
           ("2" . winner-redo)))
 
 (require 'compile)
-(add-hook 'compilation-filter-hook 'ansi-color-compilation-filter)
+
+(jacob-define-hook-function compilation-filter-hook
+  (ansi-color-compilation-filter)
+  (jacob-xfk-local-key "g" #'recompile))
 
 (setopt compilation-always-kill t
         compilation-scroll-output t)
-
-(jacob-xfk-define-key-in-major-mode compilation-mode-map "g" #'recompile)
 
 (use-package sql
   :after xah-fly-keys
