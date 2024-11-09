@@ -116,7 +116,7 @@ VC is used in `jacob-ensure-installed'."
         use-dialog-box nil
         use-short-answers t
         ring-bell-function 'ignore
-        truncate-partial-wdth-windows nil
+        truncate-partial-width-windows nil
         enable-recursive-minibuffers t
         completion-ignore-case t
         kill-buffer-query-functions (delq 'process-kill-buffer-query-function
