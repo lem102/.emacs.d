@@ -301,25 +301,10 @@ set the PROPERTIES of TABLE."
 
 (jacob-require 'xah-fly-keys)
 
-(defun jacob-xfk-define-key-in-major-mode (keymap key command)
-  "In KEYMAP bind KEY to COMMAND only when in xfk command mode."
-  ;; FIXME: keys that are not already bound will not work for `jacob-xfk-define-key-in-major-mode'
-  
-  ;; This is a big HACK, because it's time sensitive. It works by
-  ;; rebinding a key already bound to something in
-  ;; `xah-fly-command-map', but if that key is rebound to something
-  ;; else later, it will break the keybinding set up by this
-  ;; function. To fix this issue with further hacks, run this
-  ;; function in the hook for the major mode.
-  (declare (obsolete jacob-xfk-local-key nil))
-  (define-key keymap
-              (vector 'remap
-                      (lookup-key xah-fly-command-map key))
-              command))
-
 (defun jacob-xfk-local-key (key command)
   "Bind KEY buffer locally to COMMAND in xfk command mode."
-  ;; FIXME: keys that are not already bound will not work for jacob-xfk-define-key-in-major-mode
+  ;; FIXME: keys that are not already bound will not work for
+  ;; jacob-xfk-define-key-in-major-mode
   (keymap-local-set (format "<remap> <%s>"
                             (keymap-lookup xah-fly-command-map
                                            key))
