@@ -17,6 +17,7 @@
 (defconst jacob-is-linux (eq system-type 'gnu/linux)
   "Is the current OS linux?")
 
+;; JACOBTODO: look in to replacing this machinery with site-lisp.el
 (when (file-exists-p "~/.emacs.d/environment.el")
   (load-file "~/.emacs.d/environment.el"))
 
@@ -41,6 +42,9 @@
                                     (?u ?\" ?\")
                                     (?i ?\' ?\')
                                     (?h ?\< ?\>))))
+
+;; mule-cmds
+(prefer-coding-system 'utf-8)
 
 
 
@@ -290,9 +294,6 @@ set the PROPERTIES of TABLE."
   (bookmark-store "emacs environment file" '((filename . "~/.emacs.d/environment.el")) nil)
   :custom
   (bookmark-set-fringe-mark nil))
-
-;; (require 'mule-cmds)
-(prefer-coding-system 'utf-8)
 
 (require 'flymake)
 
