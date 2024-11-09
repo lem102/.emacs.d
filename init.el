@@ -46,6 +46,9 @@
 ;; mule-cmds
 (prefer-coding-system 'utf-8)
 
+;; bindings
+(setopt mode-line-percent-position nil)
+
 
 
 (require 'package)
@@ -121,11 +124,6 @@ VC is used in `jacob-ensure-installed'."
 
 ;; built-in
 
-(require 'use-package)
-
-(setopt use-package-hook-name-suffix nil
-        use-package-enable-imenu-support t)
-
 (defmacro jacob-defhookf (hook &rest body)
   "Define function with BODY and bind it to HOOK."
   (declare (indent defun))
@@ -192,82 +190,69 @@ set the PROPERTIES of TABLE."
                                        ((meta))
                                        ((control) . text-scale)))
 
-(use-package files
-  :config
-  (auto-save-visited-mode 1)
-  :custom
-  (auto-save-default nil)
-  (make-backup-files nil)
-  (backup-by-copying t)
-  (confirm-kill-processes nil)
-  (auto-save-visited-interval 2 "save file after two seconds")
-  (auto-save-visited-predicate (lambda () ; JACOBTODO: disable in hook, get rid of this
-                                 (not (equal major-mode 'message-mode)))))
+(require 'files)
+(auto-save-visited-mode 1)
 
-(use-package window
-  :config
-  ;; JACOBTODO: convert to newer syntax
-  (defvar jacob-recenter-repeat-map
-    (let ((map (make-sparse-keymap)))
-      (define-key map "p" 'recenter-top-bottom)
-      map))
+(setopt auto-save-default nil
+        make-backup-files nil
+        backup-by-copying t
+        confirm-kill-processes nil
+        auto-save-visited-interval 2    ; save file after two seconds
+        auto-save-visited-predicate (lambda () ; JACOBTODO: disable in hook, get rid of this
+                                      (not (equal major-mode 'message-mode))))
 
-  (put 'recenter-top-bottom 'repeat-map 'jacob-recenter-repeat-map)
-  :custom
-  (switch-to-buffer-obey-display-actions t)
-  (display-buffer-alist '(
-                          ;; slack
-                          ((or (derived-mode . slack-mode)
-                               (derived-mode . lui-mode))
-                           (display-buffer-in-side-window)
-                           (side . right))
-                          ;; sql
-                          ((major-mode . sql-interactive-mode)
-                           (display-buffer-reuse-mode-window display-buffer-same-window))
-                          ;; shell
-                          ;; ("eshell\\*"
-                          ;;  (display-buffer-in-side-window)
-                          ;;  (side . bottom))
-                          ))
-  (split-height-threshold nil))
+(require 'window)
 
-(use-package frame
-  :custom
-  (blink-cursor-blinks 0 "make cursor blink forever"))
+(setopt switch-to-buffer-obey-display-actions t
+        display-buffer-alist '(
+                               ;; slack
+                               ((or (derived-mode . slack-mode)
+                                    (derived-mode . lui-mode))
+                                (display-buffer-in-side-window)
+                                (side . right))
+                               ;; sql
+                               ((major-mode . sql-interactive-mode)
+                                (display-buffer-reuse-mode-window display-buffer-same-window))
+                               ;; shell
+                               ;; ("eshell\\*"
+                               ;;  (display-buffer-in-side-window)
+                               ;;  (side . bottom))
+                               )
+        split-height-threshold nil)
 
-(use-package novice
-  :defer
-  :custom
-  (disabled-command-function nil))
+;; JACOBTODO: convert to newer syntax
+(defvar jacob-recenter-repeat-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map "p" 'recenter-top-bottom)
+    map))
 
-(use-package desktop
-  :init
-  (desktop-save-mode 1)
-  :config
-  (add-to-list 'desktop-minor-mode-table '(treesit-explore-mode nil))
-  :custom
-  (desktop-restore-eager 5)
-  (desktop-lazy-verbose nil))
+(put 'recenter-top-bottom 'repeat-map 'jacob-recenter-repeat-map)
 
-(use-package recentf
-  :init
-  (recentf-mode 1))
+(require 'frame)
+(setopt blink-cursor-blinks 0)          ; make cursor blink forever
 
-(use-package savehist
-  :init
-  (savehist-mode 1)
-  :custom
-  (savehist-save-minibuffer-history t))
+(require 'novice)
+(setopt disabled-command-function nil)
 
-(use-package saveplace
-  :init
-  (save-place-mode 1)
-  :custom
-  (save-place-forget-unreadable-files t))
+(require 'desktop)
+(desktop-save-mode 1)
+(add-to-list 'desktop-minor-mode-table '(treesit-explore-mode nil))
+(setopt desktop-restore-eager 5
+        desktop-lazy-verbose nil)
 
-(use-package cus-edit
-  :custom
-  (custom-file (make-temp-file "emacs-custom-")))
+(require 'recentf)
+(recentf-mode 1)
+
+(require 'savehist)
+(savehist-mode 1)
+(setopt savehist-save-minibuffer-history t)
+
+(require 'saveplace)
+(save-place-mode 1)
+(setopt save-place-forget-unreadable-files t)
+
+(require 'cus-edit)
+(setopt custom-file (make-temp-file "emacs-custom-"))
 
 (require 'lisp-mode)
 (jacob-setup-abbrev-table lisp-mode-abbrev-table
@@ -275,25 +260,19 @@ set the PROPERTIES of TABLE."
                           :parents (list jacob-comment-abbrev-table)
                           :enable-function 'jacob-point-in-code-p)
 
-;; support for files like `/etc/fstab'
-(use-package generic-x)
+(require 'generic-x)             ; support for files like `/etc/fstab'
 
-(use-package simple
-  :init
-  (column-number-mode 1)
-  (line-number-mode 1)
-  (setq-default indent-tabs-mode nil)   ; use spaces to indent
-  :custom
-  (save-interprogram-paste-before-kill t))
+(require 'simple)
+(column-number-mode 1)
+(line-number-mode 1)
+(setq-default indent-tabs-mode nil)     ; use spaces to indent
+
+(setopt save-interprogram-paste-before-kill t)
 
 (require 'bookmark)
-(use-package bookmark
-  :defer
-  :config
-  (bookmark-store "emacs init file" '((filename . "~/.emacs.d/init.el")) nil)
-  (bookmark-store "emacs environment file" '((filename . "~/.emacs.d/environment.el")) nil)
-  :custom
-  (bookmark-set-fringe-mark nil))
+(bookmark-store "emacs init file" '((filename . "~/.emacs.d/init.el")) nil)
+(bookmark-store "emacs environment file" '((filename . "~/.emacs.d/environment.el")) nil)
+(setopt bookmark-set-fringe-mark nil)
 
 (require 'flymake)
 
@@ -527,30 +506,18 @@ Otherwise, kill from point to the end of the line."
 (require 'delsel)
 (delete-selection-mode 1)
 
-(use-package repeat
-  :config
-  (repeat-mode 1))
+(require 'repeat)
+(repeat-mode 1)
 
-(use-package dabbrev
-  :defer
-  :custom
-  (dabbrev-case-fold-search nil)
-  (dabbrev-case-replace nil))
+(require 'dabbrev)
+(setopt dabbrev-case-fold-search nil
+        dabbrev-case-replace nil)
 
-(provide 'bindings)                     ; HACK
-(use-package bindings
-  :custom
-  (mode-line-percent-position nil))
-
-(use-package vc
-  :defer
-  :custom
-  (vc-git-show-stash 0 "show 0 stashes")
-  (vc-ignore-dir-regexp
-   (format "\\(%s\\)\\|\\(%s\\)"
-           vc-ignore-dir-regexp
-           tramp-file-name-regexp)
-   "ignore tramp files"))
+(require 'vc)
+(setopt vc-git-show-stash 0             ; show 0 stashes
+        vc-ignore-dir-regexp (format "\\(%s\\)\\|\\(%s\\)" ; ignore tramp files
+                                     vc-ignore-dir-regexp
+                                     tramp-file-name-regexp))
 
 (require 'vc-git)
 (jacob-defhookf vc-git-log-view-mode-hook
@@ -578,20 +545,14 @@ Otherwise, kill from point to the end of the line."
   (jacob-xfk-local-key "q" #'quit-window)
   (jacob-xfk-local-key "g" #'revert-buffer))
 
-(use-package autoinsert
-  :defer
-  :config
-  (auto-insert-mode t)
-  :custom
-  (auto-insert-query t)
-  (auto-insert-directory (locate-user-emacs-file "templates")))
+(require 'autoinsert)
+(auto-insert-mode t)
+(setopt auto-insert-query t
+        auto-insert-directory (locate-user-emacs-file "templates"))
 
-(use-package tramp
-  :defer
-  :config
-  (add-to-list 'tramp-remote-path 'tramp-own-remote-path)
-  :custom
-  (tramp-archive-enabled nil "lots of problems. for now, disable it!"))
+(require 'tramp)
+(add-to-list 'tramp-remote-path 'tramp-own-remote-path)
+(setopt tramp-archive-enabled nil) ; lots of problems. for now, disable it!
 
 (require 'eglot)
 
@@ -957,37 +918,37 @@ hides this information."
 (require 'eldoc)
 (global-eldoc-mode 1)
 
-(use-package project
-  :defer
-  :custom
-  (project-switch-commands '((project-find-file "Find file")
-                             (jacob-project-search "Find regexp")
-                             (project-find-dir "Find directory")
-                             (project-vc-dir "VC-Dir")
-                             (project-eshell "Eshell")
-                             (project-compile "Compile"))))
+(require 'project)
+(setopt project-switch-commands '((project-find-file "Find file")
+                                  (jacob-project-search "Find regexp")
+                                  (project-find-dir "Find directory")
+                                  (project-vc-dir "VC-Dir")
+                                  (project-eshell "Eshell")
+                                  (project-compile "Compile")))
+
+(jacob-require 'highlight-defined)
+
+(jacob-require 'lisp-extra-font-lock)
+(lisp-extra-font-lock-global-mode 1)
 
 (require 'elisp-mode)
 
 (jacob-defhookf emacs-lisp-mode-hook
   (flymake-mode 1)
+  (highlight-defined-mode 1)
   (add-hook 'before-save-hook 'jacob-indent-buffer nil "LOCAL")
   (setq-local yas-key-syntaxes '("w_"))
   (add-hook 'emacs-lisp-mode-hook 'aas-activate-for-major-mode))
 
 (add-to-list 'lisp-imenu-generic-expression '("Features" "^(\\(jacob-\\)*require '\\([a-z-]+\\)" 2))
 (jacob-setup-abbrev-table emacs-lisp-mode-abbrev-table
-                          '(("up" "use-package" jacob-abbrev-no-insert)
-                            ("d" "defun" jacob-abbrev-no-insert)
+                          '(("d" "defun" jacob-abbrev-no-insert)
                             ("p" "point" jacob-abbrev-no-insert)
                             ("point" "(point)" jacob-abbrev-no-insert)
                             ("ah" "add-hook" jacob-abbrev-no-insert)
                             ("l" "lambda" jacob-abbrev-no-insert)
-                            ("gc" "goto-char" jacob-abbrev-no-insert)
                             ("weal" "with-eval-after-load" jacob-abbrev-no-insert)
                             ("mes" "message" jacob-abbrev-no-insert)
-                            ("pmi" "point-min" jacob-abbrev-no-insert)
-                            ("pma" "point-max" jacob-abbrev-no-insert)
                             ("int" "(interactive)")
                             ("se" "save-excursion" jacob-abbrev-no-insert))
                           :parents (list jacob-comment-abbrev-table)
@@ -998,7 +959,9 @@ hides this information."
   :cond #'jacob-point-in-code-p
   "pmi" "(point-min)"
   "pma" "(point-max)"
-  "gc" '(yas "(goto-char $0)"))
+  "gc" '(yas "(goto-char $0)")
+  ";r" '(yas "(require '$0)")
+  ";so" '(yas "(setopt $0)"))
 
 (defun jacob-eval-print-last-sexp ()
   "Run `eval-print-last-sexp', indent the result."
@@ -1071,9 +1034,8 @@ hides this information."
                    ))
   (advice-add command :after #'jacob-pulse-line))
 
-(use-package server
-  :config
-  (server-start))
+(require 'server)
+(server-start)
 
 (require 'smerge-mode)
 (defvar-keymap jacob-smerge-repeat-map
@@ -1115,19 +1077,14 @@ hides this information."
 ;; make tab key call indent command or insert tab character, depending on cursor position
 (setq-default tab-always-indent 'complete)
 
-(use-package grep
-  :defer
-  :config
-  (when jacob-is-windows
-    (setopt find-program "C:/Program Files (x86)/GnuWin32/bin/find.exe")))
+(require 'grep)
+(when jacob-is-windows
+  (setopt find-program "C:/Program Files (x86)/GnuWin32/bin/find.exe"))
 
-(use-package winner
-  :after xah-fly-keys
-  :init
-  (winner-mode 1)
-  :bind ( :map xah-fly-command-map
-          ("1" . winner-undo)
-          ("2" . winner-redo)))
+(require 'winner)
+(winner-mode 1)
+(keymap-set xah-fly-command-map "1" #'winner-undo)
+(keymap-set xah-fly-command-map "2" #'winner-redo)
 
 (require 'compile)
 
@@ -1207,16 +1164,12 @@ Intended as before advice for `sql-send-paragraph'."
                                  (javascript-mode . js-ts-mode))
         treesit-font-lock-level 4)      ; max level of fontification
 
-(use-package typescript-ts-mode
-  ;; JACOBTODO: would it be simpler to use `tsx-ts-mode' for all
-  ;; typescript/javascript shenanigans?
-  :mode (("\\.ts\\'" . typescript-ts-mode)
-         ("\\.tsx\\'" . tsx-ts-mode)))
+(require 'typescript-ts-mode)
+(add-to-list 'auto-mode-alist '("\\.ts\\'" . typescript-ts-mode))
+(add-to-list 'auto-mode-alist '("\\.tsx\\'" . tsx-ts-mode))
 
-(use-package message
-  :defer
-  :custom
-  (message-send-mail-function 'smtpmail-send-it))
+(require 'message)
+(setopt message-send-mail-function 'smtpmail-send-it)
 
 (require 'gnus)
 (jacob-defhookf gnus-started-hook
@@ -1234,8 +1187,8 @@ Intended as before advice for `sql-send-paragraph'."
   (jacob-xfk-local-key "k" #'gnus-group-next-group)
   (jacob-xfk-local-key "g" #'gnus-group-get-new-news))
 
-(use-package gnus-notifications
-  :hook (gnus-after-getting-new-news-hook . gnus-notifications))
+(require 'gnus-notifications)
+(add-hook 'gnus-after-getting-new-news-hook 'gnus-notifications)
 
 (require 'gnus-sum)
 (jacob-defhookf gnus-summary-mode-hook
@@ -1252,9 +1205,9 @@ Intended as before advice for `sql-send-paragraph'."
   "Hook function to be used with `gnus-topic-mode-hook'."
   (jacob-xfk-local-key "s" #'gnus-topic-select-group))
 
-(use-package nxml-mode
-  :mode (("\\.csproj\\'" . nxml-mode)
-         ("Directory.Packages.props" . nxml-mode)))
+(require 'nxml-mode)
+(add-to-list 'auto-mode-alist '("\\.csproj\\'" . nxml-mode))
+(add-to-list 'auto-mode-alist '("Directory.Packages.props" . nxml-mode))
 
 (jacob-require 'key-chord)
 (key-chord-mode 1)
@@ -1319,45 +1272,38 @@ not format the buffer."
 (keymap-set jacob-xfk-map "c n" #'csharp-toolbox-guess-namespace)
 (keymap-set jacob-xfk-map "c ;" #'csharp-toolbox-wd40)
 
-(use-package dape
-  :ensure
-  :custom
-  (dape-info-hide-mode-line nil)
-  (dape-buffer-window-arrangment 'right)
-  :config
+(jacob-require 'dape)
 
-  (push '(netcoredbg-attach-port
-          modes (csharp-mode csharp-ts-mode)
-          ensure dape-ensure-command
-          command "netcoredbg"
-          command-args ["--interpreter=vscode"]
-          :request "attach"
-          :cwd dape-cwd-fn
-          :program csharp-toolbox--select-dll
-          :stopAtEntry t
-          :processId
-          (lambda ()
-            (let* ((collection
-                    (seq-map
-                     (lambda (pid)
-                       (cons (cdr (assoc 'args
-                                         (process-attributes pid)))
-                             pid))
-                     (list-system-processes)))
-                   (selection (completing-read "process: "
-                                               collection)))
-              (cdr (assoc selection collection)))))
-        dape-configs))
+(setopt dape-info-hide-mode-line nil
+        dape-buffer-window-arrangment 'right)
 
-(use-package switch-window
-  :ensure
-  ;; JACOBTODO: investigate switch window finish hook to solve compilation scroll issue
-  :after xah-fly-keys
-  :custom
-  (switch-window-shortcut-style 'qwerty)
-  (switch-window-threshold 3)
-  :bind ( :map xah-fly-command-map
-          ("," . switch-window)))
+(add-to-list 'dape-configs '(netcoredbg-attach-port
+                             modes (csharp-mode csharp-ts-mode)
+                             ensure dape-ensure-command
+                             command "netcoredbg"
+                             command-args ["--interpreter=vscode"]
+                             :request "attach"
+                             :cwd dape-cwd-fn
+                             :program csharp-toolbox--select-dll
+                             :stopAtEntry t
+                             :processId
+                             (lambda ()
+                               (let* ((collection
+                                       (seq-map
+                                        (lambda (pid)
+                                          (cons (cdr (assoc 'args
+                                                            (process-attributes pid)))
+                                                pid))
+                                        (list-system-processes)))
+                                      (selection (completing-read "process: "
+                                                                  collection)))
+                                 (cdr (assoc selection collection))))))
+
+(require 'switch-window)
+;; JACOBTODO: investigate switch window finish hook to solve compilation scroll issue
+(setopt switch-window-shortcut-style 'qwerty
+        switch-window-threshold 3)
+(keymap-set xah-fly-command-map "," #'switch-window)
 
 (require 'tex)
 (jacob-ensure-installed 'auctex)
@@ -1383,11 +1329,8 @@ not format the buffer."
 (require 'vertico-mouse)
 (vertico-mouse-mode 1)
 
-(use-package orderless
-  :ensure
-  :after vertico
-  :custom
-  (completion-styles '(orderless initials)))
+(jacob-require 'orderless)
+(setopt completion-styles '(orderless initials))
 
 (jacob-require 'marginalia)
 (marginalia-mode 1)
@@ -1414,23 +1357,6 @@ not format the buffer."
     (lambda (action candidate)
       (funcall orig-state action (funcall filter action candidate)))))
 
-(defun jacob-consult-project-filter ()
-  (if (project-current)
-      (project-files (project-current))
-    (list)))
-
-(defvar jacob-consult-project-source
-  `(:name     "Project"
-              :narrow   ?p
-              :category file
-              :face     consult-file
-              :history  file-name-history
-              :items    ,#'jacob-consult-project-filter
-              :action   ,#'find-file))
-
-(unless jacob-is-windows
-  (add-to-list 'consult-buffer-sources jacob-consult-project-source "APPEND"))
-
 (setopt completion-in-region-function 'consult-completion-in-region
         xref-show-xrefs-function 'consult-xref
         xref-show-definitions-function 'consult-xref
@@ -1454,13 +1380,9 @@ not format the buffer."
 (setopt embark-cycle-key "\\"
         embark-help-key "h")
 
-(use-package expand-region
-  :ensure
-  :after xah-fly-keys
-  :custom
-  (expand-region-contract-fast-key "9")
-  :bind ( :map xah-fly-command-map
-          ("8" . er/expand-region)))
+(jacob-require 'expand-region)
+(setopt expand-region-contract-fast-key "9")
+(keymap-set xah-fly-command-map "8" #'er/expand-region)
 
 (jacob-require 'verb)
 (add-hook 'org-mode-hook 'verb-mode)
@@ -1537,35 +1459,22 @@ For use in yasnippets."
 For use in yasnippets."
   (string-replace " " "-" input))
 
-
-
 (jacob-require 'gptel)
 
-(use-package gdscript-mode
-  :ensure
-  :defer
-  :config
-  (add-hook 'gdscript-mode-hook 'aas-activate-for-major-mode)
-  (jacob-setup-abbrev-table gdscript-mode-abbrev-table
-                            '(("v" "var" jacob-abbrev-no-insert)
-                              ("c" "const" jacob-abbrev-no-insert)
-                              ("v2" "Vector2")
-                              ("ret" "return"))
-                            :parents (list jacob-comment-abbrev-table)
-                            :enable-function 'jacob-point-in-code-p)
-
-  (aas-set-snippets 'gdscript-mode
-    :cond #'jacob-point-in-code-p
-    "v2" "Vector2"
-    "var" '(yas "var ${1:x$(jacob-yas-snake-case yas-text)} = $0"))
-  (push '(gdscript-mode "localhost" 6008) eglot-server-programs))
-
-(use-package highlight-defined
-  :ensure
-  :hook (emacs-lisp-mode-hook . highlight-defined-mode))
-
-(jacob-require 'lisp-extra-font-lock)
-(lisp-extra-font-lock-global-mode 1)
+(jacob-require 'gdscript-mode)
+(add-hook 'gdscript-mode-hook 'aas-activate-for-major-mode)
+(jacob-setup-abbrev-table gdscript-mode-abbrev-table
+                          '(("v" "var" jacob-abbrev-no-insert)
+                            ("c" "const" jacob-abbrev-no-insert)
+                            ("v2" "Vector2")
+                            ("ret" "return"))
+                          :parents (list jacob-comment-abbrev-table)
+                          :enable-function 'jacob-point-in-code-p)
+(aas-set-snippets 'gdscript-mode
+  :cond #'jacob-point-in-code-p
+  "v2" "Vector2"
+  "var" '(yas "var ${1:x$(jacob-yas-snake-case yas-text)} = $0"))
+(push '(gdscript-mode "localhost" 6008) eglot-server-programs)
 
 
 ;; personal functions
