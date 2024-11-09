@@ -1175,7 +1175,7 @@ CONNECTION is the connection settings."
   (when (eq sql-product 'postgres)
     (setq sql-prompt-regexp "^[-[:alnum:]_]*[-=]\\*?[#>] ")
     (setq sql-prompt-cont-regexp "^\\(?:\\sw\\|\\s_\\)*[-(]\\*?[#>] "))
-  (jacob-xfk-local-key " ,d" #'sql-send-paragraph))
+  (jacob-xfk-local-key "SPC , d" #'sql-send-paragraph))
 
 (defun jacob-sqli-end-of-buffer ()
   "Move point to end of sqli buffer before sending paragraph.
@@ -1486,10 +1486,10 @@ not format the buffer."
 (sly-symbol-completion-mode 0)
 
 (jacob-defhookf sly-mode-hook
-  (jacob-xfk-local-key " ,m" #'sly-eval-last-expression)
-  (jacob-xfk-local-key " ,d" #'sly-compile-defun)
-  (jacob-xfk-local-key " ,e" #'sly-eval-buffer)
-  (jacob-xfk-local-key " wk" #'sly-edit-definition))
+  (jacob-xfk-local-key "SPC , m" #'sly-eval-last-expression)
+  (jacob-xfk-local-key "SPC , d" #'sly-compile-defun)
+  (jacob-xfk-local-key "SPC , e" #'sly-eval-buffer)
+  (jacob-xfk-local-key "SPC w k" #'sly-edit-definition))
 
 (jacob-defhookf sly-db-hook
   (jacob-xfk-local-key "q" #'sly-db-quit))
