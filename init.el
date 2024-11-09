@@ -205,11 +205,6 @@ set the PROPERTIES of TABLE."
 
 (setopt switch-to-buffer-obey-display-actions t
         display-buffer-alist '(
-                               ;; slack
-                               ((or (derived-mode . slack-mode)
-                                    (derived-mode . lui-mode))
-                                (display-buffer-in-side-window)
-                                (side . right))
                                ;; sql
                                ((major-mode . sql-interactive-mode)
                                 (display-buffer-reuse-mode-window display-buffer-same-window))
@@ -272,7 +267,8 @@ set the PROPERTIES of TABLE."
 (require 'bookmark)
 (bookmark-store "emacs init file" '((filename . "~/.emacs.d/init.el")) nil)
 (bookmark-store "emacs environment file" '((filename . "~/.emacs.d/environment.el")) nil)
-(setopt bookmark-set-fringe-mark nil)
+(setopt bookmark-set-fringe-mark nil
+        bookmark-watch-bookmark-file 'silent)
 
 (require 'flymake)
 
