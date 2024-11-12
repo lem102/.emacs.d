@@ -2,10 +2,6 @@
 ;;; Commentary:
 ;;; Code:
 
-(setq-default truncate-lines nil)
-(setq-default tab-width 4) ; set default tab char's display width to 4 spaces
-
-
 ;; read environment file and variable setup
 
 (defvar jacob-font-size 11
@@ -17,9 +13,47 @@
 (defconst jacob-is-linux (eq system-type 'gnu/linux)
   "Is the current OS linux?")
 
-;; JACOBTODO: look in to replacing this machinery with site-lisp.el
 (when (file-exists-p "~/.emacs.d/environment.el")
   (load-file "~/.emacs.d/environment.el"))
+
+;; c source code
+(setq-default truncate-lines nil)
+(setq-default tab-width 4) ; set default tab char's display width to 4 spaces
+
+;; enable emoji fonts
+(set-fontset-font t
+                  'emoji
+                  (seq-find (lambda (font)
+                              (member font (font-family-list)))
+                            '("Symbola"
+                              "Segoe UI Emoji"
+                              "Noto Emoji"
+                              "Noto Color Emoji"
+                              "Apple Color Emoji")))
+
+(add-to-list 'default-frame-alist
+             `(font . ,(format "%s-%s"
+                               (cdr (assoc-string system-type
+                                                  '(("windows-nt" . "Consolas")
+                                                    ("darwin" . "Menlo")
+                                                    ("gnu/linux" . "DejaVu Sans Mono"))))
+                               jacob-font-size)))
+
+(setopt delete-by-moving-to-trash t
+        read-process-output-max (* 1024 1024)
+        frame-resize-pixelwise t
+        create-lockfiles nil
+        history-length 1000
+        history-delete-duplicates t
+        scroll-conservatively 101
+        use-dialog-box nil
+        use-short-answers t
+        ring-bell-function 'ignore
+        truncate-partial-width-windows nil
+        enable-recursive-minibuffers t
+        completion-ignore-case t
+        kill-buffer-query-functions (delq 'process-kill-buffer-query-function
+                                          kill-buffer-query-functions))
 
 ;; startup
 (setopt inhibit-startup-screen t
@@ -49,8 +83,6 @@
 ;; bindings
 (setopt mode-line-percent-position nil)
 
-
-
 (require 'package)
 
 (defvar jacob-require-already-refreshed nil
@@ -77,52 +109,12 @@ VC is used in `jacob-ensure-installed'."
      (jacob-ensure-installed ,package ,vc)
      (require ,package)))
 
-(setopt package-archives '(("GNU" . "https://elpa.gnu.org/packages/")
-                           ("non-GNU" . "https://elpa.nongnu.org/nongnu/")
-                           ("melpa" . "https://melpa.org/packages/")))
-
-
-
-;; enable emoji fonts
-(set-fontset-font t
-                  'emoji
-                  (seq-find (lambda (font)
-                              (member font (font-family-list)))
-                            '("Symbola"
-                              "Segoe UI Emoji"
-                              "Noto Emoji"
-                              "Noto Color Emoji"
-                              "Apple Color Emoji")))
-
-(add-to-list 'default-frame-alist
-             `(font . ,(format "%s-%s"
-                               (cdr (assoc-string system-type
-                                                  '(("windows-nt" . "Consolas")
-                                                    ("darwin" . "Menlo")
-                                                    ("gnu/linux" . "DejaVu Sans Mono"))))
-                               jacob-font-size)))
-
-(keymap-global-unset "C-x C-c")         ; `save-buffers-kill-terminal'
-(keymap-global-unset "C-z")             ; `suspend-frame'
-(keymap-global-unset "C-x u")           ; `undo'
-
-(setopt delete-by-moving-to-trash t
-        read-process-output-max (* 1024 1024)
-        frame-resize-pixelwise t
-        create-lockfiles nil
-        history-length 1000
-        history-delete-duplicates t
-        scroll-conservatively 101
-        use-dialog-box nil
-        use-short-answers t
-        ring-bell-function 'ignore
-        truncate-partial-width-windows nil
-        enable-recursive-minibuffers t
-        completion-ignore-case t
-        kill-buffer-query-functions (delq 'process-kill-buffer-query-function
-                                          kill-buffer-query-functions))
-
-;; built-in
+(setopt package-archives '(;; ("gnu" . "https://elpa.gnu.org/packages/")
+                           ;; ("nongnu" . "https://elpa.nongnu.org/nongnu/")
+                           ;; ("melpa" . "https://melpa.org/packages/")
+                           ("gnu" . "~/emacs-packages/gnu")
+                           ("nongnu" . "~/emacs-packages/nongnu")
+                           ("melpa" . "~/emacs-packages/melpa")))
 
 (defmacro jacob-defhookf (hook &rest body)
   "Define function with BODY and bind it to HOOK."
@@ -144,10 +136,7 @@ VC is used in `jacob-ensure-installed'."
   "Setup an abbrev table.
 Clear the abbrev TABLE.  Then populate it with ABBREVS.  Finally,
 set the PROPERTIES of TABLE."
-  ;; JACOBTODO: use this function instead of `define-abbrev-table'.
-  ;; JACOBTODO: overwrite parents? 🤔 I think yes, you could use
-  ;; `abbrev-table-get' to get the original property and combine
-  ;; them in arguments
+  (declare (indent defun))
   (clear-abbrev-table table)
   (dolist (abbrev abbrevs)
     (apply #'define-abbrev table abbrev))
@@ -180,6 +169,40 @@ set the PROPERTIES of TABLE."
   nil
   :enable-function 'jacob-point-in-text-p)
 
+(defun jacob-insert (&optional template)
+  "Handle `jacob-insert' abbrev expansion.
+Insert TEMPLATE.  If present, move point back to ■.  ■ will be
+deleted."
+  ;; JACOBTODO: remove when switched to yasnippet
+  (when template
+    (insert template))
+  (let* ((end-position (point))
+         (start-position (if template
+                             (- end-position
+                                (length template))
+                           last-abbrev-location))
+         ■-position)
+    (when (search-backward-regexp "■"
+                                  start-position
+                                  t)
+      (delete-char 1)
+      (setq ■-position (point-marker)))
+    (indent-region start-position end-position)
+    (when ■-position
+      (goto-char ■-position))))
+
+(put 'jacob-insert 'no-self-insert t)
+
+(require 'text-mode)
+
+(jacob-setup-abbrev-table text-mode-abbrev-table
+  '(("i" "I")
+    ("im" "I'm")
+    ("idd" "I'd")
+    ("dont" "don't")
+    ("its" "it's")
+    ("havent" "haven't")))
+
 (setopt abbrev-suggest t
         save-abbrevs nil)
 
@@ -192,14 +215,13 @@ set the PROPERTIES of TABLE."
 
 (require 'files)
 (auto-save-visited-mode 1)
+(keymap-global-unset "C-x C-c")         ; `save-buffers-kill-terminal'
 
 (setopt auto-save-default nil
         make-backup-files nil
         backup-by-copying t
         confirm-kill-processes nil
-        auto-save-visited-interval 2    ; save file after two seconds
-        auto-save-visited-predicate (lambda () ; JACOBTODO: disable in hook, get rid of this
-                                      (not (equal major-mode 'message-mode))))
+        auto-save-visited-interval 2)   ; save file after two seconds
 
 (require 'window)
 
@@ -225,6 +247,7 @@ set the PROPERTIES of TABLE."
 
 (require 'frame)
 (setopt blink-cursor-blinks 0)          ; make cursor blink forever
+(keymap-global-unset "C-z")             ; `suspend-frame'
 
 (require 'novice)
 (setopt disabled-command-function nil)
@@ -233,7 +256,9 @@ set the PROPERTIES of TABLE."
 (desktop-save-mode 1)
 (add-to-list 'desktop-minor-mode-table '(treesit-explore-mode nil))
 (setopt desktop-restore-eager 5
-        desktop-lazy-verbose nil)
+        desktop-lazy-verbose nil
+        desktop-load-locked-desktop 'check-pid
+        desktop-save 'if-exists)
 
 (require 'recentf)
 (recentf-mode 1)
@@ -251,9 +276,10 @@ set the PROPERTIES of TABLE."
 
 (require 'lisp-mode)
 (jacob-setup-abbrev-table lisp-mode-abbrev-table
-                          nil
-                          :parents (list jacob-comment-abbrev-table)
-                          :enable-function 'jacob-point-in-code-p)
+  '(("d" "defun" jacob-abbrev-no-insert)
+    ("l" "lambda" jacob-abbrev-no-insert))
+  :parents (list jacob-comment-abbrev-table)
+  :enable-function 'jacob-point-in-code-p)
 
 (require 'generic-x)             ; support for files like `/etc/fstab'
 
@@ -261,8 +287,8 @@ set the PROPERTIES of TABLE."
 (column-number-mode 1)
 (line-number-mode 1)
 (setq-default indent-tabs-mode nil)     ; use spaces to indent
-
 (setopt save-interprogram-paste-before-kill t)
+(keymap-global-unset "C-x u")           ; `undo'
 
 (require 'bookmark)
 (bookmark-store "emacs init file" '((filename . "~/.emacs.d/init.el")) nil)
@@ -271,7 +297,6 @@ set the PROPERTIES of TABLE."
         bookmark-watch-bookmark-file 'silent)
 
 (require 'flymake)
-
 (setopt xah-fly-use-control-key nil
         xah-fly-use-meta-key nil) ; must be set before requiring `xah-fly-keys'
 
@@ -279,8 +304,8 @@ set the PROPERTIES of TABLE."
 
 (defun jacob-xfk-local-key (key command)
   "Bind KEY buffer locally to COMMAND in xfk command mode."
-  ;; FIXME: keys that are not already bound will not work for
-  ;; jacob-xfk-define-key-in-major-mode
+  ;; JACOBTODO: keys that are not already bound will not work for
+  ;; `jacob-xfk-local-key'
   (keymap-local-set (format "<remap> <%s>"
                             (keymap-lookup xah-fly-command-map
                                            key))
@@ -608,25 +633,27 @@ Useful for deleting ^M after `eglot-code-actions'."
 (eglot--code-action eglot-code-action-organize-imports-ts "source.organizeImports.ts")
 (eglot--code-action eglot-code-action-add-missing-imports-ts "source.addMissingImports.ts")
 
-;; JACOBTODO: is this still required?
-(defun eglot--format-markup (markup)
-  "Format MARKUP according to LSP's spec."
-  (pcase-let ((`(,string ,mode)
-               (if (stringp markup) (list markup 'gfm-view-mode)
-                 (list (plist-get markup :value)
-                       (pcase (plist-get markup :kind)
-                         ;; changed this line, before was gfm-view-mode instead of markdown-view-mode
-                         ("markdown" 'markdown-view-mode)
-                         ("plaintext" 'text-mode)
-                         (_ major-mode))))))
-    (with-temp-buffer
-      (setq-local markdown-fontify-code-blocks-natively t)
-      (insert string)
-      (let ((inhibit-message t)
-	        (message-log-max nil))
-        (ignore-errors (delay-mode-hooks (funcall mode))))
-      (font-lock-ensure)
-      (string-trim (buffer-string)))))
+;; JACOBTODO: is this still required? If no problems when using eglot
+;; in future, delete this redefinition of `eglot--format-markup'.
+
+;; (defun eglot--format-markup (markup)
+;;   "Format MARKUP according to LSP's spec."
+;;   (pcase-let ((`(,string ,mode)
+;;                (if (stringp markup) (list markup 'gfm-view-mode)
+;;                  (list (plist-get markup :value)
+;;                        (pcase (plist-get markup :kind)
+;;                          ;; changed this line, before was gfm-view-mode instead of markdown-view-mode
+;;                          ("markdown" 'markdown-view-mode)
+;;                          ("plaintext" 'text-mode)
+;;                          (_ major-mode))))))
+;;     (with-temp-buffer
+;;       (setq-local markdown-fontify-code-blocks-natively t)
+;;       (insert string)
+;;       (let ((inhibit-message t)
+;; 	        (message-log-max nil))
+;;         (ignore-errors (delay-mode-hooks (funcall mode))))
+;;       (font-lock-ensure)
+;;       (string-trim (buffer-string)))))
 
 (setopt eglot-ignored-server-capabilities '(:documentOnTypeFormattingProvider))
 
@@ -799,27 +826,27 @@ which performs the deletion."
   "aqbm" ".AsQueryable().BuildMock()")
 
 (jacob-setup-abbrev-table csharp-ts-mode-abbrev-table
-                          ;; JACOBTODO: cant insert abbrevs inside interpolated strings
-                          '(("v" "var" jacob-abbrev-no-insert)
-                            ("tostr" "ToString()" jacob-abbrev-no-insert)
-                            ("jwe" "Console.WriteLine(\"jacobwozere\");" jacob-abbrev-no-insert)
-                            ("az" "async")
-                            ("ns" "namespace")
-                            ("xgon" "x => x")
-                            ("ro" "readonly")
-                            ("nuguid" "Guid.NewGuid()")
-                            ("pri" "private")
-                            ("pub" "public")
-                            ("sta" "static")
-                            ("req" "required")
-                            ("gs" "{ get; set; }" jacob-abbrev-no-insert)
-                            ("ret" "return")
-                            ("eq" "==")
-                            ("neq" "!=")
-                            ("band" "&&")
-                            ("bor" "||"))
-                          :parents (list jacob-comment-abbrev-table)
-                          :enable-function 'jacob-point-in-code-p)
+  ;; JACOBTODO: cant insert abbrevs inside interpolated strings
+  '(("v" "var" jacob-abbrev-no-insert)
+    ("tostr" "ToString()" jacob-abbrev-no-insert)
+    ("jwe" "Console.WriteLine(\"jacobwozere\");" jacob-abbrev-no-insert)
+    ("az" "async")
+    ("ns" "namespace")
+    ("xgon" "x => x")
+    ("ro" "readonly")
+    ("nuguid" "Guid.NewGuid()")
+    ("pri" "private")
+    ("pub" "public")
+    ("sta" "static")
+    ("req" "required")
+    ("gs" "{ get; set; }" jacob-abbrev-no-insert)
+    ("ret" "return")
+    ("eq" "==")
+    ("neq" "!=")
+    ("band" "&&")
+    ("bor" "||"))
+  :parents (list jacob-comment-abbrev-table)
+  :enable-function 'jacob-point-in-code-p)
 
 (require 'inf-lisp)
 (setopt inferior-lisp-program "sbcl")
@@ -938,18 +965,16 @@ hides this information."
 
 (add-to-list 'lisp-imenu-generic-expression '("Features" "^(\\(jacob-\\)*require '\\([a-z-]+\\)" 2))
 (jacob-setup-abbrev-table emacs-lisp-mode-abbrev-table
-                          '(("d" "defun" jacob-abbrev-no-insert)
-                            ("p" "point" jacob-abbrev-no-insert)
-                            ("point" "(point)" jacob-abbrev-no-insert)
-                            ("ah" "add-hook" jacob-abbrev-no-insert)
-                            ("l" "lambda" jacob-abbrev-no-insert)
-                            ("weal" "with-eval-after-load" jacob-abbrev-no-insert)
-                            ("mes" "message" jacob-abbrev-no-insert)
-                            ("int" "(interactive)")
-                            ("se" "save-excursion" jacob-abbrev-no-insert))
-                          :parents (list jacob-comment-abbrev-table)
-                          :enable-function 'jacob-point-in-code-p
-                          :regexp "\\(^\\|[\s\t()]\\)\\(?1:[[:alpha:]-]+\\)")
+  '(("p" "point" jacob-abbrev-no-insert)
+    ("point" "(point)" jacob-abbrev-no-insert)
+    ("ah" "add-hook" jacob-abbrev-no-insert)
+    ("weal" "with-eval-after-load" jacob-abbrev-no-insert)
+    ("mes" "message" jacob-abbrev-no-insert)
+    ("int" "(interactive)")
+    ("se" "save-excursion" jacob-abbrev-no-insert))
+  :parents (list lisp-mode-abbrev-table)
+  :enable-function 'jacob-point-in-code-p
+  :regexp "\\(^\\|[\s\t()]\\)\\(?1:[[:alpha:]-]+\\)")
 
 (aas-set-snippets 'emacs-lisp-mode
   :cond #'jacob-point-in-code-p
@@ -957,6 +982,7 @@ hides this information."
   "pma" "(point-max)"
   "gc" '(yas "(goto-char $0)")
   ";r" '(yas "(require '$0)")
+  ";jr" '(yas "(jacob-require '$0)")
   ";so" '(yas "(setopt $0)"))
 
 (defun jacob-eval-print-last-sexp ()
@@ -1126,17 +1152,17 @@ Intended as before advice for `sql-send-paragraph'."
 (advice-add #'sql-send-paragraph :before #'jacob-sqli-end-of-buffer)
 
 (jacob-setup-abbrev-table sql-mode-abbrev-table
-                          '(("sel" "SELECT" jacob-abbrev-no-insert)
-                            ("upd" "UPDATE" jacob-abbrev-no-insert)
-                            ("del" "DELETE FROM ■\nWHERE condition;" jacob-insert)
-                            ("joi" "JOIN ■\nON field = field" jacob-insert)
-                            ("ins" "INSERT INTO ■ (column, column2)\nVALUES (value, value2)" jacob-insert)
-                            ("ord" "ORDER BY")
-                            ("gro" "GROUP BY")
-                            ("and" "AND")
-                            ("as" "AS"))
-                          :parents (list jacob-comment-abbrev-table)
-                          :enable-function 'jacob-point-in-code-p)
+  '(("sel" "SELECT" jacob-abbrev-no-insert)
+    ("upd" "UPDATE" jacob-abbrev-no-insert)
+    ("del" "DELETE FROM ■\nWHERE condition;" jacob-insert)
+    ("joi" "JOIN ■\nON field = field" jacob-insert)
+    ("ins" "INSERT INTO ■ (column, column2)\nVALUES (value, value2)" jacob-insert)
+    ("ord" "ORDER BY")
+    ("gro" "GROUP BY")
+    ("and" "AND")
+    ("as" "AS"))
+  :parents (list jacob-comment-abbrev-table)
+  :enable-function 'jacob-point-in-code-p)
 
 (keymap-set jacob-xfk-map "d" #'jacob-sql-connect)
 
@@ -1161,10 +1187,36 @@ Intended as before advice for `sql-send-paragraph'."
         treesit-font-lock-level 4)      ; max level of fontification
 
 (require 'typescript-ts-mode)
-(add-to-list 'auto-mode-alist '("\\.ts\\'" . typescript-ts-mode))
-(add-to-list 'auto-mode-alist '("\\.tsx\\'" . tsx-ts-mode))
+;; In emacs core there are treesitter modes for js, jsx, ts and
+;; tsx. Why not use tsx mode for all of them? Only one mode to
+;; configure that way.
+
+;; JACOBTODO: include json-mode in this?
+(add-to-list 'auto-mode-alist '("\\.[jt]s[xm]?\\'" . tsx-ts-mode))
+
+(jacob-setup-abbrev-table tsx-ts-mode-abbrev-table
+  '(("cl" "console.log(■);" jacob-insert)
+    ("fun" "(■) => " jacob-insert)
+    ("con" "const ■ = " jacob-insert)
+    ("let" "let ■ = " jacob-insert)
+    ("fore" "forEach((■) => )" jacob-insert)
+    ("map" "map((■) => )" jacob-insert)
+    ("filter" "filter((■) => )" jacob-insert)
+    ("red" "reduce((■) => )" jacob-insert)
+    ("jwe" "console.log(\"jacobwozere\");" t)
+    ("eeq" "===")
+    ("neeq" "!==")
+    ("if" "if (■) {\n\n}" jacob-insert)
+    ("for" "for (■) {\n\n}" jacob-insert)
+    ("while" "while (■) {\n}" jacob-insert)
+    ("switch" "switch (■) {\n}" jacob-insert)
+    ("case" "case ■: \n\nbreak;" jacob-insert))
+  :parents (list jacob-comment-abbrev-table)
+  :enable-function 'jacob-point-in-code-p)
 
 (require 'message)
+(jacob-defhookf message-mode-hook
+  (setq-local auto-save-visited-mode nil))
 (setopt message-send-mail-function 'smtpmail-send-it)
 
 (require 'gnus)
@@ -1256,6 +1308,7 @@ not format the buffer."
 (jacob-require 'rainbow-mode)
 (add-hook 'prog-mode-hook #'rainbow-mode)
 
+
 (jacob-require 'eglot-booster "https://github.com/jdtsmith/eglot-booster")
 (eglot-booster-mode 1)
 
@@ -1311,6 +1364,10 @@ not format the buffer."
         japanese-TeX-error-messages nil)
 
 (TeX-global-PDF-mode 1)
+
+(jacob-require 'markdown-mode)
+
+(jacob-require 'feature-mode)
 
 (jacob-require 'fsharp-mode)
 (setopt inferior-fsharp-program "dotnet fsi")
@@ -1460,12 +1517,12 @@ For use in yasnippets."
 (jacob-require 'gdscript-mode)
 (add-hook 'gdscript-mode-hook 'aas-activate-for-major-mode)
 (jacob-setup-abbrev-table gdscript-mode-abbrev-table
-                          '(("v" "var" jacob-abbrev-no-insert)
-                            ("c" "const" jacob-abbrev-no-insert)
-                            ("v2" "Vector2")
-                            ("ret" "return"))
-                          :parents (list jacob-comment-abbrev-table)
-                          :enable-function 'jacob-point-in-code-p)
+  '(("v" "var" jacob-abbrev-no-insert)
+    ("c" "const" jacob-abbrev-no-insert)
+    ("v2" "Vector2")
+    ("ret" "return"))
+  :parents (list jacob-comment-abbrev-table)
+  :enable-function 'jacob-point-in-code-p)
 (aas-set-snippets 'gdscript-mode
   :cond #'jacob-point-in-code-p
   "v2" "Vector2"
@@ -1500,18 +1557,6 @@ For use in yasnippets."
   (interactive)
   (find-file user-init-file)
   (goto-char (random (point-max))))
-
-(defun jacob-insert-elisp-colour ()
-  "Ask user for a colour, insert colour name at point."
-  (interactive)
-  (insert (concat "\"" (read-color) "\"")))
-
-(defun jacob-alist-to-form-data (alist)
-  "Convert ALIST to form-data for http request."
-  (mapconcat (lambda (x)
-               (concat (car x) "=" (cdr x)))
-             alist
-             "&"))
 
 (defun jacob-toggle-modeline ()
   "Toggle visibility of modeline."
@@ -1666,8 +1711,6 @@ For use with GitLab only."
     (with-temp-buffer
       (eshell-command command t))))
 
-
-
 (defun jacob-gitlab-link-at-point ()
   "Create a gitlab link for the line of code at point."
   (interactive)
@@ -1684,74 +1727,7 @@ For use with GitLab only."
     (kill-new link)
     (message "%s" link)))
 
-
-;; abbrevs
-
-;; jacob-insert-config
-
-;; JACOBTODO: remove when switched to yasnippet
-
-(defun jacob-insert (&optional template)
-  "Handle `jacob-insert' abbrev expansion.
-Insert TEMPLATE.  If present, move point back to ■.  ■ will be
-deleted."
-  (when template
-    (insert template))
-  (let* ((end-position (point))
-         (start-position (if template
-                             (- end-position
-                                (length template))
-                           last-abbrev-location))
-         ■-position)
-    (when (search-backward-regexp "■"
-                                  start-position
-                                  t)
-      (delete-char 1)
-      (setq ■-position (point-marker)))
-    (indent-region start-position end-position)
-    (when ■-position
-      (goto-char ■-position))))
-
-(put 'jacob-insert 'no-self-insert t)
-
-(define-abbrev-table 'text-mode-abbrev-table
-  '(("i" "I")
-    ("im" "I'm")
-    ("idd" "I'd")
-    ("dont" "don't")
-    ("its" "it's")
-    ("havent" "haven't")))
-
-(define-abbrev-table 'js-ts-mode-abbrev-table
-  '(("cl" "console.log(■);" jacob-insert)
-    ("fun" "(■) => " jacob-insert)
-    ("con" "const ■ = " jacob-insert)
-    ("let" "let ■ = " jacob-insert)
-    ("fore" "forEach((■) => )" jacob-insert)
-    ("map" "map((■) => )" jacob-insert)
-    ("filter" "filter((■) => )" jacob-insert)
-    ("red" "reduce((■) => )" jacob-insert)
-    ("jwe" "console.log(\"jacobwozere\");" t)
-    ("eeq" "===")
-    ("neeq" "!==")
-    ("if" "if (■) {\n\n}" jacob-insert)
-    ("for" "for (■) {\n\n}" jacob-insert)
-    ("while" "while (■) {\n}" jacob-insert)
-    ("switch" "switch (■) {\n}" jacob-insert)
-    ("case" "case ■: \n\nbreak;" jacob-insert))
-  nil
-  :parents (list jacob-comment-abbrev-table)
-  :enable-function 'jacob-point-in-code-p)
-
-(define-abbrev-table 'typescript-ts-mode-abbrev-table
-  nil
-  nil
-  :parents (list js-ts-mode-abbrev-table))
-
-(define-abbrev-table 'tsx-ts-mode-abbrev-table
-  nil
-  nil
-  :parents (list js-ts-mode-abbrev-table))
+;; JACOBTODO: create github equivalent of `jacob-gitlab-link-at-point'.
 
 (provide 'init)
 
