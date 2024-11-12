@@ -848,6 +848,33 @@ which performs the deletion."
   :parents (list jacob-comment-abbrev-table)
   :enable-function 'jacob-point-in-code-p)
 
+;; WIP
+
+(require 'flymake-easy)
+
+(defun flymake-dotnet-command (filename)
+  "Construct a command that flymake can use to check csharp source in FILENAME."
+  (if (string= filename "dummy")        ; HACK
+      (list "dotnet")
+    (let* ((directory (locate-dominating-file (file-name-directory filename)
+                                              (lambda (d)
+                                                (seq-find (lambda (f)
+                                                            (string-match-p "\\.csproj" f))
+                                                          (directory-files d))))))
+      (list "dotnet" "build" (expand-file-name directory)))))
+
+(defun flymake-dotnet-load ()
+  "Configure flymake mode to check the current buffer's csharp syntax."
+  (interactive)
+  (flymake-easy-load 'flymake-dotnet-command
+                     '(("\\([^
+]+\\)(\\([0-9]+\\),\\([0-9]+\\))"
+                        nil
+                        2
+                        3
+                        nil))
+                     'inplace))
+
 (require 'inf-lisp)
 (setopt inferior-lisp-program "sbcl")
 
@@ -1110,31 +1137,28 @@ hides this information."
 
 (require 'compile)
 
-(jacob-defhookf compilation-filter-hook
-  (ansi-color-compilation-filter)
+(jacob-defhookf compilation-mode-hook
   (jacob-xfk-local-key "g" #'recompile))
+
+(jacob-defhookf compilation-filter-hook
+  (ansi-color-compilation-filter))
 
 (setopt compilation-always-kill t
         compilation-scroll-output t)
 
 (require 'sql)
 
-(defun jacob-sql-connect (connection)
+(defun jacob-sql-connect ()
   "Wrapper for `sql-connect' to set postgres password.
 CONNECTION is the connection settings."
-  (interactive
-   (if sql-connection-alist
-       (list (progn
-               (require 'sql)
-               (sql-read-connection "Connection: "))
-             current-prefix-arg)
-     (user-error "No SQL Connections defined")))
-  (with-environment-variables
-      (("PGPASSWORD" (cadr (assoc 'sql-password
-                                  (assoc-string connection
-                                                sql-connection-alist
-                                                t)))))
-    (sql-connect connection)))
+  (interactive)
+  (let ((connection (sql-read-connection "Connection: ")))
+    (with-environment-variables
+        (("PGPASSWORD" (cadr (assoc 'sql-password
+                                    (assoc-string connection
+                                                  sql-connection-alist
+                                                  t)))))
+      (sql-connect connection))))
 
 (jacob-defhookf sql-interactive-mode-hook
   (when (eq sql-product 'postgres)
@@ -1371,6 +1395,9 @@ not format the buffer."
 
 (jacob-require 'fsharp-mode)
 (setopt inferior-fsharp-program "dotnet fsi")
+
+;; this is interferring with csharp compilation errors
+(setq compilation-error-regexp-alist (delq 'fsharp compilation-error-regexp-alist))
 
 (jacob-require 'eglot-fsharp)
 (setopt eglot-fsharp-server-install-dir nil)
