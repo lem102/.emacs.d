@@ -1088,9 +1088,11 @@ hides this information."
 
 (require 'compile)
 
-(jacob-defhookf compilation-filter-hook
-  (ansi-color-compilation-filter)
+(jacob-defhookf compilation-mode-hook
   (jacob-xfk-local-key "g" #'recompile))
+
+(jacob-defhookf compilation-filter-hook
+  (ansi-color-compilation-filter))
 
 (setopt compilation-always-kill t
         compilation-scroll-output t)
@@ -1318,6 +1320,9 @@ not format the buffer."
 
 (jacob-require 'fsharp-mode)
 (setopt inferior-fsharp-program "dotnet fsi")
+
+;; this is interferring with csharp compilation errors
+(delq 'fsharp compilation-error-regexp-alist)
 
 (jacob-require 'eglot-fsharp)
 (setopt eglot-fsharp-server-install-dir nil)
