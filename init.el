@@ -193,6 +193,58 @@ deleted."
 
 (put 'jacob-insert 'no-self-insert t)
 
+(jacob-require 'yasnippet)
+
+(jacob-defhookf snippet-mode-hook
+  (setq-local auto-save-visited-mode nil))
+
+(yas-global-mode 1)
+(keymap-set yas-minor-mode-map "SPC" yas-maybe-expand)
+
+(defun jacob-autoinsert-yas-expand ()
+  "Replace text in yasnippet template."
+  (yas-expand-snippet (buffer-string) (point-min) (point-max)))
+
+(defun jacob-yas-camel-case (input)
+  "Convert INPUT to camel case e.g. apple banana -> appleBanana.
+For use in yasnippets."
+  (let* ((space-at-end (if (string-match-p " $" input) " " ""))
+         (words (split-string input))
+         (capitalised-words (seq-reduce (lambda (previous current)
+                                          (concat previous (capitalize current)))
+                                        (cdr words)
+                                        (car words))))
+    (concat capitalised-words space-at-end)))
+
+(defun jacob-yas-pascal-case (input)
+  "Convert INPUT to pascal case e.g. apple banana -> AppleBanana.
+For use in yasnippets."
+  (let ((space-at-end (if (string-match-p " $" input)
+                          " "
+                        "")))
+    (with-temp-buffer
+      (insert input)
+      (goto-char (point-min))
+      (subword-mode 1)
+      (while (not (= (point) (point-max)))
+        (call-interactively #'capitalize-word))
+      (goto-char (point-min))
+      (while (search-forward " " nil "NOERROR")
+        (replace-match ""))
+      (goto-char (point-max))
+      (insert space-at-end)
+      (buffer-substring-no-properties (point-min) (point-max)))))
+
+(defun jacob-yas-snake-case (input)
+  "Convert INPUT to snake case e.g. apple banana -> apple_banana.
+For use in yasnippets."
+  (string-replace " " "_" input))
+
+(defun jacob-yas-kebab-case (input)
+  "Convert INPUT to kebab case e.g. apple banana -> apple_banana.
+For use in yasnippets."
+  (string-replace " " "-" input))
+
 (require 'text-mode)
 
 (jacob-setup-abbrev-table text-mode-abbrev-table
@@ -237,13 +289,9 @@ deleted."
                                )
         split-height-threshold nil)
 
-;; JACOBTODO: convert to newer syntax
-(defvar jacob-recenter-repeat-map
-  (let ((map (make-sparse-keymap)))
-    (define-key map "p" 'recenter-top-bottom)
-    map))
-
-(put 'recenter-top-bottom 'repeat-map 'jacob-recenter-repeat-map)
+(defvar-keymap jacob-recenter-repeat-map
+  :repeat t
+  "p" #'recenter-top-bottom)
 
 (require 'frame)
 (setopt blink-cursor-blinks 0)          ; make cursor blink forever
@@ -258,7 +306,7 @@ deleted."
 (setopt desktop-restore-eager 5
         desktop-lazy-verbose nil
         desktop-load-locked-desktop 'check-pid
-        desktop-save 'if-exists)
+        desktop-save t)
 
 (require 'recentf)
 (recentf-mode 1)
@@ -304,12 +352,11 @@ deleted."
 
 (defun jacob-xfk-local-key (key command)
   "Bind KEY buffer locally to COMMAND in xfk command mode."
-  ;; JACOBTODO: keys that are not already bound will not work for
-  ;; `jacob-xfk-local-key'
-  (keymap-local-set (format "<remap> <%s>"
-                            (keymap-lookup xah-fly-command-map
-                                           key))
-                    command))
+  (let ((existing-key (keymap-lookup xah-fly-command-map key)))
+    (unless existing-key
+      (user-error "%s is not bound to a key in `xah-fly-command-map'"))
+    (keymap-local-set (format "<remap> <%s>" existing-key)
+                      command)))
 
 (xah-fly-keys-set-layout "qwerty")
 (xah-fly-keys 1)
@@ -633,28 +680,6 @@ Useful for deleting ^M after `eglot-code-actions'."
 (eglot--code-action eglot-code-action-organize-imports-ts "source.organizeImports.ts")
 (eglot--code-action eglot-code-action-add-missing-imports-ts "source.addMissingImports.ts")
 
-;; JACOBTODO: is this still required? If no problems when using eglot
-;; in future, delete this redefinition of `eglot--format-markup'.
-
-;; (defun eglot--format-markup (markup)
-;;   "Format MARKUP according to LSP's spec."
-;;   (pcase-let ((`(,string ,mode)
-;;                (if (stringp markup) (list markup 'gfm-view-mode)
-;;                  (list (plist-get markup :value)
-;;                        (pcase (plist-get markup :kind)
-;;                          ;; changed this line, before was gfm-view-mode instead of markdown-view-mode
-;;                          ("markdown" 'markdown-view-mode)
-;;                          ("plaintext" 'text-mode)
-;;                          (_ major-mode))))))
-;;     (with-temp-buffer
-;;       (setq-local markdown-fontify-code-blocks-natively t)
-;;       (insert string)
-;;       (let ((inhibit-message t)
-;; 	        (message-log-max nil))
-;;         (ignore-errors (delay-mode-hooks (funcall mode))))
-;;       (font-lock-ensure)
-;;       (string-trim (buffer-string)))))
-
 (setopt eglot-ignored-server-capabilities '(:documentOnTypeFormattingProvider))
 
 (keymap-set jacob-xfk-map "e e" #'eglot)
@@ -847,6 +872,8 @@ which performs the deletion."
     ("bor" "||"))
   :parents (list jacob-comment-abbrev-table)
   :enable-function 'jacob-point-in-code-p)
+
+(define-auto-insert "\\.cs$" [ "template.cs" jacob-autoinsert-yas-expand ])
 
 ;; WIP
 
@@ -1196,8 +1223,6 @@ Intended as before advice for `sql-send-paragraph'."
   (jacob-xfk-local-key "l" 'doc-view-next-page)
   (jacob-xfk-local-key "j" 'doc-view-previous-page))
 
-;; JACOBTODO: when next messing with treesit libraries, swap to
-;; `treesit-auto'.
 (require 'treesit)
 (setopt treesit-language-source-alist '((c-sharp "https://github.com/tree-sitter/tree-sitter-c-sharp" "master" "src")
                                         (javascript "https://github.com/tree-sitter/tree-sitter-javascript" "master" "src")
@@ -1206,8 +1231,7 @@ Intended as before advice for `sql-send-paragraph'."
                                         (yaml "https://github.com/ikatyang/tree-sitter-yaml")
                                         (gdscript "https://github.com/PrestonKnopp/tree-sitter-gdscript"))
         treesit-load-name-override-list '((c-sharp "libtree-sitter-csharp" "tree_sitter_c_sharp"))
-        major-mode-remap-alist '((csharp-mode . csharp-ts-mode)
-                                 (javascript-mode . js-ts-mode))
+        major-mode-remap-alist '((csharp-mode . csharp-ts-mode))
         treesit-font-lock-level 4)      ; max level of fontification
 
 (require 'typescript-ts-mode)
@@ -1215,7 +1239,6 @@ Intended as before advice for `sql-send-paragraph'."
 ;; tsx. Why not use tsx mode for all of them? Only one mode to
 ;; configure that way.
 
-;; JACOBTODO: include json-mode in this?
 (add-to-list 'auto-mode-alist '("\\.[jt]s[xm]?\\'" . tsx-ts-mode))
 
 (jacob-setup-abbrev-table tsx-ts-mode-abbrev-table
@@ -1312,11 +1335,8 @@ Intended as before advice for `sql-send-paragraph'."
 
 (apheleia-global-mode 1)
 (setq-default apheleia-inhibit t) ; set `apheleia-inhibit' to nil to enable
-;; JACOBTODO: how does add-to-list work?
-(push '(csharpier "dotnet" "csharpier" "--write-stdout")
-      apheleia-formatters)
-(push '(csharp-ts-mode . csharpier)
-      apheleia-mode-alist)
+(add-to-list 'apheleia-formatters '(csharpier "dotnet" "csharpier" "--write-stdout"))
+(add-to-list 'apheleia-mode-alist '(csharp-ts-mode . csharpier))
 
 (defun jacob-apheleia-skip-function ()
   "Function for `apheleia-skip-functions'.
@@ -1332,13 +1352,11 @@ not format the buffer."
 (jacob-require 'rainbow-mode)
 (add-hook 'prog-mode-hook #'rainbow-mode)
 
-
 (jacob-require 'eglot-booster "https://github.com/jdtsmith/eglot-booster")
 (eglot-booster-mode 1)
 
-(jacob-require 'csharp-toolbox "https://github.com/lem102/csharp-toolbox.git")
-;; JACOBTODO: can i make this use ssh?
-;; JACOBTODO: how should i load this properly? 🤔
+(jacob-require 'csharp-toolbox "https://github.com/lem102/csharp-toolbox.git") ; JACOBTODO: can i make this use ssh?
+
 (keymap-set jacob-xfk-map "c f" #'csharp-toolbox-format-statement)
 (keymap-set jacob-xfk-map "c t" #'csharp-toolbox-run-test)
 (keymap-set jacob-xfk-map "c a" #'csharp-toolbox-toggle-async)
@@ -1483,61 +1501,6 @@ not format the buffer."
   (jacob-xfk-local-key "q" #'sly-db-quit))
 
 (jacob-require 'sql-indent)
-
-(jacob-require 'yasnippet)
-
-(jacob-defhookf snippet-mode-hook
-  (setq-local auto-save-visited-mode nil))
-
-(yas-global-mode 1)
-(keymap-set yas-minor-mode-map "SPC" yas-maybe-expand)
-
-(defun jacob-autoinsert-yas-expand ()
-  "Replace text in yasnippet template."
-  (yas-expand-snippet (buffer-string) (point-min) (point-max)))
-
-;; JACOBTODO: move to csharp use package
-(define-auto-insert "\\.cs$" [ "template.cs" jacob-autoinsert-yas-expand ])
-
-(defun jacob-yas-camel-case (input)
-  "Convert INPUT to camel case e.g. apple banana -> appleBanana.
-For use in yasnippets."
-  (let* ((space-at-end (if (string-match-p " $" input) " " ""))
-         (words (split-string input))
-         (capitalised-words (seq-reduce (lambda (previous current)
-                                          (concat previous (capitalize current)))
-                                        (cdr words)
-                                        (car words))))
-    (concat capitalised-words space-at-end)))
-
-(defun jacob-yas-pascal-case (input)
-  "Convert INPUT to pascal case e.g. apple banana -> AppleBanana.
-For use in yasnippets."
-  (let ((space-at-end (if (string-match-p " $" input)
-                          " "
-                        "")))
-    (with-temp-buffer
-      (insert input)
-      (goto-char (point-min))
-      (subword-mode 1)
-      (while (not (= (point) (point-max)))
-        (call-interactively #'capitalize-word))
-      (goto-char (point-min))
-      (while (search-forward " " nil "NOERROR")
-        (replace-match ""))
-      (goto-char (point-max))
-      (insert space-at-end)
-      (buffer-substring-no-properties (point-min) (point-max)))))
-
-(defun jacob-yas-snake-case (input)
-  "Convert INPUT to snake case e.g. apple banana -> apple_banana.
-For use in yasnippets."
-  (string-replace " " "_" input))
-
-(defun jacob-yas-kebab-case (input)
-  "Convert INPUT to kebab case e.g. apple banana -> apple_banana.
-For use in yasnippets."
-  (string-replace " " "-" input))
 
 (jacob-require 'gptel)
 
