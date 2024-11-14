@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: keymap-set
+# key: keymap-set
+# --
+(keymap-set $1 "$2" #'$0)
