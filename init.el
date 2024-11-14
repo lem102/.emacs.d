@@ -107,6 +107,7 @@ install the package rather than using `package-install'."
 VC is used in `jacob-ensure-installed'."
   `(progn
      (jacob-ensure-installed ,package ,vc)
+     (setopt elisp-flymake-byte-compile-load-path load-path) ; make flymake aware of new package
      (require ,package)))
 
 (setopt package-archives '(;; ("gnu" . "https://elpa.gnu.org/packages/")
@@ -282,6 +283,8 @@ For use in yasnippets."
                                ;; sql
                                ((major-mode . sql-interactive-mode)
                                 (display-buffer-reuse-mode-window display-buffer-same-window))
+                               ((major-mode . prodigy-mode)
+                                (display-buffer-reuse-mode-window display-buffer-same-window))
                                ;; shell
                                ;; ("eshell\\*"
                                ;;  (display-buffer-in-side-window)
@@ -401,20 +404,6 @@ prefix argument is provided, just delete the pair characters."
               (t                                          ; delete character
                (backward-delete-char 1)))))))
 
-(defun jacob-next-error-or-punct ()
-  "Wrapper command to allow moving forward by error or punctuation."
-  (interactive)
-  (if flymake-mode
-      (flymake-goto-next-error 1 nil t)
-    (xah-forward-punct)))
-
-(defun jacob-previous-error-or-punct ()
-  "Wrapper command to allow moving backward by error or punctuation."
-  (interactive)
-  (if flymake-mode
-      (flymake-goto-prev-error 1 nil t)
-    (xah-backward-punct)))
-
 (defun jacob-beginning-of-line ()
   "Go to indentation, line start, backward paragraph."
   (interactive)
@@ -477,11 +466,11 @@ Otherwise, kill from point to the end of the line."
 (keymap-global-set "M-SPC" #'xah-fly-command-mode-activate)
 
 (keymap-set xah-fly-command-map "'" #'jacob-format-words)
-(keymap-set xah-fly-command-map "-" #'jacob-previous-error-or-punct)
+(keymap-set xah-fly-command-map "-" #'flymake-goto-prev-error)
 (keymap-set xah-fly-command-map "4" #'other-window-prefix)
 (keymap-set xah-fly-command-map "9" #'jacob-swap-visible-buffers)
 (keymap-set xah-fly-command-map ";" #'jacob-end-of-line)
-(keymap-set xah-fly-command-map "=" #'jacob-next-error-or-punct)
+(keymap-set xah-fly-command-map "=" #'flymake-goto-next-error)
 (keymap-set xah-fly-command-map "d" #'jacob-backspace)
 (keymap-set xah-fly-command-map "g" #'jacob-kill-paragraph)
 (keymap-set xah-fly-command-map "h" #'jacob-beginning-of-line)
@@ -506,6 +495,9 @@ Otherwise, kill from point to the end of the line."
 
 (require 'minibuffer)
 (define-key minibuffer-local-completion-map "SPC" 'self-insert-command)
+
+(jacob-defhookf minibuffer-setup-hook
+  (jacob-xfk-local-key "g" #'embark-export))
 
 (require 'replace)
 (jacob-defhookf occur-mode-hook
@@ -1003,6 +995,33 @@ hides this information."
                                   (project-eshell "Eshell")
                                   (project-compile "Compile")))
 
+(jacob-require 'prodigy)
+
+(prodigy-define-tag
+  :name 'asp.net
+  :stop-signal 'kill
+  :on-output (lambda (&rest args)
+               (let ((output (plist-get args :output))
+                     (service (plist-get args :service)))
+                 (when (string-match-p "Hosting started$" output)
+                   (prodigy-set-status service 'ready)))))
+
+(keymap-set jacob-xfk-map "p" #'prodigy)
+
+(jacob-defhookf prodigy-mode-hook
+  (jacob-xfk-local-key "q" #'quit-window)
+  (jacob-xfk-local-key "g" #'prodigy-restart)
+  (jacob-xfk-local-key "i" #'prodigy-prev)
+  (jacob-xfk-local-key "k" #'prodigy-next)
+  (jacob-xfk-local-key "s" #'prodigy-start)
+  (jacob-xfk-local-key "d" #'prodigy-stop)
+  (jacob-xfk-local-key "v" #'prodigy-display-process))
+
+(jacob-defhookf prodigy-view-mode-hook
+  (compilation-minor-mode 1)
+  (jacob-xfk-local-key "q" #'quit-window)
+  (jacob-xfk-local-key "g" #'prodigy-restart))
+
 (jacob-require 'highlight-defined)
 
 (jacob-require 'lisp-extra-font-lock)
@@ -1022,6 +1041,7 @@ hides this information."
   '(("p" "point" jacob-abbrev-no-insert)
     ("point" "(point)" jacob-abbrev-no-insert)
     ("ah" "add-hook" jacob-abbrev-no-insert)
+    ("ks" "keymap-set" jacob-abbrev-no-insert)
     ("weal" "with-eval-after-load" jacob-abbrev-no-insert)
     ("mes" "message" jacob-abbrev-no-insert)
     ("int" "(interactive)")
@@ -1474,9 +1494,12 @@ not format the buffer."
 
 (jacob-require 'embark)
 
-(keymap-set xah-fly-command-map "\\" #'embark-act)
 (setopt embark-cycle-key "\\"
         embark-help-key "h")
+
+(keymap-set xah-fly-command-map "\\" #'embark-act)
+(keymap-set embark-general-map "x" #'kill-sexp)
+(keymap-set embark-general-map "n" #'embark-isearch-forward)
 
 (jacob-require 'expand-region)
 (setopt expand-region-contract-fast-key "9")
