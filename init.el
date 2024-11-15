@@ -110,12 +110,9 @@ VC is used in `jacob-ensure-installed'."
      (setopt elisp-flymake-byte-compile-load-path load-path) ; make flymake aware of new package
      (require ,package)))
 
-(setopt package-archives '(;; ("gnu" . "https://elpa.gnu.org/packages/")
-                           ;; ("nongnu" . "https://elpa.nongnu.org/nongnu/")
-                           ;; ("melpa" . "https://melpa.org/packages/")
-                           ("gnu" . "~/emacs-packages/gnu")
-                           ("nongnu" . "~/emacs-packages/nongnu")
-                           ("melpa" . "~/emacs-packages/melpa")))
+(setopt package-archives '(("gnu" . "https://elpa.gnu.org/packages/")
+                           ("nongnu" . "https://elpa.nongnu.org/nongnu/")
+                           ("melpa" . "https://melpa.org/packages/")))
 
 (defmacro jacob-defhookf (hook &rest body)
   "Define function with BODY and bind it to HOOK."
@@ -279,17 +276,10 @@ For use in yasnippets."
 (require 'window)
 
 (setopt switch-to-buffer-obey-display-actions t
-        display-buffer-alist '(
-                               ;; sql
-                               ((major-mode . sql-interactive-mode)
+        display-buffer-alist '(((major-mode . sql-interactive-mode)
                                 (display-buffer-reuse-mode-window display-buffer-same-window))
                                ((major-mode . prodigy-mode)
-                                (display-buffer-reuse-mode-window display-buffer-same-window))
-                               ;; shell
-                               ;; ("eshell\\*"
-                               ;;  (display-buffer-in-side-window)
-                               ;;  (side . bottom))
-                               )
+                                (display-buffer-reuse-mode-window display-buffer-same-window)))
         split-height-threshold nil)
 
 (defvar-keymap jacob-recenter-repeat-map
@@ -1006,15 +996,28 @@ hides this information."
                  (when (string-match-p "Hosting started$" output)
                    (prodigy-set-status service 'ready)))))
 
+(defun jacob-prodigy ()
+  "Manage external services from within Emacs."
+  (interactive)
+  (with-current-buffer (get-buffer-create prodigy-buffer-name)
+    (prodigy-mode)
+    (prodigy-start-status-check-timer)
+    (pop-to-buffer (current-buffer))))
+
+(advice-add #'prodigy :override #'jacob-prodigy)
+
 (keymap-set jacob-xfk-map "p" #'prodigy)
 
 (jacob-defhookf prodigy-mode-hook
-  (jacob-xfk-local-key "q" #'quit-window)
+  (hl-line-mode 0)
+  (jacob-xfk-local-key "d" #'prodigy-stop)
+  (jacob-xfk-local-key "e" #'prodigy-mark)
   (jacob-xfk-local-key "g" #'prodigy-restart)
   (jacob-xfk-local-key "i" #'prodigy-prev)
   (jacob-xfk-local-key "k" #'prodigy-next)
+  (jacob-xfk-local-key "q" #'quit-window)
+  (jacob-xfk-local-key "r" #'prodigy-unmark)
   (jacob-xfk-local-key "s" #'prodigy-start)
-  (jacob-xfk-local-key "d" #'prodigy-stop)
   (jacob-xfk-local-key "v" #'prodigy-display-process))
 
 (jacob-defhookf prodigy-view-mode-hook
@@ -1375,18 +1378,10 @@ not format the buffer."
 (jacob-require 'eglot-booster "https://github.com/jdtsmith/eglot-booster")
 (eglot-booster-mode 1)
 
-(jacob-require 'csharp-toolbox "https://github.com/lem102/csharp-toolbox.git") ; JACOBTODO: can i make this use ssh?
-
-(keymap-set jacob-xfk-map "c f" #'csharp-toolbox-format-statement)
-(keymap-set jacob-xfk-map "c t" #'csharp-toolbox-run-test)
-(keymap-set jacob-xfk-map "c a" #'csharp-toolbox-toggle-async)
-(keymap-set jacob-xfk-map "c n" #'csharp-toolbox-guess-namespace)
-(keymap-set jacob-xfk-map "c ;" #'csharp-toolbox-wd40)
-
 (jacob-require 'dape)
 
 (setopt dape-info-hide-mode-line nil
-        dape-buffer-window-arrangment 'right)
+        dape-buffer-window-arrangement 'right)
 
 (add-to-list 'dape-configs '(netcoredbg-attach-port
                              modes (csharp-mode csharp-ts-mode)
@@ -1409,6 +1404,14 @@ not format the buffer."
                                       (selection (completing-read "process: "
                                                                   collection)))
                                  (cdr (assoc selection collection))))))
+
+(jacob-require 'csharp-toolbox "https://github.com/lem102/csharp-toolbox.git") ; JACOBTODO: can i make this use ssh?
+
+(keymap-set jacob-xfk-map "c f" #'csharp-toolbox-format-statement)
+(keymap-set jacob-xfk-map "c t" #'csharp-toolbox-run-test)
+(keymap-set jacob-xfk-map "c a" #'csharp-toolbox-toggle-async)
+(keymap-set jacob-xfk-map "c n" #'csharp-toolbox-guess-namespace)
+(keymap-set jacob-xfk-map "c ;" #'csharp-toolbox-wd40)
 
 (require 'switch-window)
 ;; JACOBTODO: investigate switch window finish hook to solve compilation scroll issue
