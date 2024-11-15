@@ -355,10 +355,10 @@ For use in yasnippets."
 
 (defun jacob-xfk-local-key (key command)
   "Bind KEY buffer locally to COMMAND in xfk command mode."
-  (let ((existing-key (keymap-lookup xah-fly-command-map key)))
-    (unless existing-key
-      (user-error "%s is not bound to a key in `xah-fly-command-map'"))
-    (keymap-local-set (format "<remap> <%s>" existing-key)
+  (let ((existing-command (keymap-lookup xah-fly-command-map key nil "NO-REMAP")))
+    (unless existing-command
+      (user-error "%s is not bound to a key in `xah-fly-command-map'" key))
+    (keymap-local-set (format "<remap> <%s>" existing-command)
                       command)))
 
 (xah-fly-keys-set-layout "qwerty")
@@ -596,7 +596,7 @@ Otherwise, kill from point to the end of the line."
   (jacob-xfk-local-key "r" #'vc-dir-unmark)
   (jacob-xfk-local-key "v" #'vc-next-action)
   (jacob-xfk-local-key "p" #'vc-push)
-  (jacob-xfk-local-key "P" #'jacob-git-push-set-upstream)
+  (jacob-xfk-local-key ";" #'jacob-git-push-set-upstream)
   (jacob-xfk-local-key "=" #'vc-diff)
   (jacob-xfk-local-key "x" #'vc-dir-hide-up-to-date))
 
