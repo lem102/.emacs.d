@@ -859,7 +859,7 @@ which performs the deletion."
 
 ;; WIP
 
-(require 'flymake-easy)
+(jacob-require 'flymake-easy)
 
 (defun flymake-dotnet-command (filename)
   "Construct a command that flymake can use to check csharp source in FILENAME."
