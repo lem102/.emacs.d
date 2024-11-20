@@ -674,6 +674,17 @@ Useful for deleting ^M after `eglot-code-actions'."
 
 (require 'csharp-mode)
 
+(defun jacob-csharp-create-variable ()
+  "Create a variable for the identifier at point above the previous statement."
+  ;; JACOBTODO: pull existing variable above symbol at point
+  (interactive)
+  (let ((name (thing-at-point 'symbol)))
+    (goto-char (treesit-beginning-of-thing "_statement$"))
+    (forward-line -1)
+    (end-of-line)
+    (newline 1 "INTERACTIVE")
+    (insert (format "var %s = 0;" name))))
+
 (defun jacob-csharp-forward-statement ()
   "Move forward over a csharp statement."
   (interactive)
@@ -1501,8 +1512,6 @@ not format the buffer."
         embark-help-key "h")
 
 (keymap-set xah-fly-command-map "\\" #'embark-act)
-(keymap-set embark-general-map "x" #'kill-sexp)
-(keymap-set embark-general-map "n" #'embark-isearch-forward)
 
 (jacob-require 'expand-region)
 (setopt expand-region-contract-fast-key "9")
