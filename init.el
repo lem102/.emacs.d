@@ -998,13 +998,15 @@ hides this information."
 
 (jacob-require 'prodigy)
 
+(setopt prodigy-kill-process-buffer-on-stop t)
+
 (prodigy-define-tag
   :name 'asp.net
   :stop-signal 'kill
   :on-output (lambda (&rest args)
                (let ((output (plist-get args :output))
                      (service (plist-get args :service)))
-                 (when (string-match-p "Hosting started$" output)
+                 (when (string-match-p "Hosting started *$" output)
                    (prodigy-set-status service 'ready)))))
 
 (defun jacob-prodigy ()
@@ -1015,7 +1017,7 @@ hides this information."
     (prodigy-start-status-check-timer)
     (pop-to-buffer (current-buffer))))
 
-(advice-add #'prodigy :override #'jacob-prodigy)
+;; (advice-add #'prodigy :override #'jacob-prodigy)
 
 (keymap-set jacob-xfk-map "p" #'prodigy)
 
@@ -1064,6 +1066,16 @@ hides this information."
   :enable-function 'jacob-point-in-code-p
   :regexp "\\(^\\|[\s\t()]\\)\\(?1:[[:alpha:]-]+\\)")
 
+(yas-define-snippets #'emacs-lisp-mode
+                     '(("add-hook" "(add-hook '-hook$0 #')")
+                       ("cond" "(cond ($0t 0))")
+                       ("let" "(let (($0x 1))\n)")
+                       ("save-excursion" "(save-excursion\n$0)")
+                       ("defun" "(defun $0 ()\n)")
+                       ("keymap-set" "(keymap-set '$0 \"\" #')")
+                       ("lambda" "(lambda ($0)\n)")
+                       ("message" "(message $0)")))
+
 (aas-set-snippets 'emacs-lisp-mode
   :cond #'jacob-point-in-code-p
   "pmi" "(point-min)"
@@ -1086,6 +1098,8 @@ hides this information."
 
 (keymap-set lisp-interaction-mode-map "C-j" #'jacob-eval-print-last-sexp)
 
+(jacob-require 'mermaid-mode)
+
 (require 'org)
 
 (defun jacob-org-babel-tangle-delete-whitespace ()
@@ -1101,12 +1115,24 @@ hides this information."
  'org-babel-load-languages
  '((octave . t)
    (sql . t)
-   (js . t)))
+   (js . t)
+   (mermaid . t)))
 
 (setopt org-startup-folded t
         org-tags-column 0
-        org-time-stamp-custom-formats (cons "%A %d/%m/%y" "%A %d/%m/%y %H:%M")
-        org-display-custom-times t)
+        org-capture-templates '(("i" "Inbox" entry (file "") "* TODO %?\n:PROPERTIES:\n:CREATED: %U\n:END:"))
+        org-agenda-skip-scheduled-if-done t
+        org-agenda-skip-deadline-if-done t
+        org-agenda-custom-commands '(("x" "Stuff to do today"
+                                      ((agenda "")
+                                       (todo ""))
+                                      ((org-agenda-span 3)
+                                       (org-agenda-start-day "-1d")
+                                       (org-agenda-time-grid '((daily today require-timed)
+                                                               nil
+                                                               " ┄┄┄┄┄ " "┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄"))))))
+
+(jacob-require 'ob-mermaid)
 
 (require 'org-src)
 
@@ -1374,12 +1400,13 @@ Intended as before advice for `sql-send-paragraph'."
 
 (defun jacob-apheleia-skip-function ()
   "Function for `apheleia-skip-functions'.
-If point is in a yasnippet field or the minibuffer is active, do
-not format the buffer."
+If point is in a yasnippet field or the minibuffer or region are
+active, do not format the buffer."
   (or (seq-find (lambda (overlay)
                   (overlay-get overlay 'yas--snippet))
                 (overlays-at (point)))
-      (minibuffer-window-active-p (car (window-list)))))
+      (minibuffer-window-active-p (car (window-list)))
+      (region-active-p)))
 
 (add-to-list 'apheleia-skip-functions #'jacob-apheleia-skip-function)
 
@@ -1415,6 +1442,8 @@ not format the buffer."
                                       (selection (completing-read "process: "
                                                                   collection)))
                                  (cdr (assoc selection collection))))))
+
+(remove-hook 'dape-start-hook #'dape-info)
 
 (jacob-require 'csharp-toolbox "https://github.com/lem102/csharp-toolbox.git") ; JACOBTODO: can i make this use ssh?
 
@@ -1519,7 +1548,7 @@ not format the buffer."
 
 (jacob-require 'verb)
 (add-hook 'org-mode-hook 'verb-mode)
-(jacob-defhookf verb-response-body-mode
+(jacob-defhookf verb-response-body-mode-hook
   (jacob-xfk-local-key "q" #'quit-window))
 
 (jacob-require 'sly)
@@ -1541,6 +1570,7 @@ not format the buffer."
 
 (jacob-require 'gdscript-mode)
 (add-hook 'gdscript-mode-hook 'aas-activate-for-major-mode)
+
 (jacob-setup-abbrev-table gdscript-mode-abbrev-table
   '(("v" "var" jacob-abbrev-no-insert)
     ("c" "const" jacob-abbrev-no-insert)
@@ -1548,11 +1578,82 @@ not format the buffer."
     ("ret" "return"))
   :parents (list jacob-comment-abbrev-table)
   :enable-function 'jacob-point-in-code-p)
+
 (aas-set-snippets 'gdscript-mode
   :cond #'jacob-point-in-code-p
   "v2" "Vector2"
   "var" '(yas "var ${1:x$(jacob-yas-snake-case yas-text)} = $0"))
+
 (push '(gdscript-mode "localhost" 6008) eglot-server-programs)
+
+(jacob-require 'slack)
+
+(defun jacob-slack-modeline-formatter (alist)
+  "Hide the slack modeline if there are no notifications.
+
+Element in ALIST is ((team-name . ((thread . (has-unreads
+. mention-count)) (channel . (has-unreads . mention-count)))))"
+  (if (seq-find (lambda (team)
+                  (seq-find (lambda (room-type)
+                              (car (cdr room-type)))
+                            (cdr team)))
+                alist)
+      (slack-default-modeline-formatter alist)
+    ""))
+
+(defun jacob-slack-show-unread ()
+  "Open an unread slack message."
+  (interactive)
+  (let* ((team (slack-team-select))
+         (rooms (seq-filter #'(lambda (room)
+                                (slack-room-has-unread-p room team))
+                            (append (slack-team-ims team)
+                                    (slack-team-groups team)
+                                    (slack-team-channels team)))))
+    (if (null rooms)
+        (message "no unread slack messages")
+      (slack-room-display (seq-first rooms) team))))
+
+(setopt slack-enable-global-mode-string t
+        slack-buffer-emojify t
+        slack-prefer-current-team t
+        slack-thread-also-send-to-room nil
+        slack-modeline-formatter #'jacob-slack-modeline-formatter)
+
+(setopt alert-default-style 'notifications)
+
+(setopt lui-fill-type nil
+        lui-time-stamp-position 0
+        lui-time-stamp-format "%a %b %e %H:%M")
+
+(defun jacob-slack-hook-function ()
+  "Function to be run in slack mode hooks."
+  (toggle-word-wrap 1))
+
+(add-hook 'slack-message-buffer-mode-hook 'jacob-slack-hook-function)
+(add-hook 'slack-thread-message-buffer-mode-hook 'jacob-slack-hook-function)
+
+(add-to-list 'display-buffer-alist '((or (derived-mode . slack-mode)
+                                         (derived-mode . lui-mode))
+                                     (display-buffer-in-side-window)
+                                     (side . right)))
+
+(defun jacob-consult-slack-filter ()
+  "Filter for slack buffers."
+  (consult--buffer-query :sort 'visibility
+                         :as #'buffer-name
+                         :include "^*slack"))
+
+(defvar jacob-consult-slack-source
+  `( :name     "Slack"
+     :narrow   ?s
+     :category buffer
+     :face     consult-buffer
+     :history  buffer-name-history
+     :items    ,#'jacob-consult-slack-filter
+     :action   ,#'switch-to-buffer))
+
+(add-to-list 'consult-buffer-sources jacob-consult-slack-source "APPEND")
 
 
 ;; personal functions
@@ -1682,10 +1783,6 @@ point."
              (current-buffer))
     (error (message "Invalid expression")
            (insert (current-kill 0)))))
-
-(defun jacob-bookmark-jump-to-url (bookmark)
-  "Open link stored in the filename property of BOOKMARK in browser."
-  (browse-url (cdr (assoc 'filename (cdr bookmark)))))
 
 (defun jacob-swap-visible-buffers ()
   "If two windows in current frame, swap their buffers.
