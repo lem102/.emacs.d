@@ -855,7 +855,7 @@ which performs the deletion."
   :parents (list jacob-comment-abbrev-table)
   :enable-function 'jacob-point-in-code-p)
 
-(define-auto-insert "\\.cs$" [ "template.cs" jacob-autoinsert-yas-expand ])
+(define-auto-insert "\\.cs$" ["template.cs" jacob-autoinsert-yas-expand])
 
 ;; WIP
 
@@ -1525,6 +1525,8 @@ not format the buffer."
 
 (jacob-defhookf sly-db-hook
   (jacob-xfk-local-key "q" #'sly-db-quit))
+
+(jacob-require 'sly-overlay)
 
 (jacob-require 'sql-indent)
 
