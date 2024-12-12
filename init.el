@@ -1120,8 +1120,11 @@ hides this information."
 
 (setopt org-startup-folded t
         org-tags-column 0
-        org-capture-templates '(("i" "Inbox" entry (file "") "* TODO %?\n:PROPERTIES:\n:CREATED: %U\n:END:"))
-        org-agenda-skip-scheduled-if-done t
+        org-capture-templates '(("i" "Inbox" entry (file "") "* TODO %?\n:PROPERTIES:\n:CREATED: %U\n:END:")))
+
+(require 'org-agenda)
+
+(setopt org-agenda-skip-scheduled-if-done t
         org-agenda-skip-deadline-if-done t
         org-agenda-custom-commands '(("x" "Stuff to do today"
                                       ((agenda "")
@@ -1131,6 +1134,10 @@ hides this information."
                                        (org-agenda-time-grid '((daily today require-timed)
                                                                nil
                                                                " ┄┄┄┄┄ " "┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄"))))))
+
+(jacob-defhookf org-agenda-mode-hook
+  (jacob-xfk-local-key "q" #'quit-window)
+  (jacob-xfk-local-key "g" #'revert-buffer))
 
 (jacob-require 'ob-mermaid)
 
@@ -1805,10 +1812,19 @@ Otherwise, display error message."
   (interactive)
   (shell-command "git push --set-upstream origin HEAD"))
 
-(defvar jacob-git-lab-push-set-upstream-jira-url ""
+(defun jacob-github-push-set-upstream ()
+  "Push current git branch to new upstream branch.
+Try go to the create a pull request page if possible."
+  (interactive)
+  (with-temp-buffer
+    (shell-command "git push --set-upstream origin HEAD" t)
+    (when (search-forward "http" nil "NOERROR")
+      (browse-url-at-point))))
+
+(defvar jacob-gitlab-push-set-upstream-jira-url ""
   "URL for current employer's jira board.")
 
-(defun jacob-git-lab-push-set-upstream ()
+(defun jacob-gitlab-push-set-upstream ()
   "Push the current branch and create an upstream branch.
 Use GitLab push options to create a merge request and set all
 necessary values.
@@ -1822,7 +1838,7 @@ For use with GitLab only."
                    (string-match (rx (+ alpha) "-" (+ digit))
                                  branch-name)
                    (match-string 0 branch-name)))
-         (jira-link (concat jacob-git-lab-push-set-upstream-jira-url mr-key))
+         (jira-link (concat jacob-gitlab-push-set-upstream-jira-url mr-key))
          (command (concat "git push --set-upstream origin HEAD "
                           (concat "-o merge_request.create "
                                   "-o merge_request.remove_source_branch "
