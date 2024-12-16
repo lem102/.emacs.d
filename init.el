@@ -1100,6 +1100,8 @@ hides this information."
 
 (jacob-require 'mermaid-mode)
 
+(jacob-require 'ob-mermaid)
+
 (require 'org)
 
 (defun jacob-org-babel-tangle-delete-whitespace ()
@@ -1126,14 +1128,17 @@ hides this information."
 
 (setopt org-agenda-skip-scheduled-if-done t
         org-agenda-skip-deadline-if-done t
-        org-agenda-custom-commands '(("x" "Stuff to do today"
-                                      ((agenda "")
+        org-agenda-custom-commands '(("a" "Morning" agenda "" ((org-agenda-tag-filter-preset '("+tickler" "+am"))
+                                                               (org-agenda-span 'day)))
+                                     ("x" "Stuff to do today"
+                                      ((agenda ""
+                                               ((org-agenda-span 3)
+                                                (org-agenda-start-day "-1d")
+                                                (org-agenda-time-grid '((daily today require-timed)
+                                                                        nil
+                                                                        " ┄┄┄┄┄ " "┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄"))))
                                        (todo ""))
-                                      ((org-agenda-span 3)
-                                       (org-agenda-start-day "-1d")
-                                       (org-agenda-time-grid '((daily today require-timed)
-                                                               nil
-                                                               " ┄┄┄┄┄ " "┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄"))))))
+                                      ((org-agenda-tag-filter-preset '("-tickler"))))))
 
 (jacob-defhookf org-agenda-mode-hook
   (jacob-xfk-local-key "q" #'quit-window)
@@ -1595,74 +1600,74 @@ active, do not format the buffer."
 
 (push '(gdscript-mode "localhost" 6008) eglot-server-programs)
 
-(jacob-require 'slack)
+;; (jacob-require 'slack)
 
-(defun jacob-slack-modeline-formatter (alist)
-  "Hide the slack modeline if there are no notifications.
+;; (defun jacob-slack-modeline-formatter (alist)
+;;   "Hide the slack modeline if there are no notifications.
 
-Element in ALIST is ((team-name . ((thread . (has-unreads
-. mention-count)) (channel . (has-unreads . mention-count)))))"
-  (if (seq-find (lambda (team)
-                  (seq-find (lambda (room-type)
-                              (car (cdr room-type)))
-                            (cdr team)))
-                alist)
-      (slack-default-modeline-formatter alist)
-    ""))
+;; Element in ALIST is ((team-name . ((thread . (has-unreads
+;; . mention-count)) (channel . (has-unreads . mention-count)))))"
+;;   (if (seq-find (lambda (team)
+;;                   (seq-find (lambda (room-type)
+;;                               (car (cdr room-type)))
+;;                             (cdr team)))
+;;                 alist)
+;;       (slack-default-modeline-formatter alist)
+;;     ""))
 
-(defun jacob-slack-show-unread ()
-  "Open an unread slack message."
-  (interactive)
-  (let* ((team (slack-team-select))
-         (rooms (seq-filter #'(lambda (room)
-                                (slack-room-has-unread-p room team))
-                            (append (slack-team-ims team)
-                                    (slack-team-groups team)
-                                    (slack-team-channels team)))))
-    (if (null rooms)
-        (message "no unread slack messages")
-      (slack-room-display (seq-first rooms) team))))
+;; (defun jacob-slack-show-unread ()
+;;   "Open an unread slack message."
+;;   (interactive)
+;;   (let* ((team (slack-team-select))
+;;          (rooms (seq-filter #'(lambda (room)
+;;                                 (slack-room-has-unread-p room team))
+;;                             (append (slack-team-ims team)
+;;                                     (slack-team-groups team)
+;;                                     (slack-team-channels team)))))
+;;     (if (null rooms)
+;;         (message "no unread slack messages")
+;;       (slack-room-display (seq-first rooms) team))))
 
-(setopt slack-enable-global-mode-string t
-        slack-buffer-emojify t
-        slack-prefer-current-team t
-        slack-thread-also-send-to-room nil
-        slack-modeline-formatter #'jacob-slack-modeline-formatter)
+;; (setopt slack-enable-global-mode-string t
+;;         slack-buffer-emojify t
+;;         slack-prefer-current-team t
+;;         slack-thread-also-send-to-room nil
+;;         slack-modeline-formatter #'jacob-slack-modeline-formatter)
 
-(setopt alert-default-style 'notifications)
+;; (setopt alert-default-style 'notifications)
 
-(setopt lui-fill-type nil
-        lui-time-stamp-position 0
-        lui-time-stamp-format "%a %b %e %H:%M")
+;; (setopt lui-fill-type nil
+;;         lui-time-stamp-position 0
+;;         lui-time-stamp-format "%a %b %e %H:%M")
 
-(defun jacob-slack-hook-function ()
-  "Function to be run in slack mode hooks."
-  (toggle-word-wrap 1))
+;; (defun jacob-slack-hook-function ()
+;;   "Function to be run in slack mode hooks."
+;;   (toggle-word-wrap 1))
 
-(add-hook 'slack-message-buffer-mode-hook 'jacob-slack-hook-function)
-(add-hook 'slack-thread-message-buffer-mode-hook 'jacob-slack-hook-function)
+;; (add-hook 'slack-message-buffer-mode-hook 'jacob-slack-hook-function)
+;; (add-hook 'slack-thread-message-buffer-mode-hook 'jacob-slack-hook-function)
 
-(add-to-list 'display-buffer-alist '((or (derived-mode . slack-mode)
-                                         (derived-mode . lui-mode))
-                                     (display-buffer-in-side-window)
-                                     (side . right)))
+;; (add-to-list 'display-buffer-alist '((or (derived-mode . slack-mode)
+;;                                          (derived-mode . lui-mode))
+;;                                      (display-buffer-in-side-window)
+;;                                      (side . right)))
 
-(defun jacob-consult-slack-filter ()
-  "Filter for slack buffers."
-  (consult--buffer-query :sort 'visibility
-                         :as #'buffer-name
-                         :include "^*slack"))
+;; (defun jacob-consult-slack-filter ()
+;;   "Filter for slack buffers."
+;;   (consult--buffer-query :sort 'visibility
+;;                          :as #'buffer-name
+;;                          :include "^*slack"))
 
-(defvar jacob-consult-slack-source
-  `( :name     "Slack"
-     :narrow   ?s
-     :category buffer
-     :face     consult-buffer
-     :history  buffer-name-history
-     :items    ,#'jacob-consult-slack-filter
-     :action   ,#'switch-to-buffer))
+;; (defvar jacob-consult-slack-source
+;;   `( :name     "Slack"
+;;      :narrow   ?s
+;;      :category buffer
+;;      :face     consult-buffer
+;;      :history  buffer-name-history
+;;      :items    ,#'jacob-consult-slack-filter
+;;      :action   ,#'switch-to-buffer))
 
-(add-to-list 'consult-buffer-sources jacob-consult-slack-source "APPEND")
+;; (add-to-list 'consult-buffer-sources jacob-consult-slack-source "APPEND")
 
 
 ;; personal functions
