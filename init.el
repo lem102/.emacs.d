@@ -1025,12 +1025,13 @@ hides this information."
   (hl-line-mode 0)
   (jacob-xfk-local-key "d" #'prodigy-stop)
   (jacob-xfk-local-key "e" #'prodigy-mark)
-  (jacob-xfk-local-key "g" #'prodigy-restart)
+  (jacob-xfk-local-key "g" #'jacob-project-search)
+  (jacob-xfk-local-key "f" #'project-find-file)
   (jacob-xfk-local-key "i" #'prodigy-prev)
   (jacob-xfk-local-key "k" #'prodigy-next)
   (jacob-xfk-local-key "q" #'quit-window)
   (jacob-xfk-local-key "r" #'prodigy-unmark)
-  (jacob-xfk-local-key "s" #'prodigy-start)
+  (jacob-xfk-local-key "s" #'prodigy-restart)
   (jacob-xfk-local-key "v" #'prodigy-display-process))
 
 (jacob-defhookf prodigy-view-mode-hook
@@ -1130,19 +1131,21 @@ hides this information."
         org-agenda-skip-deadline-if-done t
         org-agenda-custom-commands '(("a" "Morning" agenda "" ((org-agenda-tag-filter-preset '("+tickler" "+am"))
                                                                (org-agenda-span 'day)))
+                                     ("p" "Evening" agenda "" ((org-agenda-tag-filter-preset '("+tickler" "+pm"))
+                                                               (org-agenda-span 'day)))
+                                     ("w" "Work" todo "" ((org-agenda-tag-filter-preset '("+work"))))
                                      ("x" "Stuff to do today"
-                                      ((agenda ""
-                                               ((org-agenda-span 3)
-                                                (org-agenda-start-day "-1d")
-                                                (org-agenda-time-grid '((daily today require-timed)
-                                                                        nil
-                                                                        " ┄┄┄┄┄ " "┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄"))))
-                                       (todo ""))
-                                      ((org-agenda-tag-filter-preset '("-tickler"))))))
+                                      agenda ""
+                                      ((org-agenda-span 3)
+                                       (org-agenda-start-day "-1d")
+                                       (org-agenda-time-grid '((daily today require-timed)
+                                                               nil
+                                                               " ┄┄┄┄┄ " "┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄"))
+                                       (org-agenda-tag-filter-preset '("-tickler"))))))
 
 (jacob-defhookf org-agenda-mode-hook
   (jacob-xfk-local-key "q" #'quit-window)
-  (jacob-xfk-local-key "g" #'revert-buffer))
+  (jacob-xfk-local-key "g" #'org-agenda-redo-all))
 
 (jacob-require 'ob-mermaid)
 
