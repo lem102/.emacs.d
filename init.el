@@ -1174,16 +1174,21 @@ hides this information."
                                       (point))
                                     (line-end-position)))
 
-(dolist (command '(
-                   recenter-top-bottom
+(dolist (command '(recenter-top-bottom
                    scroll-up-command
                    scroll-down-command
                    other-window
                    xref-find-definitions
                    xref-pop-marker-stack
-                   isearch-done
-                   ))
+                   isearch-done))
   (advice-add command :after #'jacob-pulse-line))
+
+(defun jacob-pulse-defun (&rest _)
+  "Pulse the defun at point."
+  (let ((bounds (bounds-of-thing-at-point 'defun)))
+    (pulse-momentary-highlight-region (car bounds) (cdr bounds))))
+
+(advice-add #'eval-defun :after #'jacob-pulse-defun)
 
 (require 'server)
 (server-start)
@@ -1468,8 +1473,12 @@ active, do not format the buffer."
 (keymap-set jacob-xfk-map "c n" #'csharp-toolbox-guess-namespace)
 (keymap-set jacob-xfk-map "c ;" #'csharp-toolbox-wd40)
 
+(easy-menu-define csharp-menu csharp-ts-mode-map
+  "Menu for word navigation commands."
+  '("C#"
+    ["Run test" csharp-toolbox-run-test]))
+
 (require 'switch-window)
-;; JACOBTODO: investigate switch window finish hook to solve compilation scroll issue
 (setopt switch-window-shortcut-style 'qwerty
         switch-window-threshold 3)
 (keymap-set xah-fly-command-map "," #'switch-window)
@@ -1489,18 +1498,8 @@ active, do not format the buffer."
 
 (jacob-require 'feature-mode)
 
-(jacob-require 'fsharp-mode)
-(setopt inferior-fsharp-program "dotnet fsi")
-
-;; this is interferring with csharp compilation errors
-(setq compilation-error-regexp-alist (delq 'fsharp compilation-error-regexp-alist))
-
-(jacob-require 'eglot-fsharp)
-(setopt eglot-fsharp-server-install-dir nil)
-
 (jacob-require 'vertico)
 (vertico-mode 1)
-(setopt vertico-count 25)
 
 (require 'vertico-mouse)
 (vertico-mouse-mode 1)
@@ -1556,6 +1555,12 @@ active, do not format the buffer."
         embark-help-key "h")
 
 (keymap-set xah-fly-command-map "\\" #'embark-act)
+
+(jacob-require 'corfu)
+
+(global-corfu-mode 1)
+
+(keymap-unset corfu-map "M-SPC")
 
 (jacob-require 'expand-region)
 (setopt expand-region-contract-fast-key "9")
@@ -1874,8 +1879,6 @@ For use with GitLab only."
                        line-number)))
     (kill-new link)
     (message "%s" link)))
-
-;; JACOBTODO: create github equivalent of `jacob-gitlab-link-at-point'.
 
 (provide 'init)
 
