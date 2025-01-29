@@ -125,6 +125,8 @@ VC is used in `jacob-ensure-installed'."
          ,@body)
        (add-hook ',hook #',function-name))))
 
+(jacob-require 'delight)
+
 (require 'abbrev)
 
 (add-hook 'text-mode-hook 'abbrev-mode)
@@ -191,6 +193,8 @@ deleted."
 
 (put 'jacob-insert 'no-self-insert t)
 
+(delight 'abbrev-mode)
+
 (jacob-require 'yasnippet)
 
 (jacob-defhookf snippet-mode-hook
@@ -242,6 +246,8 @@ For use in yasnippets."
   "Convert INPUT to kebab case e.g. apple banana -> apple_banana.
 For use in yasnippets."
   (string-replace " " "-" input))
+
+(delight 'yas-minor-mode)
 
 (require 'text-mode)
 
@@ -342,6 +348,8 @@ For use in yasnippets."
         xah-fly-use-meta-key nil) ; must be set before requiring `xah-fly-keys'
 
 (jacob-require 'xah-fly-keys)
+
+(delight 'xah-fly-keys)
 
 (defun jacob-xfk-local-key (key command)
   "Bind KEY buffer locally to COMMAND in xfk command mode."
@@ -545,6 +553,7 @@ Otherwise, kill from point to the end of the line."
 
 (require 'subword)
 (global-subword-mode 1)
+(delight 'subword-mode)
 
 (require 'paren)
 (show-paren-mode 1)
@@ -987,6 +996,7 @@ hides this information."
 
 (require 'eldoc)
 (global-eldoc-mode 1)
+(delight 'eldoc-mode)
 
 (require 'project)
 (setopt project-switch-commands '((project-find-file "Find file")
@@ -1432,6 +1442,7 @@ active, do not format the buffer."
 
 (jacob-require 'rainbow-mode)
 (add-hook 'prog-mode-hook #'rainbow-mode)
+(delight 'rainbow-mode)
 
 (jacob-require 'eglot-booster "https://github.com/jdtsmith/eglot-booster")
 (eglot-booster-mode 1)
