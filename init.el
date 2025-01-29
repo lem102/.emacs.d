@@ -853,11 +853,12 @@ which performs the deletion."
 (aas-set-snippets 'csharp-ts-mode
   :cond #'jacob-point-in-code-p
   "nuid" "Guid.NewGuid()"
-  "var" '(yas "var ${1:x$(jacob-yas-camel-case yas-text)} = $0")
+  "var" '(yas "var ${1:x$(jacob-yas-camel-case yas-text)} = $0;")
   "pub" "public"
   ";az" "async"
   ";aw" "await"
-  "aqbm" ".AsQueryable().BuildMock()")
+  "aqbm" ".AsQueryable().BuildMock()"
+  ";new" '(yas "new $0{ }"))
 
 (jacob-setup-abbrev-table csharp-ts-mode-abbrev-table
   ;; JACOBTODO: cant insert abbrevs inside interpolated strings
@@ -1582,6 +1583,10 @@ active, do not format the buffer."
 (add-hook 'org-mode-hook 'verb-mode)
 (jacob-defhookf verb-response-body-mode-hook
   (jacob-xfk-local-key "q" #'quit-window))
+
+(defun jacob-verb-id (response-id)
+  "Get the id property from the stored verb response pertaining to RESPONSE-ID."
+  (verb-json-get (oref (verb-stored-response response-id) body) "id"))
 
 (jacob-require 'sly)
 
