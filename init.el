@@ -1567,12 +1567,6 @@ active, do not format the buffer."
 
 (keymap-set xah-fly-command-map "\\" #'embark-act)
 
-(jacob-require 'corfu)
-
-(global-corfu-mode 1)
-
-(keymap-unset corfu-map "M-SPC")
-
 (jacob-require 'expand-region)
 (setopt expand-region-contract-fast-key "9")
 (keymap-set xah-fly-command-map "8" #'er/expand-region)
