@@ -684,15 +684,22 @@ Useful for deleting ^M after `eglot-code-actions'."
 (require 'csharp-mode)
 
 (defun jacob-csharp-create-variable ()
-  "Create a variable for the identifier at point above the previous statement."
-  ;; JACOBTODO: pull existing variable above symbol at point
+  "Create a variable declaration statement for an undeclared variable."
   (interactive)
-  (let ((name (thing-at-point 'symbol)))
+  (let* ((identifier
+          (thing-at-point 'symbol "NO-PROPERTIES"))
+         (first-occurance
+          (seq-first (seq-sort #'<
+                               (mapcar #'treesit-node-start
+                                       (mapcar #'cdr
+                                               (treesit-query-capture (csharp-toolbox--get-method-node)
+                                                                      `(((identifier) @id (:equal @id ,identifier))))))))))
+    (goto-char first-occurance)
     (goto-char (treesit-beginning-of-thing "_statement$"))
     (forward-line -1)
     (end-of-line)
     (newline 1 "INTERACTIVE")
-    (insert (format "var %s = 0;" name))))
+    (insert (format "var %s = Guid.NewGuid();" identifier))))
 
 (defun jacob-csharp-forward-statement ()
   "Move forward over a csharp statement."
