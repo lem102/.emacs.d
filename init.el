@@ -127,90 +127,9 @@ VC is used in `jacob-ensure-installed'."
 
 (jacob-require 'delight)
 
-(require 'abbrev)
-
-(add-hook 'text-mode-hook 'abbrev-mode)
-(add-hook 'prog-mode-hook 'abbrev-mode)
-
-(defun jacob-setup-abbrev-table (table abbrevs &rest properties)
-  "Setup an abbrev table.
-Clear the abbrev TABLE.  Then populate it with ABBREVS.  Finally,
-set the PROPERTIES of TABLE."
-  (declare (indent defun))
-  (clear-abbrev-table table)
-  (dolist (abbrev abbrevs)
-    (apply #'define-abbrev table abbrev))
-  ;; stolen from abbrev.el itself
-  (while (consp properties)
-    (unless (cdr properties)
-      (error "Missing value for property %S"
-             (car properties)))
-    (abbrev-table-put table
-                      (pop properties)
-                      (pop properties))))
-
-(defun jacob-point-in-text-p ()
-  "Return t if in comment or string.  Else nil."
-  (let ((xsyntax-state (syntax-ppss)))
-    (or (nth 3 xsyntax-state)
-        (nth 4 xsyntax-state))))
-
-(defun jacob-point-in-code-p ()
-  "Return t if outside of string or comment.  Else nil."
-  (not (jacob-point-in-text-p)))
-
-(defun jacob-abbrev-no-insert ()
-  "No-op function with `no-self-insert' property."
-  t)
-(put 'jacob-abbrev-no-insert 'no-self-insert t)
-
-(define-abbrev-table 'jacob-comment-abbrev-table
-  '(("jt" "JACOBTODO:"))
-  nil
-  :enable-function 'jacob-point-in-text-p)
-
-(defun jacob-insert (&optional template)
-  "Handle `jacob-insert' abbrev expansion.
-Insert TEMPLATE.  If present, move point back to ■.  ■ will be
-deleted."
-  ;; JACOBTODO: remove when switched to yasnippet
-  (when template
-    (insert template))
-  (let* ((end-position (point))
-         (start-position (if template
-                             (- end-position
-                                (length template))
-                           last-abbrev-location))
-         ■-position)
-    (when (search-backward-regexp "■"
-                                  start-position
-                                  t)
-      (delete-char 1)
-      (setq ■-position (point-marker)))
-    (indent-region start-position end-position)
-    (when ■-position
-      (goto-char ■-position))))
-
-(put 'jacob-insert 'no-self-insert t)
-
-(delight 'abbrev-mode nil t)
-
 (jacob-require 'which-key)
 (which-key-mode 1)
 (delight 'which-key-mode nil t)
-
-(require 'text-mode)
-
-(jacob-setup-abbrev-table text-mode-abbrev-table
-  '(("i" "I")
-    ("im" "I'm")
-    ("idd" "I'd")
-    ("dont" "don't")
-    ("its" "it's")
-    ("havent" "haven't")))
-
-(setopt abbrev-suggest t
-        save-abbrevs nil)
 
 (require 'mwheel)
 
@@ -278,13 +197,6 @@ deleted."
 (require 'cus-edit)
 (setopt custom-file (make-temp-file "emacs-custom-"))
 
-(require 'lisp-mode)
-(jacob-setup-abbrev-table lisp-mode-abbrev-table
-  '(("d" "defun" jacob-abbrev-no-insert)
-    ("l" "lambda" jacob-abbrev-no-insert))
-  :parents (list jacob-comment-abbrev-table)
-  :enable-function 'jacob-point-in-code-p)
-
 (require 'generic-x)             ; support for files like `/etc/fstab'
 
 (require 'simple)
@@ -325,7 +237,7 @@ deleted."
 (define-prefix-command 'jacob-xfk-map)
 
 (keymap-set xah-fly-leader-key-map "SPC" jacob-xfk-map)
-(keymap-set jacob-xfk-map "p" project-prefix-map)
+(keymap-set jacob-xfk-map "p" `("Project" . ,project-prefix-map))
 
 (defvar-local jacob-backspace-function nil
   "Called by `jacob-backspace' if non-nil.")
@@ -452,6 +364,16 @@ Otherwise, kill from point to the end of the line."
 
 (jacob-require 'yasnippet)
 
+(defun jacob-point-in-text-p ()
+  "Return t if in comment or string.  Else nil."
+  (let ((xsyntax-state (syntax-ppss)))
+    (or (nth 3 xsyntax-state)
+        (nth 4 xsyntax-state))))
+
+(defun jacob-point-in-code-p ()
+  "Return t if outside of string or comment.  Else nil."
+  (not (jacob-point-in-text-p)))
+
 (jacob-defhookf snippet-mode-hook
   (setq-local auto-save-visited-mode nil))
 
@@ -512,7 +434,7 @@ For use in yasnippets."
   "n" #'yas-new-snippet
   "v" #'yas-visit-snippet-file)
 
-(keymap-set jacob-xfk-map "y" jacob-yas-map)
+(keymap-set jacob-xfk-map "y" `("Yasnippet" . ,jacob-yas-map))
 
 (require 'minibuffer)
 (define-key minibuffer-local-completion-map "SPC" 'self-insert-command)
@@ -702,13 +624,13 @@ Useful for deleting ^M after `eglot-code-actions'."
 
 (setopt eglot-ignored-server-capabilities '(:documentOnTypeFormattingProvider))
 
-(define-prefix-command 'jacob-code-map)
+(defvar-keymap jacob-code-map
+  "e" #'eglot
+  "a" #'eglot-code-actions
+  "r" #'eglot-rename
+  "i" #'eglot-find-implementation)
 
-(keymap-set jacob-xfk-map "c" jacob-code-map)
-(keymap-set jacob-code-map "e" #'eglot)
-(keymap-set jacob-code-map "a" #'eglot-code-actions)
-(keymap-set jacob-code-map "r" #'eglot-rename)
-(keymap-set jacob-code-map "i" #'eglot-find-implementation)
+(keymap-set jacob-xfk-map "c" `("Code" . ,jacob-code-map))
 
 (require 'csharp-mode)
 
@@ -878,27 +800,6 @@ which performs the deletion."
   (setq jacob-backspace-function #'jacob-backspace-csharp)
   (eglot-ensure))
 
-(jacob-setup-abbrev-table csharp-ts-mode-abbrev-table
-  ;; JACOBTODO: cant insert abbrevs inside interpolated strings
-  '(("jwe" "Console.WriteLine(\"jacobwozere\");" jacob-abbrev-no-insert)
-    ("az" "async")
-    ("ns" "namespace")
-    ("xgon" "x => x")
-    ("ro" "readonly")
-    ("nuguid" "Guid.NewGuid()")
-    ("pri" "private")
-    ("pub" "public")
-    ("sta" "static")
-    ("req" "required")
-    ("gs" "{ get; set; }" jacob-abbrev-no-insert)
-    ("ret" "return")
-    ("eq" "==")
-    ("neq" "!=")
-    ("band" "&&")
-    ("bor" "||"))
-  :parents (list jacob-comment-abbrev-table)
-  :enable-function 'jacob-point-in-code-p)
-
 (define-auto-insert "\\.cs$" ["template.cs" jacob-autoinsert-yas-expand])
 
 (jacob-require 'sharper)
@@ -1028,6 +929,7 @@ hides this information."
 (require 'eldoc)
 (global-eldoc-mode 1)
 (delight 'eldoc-mode nil t)
+(setopt eldoc-documentation-strategy 'eldoc-documentation-compose)
 
 (require 'project)
 (setopt project-switch-commands '((project-find-file "Find file")
@@ -1050,17 +952,7 @@ hides this information."
                  (when (string-match-p "Hosting started *$" output)
                    (prodigy-set-status service 'ready)))))
 
-(defun jacob-prodigy ()
-  "Manage external services from within Emacs."
-  (interactive)
-  (with-current-buffer (get-buffer-create prodigy-buffer-name)
-    (prodigy-mode)
-    (prodigy-start-status-check-timer)
-    (pop-to-buffer (current-buffer))))
-
-;; (advice-add #'prodigy :override #'jacob-prodigy)
-
-(keymap-set jacob-xfk-map "p" #'prodigy)
+(keymap-set project-prefix-map "l" #'prodigy)
 
 (jacob-defhookf prodigy-mode-hook
   (hl-line-mode 0)
@@ -1097,17 +989,6 @@ hides this information."
   (setq-local yas-key-syntaxes '("w_")))
 
 (add-to-list 'lisp-imenu-generic-expression '("Features" "^(\\(jacob-\\)*require '\\([a-z-]+\\)" 2))
-(jacob-setup-abbrev-table emacs-lisp-mode-abbrev-table
-  '(("p" "point" jacob-abbrev-no-insert)
-    ("point" "(point)" jacob-abbrev-no-insert)
-    ("ah" "add-hook" jacob-abbrev-no-insert)
-    ("weal" "with-eval-after-load" jacob-abbrev-no-insert)
-    ("mes" "message" jacob-abbrev-no-insert)
-    ("int" "(interactive)")
-    ("se" "save-excursion" jacob-abbrev-no-insert))
-  :parents (list lisp-mode-abbrev-table)
-  :enable-function 'jacob-point-in-code-p
-  :regexp "\\(^\\|[\s\t()]\\)\\(?1:[[:alpha:]-]+\\)")
 
 (yas-define-snippets #'emacs-lisp-mode
                      '(("add-hook" "(add-hook '-hook$0 #')")
@@ -1198,11 +1079,11 @@ hides this information."
                                                                " ┄┄┄┄┄ " "┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄"))
                                        (org-agenda-tag-filter-preset '("-tickler"))))))
 
-(define-prefix-command 'jacob-org-agenda-map)
+(defvar-keymap jacob-org-agenda-map
+  "a" #'org-agenda
+  "c" #'org-capture)
 
-(keymap-set jacob-xfk-map "a" jacob-org-agenda-map)
-(keymap-set jacob-org-agenda-map "a" #'org-agenda)
-(keymap-set jacob-org-agenda-map "c" #'org-capture)
+(keymap-set jacob-xfk-map "a" `("Agenda" . ,jacob-org-agenda-map))
 
 (jacob-defhookf org-agenda-mode-hook
   (jacob-xfk-local-key "q" #'quit-window)
@@ -1343,19 +1224,6 @@ Intended as before advice for `sql-send-paragraph'."
 
 (advice-add #'sql-send-paragraph :before #'jacob-sqli-end-of-buffer)
 
-(jacob-setup-abbrev-table sql-mode-abbrev-table
-  '(("sel" "SELECT" jacob-abbrev-no-insert)
-    ("upd" "UPDATE" jacob-abbrev-no-insert)
-    ("del" "DELETE FROM ■\nWHERE condition;" jacob-insert)
-    ("joi" "JOIN ■\nON field = field" jacob-insert)
-    ("ins" "INSERT INTO ■ (column, column2)\nVALUES (value, value2)" jacob-insert)
-    ("ord" "ORDER BY")
-    ("gro" "GROUP BY")
-    ("and" "AND")
-    ("as" "AS"))
-  :parents (list jacob-comment-abbrev-table)
-  :enable-function 'jacob-point-in-code-p)
-
 (keymap-set jacob-xfk-map "s" #'jacob-sql-connect)
 
 (require 'doc-view)
@@ -1381,26 +1249,6 @@ Intended as before advice for `sql-send-paragraph'."
 ;; configure that way.
 
 (add-to-list 'auto-mode-alist '("\\.[jt]s[xm]?\\'" . tsx-ts-mode))
-
-(jacob-setup-abbrev-table tsx-ts-mode-abbrev-table
-  '(("cl" "console.log(■);" jacob-insert)
-    ("fun" "(■) => " jacob-insert)
-    ("con" "const ■ = " jacob-insert)
-    ("let" "let ■ = " jacob-insert)
-    ("fore" "forEach((■) => )" jacob-insert)
-    ("map" "map((■) => )" jacob-insert)
-    ("filter" "filter((■) => )" jacob-insert)
-    ("red" "reduce((■) => )" jacob-insert)
-    ("jwe" "console.log(\"jacobwozere\");" t)
-    ("eeq" "===")
-    ("neeq" "!==")
-    ("if" "if (■) {\n\n}" jacob-insert)
-    ("for" "for (■) {\n\n}" jacob-insert)
-    ("while" "while (■) {\n}" jacob-insert)
-    ("switch" "switch (■) {\n}" jacob-insert)
-    ("case" "case ■: \n\nbreak;" jacob-insert))
-  :parents (list jacob-comment-abbrev-table)
-  :enable-function 'jacob-point-in-code-p)
 
 (require 'message)
 (jacob-defhookf message-mode-hook
@@ -1651,14 +1499,6 @@ active, do not format the buffer."
 (jacob-require 'gptel)
 
 (jacob-require 'gdscript-mode)
-
-(jacob-setup-abbrev-table gdscript-mode-abbrev-table
-  '(("v" "var" jacob-abbrev-no-insert)
-    ("c" "const" jacob-abbrev-no-insert)
-    ("v2" "Vector2")
-    ("ret" "return"))
-  :parents (list jacob-comment-abbrev-table)
-  :enable-function 'jacob-point-in-code-p)
 
 (push '(gdscript-mode "localhost" 6008) eglot-server-programs)
 
