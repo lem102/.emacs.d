@@ -570,7 +570,7 @@ For use in yasnippets."
   (eglot-inlay-hints-mode 0)
   (setq-local eldoc-documentation-strategy 'eldoc-documentation-compose))
 
-;; JACOBTODO: function that can smartly decide between jumping to
+;; TODO: function that can smartly decide between jumping to
 ;; definition or implementation (`xref-find-definitions' vs
 ;; `eglot-find-implementation')
 
@@ -587,7 +587,7 @@ definition."
       (ignore-errors
         (eglot-find-implementation))
       (when (eq start-buffer (current-buffer))
-        ;; JACOBTODO: won't work, this just takes us to the current
+        ;; TODO: won't work, this just takes us to the current
         ;; method. if language server implemented go to declaration
         ;; something might be possible.
         (call-interactively #'xref-find-definitions)))))
@@ -703,7 +703,7 @@ which performs the deletion."
             (funcall f)))
         t))))
 
-;; JACOBTODO: include only my modifications rather than the whole data structure
+;; TODO: include only my modifications rather than the whole data structure
 (setopt csharp-ts-mode--indent-rules
         '((c-sharp
            ((parent-is "compilation_unit") parent-bol 0)
@@ -776,7 +776,7 @@ which performs the deletion."
            ((parent-is "interface_declaration") parent-bol 0)
            )))
 
-;; JACOBTODO: merge into emacs core
+;; TODO: merge into emacs core
 (nconc csharp-ts-mode--font-lock-settings
        (treesit-font-lock-rules
         :language 'c-sharp
@@ -805,33 +805,6 @@ which performs the deletion."
 (jacob-require 'sharper)
 
 (keymap-set jacob-xfk-map "d" #'sharper-main-transient)
-
-;; WIP
-
-(jacob-require 'flymake-easy)
-
-(defun flymake-dotnet-command (filename)
-  "Construct a command that flymake can use to check csharp source in FILENAME."
-  (if (string= filename "dummy")        ; HACK
-      (list "dotnet")
-    (let* ((directory (locate-dominating-file (file-name-directory filename)
-                                              (lambda (d)
-                                                (seq-find (lambda (f)
-                                                            (string-match-p "\\.csproj" f))
-                                                          (directory-files d))))))
-      (list "dotnet" "build" (expand-file-name directory)))))
-
-(defun flymake-dotnet-load ()
-  "Configure flymake mode to check the current buffer's csharp syntax."
-  (interactive)
-  (flymake-easy-load 'flymake-dotnet-command
-                     '(("\\([^
-]+\\)(\\([0-9]+\\),\\([0-9]+\\))"
-                        nil
-                        2
-                        3
-                        nil))
-                     'inplace))
 
 (require 'inf-lisp)
 (setopt inferior-lisp-program "sbcl")
@@ -1375,18 +1348,13 @@ active, do not format the buffer."
 
 (remove-hook 'dape-start-hook #'dape-info)
 
-(jacob-require 'csharp-toolbox "https://github.com/lem102/csharp-toolbox.git") ; JACOBTODO: can i make this use ssh?
+(jacob-require 'csharp-toolbox "https://github.com/lem102/csharp-toolbox.git") ; TODO: can i make this use ssh?
 
 (keymap-set jacob-xfk-map "c f" #'csharp-toolbox-format-statement)
 (keymap-set jacob-xfk-map "c t" #'csharp-toolbox-run-test)
 (keymap-set jacob-xfk-map "c a" #'csharp-toolbox-toggle-async)
 (keymap-set jacob-xfk-map "c n" #'csharp-toolbox-guess-namespace)
 (keymap-set jacob-xfk-map "c ;" #'csharp-toolbox-wd40)
-
-(easy-menu-define csharp-menu csharp-ts-mode-map
-  "Menu for word navigation commands."
-  '("C#"
-    ["Run test" csharp-toolbox-run-test]))
 
 (require 'switch-window)
 (setopt switch-window-shortcut-style 'qwerty
