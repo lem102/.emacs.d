@@ -125,6 +125,8 @@ VC is used in `jacob-ensure-installed'."
          ,@body)
        (add-hook ',hook #',function-name))))
 
+(jacob-require 'delight)
+
 (require 'abbrev)
 
 (add-hook 'text-mode-hook 'abbrev-mode)
@@ -191,57 +193,11 @@ deleted."
 
 (put 'jacob-insert 'no-self-insert t)
 
-(jacob-require 'yasnippet)
+(delight 'abbrev-mode nil t)
 
-(jacob-defhookf snippet-mode-hook
-  (setq-local auto-save-visited-mode nil))
-
-(yas-global-mode 1)
-(keymap-set yas-minor-mode-map "SPC" yas-maybe-expand)
-
-(defun jacob-autoinsert-yas-expand ()
-  "Replace text in yasnippet template."
-  (yas-expand-snippet (buffer-string) (point-min) (point-max)))
-
-(defun jacob-yas-camel-case (input)
-  "Convert INPUT to camel case e.g. apple banana -> appleBanana.
-For use in yasnippets."
-  (let* ((space-at-end (if (string-match-p " $" input) " " ""))
-         (words (split-string input))
-         (capitalised-words (seq-reduce (lambda (previous current)
-                                          (concat previous (capitalize current)))
-                                        (cdr words)
-                                        (car words))))
-    (concat capitalised-words space-at-end)))
-
-(defun jacob-yas-pascal-case (input)
-  "Convert INPUT to pascal case e.g. apple banana -> AppleBanana.
-For use in yasnippets."
-  (let ((space-at-end (if (string-match-p " $" input)
-                          " "
-                        "")))
-    (with-temp-buffer
-      (insert input)
-      (goto-char (point-min))
-      (subword-mode 1)
-      (while (not (= (point) (point-max)))
-        (call-interactively #'capitalize-word))
-      (goto-char (point-min))
-      (while (search-forward " " nil "NOERROR")
-        (replace-match ""))
-      (goto-char (point-max))
-      (insert space-at-end)
-      (buffer-substring-no-properties (point-min) (point-max)))))
-
-(defun jacob-yas-snake-case (input)
-  "Convert INPUT to snake case e.g. apple banana -> apple_banana.
-For use in yasnippets."
-  (string-replace " " "_" input))
-
-(defun jacob-yas-kebab-case (input)
-  "Convert INPUT to kebab case e.g. apple banana -> apple_banana.
-For use in yasnippets."
-  (string-replace " " "-" input))
+(jacob-require 'which-key)
+(which-key-mode 1)
+(delight 'which-key-mode nil t)
 
 (require 'text-mode)
 
@@ -277,6 +233,9 @@ For use in yasnippets."
         confirm-kill-processes nil
         auto-save-visited-interval 2)   ; save file after two seconds
 
+(require 'autorevert)
+(delight 'auto-revert-mode nil t)
+
 (require 'window)
 
 (setopt switch-to-buffer-obey-display-actions t
@@ -297,14 +256,6 @@ For use in yasnippets."
 (require 'novice)
 (setopt disabled-command-function nil)
 
-(require 'desktop)
-(desktop-save-mode 1)
-(add-to-list 'desktop-minor-mode-table '(treesit-explore-mode nil))
-(setopt desktop-restore-eager 5
-        desktop-lazy-verbose nil
-        desktop-load-locked-desktop 'check-pid
-        desktop-save 'if-exists)
-
 (require 'recentf)
 (recentf-mode 1)
 
@@ -315,6 +266,18 @@ For use in yasnippets."
 (require 'saveplace)
 (save-place-mode 1)
 (setopt save-place-forget-unreadable-files t)
+
+(require 'custom)
+(load-theme 'modus-vivendi)
+
+(require 'tool-bar)
+(tool-bar-mode 0)
+
+(require 'menu-bar)
+(menu-bar-mode 0)
+
+(require 'scroll-bar)
+(scroll-bar-mode 0)
 
 (require 'cus-edit)
 (setopt custom-file (make-temp-file "emacs-custom-"))
@@ -343,10 +306,14 @@ For use in yasnippets."
 
 (require 'flymake)
 
+(setopt flymake-fringe-indicator-position 'right-fringe)
+
 (setopt xah-fly-use-control-key nil
         xah-fly-use-meta-key nil) ; must be set before requiring `xah-fly-keys'
 
 (jacob-require 'xah-fly-keys)
+
+(delight 'xah-fly-keys)
 
 (defun jacob-xfk-local-key (key command)
   "Bind KEY buffer locally to COMMAND in xfk command mode."
@@ -359,10 +326,10 @@ For use in yasnippets."
 (xah-fly-keys-set-layout "qwerty")
 (xah-fly-keys 1)
 
-(defvar-keymap jacob-xfk-map)
+(define-prefix-command 'jacob-xfk-map)
 
 (keymap-set xah-fly-leader-key-map "SPC" jacob-xfk-map)
-(keymap-set xah-fly-leader-key-map "e p" project-prefix-map)
+(keymap-set jacob-xfk-map "p" project-prefix-map)
 
 (defvar-local jacob-backspace-function nil
   "Called by `jacob-backspace' if non-nil.")
@@ -476,7 +443,6 @@ Otherwise, kill from point to the end of the line."
 
 (keymap-set xah-fly-leader-key-map "/ b" #'vc-switch-branch)
 (keymap-set xah-fly-leader-key-map "/ c" #'vc-create-branch)
-(keymap-set xah-fly-leader-key-map "d h" #'insert-pair)
 (keymap-set xah-fly-leader-key-map "d i" #'insert-pair)
 (keymap-set xah-fly-leader-key-map "d j" #'insert-pair)
 (keymap-set xah-fly-leader-key-map "d k" #'insert-pair)
@@ -487,6 +453,70 @@ Otherwise, kill from point to the end of the line."
 (keymap-set xah-fly-leader-key-map "u" #'kill-current-buffer)
 (keymap-set xah-fly-leader-key-map "w j" #'xref-find-references)
 (keymap-set xah-fly-leader-key-map ", n" #'jacob-eval-and-replace)
+
+(jacob-require 'yasnippet)
+
+(jacob-defhookf snippet-mode-hook
+  (setq-local auto-save-visited-mode nil))
+
+(yas-global-mode 1)
+
+(setopt yas-new-snippet-default "# -*- mode: snippet -*-
+# key: $1
+# --
+$0`(yas-escape-text yas-selected-text)`")
+
+(defun jacob-autoinsert-yas-expand ()
+  "Replace text in yasnippet template."
+  (yas-expand-snippet (buffer-string) (point-min) (point-max)))
+
+(defun jacob-yas-camel-case (input)
+  "Convert INPUT to camel case e.g. apple banana -> appleBanana.
+For use in yasnippets."
+  (let* ((space-at-end (if (string-match-p " $" input) " " ""))
+         (words (split-string input))
+         (capitalised-words (seq-reduce (lambda (previous current)
+                                          (concat previous (capitalize current)))
+                                        (cdr words)
+                                        (car words))))
+    (concat capitalised-words space-at-end)))
+
+(defun jacob-yas-pascal-case (input)
+  "Convert INPUT to pascal case e.g. apple banana -> AppleBanana.
+For use in yasnippets."
+  (let ((space-at-end (if (string-match-p " $" input)
+                          " "
+                        "")))
+    (with-temp-buffer
+      (insert input)
+      (goto-char (point-min))
+      (subword-mode 1)
+      (while (not (= (point) (point-max)))
+        (call-interactively #'capitalize-word))
+      (goto-char (point-min))
+      (while (search-forward " " nil "NOERROR")
+        (replace-match ""))
+      (goto-char (point-max))
+      (insert space-at-end)
+      (buffer-substring-no-properties (point-min) (point-max)))))
+
+(defun jacob-yas-snake-case (input)
+  "Convert INPUT to snake case e.g. apple banana -> apple_banana.
+For use in yasnippets."
+  (string-replace " " "_" input))
+
+(defun jacob-yas-kebab-case (input)
+  "Convert INPUT to kebab case e.g. apple banana -> apple_banana.
+For use in yasnippets."
+  (string-replace " " "-" input))
+
+(delight 'yas-minor-mode nil t)
+
+(defvar-keymap jacob-yas-map
+  "n" #'yas-new-snippet
+  "v" #'yas-visit-snippet-file)
+
+(keymap-set jacob-xfk-map "y" jacob-yas-map)
 
 (require 'minibuffer)
 (define-key minibuffer-local-completion-map "SPC" 'self-insert-command)
@@ -550,6 +580,7 @@ Otherwise, kill from point to the end of the line."
 
 (require 'subword)
 (global-subword-mode 1)
+(delight 'subword-mode nil t)
 
 (require 'paren)
 (show-paren-mode 1)
@@ -599,6 +630,12 @@ Otherwise, kill from point to the end of the line."
 (jacob-defhookf vc-annotate-mode-hook
   (jacob-xfk-local-key "q" #'quit-window)
   (jacob-xfk-local-key "g" #'revert-buffer))
+
+(jacob-require 'magit)
+
+(jacob-require 'git-gutter-fringe)
+(global-git-gutter-mode 1)
+(delight 'git-gutter-mode nil t)
 
 (require 'autoinsert)
 (auto-insert-mode t)
@@ -669,26 +706,33 @@ Useful for deleting ^M after `eglot-code-actions'."
 
 (setopt eglot-ignored-server-capabilities '(:documentOnTypeFormattingProvider))
 
-(keymap-set jacob-xfk-map "e e" #'eglot)
-(keymap-set jacob-xfk-map "e a" #'eglot-code-actions)
-(keymap-set jacob-xfk-map "e r" #'eglot-rename)
-(keymap-set jacob-xfk-map "e i" #'eglot-find-implementation)
-(keymap-set jacob-xfk-map "e R" #'eglot-reconnect)
+(define-prefix-command 'jacob-code-map)
 
-(jacob-require 'aas)
+(keymap-set jacob-xfk-map "c" jacob-code-map)
+(keymap-set jacob-code-map "e" #'eglot)
+(keymap-set jacob-code-map "a" #'eglot-code-actions)
+(keymap-set jacob-code-map "r" #'eglot-rename)
+(keymap-set jacob-code-map "i" #'eglot-find-implementation)
 
 (require 'csharp-mode)
 
 (defun jacob-csharp-create-variable ()
-  "Create a variable for the identifier at point above the previous statement."
-  ;; JACOBTODO: pull existing variable above symbol at point
+  "Create a variable declaration statement for an undeclared variable."
   (interactive)
-  (let ((name (thing-at-point 'symbol)))
+  (let* ((identifier
+          (thing-at-point 'symbol "NO-PROPERTIES"))
+         (first-occurance
+          (seq-first (seq-sort #'<
+                               (mapcar #'treesit-node-start
+                                       (mapcar #'cdr
+                                               (treesit-query-capture (csharp-toolbox--get-method-node)
+                                                                      `(((identifier) @id (:equal @id ,identifier))))))))))
+    (goto-char first-occurance)
     (goto-char (treesit-beginning-of-thing "_statement$"))
     (forward-line -1)
     (end-of-line)
     (newline 1 "INTERACTIVE")
-    (insert (format "var %s = 0;" name))))
+    (insert (format "var %s = Guid.NewGuid();" identifier))))
 
 (defun jacob-csharp-forward-statement ()
   "Move forward over a csharp statement."
@@ -836,23 +880,11 @@ which performs the deletion."
 (jacob-defhookf csharp-ts-mode-hook
   (setq treesit-defun-type-regexp "\\(method\\|constructor\\|field\\)_declaration")
   (setq jacob-backspace-function #'jacob-backspace-csharp)
-  (eglot-ensure)
-  (aas-activate-for-major-mode))
-
-(aas-set-snippets 'csharp-ts-mode
-  :cond #'jacob-point-in-code-p
-  "nuid" "Guid.NewGuid()"
-  "var" '(yas "var ${1:x$(jacob-yas-camel-case yas-text)} = $0")
-  "pub" "public"
-  ";az" "async"
-  ";aw" "await"
-  "aqbm" ".AsQueryable().BuildMock()")
+  (eglot-ensure))
 
 (jacob-setup-abbrev-table csharp-ts-mode-abbrev-table
   ;; JACOBTODO: cant insert abbrevs inside interpolated strings
-  '(("v" "var" jacob-abbrev-no-insert)
-    ("tostr" "ToString()" jacob-abbrev-no-insert)
-    ("jwe" "Console.WriteLine(\"jacobwozere\");" jacob-abbrev-no-insert)
+  '(("jwe" "Console.WriteLine(\"jacobwozere\");" jacob-abbrev-no-insert)
     ("az" "async")
     ("ns" "namespace")
     ("xgon" "x => x")
@@ -872,6 +904,10 @@ which performs the deletion."
   :enable-function 'jacob-point-in-code-p)
 
 (define-auto-insert "\\.cs$" ["template.cs" jacob-autoinsert-yas-expand])
+
+(jacob-require 'sharper)
+
+(keymap-set jacob-xfk-map "d" #'sharper-main-transient)
 
 ;; WIP
 
@@ -994,8 +1030,12 @@ hides this information."
 (when jacob-is-windows
   (advice-add 'eshell-interrupt-process :after #'jacob-confirm-terminate-batch-job))
 
+(jacob-require 'eat)
+(add-hook 'eshell-mode-hook #'eat-eshell-mode)
+
 (require 'eldoc)
 (global-eldoc-mode 1)
+(delight 'eldoc-mode nil t)
 
 (require 'project)
 (setopt project-switch-commands '((project-find-file "Find file")
@@ -1050,6 +1090,9 @@ hides this information."
 
 (jacob-require 'highlight-defined)
 
+(jacob-require 'hl-todo)
+(global-hl-todo-mode 1)
+
 (jacob-require 'lisp-extra-font-lock)
 (lisp-extra-font-lock-global-mode 1)
 
@@ -1059,15 +1102,13 @@ hides this information."
   (flymake-mode 1)
   (highlight-defined-mode 1)
   (add-hook 'before-save-hook 'jacob-indent-buffer nil "LOCAL")
-  (setq-local yas-key-syntaxes '("w_"))
-  (add-hook 'emacs-lisp-mode-hook 'aas-activate-for-major-mode))
+  (setq-local yas-key-syntaxes '("w_")))
 
 (add-to-list 'lisp-imenu-generic-expression '("Features" "^(\\(jacob-\\)*require '\\([a-z-]+\\)" 2))
 (jacob-setup-abbrev-table emacs-lisp-mode-abbrev-table
   '(("p" "point" jacob-abbrev-no-insert)
     ("point" "(point)" jacob-abbrev-no-insert)
     ("ah" "add-hook" jacob-abbrev-no-insert)
-    ("ks" "keymap-set" jacob-abbrev-no-insert)
     ("weal" "with-eval-after-load" jacob-abbrev-no-insert)
     ("mes" "message" jacob-abbrev-no-insert)
     ("int" "(interactive)")
@@ -1085,15 +1126,6 @@ hides this information."
                        ("keymap-set" "(keymap-set '$0 \"\" #')")
                        ("lambda" "(lambda ($0)\n)")
                        ("message" "(message $0)")))
-
-(aas-set-snippets 'emacs-lisp-mode
-  :cond #'jacob-point-in-code-p
-  "pmi" "(point-min)"
-  "pma" "(point-max)"
-  "gc" '(yas "(goto-char $0)")
-  ";r" '(yas "(require '$0)")
-  ";jr" '(yas "(jacob-require '$0)")
-  ";so" '(yas "(setopt $0)"))
 
 (defun jacob-eval-print-last-sexp ()
   "Run `eval-print-last-sexp', indent the result."
@@ -1132,7 +1164,29 @@ hides this information."
 
 (setopt org-startup-folded t
         org-tags-column 0
-        org-capture-templates '(("i" "Inbox" entry (file "") "* TODO %?\n:PROPERTIES:\n:CREATED: %U\n:END:")))
+        org-capture-templates '(("i" "Inbox" entry (file "") "* TODO %?\n:PROPERTIES:\n:CREATED: %U\n:END:"))
+        org-todo-keywords '((sequence
+                             "TODO(t)"  ; A task that needs doing & is ready to do
+                             "PROJ(p)"  ; A project, which usually contains other tasks
+                             "LOOP(r)"  ; A recurring task
+                             "STRT(s)"  ; A task that is in progress
+                             "WAIT(w)"  ; Something external is holding up this task
+                             "HOLD(h)"  ; This task is paused/on hold because of me
+                             "IDEA(i)"  ; An unconfirmed and unapproved task or notion
+                             "|"
+                             "DONE(d)"  ; Task successfully completed
+                             "KILL(k)") ; Task was cancelled, aborted, or is no longer applicable
+                            (sequence
+                             "[ ](T)"   ; A task that needs doing
+                             "[-](S)"   ; Task is in progress
+                             "[?](W)"   ; Task is being held up or paused
+                             "|"
+                             "[X](D)")  ; Task was completed
+                            (sequence
+                             "|"
+                             "OKAY(o)"
+                             "YES(y)"
+                             "NO(n)")))
 
 (require 'org-agenda)
 
@@ -1151,6 +1205,12 @@ hides this information."
                                                                nil
                                                                " ┄┄┄┄┄ " "┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄"))
                                        (org-agenda-tag-filter-preset '("-tickler"))))))
+
+(define-prefix-command 'jacob-org-agenda-map)
+
+(keymap-set jacob-xfk-map "a" jacob-org-agenda-map)
+(keymap-set jacob-org-agenda-map "a" #'org-agenda)
+(keymap-set jacob-org-agenda-map "c" #'org-capture)
 
 (jacob-defhookf org-agenda-mode-hook
   (jacob-xfk-local-key "q" #'quit-window)
@@ -1183,16 +1243,21 @@ hides this information."
                                       (point))
                                     (line-end-position)))
 
-(dolist (command '(
-                   recenter-top-bottom
+(dolist (command '(recenter-top-bottom
                    scroll-up-command
                    scroll-down-command
                    other-window
                    xref-find-definitions
                    xref-pop-marker-stack
-                   isearch-done
-                   ))
+                   isearch-done))
   (advice-add command :after #'jacob-pulse-line))
+
+(defun jacob-pulse-defun (&rest _)
+  "Pulse the defun at point."
+  (let ((bounds (bounds-of-thing-at-point 'defun)))
+    (pulse-momentary-highlight-region (car bounds) (cdr bounds))))
+
+(advice-add #'eval-defun :after #'jacob-pulse-defun)
 
 (require 'server)
 (server-start)
@@ -1299,7 +1364,7 @@ Intended as before advice for `sql-send-paragraph'."
   :parents (list jacob-comment-abbrev-table)
   :enable-function 'jacob-point-in-code-p)
 
-(keymap-set jacob-xfk-map "d" #'jacob-sql-connect)
+(keymap-set jacob-xfk-map "s" #'jacob-sql-connect)
 
 (require 'doc-view)
 (jacob-defhookf doc-view-mode-hook
@@ -1436,6 +1501,7 @@ active, do not format the buffer."
 
 (jacob-require 'rainbow-mode)
 (add-hook 'prog-mode-hook #'rainbow-mode)
+(delight 'rainbow-mode)
 
 (jacob-require 'eglot-booster "https://github.com/jdtsmith/eglot-booster")
 (eglot-booster-mode 1)
@@ -1477,8 +1543,12 @@ active, do not format the buffer."
 (keymap-set jacob-xfk-map "c n" #'csharp-toolbox-guess-namespace)
 (keymap-set jacob-xfk-map "c ;" #'csharp-toolbox-wd40)
 
+(easy-menu-define csharp-menu csharp-ts-mode-map
+  "Menu for word navigation commands."
+  '("C#"
+    ["Run test" csharp-toolbox-run-test]))
+
 (require 'switch-window)
-;; JACOBTODO: investigate switch window finish hook to solve compilation scroll issue
 (setopt switch-window-shortcut-style 'qwerty
         switch-window-threshold 3)
 (keymap-set xah-fly-command-map "," #'switch-window)
@@ -1498,18 +1568,8 @@ active, do not format the buffer."
 
 (jacob-require 'feature-mode)
 
-(jacob-require 'fsharp-mode)
-(setopt inferior-fsharp-program "dotnet fsi")
-
-;; this is interferring with csharp compilation errors
-(setq compilation-error-regexp-alist (delq 'fsharp compilation-error-regexp-alist))
-
-(jacob-require 'eglot-fsharp)
-(setopt eglot-fsharp-server-install-dir nil)
-
 (jacob-require 'vertico)
 (vertico-mode 1)
-(setopt vertico-count 25)
 
 (require 'vertico-mouse)
 (vertico-mouse-mode 1)
@@ -1575,6 +1635,10 @@ active, do not format the buffer."
 (jacob-defhookf verb-response-body-mode-hook
   (jacob-xfk-local-key "q" #'quit-window))
 
+(defun jacob-verb-id (response-id)
+  "Get the id property from the stored verb response pertaining to RESPONSE-ID."
+  (verb-json-get (oref (verb-stored-response response-id) body) "id"))
+
 (jacob-require 'sly)
 
 (sly-symbol-completion-mode 0)
@@ -1595,7 +1659,6 @@ active, do not format the buffer."
 (jacob-require 'gptel)
 
 (jacob-require 'gdscript-mode)
-(add-hook 'gdscript-mode-hook 'aas-activate-for-major-mode)
 
 (jacob-setup-abbrev-table gdscript-mode-abbrev-table
   '(("v" "var" jacob-abbrev-no-insert)
@@ -1604,11 +1667,6 @@ active, do not format the buffer."
     ("ret" "return"))
   :parents (list jacob-comment-abbrev-table)
   :enable-function 'jacob-point-in-code-p)
-
-(aas-set-snippets 'gdscript-mode
-  :cond #'jacob-point-in-code-p
-  "v2" "Vector2"
-  "var" '(yas "var ${1:x$(jacob-yas-snake-case yas-text)} = $0"))
 
 (push '(gdscript-mode "localhost" 6008) eglot-server-programs)
 
@@ -1883,8 +1941,6 @@ For use with GitLab only."
                        line-number)))
     (kill-new link)
     (message "%s" link)))
-
-;; JACOBTODO: create github equivalent of `jacob-gitlab-link-at-point'.
 
 (provide 'init)
 
