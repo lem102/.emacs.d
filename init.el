@@ -193,7 +193,10 @@ deleted."
 
 (put 'jacob-insert 'no-self-insert t)
 
-(delight 'abbrev-mode)
+(delight 'abbrev-mode nil t)
+
+(jacob-require 'which-key)
+(which-key-mode 1)
 
 (jacob-require 'yasnippet)
 
@@ -201,7 +204,6 @@ deleted."
   (setq-local auto-save-visited-mode nil))
 
 (yas-global-mode 1)
-(keymap-set yas-minor-mode-map "SPC" yas-maybe-expand)
 
 (defun jacob-autoinsert-yas-expand ()
   "Replace text in yasnippet template."
@@ -247,7 +249,7 @@ For use in yasnippets."
 For use in yasnippets."
   (string-replace " " "-" input))
 
-(delight 'yas-minor-mode)
+(delight 'yas-minor-mode nil t)
 
 (require 'text-mode)
 
@@ -298,14 +300,6 @@ For use in yasnippets."
 
 (require 'novice)
 (setopt disabled-command-function nil)
-
-(require 'desktop)
-(desktop-save-mode 1)
-(add-to-list 'desktop-minor-mode-table '(treesit-explore-mode nil))
-(setopt desktop-restore-eager 5
-        desktop-lazy-verbose nil
-        desktop-load-locked-desktop 'check-pid
-        desktop-save t)
 
 (require 'recentf)
 (recentf-mode 1)
@@ -553,7 +547,7 @@ Otherwise, kill from point to the end of the line."
 
 (require 'subword)
 (global-subword-mode 1)
-(delight 'subword-mode)
+(delight 'subword-mode nil t)
 
 (require 'paren)
 (show-paren-mode 1)
@@ -678,8 +672,6 @@ Useful for deleting ^M after `eglot-code-actions'."
 (keymap-set jacob-xfk-map "e r" #'eglot-rename)
 (keymap-set jacob-xfk-map "e i" #'eglot-find-implementation)
 (keymap-set jacob-xfk-map "e R" #'eglot-reconnect)
-
-(jacob-require 'aas)
 
 (require 'csharp-mode)
 
@@ -847,18 +839,7 @@ which performs the deletion."
 (jacob-defhookf csharp-ts-mode-hook
   (setq treesit-defun-type-regexp "\\(method\\|constructor\\|field\\)_declaration")
   (setq jacob-backspace-function #'jacob-backspace-csharp)
-  (eglot-ensure)
-  (aas-activate-for-major-mode))
-
-(aas-set-snippets 'csharp-ts-mode
-  :cond #'jacob-point-in-code-p
-  "nuid" "Guid.NewGuid()"
-  "var" '(yas "var ${1:x$(jacob-yas-camel-case yas-text)} = $0;")
-  "pub" "public"
-  ";az" "async"
-  ";aw" "await"
-  "aqbm" ".AsQueryable().BuildMock()"
-  ";new" '(yas "new $0{ }"))
+  (eglot-ensure))
 
 (jacob-setup-abbrev-table csharp-ts-mode-abbrev-table
   ;; JACOBTODO: cant insert abbrevs inside interpolated strings
@@ -884,6 +865,8 @@ which performs the deletion."
   :enable-function 'jacob-point-in-code-p)
 
 (define-auto-insert "\\.cs$" ["template.cs" jacob-autoinsert-yas-expand])
+
+(jacob-require 'sharper)
 
 ;; WIP
 
@@ -1004,7 +987,7 @@ hides this information."
 
 (require 'eldoc)
 (global-eldoc-mode 1)
-(delight 'eldoc-mode)
+(delight 'eldoc-mode nil t)
 
 (require 'project)
 (setopt project-switch-commands '((project-find-file "Find file")
@@ -1059,6 +1042,8 @@ hides this information."
 
 (jacob-require 'highlight-defined)
 
+(jacob-require 'hl-todo)
+
 (jacob-require 'lisp-extra-font-lock)
 (lisp-extra-font-lock-global-mode 1)
 
@@ -1068,8 +1053,7 @@ hides this information."
   (flymake-mode 1)
   (highlight-defined-mode 1)
   (add-hook 'before-save-hook 'jacob-indent-buffer nil "LOCAL")
-  (setq-local yas-key-syntaxes '("w_"))
-  (add-hook 'emacs-lisp-mode-hook 'aas-activate-for-major-mode))
+  (setq-local yas-key-syntaxes '("w_")))
 
 (add-to-list 'lisp-imenu-generic-expression '("Features" "^(\\(jacob-\\)*require '\\([a-z-]+\\)" 2))
 (jacob-setup-abbrev-table emacs-lisp-mode-abbrev-table
@@ -1094,15 +1078,6 @@ hides this information."
                        ("keymap-set" "(keymap-set '$0 \"\" #')")
                        ("lambda" "(lambda ($0)\n)")
                        ("message" "(message $0)")))
-
-(aas-set-snippets 'emacs-lisp-mode
-  :cond #'jacob-point-in-code-p
-  "pmi" "(point-min)"
-  "pma" "(point-max)"
-  "gc" '(yas "(goto-char $0)")
-  ";r" '(yas "(require '$0)")
-  ";jr" '(yas "(jacob-require '$0)")
-  ";so" '(yas "(setopt $0)"))
 
 (defun jacob-eval-print-last-sexp ()
   "Run `eval-print-last-sexp', indent the result."
@@ -1141,7 +1116,29 @@ hides this information."
 
 (setopt org-startup-folded t
         org-tags-column 0
-        org-capture-templates '(("i" "Inbox" entry (file "") "* TODO %?\n:PROPERTIES:\n:CREATED: %U\n:END:")))
+        org-capture-templates '(("i" "Inbox" entry (file "") "* TODO %?\n:PROPERTIES:\n:CREATED: %U\n:END:"))
+        org-todo-keywords '((sequence
+                             "TODO(t)"  ; A task that needs doing & is ready to do
+                             "PROJ(p)"  ; A project, which usually contains other tasks
+                             "LOOP(r)"  ; A recurring task
+                             "STRT(s)"  ; A task that is in progress
+                             "WAIT(w)"  ; Something external is holding up this task
+                             "HOLD(h)"  ; This task is paused/on hold because of me
+                             "IDEA(i)"  ; An unconfirmed and unapproved task or notion
+                             "|"
+                             "DONE(d)"  ; Task successfully completed
+                             "KILL(k)") ; Task was cancelled, aborted, or is no longer applicable
+                            (sequence
+                             "[ ](T)"   ; A task that needs doing
+                             "[-](S)"   ; Task is in progress
+                             "[?](W)"   ; Task is being held up or paused
+                             "|"
+                             "[X](D)")  ; Task was completed
+                            (sequence
+                             "|"
+                             "OKAY(o)"
+                             "YES(y)"
+                             "NO(n)")))
 
 (require 'org-agenda)
 
@@ -1608,7 +1605,6 @@ active, do not format the buffer."
 (jacob-require 'gptel)
 
 (jacob-require 'gdscript-mode)
-(add-hook 'gdscript-mode-hook 'aas-activate-for-major-mode)
 
 (jacob-setup-abbrev-table gdscript-mode-abbrev-table
   '(("v" "var" jacob-abbrev-no-insert)
@@ -1617,11 +1613,6 @@ active, do not format the buffer."
     ("ret" "return"))
   :parents (list jacob-comment-abbrev-table)
   :enable-function 'jacob-point-in-code-p)
-
-(aas-set-snippets 'gdscript-mode
-  :cond #'jacob-point-in-code-p
-  "v2" "Vector2"
-  "var" '(yas "var ${1:x$(jacob-yas-snake-case yas-text)} = $0"))
 
 (push '(gdscript-mode "localhost" 6008) eglot-server-programs)
 
