@@ -197,59 +197,7 @@ deleted."
 
 (jacob-require 'which-key)
 (which-key-mode 1)
-
-(jacob-require 'yasnippet)
-
-(jacob-defhookf snippet-mode-hook
-  (setq-local auto-save-visited-mode nil))
-
-(yas-global-mode 1)
-
-(defun jacob-autoinsert-yas-expand ()
-  "Replace text in yasnippet template."
-  (yas-expand-snippet (buffer-string) (point-min) (point-max)))
-
-(defun jacob-yas-camel-case (input)
-  "Convert INPUT to camel case e.g. apple banana -> appleBanana.
-For use in yasnippets."
-  (let* ((space-at-end (if (string-match-p " $" input) " " ""))
-         (words (split-string input))
-         (capitalised-words (seq-reduce (lambda (previous current)
-                                          (concat previous (capitalize current)))
-                                        (cdr words)
-                                        (car words))))
-    (concat capitalised-words space-at-end)))
-
-(defun jacob-yas-pascal-case (input)
-  "Convert INPUT to pascal case e.g. apple banana -> AppleBanana.
-For use in yasnippets."
-  (let ((space-at-end (if (string-match-p " $" input)
-                          " "
-                        "")))
-    (with-temp-buffer
-      (insert input)
-      (goto-char (point-min))
-      (subword-mode 1)
-      (while (not (= (point) (point-max)))
-        (call-interactively #'capitalize-word))
-      (goto-char (point-min))
-      (while (search-forward " " nil "NOERROR")
-        (replace-match ""))
-      (goto-char (point-max))
-      (insert space-at-end)
-      (buffer-substring-no-properties (point-min) (point-max)))))
-
-(defun jacob-yas-snake-case (input)
-  "Convert INPUT to snake case e.g. apple banana -> apple_banana.
-For use in yasnippets."
-  (string-replace " " "_" input))
-
-(defun jacob-yas-kebab-case (input)
-  "Convert INPUT to kebab case e.g. apple banana -> apple_banana.
-For use in yasnippets."
-  (string-replace " " "-" input))
-
-(delight 'yas-minor-mode nil t)
+(delight 'which-key-mode nil t)
 
 (require 'text-mode)
 
@@ -280,6 +228,9 @@ For use in yasnippets."
         backup-by-copying t
         confirm-kill-processes nil
         auto-save-visited-interval 2)   ; save file after two seconds
+
+(require 'autorevert)
+(delight 'auto-revert-mode nil t)
 
 (require 'window)
 
@@ -312,6 +263,18 @@ For use in yasnippets."
 (save-place-mode 1)
 (setopt save-place-forget-unreadable-files t)
 
+(require 'custom)
+(load-theme 'modus-vivendi)
+
+(require 'tool-bar)
+(tool-bar-mode 0)
+
+(require 'menu-bar)
+(menu-bar-mode 0)
+
+(require 'scroll-bar)
+(scroll-bar-mode 0)
+
 (require 'cus-edit)
 (setopt custom-file (make-temp-file "emacs-custom-"))
 
@@ -338,6 +301,9 @@ For use in yasnippets."
         bookmark-watch-bookmark-file 'silent)
 
 (require 'flymake)
+
+(setopt flymake-fringe-indicator-position 'right-fringe)
+
 (setopt xah-fly-use-control-key nil
         xah-fly-use-meta-key nil) ; must be set before requiring `xah-fly-keys'
 
@@ -356,10 +322,10 @@ For use in yasnippets."
 (xah-fly-keys-set-layout "qwerty")
 (xah-fly-keys 1)
 
-(defvar-keymap jacob-xfk-map)
+(define-prefix-command 'jacob-xfk-map)
 
 (keymap-set xah-fly-leader-key-map "SPC" jacob-xfk-map)
-(keymap-set xah-fly-leader-key-map "e p" project-prefix-map)
+(keymap-set jacob-xfk-map "p" project-prefix-map)
 
 (defvar-local jacob-backspace-function nil
   "Called by `jacob-backspace' if non-nil.")
@@ -473,7 +439,6 @@ Otherwise, kill from point to the end of the line."
 
 (keymap-set xah-fly-leader-key-map "/ b" #'vc-switch-branch)
 (keymap-set xah-fly-leader-key-map "/ c" #'vc-create-branch)
-(keymap-set xah-fly-leader-key-map "d h" #'insert-pair)
 (keymap-set xah-fly-leader-key-map "d i" #'insert-pair)
 (keymap-set xah-fly-leader-key-map "d j" #'insert-pair)
 (keymap-set xah-fly-leader-key-map "d k" #'insert-pair)
@@ -484,6 +449,70 @@ Otherwise, kill from point to the end of the line."
 (keymap-set xah-fly-leader-key-map "u" #'kill-current-buffer)
 (keymap-set xah-fly-leader-key-map "w j" #'xref-find-references)
 (keymap-set xah-fly-leader-key-map ", n" #'jacob-eval-and-replace)
+
+(jacob-require 'yasnippet)
+
+(jacob-defhookf snippet-mode-hook
+  (setq-local auto-save-visited-mode nil))
+
+(yas-global-mode 1)
+
+(setopt yas-new-snippet-default "# -*- mode: snippet -*-
+# key: $1
+# --
+$0`(yas-escape-text yas-selected-text)`")
+
+(defun jacob-autoinsert-yas-expand ()
+  "Replace text in yasnippet template."
+  (yas-expand-snippet (buffer-string) (point-min) (point-max)))
+
+(defun jacob-yas-camel-case (input)
+  "Convert INPUT to camel case e.g. apple banana -> appleBanana.
+For use in yasnippets."
+  (let* ((space-at-end (if (string-match-p " $" input) " " ""))
+         (words (split-string input))
+         (capitalised-words (seq-reduce (lambda (previous current)
+                                          (concat previous (capitalize current)))
+                                        (cdr words)
+                                        (car words))))
+    (concat capitalised-words space-at-end)))
+
+(defun jacob-yas-pascal-case (input)
+  "Convert INPUT to pascal case e.g. apple banana -> AppleBanana.
+For use in yasnippets."
+  (let ((space-at-end (if (string-match-p " $" input)
+                          " "
+                        "")))
+    (with-temp-buffer
+      (insert input)
+      (goto-char (point-min))
+      (subword-mode 1)
+      (while (not (= (point) (point-max)))
+        (call-interactively #'capitalize-word))
+      (goto-char (point-min))
+      (while (search-forward " " nil "NOERROR")
+        (replace-match ""))
+      (goto-char (point-max))
+      (insert space-at-end)
+      (buffer-substring-no-properties (point-min) (point-max)))))
+
+(defun jacob-yas-snake-case (input)
+  "Convert INPUT to snake case e.g. apple banana -> apple_banana.
+For use in yasnippets."
+  (string-replace " " "_" input))
+
+(defun jacob-yas-kebab-case (input)
+  "Convert INPUT to kebab case e.g. apple banana -> apple_banana.
+For use in yasnippets."
+  (string-replace " " "-" input))
+
+(delight 'yas-minor-mode nil t)
+
+(defvar-keymap jacob-yas-map
+  "n" #'yas-new-snippet
+  "v" #'yas-visit-snippet-file)
+
+(keymap-set jacob-xfk-map "y" jacob-yas-map)
 
 (require 'minibuffer)
 (define-key minibuffer-local-completion-map "SPC" 'self-insert-command)
@@ -598,6 +627,12 @@ Otherwise, kill from point to the end of the line."
   (jacob-xfk-local-key "q" #'quit-window)
   (jacob-xfk-local-key "g" #'revert-buffer))
 
+(jacob-require 'magit)
+
+(jacob-require 'git-gutter-fringe)
+(global-git-gutter-mode 1)
+(delight 'git-gutter-mode nil t)
+
 (require 'autoinsert)
 (auto-insert-mode t)
 (setopt auto-insert-query t
@@ -667,11 +702,13 @@ Useful for deleting ^M after `eglot-code-actions'."
 
 (setopt eglot-ignored-server-capabilities '(:documentOnTypeFormattingProvider))
 
-(keymap-set jacob-xfk-map "e e" #'eglot)
-(keymap-set jacob-xfk-map "e a" #'eglot-code-actions)
-(keymap-set jacob-xfk-map "e r" #'eglot-rename)
-(keymap-set jacob-xfk-map "e i" #'eglot-find-implementation)
-(keymap-set jacob-xfk-map "e R" #'eglot-reconnect)
+(define-prefix-command 'jacob-code-map)
+
+(keymap-set jacob-xfk-map "c" jacob-code-map)
+(keymap-set jacob-code-map "e" #'eglot)
+(keymap-set jacob-code-map "a" #'eglot-code-actions)
+(keymap-set jacob-code-map "r" #'eglot-rename)
+(keymap-set jacob-code-map "i" #'eglot-find-implementation)
 
 (require 'csharp-mode)
 
@@ -843,9 +880,7 @@ which performs the deletion."
 
 (jacob-setup-abbrev-table csharp-ts-mode-abbrev-table
   ;; JACOBTODO: cant insert abbrevs inside interpolated strings
-  '(("v" "var" jacob-abbrev-no-insert)
-    ("tostr" "ToString()" jacob-abbrev-no-insert)
-    ("jwe" "Console.WriteLine(\"jacobwozere\");" jacob-abbrev-no-insert)
+  '(("jwe" "Console.WriteLine(\"jacobwozere\");" jacob-abbrev-no-insert)
     ("az" "async")
     ("ns" "namespace")
     ("xgon" "x => x")
@@ -867,6 +902,8 @@ which performs the deletion."
 (define-auto-insert "\\.cs$" ["template.cs" jacob-autoinsert-yas-expand])
 
 (jacob-require 'sharper)
+
+(keymap-set jacob-xfk-map "d" #'sharper-main-transient)
 
 ;; WIP
 
@@ -985,6 +1022,9 @@ hides this information."
 (when jacob-is-windows
   (advice-add 'eshell-interrupt-process :after #'jacob-confirm-terminate-batch-job))
 
+(jacob-require 'eat)
+(add-hook 'eshell-mode-hook #'eat-eshell-mode)
+
 (require 'eldoc)
 (global-eldoc-mode 1)
 (delight 'eldoc-mode nil t)
@@ -1043,6 +1083,7 @@ hides this information."
 (jacob-require 'highlight-defined)
 
 (jacob-require 'hl-todo)
+(global-hl-todo-mode 1)
 
 (jacob-require 'lisp-extra-font-lock)
 (lisp-extra-font-lock-global-mode 1)
@@ -1060,7 +1101,6 @@ hides this information."
   '(("p" "point" jacob-abbrev-no-insert)
     ("point" "(point)" jacob-abbrev-no-insert)
     ("ah" "add-hook" jacob-abbrev-no-insert)
-    ("ks" "keymap-set" jacob-abbrev-no-insert)
     ("weal" "with-eval-after-load" jacob-abbrev-no-insert)
     ("mes" "message" jacob-abbrev-no-insert)
     ("int" "(interactive)")
@@ -1157,6 +1197,12 @@ hides this information."
                                                                nil
                                                                " ┄┄┄┄┄ " "┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄"))
                                        (org-agenda-tag-filter-preset '("-tickler"))))))
+
+(define-prefix-command 'jacob-org-agenda-map)
+
+(keymap-set jacob-xfk-map "a" jacob-org-agenda-map)
+(keymap-set jacob-org-agenda-map "a" #'org-agenda)
+(keymap-set jacob-org-agenda-map "c" #'org-capture)
 
 (jacob-defhookf org-agenda-mode-hook
   (jacob-xfk-local-key "q" #'quit-window)
@@ -1310,7 +1356,7 @@ Intended as before advice for `sql-send-paragraph'."
   :parents (list jacob-comment-abbrev-table)
   :enable-function 'jacob-point-in-code-p)
 
-(keymap-set jacob-xfk-map "d" #'jacob-sql-connect)
+(keymap-set jacob-xfk-map "s" #'jacob-sql-connect)
 
 (require 'doc-view)
 (jacob-defhookf doc-view-mode-hook
