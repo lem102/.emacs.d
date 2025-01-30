@@ -263,6 +263,10 @@ For use in yasnippets."
                                        ((meta))
                                        ((control) . text-scale)))
 
+(require 'tooltip)
+
+(setopt tooltip-delay 0.1)
+
 (require 'files)
 (auto-save-visited-mode 1)
 (keymap-global-unset "C-x C-c")         ; `save-buffers-kill-terminal'
@@ -299,7 +303,7 @@ For use in yasnippets."
 (setopt desktop-restore-eager 5
         desktop-lazy-verbose nil
         desktop-load-locked-desktop 'check-pid
-        desktop-save t)
+        desktop-save 'if-exists)
 
 (require 'recentf)
 (recentf-mode 1)
@@ -338,6 +342,7 @@ For use in yasnippets."
         bookmark-watch-bookmark-file 'silent)
 
 (require 'flymake)
+
 (setopt xah-fly-use-control-key nil
         xah-fly-use-meta-key nil) ; must be set before requiring `xah-fly-keys'
 
@@ -926,6 +931,10 @@ which performs the deletion."
 (setopt ls-lisp-use-insert-directory-program nil
         ls-lisp-dirs-first t)
 
+(jacob-require 'dired-rsync)
+
+(add-to-list 'mode-line-misc-info '(:eval dired-rsync-modeline-status 'append))
+
 (require 'esh-mode)
 
 (setopt eshell-scroll-to-bottom-on-output t)
@@ -1129,9 +1138,9 @@ hides this information."
 
 (setopt org-agenda-skip-scheduled-if-done t
         org-agenda-skip-deadline-if-done t
-        org-agenda-custom-commands '(("a" "Morning" agenda "" ((org-agenda-tag-filter-preset '("+tickler" "+am"))
+        org-agenda-custom-commands '(("a" "Morning" agenda "" ((org-agenda-tag-filter-preset '("+tickler" "-pm"))
                                                                (org-agenda-span 'day)))
-                                     ("p" "Evening" agenda "" ((org-agenda-tag-filter-preset '("+tickler" "+pm"))
+                                     ("p" "Evening" agenda "" ((org-agenda-tag-filter-preset '("+tickler" "-am"))
                                                                (org-agenda-span 'day)))
                                      ("w" "Work" todo "" ((org-agenda-tag-filter-preset '("+work"))))
                                      ("x" "Stuff to do today"
