@@ -53,7 +53,8 @@
         enable-recursive-minibuffers t
         completion-ignore-case t
         kill-buffer-query-functions (delq 'process-kill-buffer-query-function
-                                          kill-buffer-query-functions))
+                                          kill-buffer-query-functions)
+        echo-keystrokes 0.01)
 
 ;; startup
 (setopt inhibit-startup-screen t
@@ -127,7 +128,8 @@ VC is used in `jacob-ensure-installed'."
 
 (jacob-require 'delight)
 
-(jacob-require 'which-key)
+(jacob-require 'which-key)         ; in vanilla by V30.1
+(setopt which-key-idle-delay 0.01) ; needs to be set before loading the mode
 (which-key-mode 1)
 (delight 'which-key-mode nil t)
 
@@ -214,8 +216,6 @@ VC is used in `jacob-ensure-installed'."
 
 (require 'flymake)
 
-(setopt flymake-fringe-indicator-position 'right-fringe)
-
 (setopt xah-fly-use-control-key nil
         xah-fly-use-meta-key nil) ; must be set before requiring `xah-fly-keys'
 
@@ -234,7 +234,7 @@ VC is used in `jacob-ensure-installed'."
 (xah-fly-keys-set-layout "qwerty")
 (xah-fly-keys 1)
 
-(define-prefix-command 'jacob-xfk-map)
+(defvar-keymap jacob-xfk-map)
 
 (keymap-set xah-fly-leader-key-map "SPC" jacob-xfk-map)
 (keymap-set jacob-xfk-map "p" `("Project" . ,project-prefix-map))
@@ -489,6 +489,20 @@ For use in yasnippets."
   (jacob-xfk-local-key "g" #'revert-buffer)
   (jacob-xfk-local-key "w" #'jacob-help-edit))
 
+(jacob-require 'helpful)
+
+(keymap-set xah-fly-leader-key-map "j k" #'helpful-callable)
+(keymap-set xah-fly-leader-key-map "j l" #'helpful-variable)
+(keymap-set xah-fly-leader-key-map "j v" #'helpful-key)
+(keymap-set xah-fly-leader-key-map "j b" #'helpful-command)
+
+(jacob-defhookf helpful-mode-hook
+  (jacob-xfk-local-key "q" #'quit-window)
+  (jacob-xfk-local-key "g" #'helpful-update)
+  (jacob-xfk-local-key "e" #'backward-button)
+  (jacob-xfk-local-key "r" #'forward-button)
+  (jacob-xfk-local-key "s" #'push-button))
+
 (require 'help-at-pt)
 (setq-default help-at-pt-display-when-idle '(flymake-diagnostic))
 (help-at-pt-set-timer)
@@ -604,7 +618,7 @@ Useful for deleting ^M after `eglot-code-actions'."
 (advice-add 'eglot-code-actions :after #'jacob-remove-ret-character-from-buffer)
 (advice-add 'eglot-rename :after #'jacob-remove-ret-character-from-buffer)
 
-(add-to-list 'eglot-server-programs '((csharp-mode csharp-ts-mode) . ("csharp-ls")))
+(add-to-list 'eglot-server-programs '((csharp-mode csharp-ts-mode) . ("OmniSharp" "-lsp")))
 
 (add-to-list 'eglot-server-programs '(sql-mode . "sqls"))
 
