@@ -1502,6 +1502,10 @@ active, do not format the buffer."
 
 (jacob-require 'sly-overlay)
 
+(jacob-require 'sly-macrostep)
+
+(jacob-require 'sly-stepper "https://github.com/joaotavora/sly-stepper.git")
+
 (jacob-require 'sql-indent)
 
 (jacob-require 'gptel)
