@@ -53,7 +53,8 @@
         enable-recursive-minibuffers t
         completion-ignore-case t
         kill-buffer-query-functions (delq 'process-kill-buffer-query-function
-                                          kill-buffer-query-functions))
+                                          kill-buffer-query-functions)
+        echo-keystrokes 0.01)
 
 ;; startup
 (setopt inhibit-startup-screen t
@@ -127,7 +128,8 @@ VC is used in `jacob-ensure-installed'."
 
 (jacob-require 'delight)
 
-(jacob-require 'which-key)
+(jacob-require 'which-key)         ; in vanilla by V30.1
+(setopt which-key-idle-delay 0.01) ; needs to be set before loading the mode
 (which-key-mode 1)
 (delight 'which-key-mode nil t)
 
@@ -218,8 +220,6 @@ VC is used in `jacob-ensure-installed'."
 
 (require 'flymake)
 
-(setopt flymake-fringe-indicator-position 'right-fringe)
-
 (setopt xah-fly-use-control-key nil
         xah-fly-use-meta-key nil) ; must be set before requiring `xah-fly-keys'
 
@@ -238,7 +238,7 @@ VC is used in `jacob-ensure-installed'."
 (xah-fly-keys-set-layout "qwerty")
 (xah-fly-keys 1)
 
-(define-prefix-command 'jacob-xfk-map)
+(defvar-keymap jacob-xfk-map)
 
 (keymap-set xah-fly-leader-key-map "SPC" jacob-xfk-map)
 (keymap-set jacob-xfk-map "p" `("Project" . ,project-prefix-map))
@@ -493,6 +493,20 @@ For use in yasnippets."
   (jacob-xfk-local-key "g" #'revert-buffer)
   (jacob-xfk-local-key "w" #'jacob-help-edit))
 
+(jacob-require 'helpful)
+
+(keymap-set xah-fly-leader-key-map "j k" #'helpful-callable)
+(keymap-set xah-fly-leader-key-map "j l" #'helpful-variable)
+(keymap-set xah-fly-leader-key-map "j v" #'helpful-key)
+(keymap-set xah-fly-leader-key-map "j b" #'helpful-command)
+
+(jacob-defhookf helpful-mode-hook
+  (jacob-xfk-local-key "q" #'quit-window)
+  (jacob-xfk-local-key "g" #'helpful-update)
+  (jacob-xfk-local-key "e" #'backward-button)
+  (jacob-xfk-local-key "r" #'forward-button)
+  (jacob-xfk-local-key "s" #'push-button))
+
 (require 'help-at-pt)
 (setq-default help-at-pt-display-when-idle '(flymake-diagnostic))
 (help-at-pt-set-timer)
@@ -574,7 +588,7 @@ For use in yasnippets."
   (eglot-inlay-hints-mode 0)
   (setq-local eldoc-documentation-strategy 'eldoc-documentation-compose))
 
-;; JACOBTODO: function that can smartly decide between jumping to
+;; TODO: function that can smartly decide between jumping to
 ;; definition or implementation (`xref-find-definitions' vs
 ;; `eglot-find-implementation')
 
@@ -591,7 +605,7 @@ definition."
       (ignore-errors
         (eglot-find-implementation))
       (when (eq start-buffer (current-buffer))
-        ;; JACOBTODO: won't work, this just takes us to the current
+        ;; TODO: won't work, this just takes us to the current
         ;; method. if language server implemented go to declaration
         ;; something might be possible.
         (call-interactively #'xref-find-definitions)))))
@@ -608,7 +622,7 @@ Useful for deleting ^M after `eglot-code-actions'."
 (advice-add 'eglot-code-actions :after #'jacob-remove-ret-character-from-buffer)
 (advice-add 'eglot-rename :after #'jacob-remove-ret-character-from-buffer)
 
-(add-to-list 'eglot-server-programs '((csharp-mode csharp-ts-mode) . ("csharp-ls")))
+(add-to-list 'eglot-server-programs '((csharp-mode csharp-ts-mode) . ("OmniSharp" "-lsp")))
 
 (add-to-list 'eglot-server-programs '(sql-mode . "sqls"))
 
@@ -707,7 +721,7 @@ which performs the deletion."
             (funcall f)))
         t))))
 
-;; JACOBTODO: include only my modifications rather than the whole data structure
+;; TODO: include only my modifications rather than the whole data structure
 (setopt csharp-ts-mode--indent-rules
         '((c-sharp
            ((parent-is "compilation_unit") parent-bol 0)
@@ -780,7 +794,7 @@ which performs the deletion."
            ((parent-is "interface_declaration") parent-bol 0)
            )))
 
-;; JACOBTODO: merge into emacs core
+;; TODO: merge into emacs core
 (nconc csharp-ts-mode--font-lock-settings
        (treesit-font-lock-rules
         :language 'c-sharp
@@ -809,33 +823,6 @@ which performs the deletion."
 (jacob-require 'sharper)
 
 (keymap-set jacob-xfk-map "d" #'sharper-main-transient)
-
-;; WIP
-
-(jacob-require 'flymake-easy)
-
-(defun flymake-dotnet-command (filename)
-  "Construct a command that flymake can use to check csharp source in FILENAME."
-  (if (string= filename "dummy")        ; HACK
-      (list "dotnet")
-    (let* ((directory (locate-dominating-file (file-name-directory filename)
-                                              (lambda (d)
-                                                (seq-find (lambda (f)
-                                                            (string-match-p "\\.csproj" f))
-                                                          (directory-files d))))))
-      (list "dotnet" "build" (expand-file-name directory)))))
-
-(defun flymake-dotnet-load ()
-  "Configure flymake mode to check the current buffer's csharp syntax."
-  (interactive)
-  (flymake-easy-load 'flymake-dotnet-command
-                     '(("\\([^
-]+\\)(\\([0-9]+\\),\\([0-9]+\\))"
-                        nil
-                        2
-                        3
-                        nil))
-                     'inplace))
 
 (require 'inf-lisp)
 (setopt inferior-lisp-program "sbcl")
@@ -1383,18 +1370,13 @@ active, do not format the buffer."
 
 (remove-hook 'dape-start-hook #'dape-info)
 
-(jacob-require 'csharp-toolbox "https://github.com/lem102/csharp-toolbox.git") ; JACOBTODO: can i make this use ssh?
+(jacob-require 'csharp-toolbox "https://github.com/lem102/csharp-toolbox.git") ; TODO: can i make this use ssh?
 
 (keymap-set jacob-xfk-map "c f" #'csharp-toolbox-format-statement)
 (keymap-set jacob-xfk-map "c t" #'csharp-toolbox-run-test)
 (keymap-set jacob-xfk-map "c a" #'csharp-toolbox-toggle-async)
 (keymap-set jacob-xfk-map "c n" #'csharp-toolbox-guess-namespace)
 (keymap-set jacob-xfk-map "c ;" #'csharp-toolbox-wd40)
-
-(easy-menu-define csharp-menu csharp-ts-mode-map
-  "Menu for word navigation commands."
-  '("C#"
-    ["Run test" csharp-toolbox-run-test]))
 
 (require 'switch-window)
 (setopt switch-window-shortcut-style 'qwerty
