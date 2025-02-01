@@ -1489,6 +1489,8 @@ active, do not format the buffer."
 
 (jacob-require 'sly)
 
+(sly-setup)
+
 (sly-symbol-completion-mode 0)
 
 (jacob-defhookf sly-mode-hook
