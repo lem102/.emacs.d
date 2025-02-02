@@ -624,7 +624,7 @@ Useful for deleting ^M after `eglot-code-actions'."
 (advice-add 'eglot-code-actions :after #'jacob-remove-ret-character-from-buffer)
 (advice-add 'eglot-rename :after #'jacob-remove-ret-character-from-buffer)
 
-(add-to-list 'eglot-server-programs '((csharp-mode csharp-ts-mode) . ("OmniSharp" "-lsp")))
+(add-to-list 'eglot-server-programs '((csharp-mode csharp-ts-mode) . ("csharp-ls")))
 
 (add-to-list 'eglot-server-programs '(sql-mode . "sqls"))
 
@@ -822,9 +822,53 @@ which performs the deletion."
 
 (define-auto-insert "\\.cs$" ["template.cs" jacob-autoinsert-yas-expand])
 
+;; TODO: test the below code!
+
+(defun eglot-csharp-ls-metadata (xrefs)
+  "Advice for `eglot--lsp-xrefs-for-method'.
+
+- For showing `csharp-ls' metadata in Emacs.
+
+- Check the first xref from XREFS to see if it's referring to a
+  non-existant metadata file.
+
+- If so, create it in a “sensible” location and modify the xref to
+  point there."
+  (dolist (xref-match-item xrefs)
+    (when-let ((xref-file-location (xref-item-location xref-match-item))
+               (uri (xref-file-location-file xref-file-location))
+               (uri-path (when (string-match "^csharp:\\(.*\\)$" uri)
+                           (match-string 1 uri)))
+               (target-path (concat (directory-file-name (project-root (project-current)))
+                                    uri-path))
+               (source (plist-get (eglot--request (eglot-current-server)
+                                                  :csharp/metadata
+                                                  `(:textDocument (:uri ,uri)))
+                                  :source)))
+      (with-temp-buffer
+        (insert source)
+        (write-file target-path nil))
+
+      (setf (xref-file-location-file xref-file-location)
+            target-path)))
+  xrefs)
+
+(advice-add #'eglot--lsp-xrefs-for-method :filter-return #'eglot-csharp-ls-metadata)
+
 (jacob-require 'sharper)
 
 (keymap-set jacob-xfk-map "d" #'sharper-main-transient)
+
+(jacob-require 'csproj-mode)
+
+;; TODO: package `sln-mode' for elpa/melpa?
+(jacob-require 'font-lock-ext "https://github.com/sensorflo/font-lock-ext.git") ; dependency of `sln-mode'
+(jacob-require 'sln-mode "https://github.com/sensorflo/sln-mode.git")
+(add-to-list 'auto-mode-alist '("\\.sln\\'". sln-mode))
+
+(jacob-require 'fsharp-mode)
+
+(remove-hook 'project-find-functions #'fsharp-mode-project-root)
 
 (require 'inf-lisp)
 (setopt inferior-lisp-program "sbcl")
@@ -1062,19 +1106,17 @@ hides this information."
 
 (setopt org-agenda-skip-scheduled-if-done t
         org-agenda-skip-deadline-if-done t
-        org-agenda-custom-commands '(("a" "Morning" agenda "" ((org-agenda-tag-filter-preset '("+tickler" "-pm"))
-                                                               (org-agenda-span 'day)))
-                                     ("p" "Evening" agenda "" ((org-agenda-tag-filter-preset '("+tickler" "-am"))
+        org-agenda-custom-commands '(("r" "Routine" agenda "" ((org-agenda-tag-filter-preset '("+tickler"))
                                                                (org-agenda-span 'day)))
                                      ("w" "Work" todo "" ((org-agenda-tag-filter-preset '("+work"))))
-                                     ("x" "Stuff to do today"
+                                     ("j" "Jobs"
                                       agenda ""
                                       ((org-agenda-span 3)
                                        (org-agenda-start-day "-1d")
                                        (org-agenda-time-grid '((daily today require-timed)
                                                                nil
                                                                " ┄┄┄┄┄ " "┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄"))
-                                       (org-agenda-tag-filter-preset '("-tickler"))))))
+                                       (org-agenda-tag-filter-preset '("-tickler" "-work"))))))
 
 (defvar-keymap jacob-org-agenda-map
   "a" #'org-agenda
@@ -1240,6 +1282,10 @@ Intended as before advice for `sql-send-paragraph'."
         major-mode-remap-alist '((csharp-mode . csharp-ts-mode))
         treesit-font-lock-level 4)      ; max level of fontification
 
+(require 'yaml-ts-mode)
+
+(add-to-list 'auto-mode-alist '("\\.ya?ml\\'" . yaml-ts-mode))
+
 (require 'typescript-ts-mode)
 ;; In emacs core there are treesitter modes for js, jsx, ts and
 ;; tsx. Why not use tsx mode for all of them? Only one mode to
@@ -1287,7 +1333,6 @@ Intended as before advice for `sql-send-paragraph'."
   (jacob-xfk-local-key "s" #'gnus-topic-select-group))
 
 (require 'nxml-mode)
-(add-to-list 'auto-mode-alist '("\\.csproj\\'" . nxml-mode))
 (add-to-list 'auto-mode-alist '("Directory.Packages.props" . nxml-mode))
 
 (jacob-require 'key-chord)
@@ -1374,11 +1419,11 @@ active, do not format the buffer."
 
 (jacob-require 'csharp-toolbox "https://github.com/lem102/csharp-toolbox.git") ; TODO: can i make this use ssh?
 
-(keymap-set jacob-xfk-map "c f" #'csharp-toolbox-format-statement)
-(keymap-set jacob-xfk-map "c t" #'csharp-toolbox-run-test)
-(keymap-set jacob-xfk-map "c a" #'csharp-toolbox-toggle-async)
-(keymap-set jacob-xfk-map "c n" #'csharp-toolbox-guess-namespace)
-(keymap-set jacob-xfk-map "c ;" #'csharp-toolbox-wd40)
+;; (keymap-set jacob-xfk-map "c f" #'csharp-toolbox-format-statement)
+;; (keymap-set jacob-xfk-map "c t" #'csharp-toolbox-run-test)
+;; (keymap-set jacob-xfk-map "c a" #'csharp-toolbox-toggle-async)
+;; (keymap-set jacob-xfk-map "c n" #'csharp-toolbox-guess-namespace)
+;; (keymap-set jacob-xfk-map "c ;" #'csharp-toolbox-wd40)
 
 (require 'switch-window)
 (setopt switch-window-shortcut-style 'qwerty
