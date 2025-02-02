@@ -126,6 +126,8 @@ VC is used in `jacob-ensure-installed'."
          ,@body)
        (add-hook ',hook #',function-name))))
 
+(jacob-require 'no-littering)
+
 (jacob-require 'delight)
 
 (jacob-require 'which-key)         ; in vanilla by V30.1
