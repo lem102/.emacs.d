@@ -577,8 +577,7 @@ For use in yasnippets."
 
 (require 'autoinsert)
 (auto-insert-mode t)
-(setopt auto-insert-query t
-        auto-insert-directory (locate-user-emacs-file "templates"))
+(setopt auto-insert-query t)
 
 (require 'tramp)
 (add-to-list 'tramp-remote-path 'tramp-own-remote-path)
