@@ -1,7 +1,7 @@
 # key: meth
 # name: method
 # --
-public void X()
+${1:public$(yas-auto-next (yas-completing-read "Method accessibility: " '("public" "private" "internal" "file")))} ${2:void} ${3:X$(jacob-yas-pascal-case yas-text)}($4)
 {
     $0
 }
