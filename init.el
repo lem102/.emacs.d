@@ -1075,6 +1075,13 @@ hides this information."
    (js . t)
    (mermaid . t)))
 
+;; stolen from doom
+(with-no-warnings
+  (custom-declare-face '+org-todo-active  '((t (:inherit (bold font-lock-constant-face org-todo)))) "")
+  (custom-declare-face '+org-todo-project '((t (:inherit (bold font-lock-doc-face org-todo)))) "")
+  (custom-declare-face '+org-todo-onhold  '((t (:inherit (bold warning org-todo)))) "")
+  (custom-declare-face '+org-todo-cancel  '((t (:inherit (bold error org-todo)))) ""))
+
 (setopt org-startup-folded t
         org-tags-column 0
         org-capture-templates '(("i" "Inbox" entry (file "") "* TODO %?\n:PROPERTIES:\n:CREATED: %U\n:END:"))
@@ -1099,7 +1106,15 @@ hides this information."
                              "|"
                              "OKAY(o)"
                              "YES(y)"
-                             "NO(n)")))
+                             "NO(n)"))
+        org-todo-keyword-faces '(("[-]"  . +org-todo-active)
+                                 ("STRT" . +org-todo-active)
+                                 ("[?]"  . +org-todo-onhold)
+                                 ("WAIT" . +org-todo-onhold)
+                                 ("HOLD" . +org-todo-onhold)
+                                 ("PROJ" . +org-todo-project)
+                                 ("NO"   . +org-todo-cancel)
+                                 ("KILL" . +org-todo-cancel)))
 
 (require 'org-agenda)
 
@@ -1144,6 +1159,9 @@ hides this information."
 (require 'ox-extra)
 
 (ox-extras-activate '(latex-header-blocks ignore-headlines))
+
+(jacob-require 'org-edna)
+(org-edna-mode 1)
 
 (require 'pulse)
 
@@ -1200,13 +1218,11 @@ hides this information."
 
 (add-hook 'calendar-today-visible-hook 'calendar-mark-today)
 
-(setopt diary-date-forms diary-european-date-forms
-        calendar-date-style 'european
+(setopt calendar-date-style 'european
         calendar-date-display-form '((if dayname
                                          (concat dayname ", "))
                                      day "/" month "/" year)
         calendar-week-start-day 1
-        calendar-mark-diary-entries-flag t
         calendar-mark-holidays-flag t)
 
 ;; indent
@@ -1525,7 +1541,11 @@ active, do not format the buffer."
   (jacob-xfk-local-key "SPC , m" #'sly-eval-last-expression)
   (jacob-xfk-local-key "SPC , d" #'sly-compile-defun)
   (jacob-xfk-local-key "SPC , e" #'sly-eval-buffer)
-  (jacob-xfk-local-key "SPC w k" #'sly-edit-definition))
+  (jacob-xfk-local-key "SPC w k" #'sly-edit-definition)
+
+  (unless (sly-connected-p)
+    (save-excursion
+      (sly))))
 
 (jacob-defhookf sly-db-hook
   (jacob-xfk-local-key "q" #'sly-db-quit))
@@ -1535,6 +1555,8 @@ active, do not format the buffer."
 (jacob-require 'sly-macrostep)
 
 (jacob-require 'sly-stepper "https://github.com/joaotavora/sly-stepper.git")
+
+(jacob-require 'sly-quicklisp)
 
 (jacob-require 'sql-indent)
 
