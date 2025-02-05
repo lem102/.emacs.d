@@ -1013,6 +1013,9 @@ hides this information."
   (jacob-xfk-local-key "q" #'quit-window)
   (jacob-xfk-local-key "g" #'prodigy-restart))
 
+(require 'hi-lock)
+(delight 'hi-lock-mode nil t)
+
 (jacob-require 'highlight-defined)
 
 (jacob-require 'hl-todo)
@@ -1287,6 +1290,9 @@ Intended as before advice for `sql-send-paragraph'."
   (auto-revert-mode 1)
   (jacob-xfk-local-key "l" 'doc-view-next-page)
   (jacob-xfk-local-key "j" 'doc-view-previous-page))
+
+(jacob-require 'pdf-tools)
+(pdf-tools-install)
 
 (require 'treesit)
 (setopt treesit-language-source-alist '((c-sharp "https://github.com/tree-sitter/tree-sitter-c-sharp" "master" "src")
