@@ -1163,6 +1163,7 @@ hides this information."
 
 (jacob-require 'org-edna)
 (org-edna-mode 1)
+(delight 'org-edna-mode nil t)
 
 (require 'pulse)
 
