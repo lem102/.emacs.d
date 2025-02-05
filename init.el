@@ -642,7 +642,8 @@ Useful for deleting ^M after `eglot-code-actions'."
   "e" #'eglot
   "a" #'eglot-code-actions
   "r" #'eglot-rename
-  "i" #'eglot-find-implementation)
+  "i" #'eglot-find-implementation
+  "t" #'eglot-find-typeDefinition)
 
 (keymap-set jacob-xfk-map "c" `("Code" . ,jacob-code-map))
 
