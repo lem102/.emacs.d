@@ -84,6 +84,9 @@
 ;; bindings
 (setopt mode-line-percent-position nil)
 
+;; paragraphs
+(setopt sentence-end-double-space nil)
+
 (require 'package)
 
 (defvar jacob-require-already-refreshed nil
