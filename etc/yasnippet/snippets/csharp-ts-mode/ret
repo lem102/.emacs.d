@@ -1,0 +1,4 @@
+# -*- mode: snippet -*-
+# key: ret
+# --
+return $0;

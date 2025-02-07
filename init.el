@@ -1288,6 +1288,10 @@ Intended as before advice for `sql-send-paragraph'."
 
 (keymap-set jacob-xfk-map "s" #'jacob-sql-connect)
 
+(jacob-require 'pg "https://github.com/emarsden/pg-el")
+(jacob-require 'pgmacs "https://github.com/emarsden/pgmacs")
+(require 'pgmacs)
+
 (require 'doc-view)
 (jacob-defhookf doc-view-mode-hook
   (auto-revert-mode 1)
