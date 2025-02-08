@@ -1463,6 +1463,12 @@ active, do not format the buffer."
 (require 'tex)
 (jacob-ensure-installed 'auctex)
 
+(jacob-require 'visual-fill-column)
+
+(jacob-defhookf LaTeX-mode-hook
+  (visual-fill-column-mode 1)
+  (toggle-word-wrap 1))
+
 (add-to-list 'auto-mode-alist '("\\.tex\\'" . latex-mode))
 
 (setopt TeX-auto-save t
