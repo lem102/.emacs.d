@@ -1084,7 +1084,7 @@ hides this information."
   (custom-declare-face '+org-todo-active  '((t (:inherit (bold font-lock-constant-face org-todo)))) "")
   (custom-declare-face '+org-todo-project '((t (:inherit (bold font-lock-doc-face org-todo)))) "")
   (custom-declare-face '+org-todo-onhold  '((t (:inherit (bold warning org-todo)))) "")
-  (custom-declare-face '+org-todo-cancel  '((t (:inherit (bold error org-todo)))) ""))
+  (custom-declare-face '+org-todo-cancel  '((t (:inherit (bold font-lock-comment-face org-todo)))) ""))
 
 (setopt org-startup-folded t
         org-tags-column 0
@@ -1253,6 +1253,8 @@ hides this information."
 
 (setopt compilation-always-kill t
         compilation-scroll-output t)
+
+(keymap-global-set "<f5>" 'recompile)
 
 (require 'sql)
 
