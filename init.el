@@ -165,6 +165,8 @@ VC is used in `jacob-ensure-installed'."
         display-buffer-alist '(((major-mode . sql-interactive-mode)
                                 (display-buffer-reuse-mode-window display-buffer-same-window))
                                ((major-mode . prodigy-mode)
+                                (display-buffer-reuse-mode-window display-buffer-same-window))
+                               ((major-mode . magit-status-mode)
                                 (display-buffer-reuse-mode-window display-buffer-same-window)))
         split-height-threshold nil)
 
@@ -570,10 +572,12 @@ For use in yasnippets."
   (jacob-xfk-local-key "g" #'revert-buffer))
 
 (jacob-require 'magit)
+(keymap-set project-prefix-map "v" #'magit)
 
 (jacob-require 'git-gutter-fringe)
 (global-git-gutter-mode 1)
 (delight 'git-gutter-mode nil t)
+(setopt git-gutter-fr:side 'right-fringe)
 
 (require 'autoinsert)
 (auto-insert-mode t)
@@ -623,7 +627,11 @@ Useful for deleting ^M after `eglot-code-actions'."
 (advice-add 'eglot-code-actions :after #'jacob-remove-ret-character-from-buffer)
 (advice-add 'eglot-rename :after #'jacob-remove-ret-character-from-buffer)
 
-(add-to-list 'eglot-server-programs '((csharp-mode csharp-ts-mode) . ("csharp-ls")))
+(add-to-list 'eglot-server-programs '((csharp-mode csharp-ts-mode) . (lambda (_interactive _project)
+                                                                       "Don't activate eglot when in a C# script."
+                                                                       (unless (string= (file-name-extension (buffer-name (current-buffer)))
+                                                                                        "csx")
+                                                                         '("csharp-ls")))))
 
 (add-to-list 'eglot-server-programs '(sql-mode . "sqls"))
 
@@ -855,6 +863,8 @@ which performs the deletion."
 
 (advice-add #'eglot--lsp-xrefs-for-method :filter-return #'eglot-csharp-ls-metadata)
 
+(add-to-list 'auto-mode-alist '("\\.csx\\'". csharp-ts-mode))
+
 (jacob-require 'sharper)
 
 (keymap-set jacob-xfk-map "d" #'sharper-main-transient)
@@ -976,8 +986,8 @@ hides this information."
 (setopt project-switch-commands '((project-find-file "Find file")
                                   (jacob-project-search "Find regexp")
                                   (project-find-dir "Find directory")
-                                  (project-vc-dir "VC-Dir")
-                                  (project-eshell "Eshell")
+                                  (magit "Version Control")
+                                  (project-eshell "Shell")
                                   (project-compile "Compile")))
 
 (jacob-require 'prodigy)
@@ -1531,6 +1541,10 @@ active, do not format the buffer."
         embark-help-key "h")
 
 (keymap-set xah-fly-command-map "\\" #'embark-act)
+
+(keymap-set embark-flymake-map "a" #'eglot-code-actions)
+
+(push 'embark--ignore-target (alist-get 'eglot-code-actions embark-target-injection-hooks))
 
 (jacob-require 'expand-region)
 (setopt expand-region-contract-fast-key "9")
