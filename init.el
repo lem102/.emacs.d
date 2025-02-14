@@ -1581,6 +1581,85 @@ active, do not format the buffer."
 
 (jacob-require 'gptel)
 
+(gptel-make-tool :name "variable_completions"
+                 :function (lambda (query)
+                             (let (symbols)
+                               (mapatoms (lambda (symbol)
+                                           (let ((name (symbol-name symbol)))
+                                             (when (and (boundp symbol)
+                                                        (string-prefix-p query name))
+                                               (push symbol symbols)))))
+                               symbols))
+                 :description "returns the emacs variables that start with the given prefix"
+                 :args (list '( :name "prefix"
+                                :type string
+                                :description "the prefix that the variables will be filtered by"))
+                 :category "emacs")
+
+(gptel-make-tool :name "function_completions"
+                 :function (lambda (query)
+                             (let (symbols)
+                               (mapatoms (lambda (symbol)
+                                           (let ((name (symbol-name symbol)))
+                                             (when (and (fboundp symbol)
+                                                        (string-prefix-p query name))
+                                               (push symbol symbols)))))
+                               symbols))
+                 :description "returns the emacs functions that start with the given prefix"
+                 :args (list '( :name "prefix"
+                                :type string
+                                :description "the prefix that the functions will be filtered by"))
+                 :category "emacs")
+
+(gptel-make-tool :name "command_completions"
+                 :function (lambda (query)
+                             (let (symbols)
+                               (mapatoms (lambda (symbol)
+                                           (let ((name (symbol-name symbol)))
+                                             (when (and (commandp symbol)
+                                                        (string-prefix-p query name))
+                                               (push symbol symbols)))))
+                               symbols))
+                 :description "returns the emacs commands that start with the given prefix"
+                 :args (list '( :name "prefix"
+                                :type string
+                                :description "the prefix that the commands will be filtered by"))
+                 :category "emacs")
+
+(gptel-make-tool :name "variable_documentation"
+                 :function (lambda (variable-name)
+                             (let ((symbol (intern-soft variable-name)))
+                               (when (and symbol (boundp symbol))
+                                 (documentation-property symbol
+                                                         'variable-documentation))))
+                 :description "returns the documentation for an emacs variable"
+                 :args (list '( :name "variable name"
+                                :type string
+                                :description "the variable name we want to get documentation about"))
+                 :category "emacs")
+
+(gptel-make-tool :name "function_documentation"
+                 :function (lambda (function-name)
+                             (let ((symbol (intern-soft function-name)))
+                               (when (and symbol (fboundp symbol))
+                                 (documentation symbol))))
+                 :description "returns the documentation for an emacs function"
+                 :args (list '( :name "function name"
+                                :type string
+                                :description "the function name we want to get documentation about"))
+                 :category "emacs")
+
+(gptel-make-tool :name "variable_value"
+                 :function (lambda (variable-name)
+                             (let ((symbol (intern-soft variable-name)))
+                               (when (and symbol (boundp symbol))
+                                 (symbol-value symbol))))
+                 :description "returns the value of an emacs variable"
+                 :args (list '( :name "variable name"
+                                :type string
+                                :description "the variable we want to get the value of"))
+                 :category "emacs")
+
 (jacob-require 'gdscript-mode)
 
 (jacob-defhookf gdscript-mode-hook
