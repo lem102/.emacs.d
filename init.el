@@ -1562,11 +1562,9 @@ active, do not format the buffer."
   (jacob-xfk-local-key "SPC , m" #'sly-eval-last-expression)
   (jacob-xfk-local-key "SPC , d" #'sly-compile-defun)
   (jacob-xfk-local-key "SPC , e" #'sly-eval-buffer)
-  (jacob-xfk-local-key "SPC w k" #'sly-edit-definition)
+  (jacob-xfk-local-key "SPC w k" #'sly-edit-definition))
 
-  (unless (sly-connected-p)
-    (save-excursion
-      (sly))))
+(setopt sly-auto-start 'always)
 
 (jacob-defhookf sly-db-hook
   (jacob-xfk-local-key "q" #'sly-db-quit))
@@ -1584,6 +1582,9 @@ active, do not format the buffer."
 (jacob-require 'gptel)
 
 (jacob-require 'gdscript-mode)
+
+(jacob-defhookf gdscript-mode-hook
+  (setopt indent-tabs-mode t))
 
 (push '(gdscript-mode "localhost" 6008) eglot-server-programs)
 
