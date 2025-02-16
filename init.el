@@ -1555,9 +1555,9 @@ active, do not format the buffer."
 
 (push 'embark--ignore-target (alist-get 'eglot-code-actions embark-target-injection-hooks))
 
-(jacob-require 'expand-region)
-(setopt expand-region-contract-fast-key "9")
-(keymap-set xah-fly-command-map "8" #'er/expand-region)
+(jacob-require 'expreg)
+(keymap-set xah-fly-command-map "8" #'expreg-expand)
+(keymap-set xah-fly-command-map "9" #'expreg-contract)
 
 (jacob-require 'verb)
 (add-hook 'org-mode-hook 'verb-mode)
