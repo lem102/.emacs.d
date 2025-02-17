@@ -905,7 +905,8 @@ which performs the deletion."
 (setopt dired-recursive-copies 'always
         dired-dwim-target t
         dired-listing-switches "-hal" ; the h option needs to come first 🙃
-        dired-guess-shell-alist-user '(("\\.mkv\\'" "mpv")))
+        dired-guess-shell-alist-user '(("\\.mkv\\'" "mpv")
+                                       ("\\.mp4\\'" "mpv")))
 
 (require 'dired-aux)
 (setopt dired-vc-rename-file t)
