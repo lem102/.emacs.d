@@ -1,4 +1,4 @@
 # -*- mode: snippet -*-
 # key: cwl
 # --
-Console.WriteLine($0)
+Console.WriteLine($0);

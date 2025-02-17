@@ -1,0 +1,4 @@
+# key: setopt
+# name: setopt
+# --
+(setopt $0)
