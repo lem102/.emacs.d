@@ -306,7 +306,7 @@ prefix argument is provided, just delete the pair characters."
     (let ((content-end (save-excursion
                          (when (comment-search-forward (line-end-position) "NOERROR")
                            (goto-char (match-beginning 0))
-                           (skip-syntax-backward " " (line-beginning-position))
+                           (skip-syntax-backward " <" (line-beginning-position))
                            (unless (= (point) (line-beginning-position))
                              (point))))))
       (if (or (null content-end)
@@ -576,6 +576,8 @@ For use in yasnippets."
 
 (jacob-require 'magit)
 (keymap-set project-prefix-map "v" #'magit)
+
+(jacob-require 'forge)
 
 (jacob-require 'git-gutter-fringe)
 (global-git-gutter-mode 1)
@@ -905,7 +907,8 @@ which performs the deletion."
 (setopt dired-recursive-copies 'always
         dired-dwim-target t
         dired-listing-switches "-hal" ; the h option needs to come first 🙃
-        dired-guess-shell-alist-user '(("\\.mkv\\'" "mpv")))
+        dired-guess-shell-alist-user '(("\\.mkv\\'" "mpv")
+                                       ("\\.mp4\\'" "mpv")))
 
 (require 'dired-aux)
 (setopt dired-vc-rename-file t)
@@ -1606,7 +1609,8 @@ active, do not format the buffer."
 
 (jacob-require 'gptel)
 
-(setopt gptel-default-mode #'org-mode)
+(setopt gptel-default-mode #'org-mode
+        gptel-confirm-tool-calls t)
 
 (gptel-make-tool :name "variable_completions"
                  :function (lambda (query)
