@@ -196,7 +196,7 @@ VC is used in `jacob-ensure-installed'."
 (setopt save-place-forget-unreadable-files t)
 
 (require 'custom)
-(load-theme 'modus-vivendi)
+(load-theme 'modus-operandi)
 
 (require 'tool-bar)
 (tool-bar-mode 0)
@@ -306,7 +306,7 @@ prefix argument is provided, just delete the pair characters."
     (let ((content-end (save-excursion
                          (when (comment-search-forward (line-end-position) "NOERROR")
                            (goto-char (match-beginning 0))
-                           (skip-syntax-backward " " (line-beginning-position))
+                           (skip-syntax-backward " <" (line-beginning-position))
                            (unless (= (point) (line-beginning-position))
                              (point))))))
       (if (or (null content-end)
@@ -576,6 +576,8 @@ For use in yasnippets."
 
 (jacob-require 'magit)
 (keymap-set project-prefix-map "v" #'magit)
+
+(jacob-require 'forge)
 
 (jacob-require 'git-gutter-fringe)
 (global-git-gutter-mode 1)
@@ -1597,6 +1599,8 @@ active, do not format the buffer."
 (jacob-require 'sql-indent)
 
 (jacob-require 'gptel)
+
+(setopt gptel-confirm-tool-calls t)
 
 (gptel-make-tool :name "variable_completions"
                  :function (lambda (query)
