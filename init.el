@@ -36,7 +36,8 @@
                                (cdr (assoc-string system-type
                                                   '(("windows-nt" . "Consolas")
                                                     ("darwin" . "Menlo")
-                                                    ("gnu/linux" . "DejaVu Sans Mono"))))
+                                                    ("gnu/linux" . "DejaVu Sans Mono")
+                                                    ("android" . "Droid Sans Mono"))))
                                jacob-font-size)))
 
 (setopt delete-by-moving-to-trash t
