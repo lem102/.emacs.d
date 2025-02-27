@@ -13,6 +13,9 @@
 (defconst jacob-is-linux (eq system-type 'gnu/linux)
   "Is the current OS linux?")
 
+(defconst jacob-is-android (eq system-type 'android)
+  "Is the current OS android?")
+
 (when (file-exists-p "~/.emacs.d/environment.el")
   (load-file "~/.emacs.d/environment.el"))
 
@@ -36,7 +39,8 @@
                                (cdr (assoc-string system-type
                                                   '(("windows-nt" . "Consolas")
                                                     ("darwin" . "Menlo")
-                                                    ("gnu/linux" . "DejaVu Sans Mono"))))
+                                                    ("gnu/linux" . "DejaVu Sans Mono")
+                                                    ("android" . "Droid Sans Mono"))))
                                jacob-font-size)))
 
 (setopt delete-by-moving-to-trash t
@@ -199,10 +203,12 @@ VC is used in `jacob-ensure-installed'."
 (load-theme 'modus-operandi)
 
 (require 'tool-bar)
-(tool-bar-mode 0)
+(tool-bar-mode (if jacob-is-android 1 0))
+(setopt tool-bar-button-margin 30
+        tool-bar-position 'bottom)
 
 (require 'menu-bar)
-(menu-bar-mode 0)
+(menu-bar-mode 1)
 
 (require 'scroll-bar)
 (scroll-bar-mode 0)
@@ -350,7 +356,7 @@ Otherwise, kill from point to the end of the line."
 
 (keymap-set xah-fly-command-map "'" #'jacob-format-words)
 (keymap-set xah-fly-command-map "-" #'flymake-goto-prev-error)
-(keymap-set xah-fly-command-map "4" #'other-window-prefix)
+;; (keymap-set xah-fly-command-map "4" #'other-window-prefix)
 (keymap-set xah-fly-command-map "9" #'jacob-swap-visible-buffers)
 (keymap-set xah-fly-command-map ";" #'jacob-end-of-line)
 (keymap-set xah-fly-command-map "=" #'flymake-goto-next-error)
@@ -1046,12 +1052,13 @@ hides this information."
 (require 'elisp-mode)
 
 (jacob-defhookf emacs-lisp-mode-hook
+  (setq-local outline-regexp "^(\\(jacob-\\)*require '\\([a-z-]+\\)")
   (flymake-mode 1)
   (highlight-defined-mode 1)
   (add-hook 'before-save-hook 'jacob-indent-buffer nil "LOCAL")
   (setq-local yas-key-syntaxes '("w_")))
 
-(add-to-list 'lisp-imenu-generic-expression '("Features" "^(\\(jacob-\\)*require '\\([a-z-]+\\)" 2))
+(add-to-list 'lisp-imenu-generic-expression '(nil "^(\\(jacob-\\)*require '\\([a-z-]+\\)" 2))
 
 (yas-define-snippets #'emacs-lisp-mode
                      '(("add-hook" "(add-hook '-hook$0 #')")
@@ -1079,6 +1086,8 @@ hides this information."
 (jacob-require 'mermaid-mode)
 
 (jacob-require 'ob-mermaid)
+
+(require 'outline)
 
 (require 'org)
 
@@ -1139,6 +1148,11 @@ hides this information."
                                  ("NO"   . +org-todo-cancel)
                                  ("KILL" . +org-todo-cancel)))
 
+(jacob-defhookf org-mode-hook
+  (visual-fill-column-mode 1)
+  (toggle-truncate-lines 0)
+  (toggle-word-wrap 1))
+
 (require 'org-agenda)
 
 (setopt org-agenda-skip-scheduled-if-done t
@@ -1162,6 +1176,7 @@ hides this information."
 (keymap-set jacob-xfk-map "a" `("Agenda" . ,jacob-org-agenda-map))
 
 (jacob-defhookf org-agenda-mode-hook
+  (hl-line-mode 1)
   (jacob-xfk-local-key "q" #'quit-window)
   (jacob-xfk-local-key "g" #'org-agenda-redo-all))
 
@@ -1552,12 +1567,12 @@ active, do not format the buffer."
 (keymap-set embark-identifier-map "r" #'eglot-rename)
 (push 'embark--ignore-target (alist-get 'eglot-rename embark-target-injection-hooks))
 
-(jacob-require 'expand-region)
-(setopt expand-region-contract-fast-key "9")
-(keymap-set xah-fly-command-map "8" #'er/expand-region)
+(jacob-require 'expreg)
+(keymap-set xah-fly-command-map "8" #'expreg-expand)
+(keymap-set xah-fly-command-map "9" #'expreg-contract)
 
 (jacob-require 'verb)
-(add-hook 'org-mode-hook 'verb-mode)
+(add-hook 'org-mode-hook #'verb-mode)
 (jacob-defhookf verb-response-body-mode-hook
   (jacob-xfk-local-key "q" #'quit-window))
 
@@ -1594,7 +1609,8 @@ active, do not format the buffer."
 
 (jacob-require 'gptel)
 
-(setopt gptel-confirm-tool-calls t)
+(setopt gptel-default-mode #'org-mode
+        gptel-confirm-tool-calls t)
 
 (gptel-make-tool :name "variable_completions"
                  :function (lambda (query)
@@ -1602,13 +1618,13 @@ active, do not format the buffer."
                                (mapatoms (lambda (symbol)
                                            (let ((name (symbol-name symbol)))
                                              (when (and (boundp symbol)
-                                                        (string-prefix-p query name))
+                                                        (string-match-p query name))
                                                (push symbol symbols)))))
                                symbols))
-                 :description "returns the emacs variables that start with the given prefix"
-                 :args (list '( :name "prefix"
+                 :description "get the names of all the variables that match the search query"
+                 :args (list '( :name "search query"
                                 :type string
-                                :description "the prefix that the variables will be filtered by"))
+                                :description "the search query"))
                  :category "emacs")
 
 (gptel-make-tool :name "function_completions"
@@ -1617,13 +1633,13 @@ active, do not format the buffer."
                                (mapatoms (lambda (symbol)
                                            (let ((name (symbol-name symbol)))
                                              (when (and (fboundp symbol)
-                                                        (string-prefix-p query name))
+                                                        (string-match-p query name))
                                                (push symbol symbols)))))
                                symbols))
-                 :description "returns the emacs functions that start with the given prefix"
-                 :args (list '( :name "prefix"
+                 :description "get the names of all the functions that match the search query"
+                 :args (list '( :name "search query"
                                 :type string
-                                :description "the prefix that the functions will be filtered by"))
+                                :description "the search query"))
                  :category "emacs")
 
 (gptel-make-tool :name "command_completions"
@@ -1632,13 +1648,13 @@ active, do not format the buffer."
                                (mapatoms (lambda (symbol)
                                            (let ((name (symbol-name symbol)))
                                              (when (and (commandp symbol)
-                                                        (string-prefix-p query name))
+                                                        (string-match-p query name))
                                                (push symbol symbols)))))
                                symbols))
-                 :description "returns the emacs commands that start with the given prefix"
-                 :args (list '( :name "prefix"
+                 :description "get the names of all the commands that match the search query"
+                 :args (list '( :name "search query"
                                 :type string
-                                :description "the prefix that the commands will be filtered by"))
+                                :description "the search query"))
                  :category "emacs")
 
 (gptel-make-tool :name "variable_documentation"
@@ -1647,10 +1663,10 @@ active, do not format the buffer."
                                (when (and symbol (boundp symbol))
                                  (documentation-property symbol
                                                          'variable-documentation))))
-                 :description "returns the documentation for an emacs variable"
+                 :description "get the documentation for an emacs variable"
                  :args (list '( :name "variable name"
                                 :type string
-                                :description "the variable name we want to get documentation about"))
+                                :description "the variable name"))
                  :category "emacs")
 
 (gptel-make-tool :name "function_documentation"
@@ -1658,10 +1674,10 @@ active, do not format the buffer."
                              (let ((symbol (intern-soft function-name)))
                                (when (and symbol (fboundp symbol))
                                  (documentation symbol))))
-                 :description "returns the documentation for an emacs function"
+                 :description "get the documentation for an emacs function"
                  :args (list '( :name "function name"
                                 :type string
-                                :description "the function name we want to get documentation about"))
+                                :description "the function name"))
                  :category "emacs")
 
 (gptel-make-tool :name "variable_value"
@@ -1669,11 +1685,110 @@ active, do not format the buffer."
                              (let ((symbol (intern-soft variable-name)))
                                (when (and symbol (boundp symbol))
                                  (symbol-value symbol))))
-                 :description "returns the value of an emacs variable"
+                 :description "get the value of an emacs variable"
                  :args (list '( :name "variable name"
                                 :type string
-                                :description "the variable we want to get the value of"))
+                                :description "the variable's name"))
                  :category "emacs")
+
+(gptel-make-tool :name "variable_source"
+                 :function (lambda (variable-name)
+                             (let ((symbol (intern-soft variable-name)))
+                               (when (and symbol (boundp symbol))
+                                 (with-temp-buffer
+                                   (find-variable symbol)
+                                   (buffer-substring-no-properties (point)
+                                                                   (save-excursion
+                                                                     (end-of-defun)
+                                                                     (point)))))))
+                 :description "get the source code of an emacs variable"
+                 :args (list '( :name "variable name"
+                                :type string
+                                :description "the variable's name"))
+                 :category "emacs")
+
+(defun jacob-gptel-function-source (function-name)
+  "Get the source code of an Emacs function called FUNCTION-NAME."
+  (let ((symbol (intern-soft function-name)))
+    (when (and symbol (fboundp symbol))
+      (save-window-excursion
+        (find-function symbol)
+        (buffer-substring-no-properties (point)
+                                        (save-excursion
+                                          (end-of-defun)
+                                          (point)))))))
+
+(gptel-make-tool :name "function_source"
+                 :function #'jacob-gptel-function-source
+                 :description "get the source code of an emacs function"
+                 :args (list '( :name "function name"
+                                :type string
+                                :description "the function's name"))
+                 :category "emacs")
+
+(defun jacob-gptel-symbol-manual-section (symbol-name)
+  "Get the manual node for SYMBOL-NAME."
+  (when-let ((symbol (intern-soft symbol-name)))
+    (save-window-excursion
+      (info-lookup-symbol symbol)
+      (buffer-string))))
+
+(gptel-make-tool :name "symbol_manual_section"
+                 :function #'jacob-gptel-symbol-manual-section
+                 :description "get the manual page of an emacs symbol"
+                 :args (list '( :name "manual page name"
+                                :type string
+                                :description "the name of the manual page"))
+                 :category "emacs")
+
+(defun jacob-gptel-library-source (library-name)
+  "Get the source code of LIBRARY-NAME."
+  (when (locate-library library-name)
+    (save-window-excursion
+      (find-library library-name)
+      (buffer-string))))
+
+(gptel-make-tool :name "library_source"
+                 :function #'jacob-gptel-library-source
+                 :description "get the source code of a library or package in emacs"
+                 :args (list '( :name "library name"
+                                :type string
+                                :description "the library name"))
+                 :category "emacs")
+
+(defun jacob-gptel-manual-node-contents (node-name)
+  "Get the contents of the manul node NODE-NAME."
+  (save-window-excursion
+    (Info-goto-node node-name)
+    (buffer-string)))
+
+(gptel-make-tool :name "manual_node_contents"
+                 :function #'jacob-gptel-manual-node-contents
+                 :description "get the contents of the manual node."
+                 :args (list '( :name "manual node name"
+                                :type string
+                                :description "the manual node's name"))
+                 :category "emacs")
+
+;; manual nodes
+
+(defun jacob-gptel-manual-nodes (manual)
+  "Get all nodes in MANUAL."
+  (info--manual-names nil))
+
+;; manual names
+
+(defun jacob-gptel-manual-names ()
+  "Get a list of all info manual names."
+  (info--manual-names nil))
+
+;; features
+
+;; load paths
+
+;; symbol exists
+
+;; elisp eval ?
 
 (jacob-require 'gdscript-mode)
 
