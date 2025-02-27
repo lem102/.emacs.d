@@ -133,7 +133,7 @@ VC is used in `jacob-ensure-installed'."
 
 (jacob-require 'delight)
 
-(jacob-require 'which-key)         ; in vanilla by V30.1
+(require 'which-key)
 (setopt which-key-idle-delay 0.01) ; needs to be set before loading the mode
 (which-key-mode 1)
 (delight 'which-key-mode nil t)
