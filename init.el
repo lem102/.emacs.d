@@ -1317,26 +1317,15 @@ Intended as before advice for `sql-send-paragraph'."
 (pdf-tools-install)
 
 (require 'treesit)
-(setopt treesit-language-source-alist '((c-sharp "https://github.com/tree-sitter/tree-sitter-c-sharp" "master" "src")
-                                        (javascript "https://github.com/tree-sitter/tree-sitter-javascript" "master" "src")
-                                        (typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src")
-                                        (tsx "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src")
-                                        (yaml "https://github.com/ikatyang/tree-sitter-yaml")
-                                        (gdscript "https://github.com/PrestonKnopp/tree-sitter-gdscript"))
-        treesit-load-name-override-list '((c-sharp "libtree-sitter-csharp" "tree_sitter_c_sharp"))
-        major-mode-remap-alist '((csharp-mode . csharp-ts-mode))
-        treesit-font-lock-level 4)      ; max level of fontification
+(setopt treesit-font-lock-level 4)
+
+(jacob-require 'treesit-auto)
+(global-treesit-auto-mode 1)
+(treesit-auto-add-to-auto-mode-alist)
 
 (require 'yaml-ts-mode)
 
 (add-to-list 'auto-mode-alist '("\\.ya?ml\\'" . yaml-ts-mode))
-
-(require 'typescript-ts-mode)
-;; In emacs core there are treesitter modes for js, jsx, ts and
-;; tsx. Why not use tsx mode for all of them? Only one mode to
-;; configure that way.
-
-(add-to-list 'auto-mode-alist '("\\.[jt]s[xm]?\\'" . tsx-ts-mode))
 
 (require 'message)
 (jacob-defhookf message-mode-hook
