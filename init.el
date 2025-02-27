@@ -200,7 +200,7 @@ VC is used in `jacob-ensure-installed'."
 (setopt save-place-forget-unreadable-files t)
 
 (require 'custom)
-(load-theme 'modus-operandi)
+(load-theme 'modus-vivendi-tinted)
 
 (require 'tool-bar)
 (tool-bar-mode (if jacob-is-android 1 0))
