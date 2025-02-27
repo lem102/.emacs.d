@@ -208,7 +208,9 @@ VC is used in `jacob-ensure-installed'."
 (scroll-bar-mode 0)
 
 (require 'cus-edit)
-(setopt custom-file (make-temp-file "emacs-custom-"))
+(setopt custom-file (concat user-emacs-directory "custom.el"))
+(when (file-exists-p custom-file)
+  (load custom-file))
 
 (require 'generic-x)             ; support for files like `/etc/fstab'
 
@@ -369,7 +371,6 @@ Otherwise, kill from point to the end of the line."
 (keymap-set xah-fly-leader-key-map "d u" #'insert-pair)
 (keymap-set xah-fly-leader-key-map "l 3" #'jacob-async-shell-command)
 (keymap-set xah-fly-leader-key-map "l a" #'global-text-scale-adjust)
-(keymap-set xah-fly-leader-key-map "u" #'kill-current-buffer)
 (keymap-set xah-fly-leader-key-map "w j" #'xref-find-references)
 (keymap-set xah-fly-leader-key-map ", n" #'jacob-eval-and-replace)
 
@@ -884,6 +885,8 @@ which performs the deletion."
 (jacob-require 'fsharp-mode)
 
 (remove-hook 'project-find-functions #'fsharp-mode-project-root)
+
+(setopt compilation-error-regexp-alist (remq 'fsharp compilation-error-regexp-alist))
 
 (require 'inf-lisp)
 (setopt inferior-lisp-program "sbcl")
@@ -1544,8 +1547,10 @@ active, do not format the buffer."
 (keymap-set xah-fly-command-map "\\" #'embark-act)
 
 (keymap-set embark-flymake-map "a" #'eglot-code-actions)
-
 (push 'embark--ignore-target (alist-get 'eglot-code-actions embark-target-injection-hooks))
+
+(keymap-set embark-identifier-map "r" #'eglot-rename)
+(push 'embark--ignore-target (alist-get 'eglot-rename embark-target-injection-hooks))
 
 (jacob-require 'expand-region)
 (setopt expand-region-contract-fast-key "9")
