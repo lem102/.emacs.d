@@ -1175,7 +1175,19 @@ hides this information."
 
 (keymap-set jacob-xfk-map "a" `("Agenda" . ,jacob-org-agenda-map))
 
+(defvar org-agenda-tool-bar-map
+  (let ((map (make-sparse-keymap)))
+    (tool-bar-local-item "checked"
+                         (lambda ()
+                           (interactive)
+                           (org-agenda-todo 'done))
+                         :done
+                         map
+                         :vert-only t)
+    map))
+
 (jacob-defhookf org-agenda-mode-hook
+  (setq-local tool-bar-map org-agenda-tool-bar-map)
   (hl-line-mode 1)
   (jacob-xfk-local-key "q" #'quit-window)
   (jacob-xfk-local-key "g" #'org-agenda-redo-all))
