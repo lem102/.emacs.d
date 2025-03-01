@@ -203,12 +203,12 @@ VC is used in `jacob-ensure-installed'."
 (load-theme 'modus-vivendi-tinted)
 
 (require 'tool-bar)
-(tool-bar-mode (if jacob-is-android 1 0))
-(setopt tool-bar-button-margin 30
-        tool-bar-position 'bottom)
+
+(when jacob-is-android
+  (setopt tool-bar-button-margin 40
+		  tool-bar-position 'bottom))
 
 (require 'menu-bar)
-(menu-bar-mode 1)
 
 (require 'scroll-bar)
 (scroll-bar-mode 0)
@@ -1338,6 +1338,7 @@ Intended as before advice for `sql-send-paragraph'."
 (setopt treesit-font-lock-level 4)
 
 (jacob-require 'treesit-auto)
+
 (global-treesit-auto-mode 1)
 (treesit-auto-add-to-auto-mode-alist)
 
@@ -1796,6 +1797,17 @@ active, do not format the buffer."
   (setopt indent-tabs-mode t))
 
 (push '(gdscript-mode "localhost" 6008) eglot-server-programs)
+
+(require 'gdscript-ts-mode)
+
+(add-to-list 'treesit-auto-recipe-list (make-treesit-auto-recipe
+										:lang 'gdscript
+										:ts-mode 'gdscript-ts-mode
+										:remap 'gdscript-mode
+										:url "https://github.com/PrestonKnopp/tree-sitter-gdscript.git"
+										:ext "\\.gd\\'"))
+
+(add-to-list 'treesit-auto-langs 'gdscript)
 
 ;; (jacob-require 'slack)
 
