@@ -137,7 +137,7 @@ VC is used in `jacob-ensure-installed'."
 
 (jacob-require 'delight)
 
-(require 'which-key)
+(jacob-require 'which-key)         ; when upgrade to 30.1, switch to builtin
 (setopt which-key-idle-delay 0.01) ; needs to be set before loading the mode
 (which-key-mode 1)
 (delight 'which-key-mode nil t)
@@ -234,6 +234,9 @@ VC is used in `jacob-ensure-installed'."
         bookmark-watch-bookmark-file 'silent)
 
 (require 'flymake)
+
+(keymap-global-set "M-n" #'flymake-goto-next-error)
+(keymap-global-set "M-p" #'flymake-goto-prev-error)
 
 (setopt xah-fly-use-control-key nil
         xah-fly-use-meta-key nil) ; must be set before requiring `xah-fly-keys'
@@ -350,8 +353,15 @@ Otherwise, kill from point to the end of the line."
 (defalias 'jacob-return-macro
   (kmacro "<return>"))
 
-(keymap-global-set "<f7>" #'xah-fly-leader-key-map)
+(keymap-global-set "C-a" #'jacob-beginning-of-line)
+(keymap-global-set "C-e" #'jacob-end-of-line)
+(keymap-global-set "C-k" #'jacob-kill-line)
+(keymap-global-set "<backspace>" #'jacob-backspace)
+(keymap-global-set "M-;" #'xah-comment-dwim)
+(keymap-global-set "C-w" #'xah-cut-line-or-region)
+(keymap-global-set "M-w" #'xah-copy-line-or-region)
 
+(keymap-global-set "<f7>" #'xah-fly-leader-key-map)
 (keymap-global-set "M-SPC" #'xah-fly-command-mode-activate)
 
 (keymap-set xah-fly-command-map "'" #'jacob-format-words)
