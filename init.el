@@ -208,7 +208,7 @@ VC is used in `jacob-ensure-installed'."
         tool-bar-position 'bottom)
 
 (require 'menu-bar)
-(menu-bar-mode 1)
+(menu-bar-mode (if jacob-is-android 1 0))
 
 (require 'scroll-bar)
 (scroll-bar-mode 0)
@@ -251,7 +251,7 @@ VC is used in `jacob-ensure-installed'."
                       command)))
 
 (xah-fly-keys-set-layout "qwerty")
-(xah-fly-keys 1)
+;; (xah-fly-keys 1)
 
 (defvar-keymap jacob-xfk-map)
 
@@ -264,9 +264,9 @@ VC is used in `jacob-ensure-installed'."
 (defun jacob-backspace ()
   "DWIM backspace command.
 
-If character to the left is a pair character as determined by
-`insert-pair-alist', kill from the pair to its match.  If the
-prefix argument is provided, just delete the pair characters."
+  If character to the left is a pair character as determined by
+  `insert-pair-alist', kill from the pair to its match.  If the
+  prefix argument is provided, just delete the pair characters."
   (interactive)
   (undo-boundary)
   (if (region-active-p)
@@ -325,11 +325,11 @@ prefix argument is provided, just delete the pair characters."
 (defun jacob-kill-line ()
   "If region is active, kill it.  Otherwise:
 
-If point is at the beginning of the line, kill the whole line.
+  If point is at the beginning of the line, kill the whole line.
 
-If point is at the end of the line, kill until the beginning of the line.
+  If point is at the end of the line, kill until the beginning of the line.
 
-Otherwise, kill from point to the end of the line."
+  Otherwise, kill from point to the end of the line."
   (interactive)
   (cond ((region-active-p)
          (call-interactively #'kill-region))
@@ -508,6 +508,10 @@ For use in yasnippets."
   (jacob-xfk-local-key "w" #'jacob-help-edit))
 
 (jacob-require 'helpful)
+
+(keymap-global-set "C-h v" #'helpful-variable)
+(keymap-global-set "C-h f" #'helpful-callable)
+(keymap-global-set "C-h k" #'helpful-key)
 
 (keymap-set xah-fly-leader-key-map "j k" #'helpful-callable)
 (keymap-set xah-fly-leader-key-map "j l" #'helpful-variable)
@@ -1915,12 +1919,12 @@ active, do not format the buffer."
                                              default-directory))
                           "Async shell command: ")
                         nil nil
-			            (let ((filename
-			                   (cond
-				                (buffer-file-name)
-				                ((eq major-mode 'dired-mode)
-				                 (dired-get-filename nil t)))))
-			              (and filename (file-relative-name filename))))))
+                        (let ((filename
+                               (cond
+                                (buffer-file-name)
+                                ((eq major-mode 'dired-mode)
+                                 (dired-get-filename nil t)))))
+                          (and filename (file-relative-name filename))))))
   (async-shell-command command
                        (format "* %s %s *" default-directory command)))
 
