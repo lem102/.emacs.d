@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# key: defun
+# --
+(defun ${1:x} ($2)
+  $0)

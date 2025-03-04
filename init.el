@@ -203,9 +203,10 @@ VC is used in `jacob-ensure-installed'."
 (load-theme 'modus-vivendi-tinted)
 
 (require 'tool-bar)
-(tool-bar-mode (if jacob-is-android 1 0))
-(setopt tool-bar-button-margin 30
-        tool-bar-position 'bottom)
+
+(when jacob-is-android
+  (setopt tool-bar-button-margin 40
+		  tool-bar-position 'bottom))
 
 (require 'menu-bar)
 (menu-bar-mode (if jacob-is-android 1 0))
@@ -1179,7 +1180,19 @@ hides this information."
 
 (keymap-set jacob-xfk-map "a" `("Agenda" . ,jacob-org-agenda-map))
 
+(defvar org-agenda-tool-bar-map
+  (let ((map (make-sparse-keymap)))
+    (tool-bar-local-item "checked"
+                         (lambda ()
+                           (interactive)
+                           (org-agenda-todo 'done))
+                         :done
+                         map
+                         :vert-only t)
+    map))
+
 (jacob-defhookf org-agenda-mode-hook
+  (setq-local tool-bar-map org-agenda-tool-bar-map)
   (hl-line-mode 1)
   (jacob-xfk-local-key "q" #'quit-window)
   (jacob-xfk-local-key "g" #'org-agenda-redo-all))
@@ -1342,6 +1355,7 @@ Intended as before advice for `sql-send-paragraph'."
 (setopt treesit-font-lock-level 4)
 
 (jacob-require 'treesit-auto)
+
 (global-treesit-auto-mode 1)
 (treesit-auto-add-to-auto-mode-alist)
 
@@ -1800,6 +1814,17 @@ active, do not format the buffer."
   (setopt indent-tabs-mode t))
 
 (push '(gdscript-mode "localhost" 6008) eglot-server-programs)
+
+(require 'gdscript-ts-mode)
+
+(add-to-list 'treesit-auto-recipe-list (make-treesit-auto-recipe
+										:lang 'gdscript
+										:ts-mode 'gdscript-ts-mode
+										:remap 'gdscript-mode
+										:url "https://github.com/PrestonKnopp/tree-sitter-gdscript.git"
+										:ext "\\.gd\\'"))
+
+(add-to-list 'treesit-auto-langs 'gdscript)
 
 ;; (jacob-require 'slack)
 
