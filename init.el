@@ -203,7 +203,7 @@ VC is used in `jacob-ensure-installed'."
 (load-theme 'modus-vivendi)
 
 (require 'tool-bar)
-
+(tool-bar-mode (if jacob-is-android 1 0))
 (when jacob-is-android
   (setopt tool-bar-button-margin 40
 		  tool-bar-position 'bottom))
@@ -361,6 +361,38 @@ VC is used in `jacob-ensure-installed'."
 (keymap-global-set "M-;" #'xah-comment-dwim)
 (keymap-global-set "C-w" #'xah-cut-line-or-region)
 (keymap-global-set "M-w" #'xah-copy-line-or-region)
+
+(defvar-keymap jacob-movement-repeat-map
+  :repeat t
+  "n" #'next-line
+  "p" #'previous-line
+  "a" #'jacob-beginning-of-line
+  "e" #'jacob-end-of-line
+  "f" #'forward-word
+  "b" #'backward-word)
+
+(defvar-keymap jacob-character-movement-repeat-map
+  :repeat t
+  "f" #'forward-char
+  "b" #'backward-char)
+
+(defvar-keymap jacob-sexp-repeat-map
+  :repeat t
+  "f" #'forward-sexp
+  "b" #'backward-sexp
+  "n" #'forward-list
+  "p" #'backward-list
+  "u" #'backward-up-list
+  "d" #'down-list
+  "k" #'kill-sexp
+  "<backspace>" #'backward-kill-sexp
+  "a" #'beginning-of-defun
+  "e" #'end-of-defun)
+
+(defvar-keymap jacob-isearch-repeat-map
+  :repeat t
+  "s" #'isearch-repeat-forward
+  "r" #'isearch-repeat-backward)
 
 (keymap-global-set "<f7>" #'xah-fly-leader-key-map)
 (keymap-global-set "M-SPC" #'xah-fly-command-mode-activate)
@@ -1596,6 +1628,13 @@ active, do not format the buffer."
 (push 'embark--ignore-target (alist-get 'eglot-rename embark-target-injection-hooks))
 
 (jacob-require 'expreg)
+
+(keymap-global-set "C-c SPC" #'expreg-expand)
+
+(defvar-keymap expreg-repeat-map
+  :repeat t
+  "SPC" #'expreg-expand)
+
 (keymap-set xah-fly-command-map "8" #'expreg-expand)
 (keymap-set xah-fly-command-map "9" #'expreg-contract)
 
