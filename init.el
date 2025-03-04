@@ -200,7 +200,7 @@ VC is used in `jacob-ensure-installed'."
 (setopt save-place-forget-unreadable-files t)
 
 (require 'custom)
-(load-theme 'modus-vivendi-tinted)
+(load-theme 'modus-vivendi)
 
 (require 'tool-bar)
 
@@ -1806,7 +1806,7 @@ active, do not format the buffer."
 (jacob-defhookf gdscript-mode-hook
   (setopt indent-tabs-mode t))
 
-(push '(gdscript-mode "localhost" 6008) eglot-server-programs)
+(push '((gdscript-mode gdscript-ts-mode) "localhost" 6008) eglot-server-programs)
 
 (require 'gdscript-ts-mode)
 
