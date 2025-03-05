@@ -1,5 +1,5 @@
+# -*- mode: snippet -*-
 # key: save-excursion
-# name: save-excursion
 # --
 (save-excursion
   $0)
