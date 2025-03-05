@@ -1452,27 +1452,45 @@ Intended as before advice for `sql-send-paragraph'."
 
 (jacob-require 'avy)
 
-(defun jacob-avy-action-xref (pt)
-  "Call `xref-find-definitions' at PT."
-  (save-excursion
-    (goto-char pt)
-    (call-interactively #'xref-find-definitions))
+(defun jacob-avy-action-xref (point)
+  "Call `xref-find-definitions' at POINT."
+  (goto-char point)
+  (call-interactively #'xref-find-definitions)
   (select-window
    (cdr (ring-ref avy-ring 0)))
   t)
 
+(defun jacob-avy-action-kill-line (point)
+  "Kill line at POINT."
+  (save-excursion
+	(goto-char point)
+	(beginning-of-line)
+	(kill-line)
+	(delete-char 1)))
+
+(defun jacob-avy-action-copy-line (point)
+  "Copy line at POINT."
+  (save-excursion
+	(goto-char point)
+	(beginning-of-line)
+	(copy-region-as-kill (line-beginning-position) (line-end-position))))
+
 (setopt avy-keys '(?a ?s ?d ?f ?g ?h ?j ?l ?\;)
-        avy-dispatch-alist '((?y . avy-action-yank)
-                             (?k . avy-action-kill-stay)
-                             (?K . avy-action-kill-move)
-                             (?t . avy-action-teleport)
-                             (?m . avy-action-mark)
-                             (?w . avy-action-copy)
-                             (?i . avy-action-ispell)
-                             (?z . avy-action-zap-to-char)
-                             (?. . jacob-avy-action-xref)))
+		avy-dispatch-alist '((?y . avy-action-yank)
+							 (?k . avy-action-kill-stay)
+							 (?K . jacob-avy-action-kill-line)
+							 (?t . avy-action-teleport)
+							 (?m . avy-action-mark)
+							 (?w . avy-action-copy)
+							 (?W . jacob-avy-action-copy-line)
+							 (?i . avy-action-ispell)
+							 (?z . avy-action-zap-to-char)
+							 (?. . jacob-avy-action-xref)))
 
 (key-chord-define-global "fj" #'avy-goto-char-timer)
+
+(keymap-global-set "M-j" #'avy-goto-char-timer)
+(keymap-set isearch-mode-map "M-j" #'avy-isearch)
 
 (jacob-require 'apheleia)
 
@@ -1631,7 +1649,7 @@ active, do not format the buffer."
 
 (keymap-global-set "C-c SPC" #'expreg-expand)
 
-(defvar-keymap expreg-repeat-map
+(defvar-keymap jacob-expreg-repeat-map
   :repeat t
   "SPC" #'expreg-expand)
 
