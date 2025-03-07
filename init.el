@@ -255,7 +255,7 @@ VC is used in `jacob-ensure-installed'."
                       command)))
 
 (xah-fly-keys-set-layout "qwerty")
-;; (xah-fly-keys 1)
+(xah-fly-keys 1)
 
 (defvar-keymap jacob-xfk-map)
 
