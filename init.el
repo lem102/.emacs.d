@@ -1895,11 +1895,11 @@ active, do not format the buffer."
 (require 'gdscript-ts-mode)
 
 (add-to-list 'treesit-auto-recipe-list (make-treesit-auto-recipe
-										:lang 'gdscript
-										:ts-mode 'gdscript-ts-mode
-										:remap 'gdscript-mode
-										:url "https://github.com/PrestonKnopp/tree-sitter-gdscript.git"
-										:ext "\\.gd\\'"))
+                                        :lang 'gdscript
+                                        :ts-mode 'gdscript-ts-mode
+                                        :remap 'gdscript-mode
+                                        :url "https://github.com/PrestonKnopp/tree-sitter-gdscript.git"
+                                        :ext "\\.gd\\'"))
 
 (add-to-list 'treesit-auto-langs 'gdscript)
 
