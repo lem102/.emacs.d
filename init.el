@@ -1881,6 +1881,8 @@ active, do not format the buffer."
 
 ;; load paths
 
+(add-to-list 'load-path (concat "~/.emacs.d/" "lisp"))
+
 ;; symbol exists
 
 ;; elisp eval ?
@@ -1902,6 +1904,9 @@ active, do not format the buffer."
                                         :ext "\\.gd\\'"))
 
 (add-to-list 'treesit-auto-langs 'gdscript)
+
+(when jacob-is-linux
+  (require 'jacob-linux))
 
 ;; (jacob-require 'slack)
 
