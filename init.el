@@ -1339,7 +1339,8 @@ hides this information."
 (require 'compile)
 
 (jacob-defhookf compilation-mode-hook
-  (jacob-xfk-local-key "g" #'recompile))
+  (jacob-xfk-local-key "g" #'recompile)
+  (jacob-xfk-local-key "q" #'quit-window))
 
 (jacob-defhookf compilation-filter-hook
   (ansi-color-compilation-filter))
