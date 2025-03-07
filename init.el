@@ -19,6 +19,8 @@
 (when (file-exists-p "~/.emacs.d/environment.el")
   (load-file "~/.emacs.d/environment.el"))
 
+(add-to-list 'load-path (concat (file-name-directory user-init-file) "lisp"))
+
 ;; c source code
 (setq-default truncate-lines nil)
 (setq-default tab-width 4) ; set default tab char's display width to 4 spaces
@@ -93,31 +95,6 @@
 
 (require 'package)
 
-(defvar jacob-require-already-refreshed nil
-  "If nil, haven't refreshed packages with `jacob-require' yet.")
-
-(defun jacob-ensure-installed (package &optional vc)
-  "Ensure PACKAGE is installed.
-
-If VC is provided, it is passed to `package-vc-install' to
-install the package rather than using `package-install'."
-  (unless (package-installed-p package)
-    (if vc
-        (package-vc-install vc)
-      (unless jacob-require-already-refreshed
-        (package-refresh-contents)
-        (setq jacob-require-already-refreshed t))
-      (package-install package))))
-
-(defmacro jacob-require (package &optional vc)
-  "Ensure the PACKAGE is installed, then `require' it.
-
-VC is used in `jacob-ensure-installed'."
-  `(progn
-     (jacob-ensure-installed ,package ,vc)
-     (setopt elisp-flymake-byte-compile-load-path load-path) ; make flymake aware of new package
-     (require ,package)))
-
 (setopt package-archives '(("gnu" . "https://elpa.gnu.org/packages/")
                            ("nongnu" . "https://elpa.nongnu.org/nongnu/")
                            ("melpa" . "https://melpa.org/packages/")))
@@ -132,6 +109,8 @@ VC is used in `jacob-ensure-installed'."
          ,(format "Auto-generated hook function for `%s'." hook-name)
          ,@body)
        (add-hook ',hook #',function-name))))
+
+(require 'jacob-require)
 
 (jacob-require 'no-littering)
 
@@ -1025,20 +1004,6 @@ hides this information."
   "Completion for the grh alias on git branches."
   (pcomplete-here* (jacob-git-get-branches t)))
 
-(require 'esh-proc)
-
-(defun jacob-confirm-terminate-batch-job ()
-  "Type y and enter to terminate batch job after sending ^C."
-  (when (not (null eshell-process-list))
-    (insert "y")
-    (eshell-send-input)))
-
-(when jacob-is-windows
-  (advice-add 'eshell-interrupt-process :after #'jacob-confirm-terminate-batch-job))
-
-(jacob-require 'eat)
-(add-hook 'eshell-mode-hook #'eat-eshell-mode)
-
 (require 'eldoc)
 (global-eldoc-mode 1)
 (delight 'eldoc-mode nil t)
@@ -1327,10 +1292,6 @@ hides this information."
 ;; make tab key call indent command or insert tab character, depending on cursor position
 (setq-default tab-always-indent 'complete)
 
-(require 'grep)
-(when jacob-is-windows
-  (setopt find-program "C:/Program Files (x86)/GnuWin32/bin/find.exe"))
-
 (require 'winner)
 (winner-mode 1)
 (keymap-set xah-fly-command-map "1" #'winner-undo)
@@ -1390,9 +1351,6 @@ Intended as before advice for `sql-send-paragraph'."
   (auto-revert-mode 1)
   (jacob-xfk-local-key "l" 'doc-view-next-page)
   (jacob-xfk-local-key "j" 'doc-view-previous-page))
-
-(jacob-require 'pdf-tools)
-(pdf-tools-install)
 
 (require 'treesit)
 (setopt treesit-font-lock-level 4)
@@ -1571,7 +1529,7 @@ active, do not format the buffer."
 (keymap-set xah-fly-command-map "," #'switch-window)
 
 (require 'tex)
-(jacob-ensure-installed 'auctex)
+(jacob-require-ensure-installed 'auctex)
 
 (jacob-require 'visual-fill-column)
 
@@ -1881,8 +1839,6 @@ active, do not format the buffer."
 
 ;; load paths
 
-(add-to-list 'load-path (concat "~/.emacs.d/" "lisp"))
-
 ;; symbol exists
 
 ;; elisp eval ?
@@ -1907,6 +1863,9 @@ active, do not format the buffer."
 
 (when jacob-is-linux
   (require 'jacob-linux))
+
+(when jacob-is-windows
+  (require 'jacob-windows))
 
 ;; (jacob-require 'slack)
 

@@ -2,6 +2,14 @@
 ;;; Commentary:
 ;;; Code:
 
+(require 'jacob-require)
+
+(jacob-require 'eat)
+(add-hook 'eshell-mode-hook #'eat-eshell-mode)
+
+(jacob-require 'pdf-tools)
+(pdf-tools-install)
+
 (jacob-require 'pulseaudio-control)
 
 ;; use `pulseaudio-control-select-sink-by-name' to set the "sink" (the
