@@ -1463,30 +1463,39 @@ Intended as before advice for `sql-send-paragraph'."
 
 (defun jacob-avy-action-kill-line (point)
   "Kill line at POINT."
-  (save-excursion
-	(goto-char point)
-	(beginning-of-line)
-	(kill-line)
-	(delete-char 1)))
+  (save-window-excursion
+    (goto-char point)
+    (beginning-of-line)
+    (kill-line)
+    (delete-char 1)))
 
 (defun jacob-avy-action-copy-line (point)
   "Copy line at POINT."
   (save-excursion
-	(goto-char point)
-	(beginning-of-line)
-	(copy-region-as-kill (line-beginning-position) (line-end-position))))
+    (goto-char point)
+    (copy-region-as-kill (line-beginning-position) (line-end-position)))
+  (let ((dat (ring-ref avy-ring 0)))
+    (select-frame-set-input-focus
+     (window-frame (cdr dat)))
+    (select-window (cdr dat))
+    (goto-char (car dat))))
+
+(defun jacob-avy-action-yank-line (pt)
+  "Copy sexp starting on PT."
+  (jacob-avy-action-copy-line pt)
+  (yank))
 
 (setopt avy-keys '(?a ?s ?d ?f ?g ?h ?j ?l ?\;)
-		avy-dispatch-alist '((?y . avy-action-yank)
-							 (?k . avy-action-kill-stay)
-							 (?K . jacob-avy-action-kill-line)
-							 (?t . avy-action-teleport)
-							 (?m . avy-action-mark)
-							 (?w . avy-action-copy)
-							 (?W . jacob-avy-action-copy-line)
-							 (?i . avy-action-ispell)
-							 (?z . avy-action-zap-to-char)
-							 (?. . jacob-avy-action-xref)))
+        avy-dispatch-alist '((?v . avy-action-yank)
+                             (?V . jacob-avy-action-yank-line)
+                             (?x . avy-action-kill-stay)
+                             (?X . jacob-avy-action-kill-line)
+                             (?t . avy-action-mark)
+                             (?c . avy-action-copy)
+                             (?C . jacob-avy-action-copy-line)
+                             (?i . avy-action-ispell)
+                             (?z . avy-action-zap-to-char)
+                             (?. . jacob-avy-action-xref)))
 
 (key-chord-define-global "fj" #'avy-goto-char-timer)
 
