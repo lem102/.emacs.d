@@ -1218,9 +1218,9 @@ hides this information."
 
 (setopt org-latex-pdf-process (list "latexmk -pdf %f -shell-escape")) ; probably requires texlive
 
-(require 'ox-extra)
+;; (require 'ox-extra)
 
-(ox-extras-activate '(latex-header-blocks ignore-headlines))
+;; (ox-extras-activate '(latex-header-blocks ignore-headlines))
 
 (jacob-require 'org-edna)
 (org-edna-mode 1)
@@ -1523,13 +1523,13 @@ active, do not format the buffer."
 ;; (keymap-set jacob-xfk-map "c n" #'csharp-toolbox-guess-namespace)
 ;; (keymap-set jacob-xfk-map "c ;" #'csharp-toolbox-wd40)
 
-(require 'switch-window)
+(jacob-require 'switch-window)
 (setopt switch-window-shortcut-style 'qwerty
         switch-window-threshold 3)
 (keymap-set xah-fly-command-map "," #'switch-window)
 
-(require 'tex)
 (jacob-require-ensure-installed 'auctex)
+(require 'tex)
 
 (jacob-require 'visual-fill-column)
 
