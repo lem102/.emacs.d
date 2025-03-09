@@ -1063,6 +1063,11 @@ hides this information."
 
 (require 'elisp-mode)
 
+(defun jacob-indent-buffer ()
+  "Indent whole buffer.  Designed for use in `before-save-hook'."
+  (unless (ignore-errors smerge-mode)
+    (indent-region (point-min) (point-max))))
+
 (jacob-defhookf emacs-lisp-mode-hook
   (setq-local outline-regexp "^(\\(jacob-\\)*require '\\([a-z-]+\\)")
   (flymake-mode 1)
@@ -1218,9 +1223,9 @@ hides this information."
 
 (setopt org-latex-pdf-process (list "latexmk -pdf %f -shell-escape")) ; probably requires texlive
 
-(require 'ox-extra)
+;; (require 'ox-extra)
 
-(ox-extras-activate '(latex-header-blocks ignore-headlines))
+;; (ox-extras-activate '(latex-header-blocks ignore-headlines))
 
 (jacob-require 'org-edna)
 (org-edna-mode 1)
@@ -1341,10 +1346,6 @@ Intended as before advice for `sql-send-paragraph'."
 (advice-add #'sql-send-paragraph :before #'jacob-sqli-end-of-buffer)
 
 (keymap-set jacob-xfk-map "s" #'jacob-sql-connect)
-
-(jacob-require 'pg "https://github.com/emarsden/pg-el")
-(jacob-require 'pgmacs "https://github.com/emarsden/pgmacs")
-(require 'pgmacs)
 
 (require 'doc-view)
 (jacob-defhookf doc-view-mode-hook
@@ -1484,7 +1485,8 @@ active, do not format the buffer."
 (delight 'rainbow-mode)
 
 (jacob-require 'eglot-booster "https://github.com/jdtsmith/eglot-booster")
-(eglot-booster-mode 1)
+(when (executable-find "emacs-lsp-booster")
+  (eglot-booster-mode 1))
 
 (jacob-require 'dape)
 
@@ -1523,13 +1525,13 @@ active, do not format the buffer."
 ;; (keymap-set jacob-xfk-map "c n" #'csharp-toolbox-guess-namespace)
 ;; (keymap-set jacob-xfk-map "c ;" #'csharp-toolbox-wd40)
 
-(require 'switch-window)
+(jacob-require 'switch-window)
 (setopt switch-window-shortcut-style 'qwerty
         switch-window-threshold 3)
 (keymap-set xah-fly-command-map "," #'switch-window)
 
-(require 'tex)
 (jacob-require-ensure-installed 'auctex)
+(require 'tex)
 
 (jacob-require 'visual-fill-column)
 
@@ -1654,7 +1656,7 @@ active, do not format the buffer."
 
 (jacob-require 'sly-macrostep)
 
-(jacob-require 'sly-stepper "https://github.com/joaotavora/sly-stepper.git")
+;; (jacob-require 'sly-stepper "https://github.com/joaotavora/sly-stepper.git")
 
 (jacob-require 'sly-quicklisp)
 
@@ -1938,11 +1940,6 @@ active, do not format the buffer."
 
 
 ;; personal functions
-
-(defun jacob-indent-buffer ()
-  "Indent whole buffer.  Designed for use in `before-save-hook'."
-  (unless (ignore-errors smerge-mode)
-    (indent-region (point-min) (point-max))))
 
 (define-minor-mode jacob-screen-sharing-mode
   "Minor mode for sharing screens."

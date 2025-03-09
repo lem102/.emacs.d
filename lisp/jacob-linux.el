@@ -8,7 +8,6 @@
 (add-hook 'eshell-mode-hook #'eat-eshell-mode)
 
 (jacob-require 'pdf-tools)
-(pdf-tools-install)
 
 (jacob-require 'pulseaudio-control)
 
