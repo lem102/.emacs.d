@@ -1063,6 +1063,11 @@ hides this information."
 
 (require 'elisp-mode)
 
+(defun jacob-indent-buffer ()
+  "Indent whole buffer.  Designed for use in `before-save-hook'."
+  (unless (ignore-errors smerge-mode)
+    (indent-region (point-min) (point-max))))
+
 (jacob-defhookf emacs-lisp-mode-hook
   (setq-local outline-regexp "^(\\(jacob-\\)*require '\\([a-z-]+\\)")
   (flymake-mode 1)
@@ -1650,7 +1655,7 @@ active, do not format the buffer."
 
 (jacob-require 'sly-macrostep)
 
-(jacob-require 'sly-stepper "https://github.com/joaotavora/sly-stepper.git")
+;; (jacob-require 'sly-stepper "https://github.com/joaotavora/sly-stepper.git")
 
 (jacob-require 'sly-quicklisp)
 
@@ -1934,11 +1939,6 @@ active, do not format the buffer."
 
 
 ;; personal functions
-
-(defun jacob-indent-buffer ()
-  "Indent whole buffer.  Designed for use in `before-save-hook'."
-  (unless (ignore-errors smerge-mode)
-    (indent-region (point-min) (point-max))))
 
 (define-minor-mode jacob-screen-sharing-mode
   "Minor mode for sharing screens."
