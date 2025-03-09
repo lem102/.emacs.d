@@ -1485,7 +1485,8 @@ active, do not format the buffer."
 (delight 'rainbow-mode)
 
 (jacob-require 'eglot-booster "https://github.com/jdtsmith/eglot-booster")
-(eglot-booster-mode 1)
+(when (executable-find "emacs-lsp-booster")
+  (eglot-booster-mode 1))
 
 (jacob-require 'dape)
 
