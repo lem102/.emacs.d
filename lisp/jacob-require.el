@@ -21,10 +21,9 @@ install the package rather than using `package-install'."
 (defmacro jacob-require (package &optional vc)
   "Ensure the PACKAGE is installed, then `require' it.
 
-VC is used in `jacob-ensure-installed'."
+VC is a url pointing to a git repository."
   `(progn
      (jacob-require-ensure-installed ,package ,vc)
-     (setopt elisp-flymake-byte-compile-load-path load-path) ; make flymake aware of new package
      (require ,package)))
 
 (provide 'jacob-require)
