@@ -1063,6 +1063,13 @@ hides this information."
 
 (require 'elisp-mode)
 
+(defun jacob-move-past-close-and-reindent ()
+  "Advice for `move-past-close-and-reindent'."
+  (when (bolp)
+    (delete-blank-lines)))
+
+(advice-add #'move-past-close-and-reindent :after #'jacob-move-past-close-and-reindent)
+
 (defun jacob-indent-buffer ()
   "Indent whole buffer.  Designed for use in `before-save-hook'."
   (unless (ignore-errors smerge-mode)
@@ -1099,6 +1106,11 @@ hides this information."
 (setopt elisp-flymake-byte-compile-load-path load-path)
 
 (keymap-set lisp-interaction-mode-map "C-j" #'jacob-eval-print-last-sexp)
+(keymap-set lisp-interaction-mode-map "(" #'insert-parentheses)
+(keymap-set lisp-interaction-mode-map ")" #'move-past-close-and-reindent)
+
+(keymap-set emacs-lisp-mode-map "(" #'insert-parentheses)
+(keymap-set emacs-lisp-mode-map ")" #'move-past-close-and-reindent)
 
 (jacob-require 'mermaid-mode)
 
