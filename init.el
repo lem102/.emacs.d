@@ -1231,6 +1231,8 @@ hides this information."
 (org-edna-mode 1)
 (delight 'org-edna-mode nil t)
 
+(jacob-require 'denote)
+
 (require 'pulse)
 
 (defun jacob-pulse-line (&rest _)
