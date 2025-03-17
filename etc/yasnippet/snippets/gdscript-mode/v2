@@ -1,0 +1,4 @@
+# -*- mode: snippet -*-
+# key: v2
+# --
+Vector2($0)
