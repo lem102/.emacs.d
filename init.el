@@ -236,6 +236,12 @@
 (xah-fly-keys-set-layout "qwerty")
 (xah-fly-keys 1)
 
+(defun jacob-modeline-color-on () (set-face-background 'mode-line "firebrick"))
+(defun jacob-modeline-color-off () (set-face-background 'mode-line "dark olive green"))
+
+(add-hook 'xah-fly-command-mode-activate-hook 'jacob-modeline-color-on)
+(add-hook 'xah-fly-insert-mode-activate-hook  'jacob-modeline-color-off)
+
 (defvar-keymap jacob-xfk-map)
 
 (keymap-set xah-fly-leader-key-map "SPC" jacob-xfk-map)
@@ -1374,6 +1380,12 @@ Intended as before advice for `sql-send-paragraph'."
 
 (global-treesit-auto-mode 1)
 (treesit-auto-add-to-auto-mode-alist)
+
+(require 'typescript-ts-mode)
+
+(jacob-defhookf typescript-ts-mode-hook
+  (setq-local forward-sexp-function nil)
+  (setq-local transpose-sexps-function nil))
 
 (require 'yaml-ts-mode)
 
