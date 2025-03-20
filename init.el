@@ -1882,6 +1882,11 @@ active, do not format the buffer."
 
 ;; elisp eval ?
 
+(jacob-require 'aider)
+
+;; (setenv "GEMINI_API_KEY" "")
+(setopt aider-args '("--model" "gemini/gemini-2.0-flash-exp"))
+
 (jacob-require 'gdscript-mode)
 
 (jacob-defhookf gdscript-mode-hook
