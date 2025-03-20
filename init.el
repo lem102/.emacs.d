@@ -1438,13 +1438,13 @@ Intended as before advice for `sql-send-paragraph'."
 
 (jacob-require 'avy)
 
-(defun jacob-avy-action-xref (point)
+(defun jacob-avy-xref (point)
   "Call `xref-find-definitions' at POINT."
   (goto-char point)
   (call-interactively #'xref-find-definitions)
   (jacob-avy-go-home))
 
-(defun jacob-avy-action-kill-line (point)
+(defun jacob-avy-kill-line (point)
   "Kill line at POINT."
   (save-excursion
     (goto-char point)
@@ -1453,16 +1453,16 @@ Intended as before advice for `sql-send-paragraph'."
     (delete-char 1))
   (jacob-avy-go-home))
 
-(defun jacob-avy-action-copy-line (point)
+(defun jacob-avy-copy-line (point)
   "Copy line at POINT."
   (save-excursion
     (goto-char point)
     (copy-region-as-kill (line-beginning-position) (line-end-position)))
   (jacob-avy-go-home))
 
-(defun jacob-avy-action-yank-line (pt)
+(defun jacob-avy-yank-line (pt)
   "Copy sexp starting on PT."
-  (jacob-avy-action-copy-line pt)
+  (jacob-avy-copy-line pt)
   (yank))
 
 (defun jacob-avy-go-home ()
@@ -1473,7 +1473,7 @@ Intended as before advice for `sql-send-paragraph'."
     (select-window (cdr dat))
     (goto-char (car dat))))
 
-(defun jacob-avy-action-eglot-rename (pt)
+(defun jacob-avy-eglot-rename (pt)
   "Copy sexp starting on PT."
   (save-excursion
     (goto-char pt)
@@ -1482,16 +1482,16 @@ Intended as before advice for `sql-send-paragraph'."
 
 (setopt avy-keys '(?a ?s ?d ?f ?g ?h ?j ?l ?\;)
         avy-dispatch-alist '((?v . avy-action-yank)
-                             (?V . jacob-avy-action-yank-line)
+                             (?V . jacob-avy-yank-line)
                              (?x . avy-action-kill-stay)
-                             (?X . jacob-avy-action-kill-line)
+                             (?X . jacob-avy-kill-line)
                              (?t . avy-action-mark)
                              (?c . avy-action-copy)
-                             (?C . jacob-avy-action-copy-line)
+                             (?C . jacob-avy-copy-line)
                              (?i . avy-action-ispell)
                              (?z . avy-action-zap-to-char)
-                             (?. . jacob-avy-action-xref)
-                             (?r . jacob-avy-action-eglot-rename)))
+                             (?. . jacob-avy-xref)
+                             (?r . jacob-avy-eglot-rename)))
 
 (key-chord-define-global "fj" #'avy-goto-char-timer)
 
