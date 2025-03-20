@@ -1442,33 +1442,43 @@ Intended as before advice for `sql-send-paragraph'."
   "Call `xref-find-definitions' at POINT."
   (goto-char point)
   (call-interactively #'xref-find-definitions)
-  (select-window
-   (cdr (ring-ref avy-ring 0)))
-  t)
+  (jacob-avy-go-home))
 
 (defun jacob-avy-action-kill-line (point)
   "Kill line at POINT."
-  (save-window-excursion
+  (save-excursion
     (goto-char point)
     (beginning-of-line)
     (kill-line)
-    (delete-char 1)))
+    (delete-char 1))
+  (jacob-avy-go-home))
 
 (defun jacob-avy-action-copy-line (point)
   "Copy line at POINT."
   (save-excursion
     (goto-char point)
     (copy-region-as-kill (line-beginning-position) (line-end-position)))
+  (jacob-avy-go-home))
+
+(defun jacob-avy-action-yank-line (pt)
+  "Copy sexp starting on PT."
+  (jacob-avy-action-copy-line pt)
+  (yank))
+
+(defun jacob-avy-go-home ()
+  "Return to the avy origin."
   (let ((dat (ring-ref avy-ring 0)))
     (select-frame-set-input-focus
      (window-frame (cdr dat)))
     (select-window (cdr dat))
     (goto-char (car dat))))
 
-(defun jacob-avy-action-yank-line (pt)
+(defun jacob-avy-action-eglot-rename (pt)
   "Copy sexp starting on PT."
-  (jacob-avy-action-copy-line pt)
-  (yank))
+  (save-excursion
+    (goto-char pt)
+    (call-interactively #'eglot-rename))
+  (jacob-avy-go-home))
 
 (setopt avy-keys '(?a ?s ?d ?f ?g ?h ?j ?l ?\;)
         avy-dispatch-alist '((?v . avy-action-yank)
@@ -1480,7 +1490,8 @@ Intended as before advice for `sql-send-paragraph'."
                              (?C . jacob-avy-action-copy-line)
                              (?i . avy-action-ispell)
                              (?z . avy-action-zap-to-char)
-                             (?. . jacob-avy-action-xref)))
+                             (?. . jacob-avy-action-xref)
+                             (?r . jacob-avy-action-eglot-rename)))
 
 (key-chord-define-global "fj" #'avy-goto-char-timer)
 
