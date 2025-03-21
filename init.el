@@ -1133,6 +1133,20 @@ hides this information."
 (keymap-set emacs-lisp-mode-map "(" #'insert-parentheses)
 (keymap-set emacs-lisp-mode-map ")" #'move-past-close-and-reindent)
 
+(require 'scheme)
+
+(keymap-set scheme-mode-map "(" #'insert-parentheses)
+(keymap-set scheme-mode-map ")" #'move-past-close-and-reindent)
+
+(jacob-require 'geiser)
+(require 'geiser-mode)
+
+(jacob-defhookf geiser-mode-hook
+  (jacob-xfk-local-key "SPC , m" #'geiser-eval-last-sexp)
+  (jacob-xfk-local-key "SPC , d" #'geiser-eval-definition))
+
+(jacob-require 'geiser-guile)
+
 (jacob-require 'mermaid-mode)
 
 (jacob-require 'ob-mermaid)
