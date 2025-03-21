@@ -336,6 +336,20 @@
   (backward-paragraph)
   (kill-paragraph 1))
 
+(defun jacob-split-or-switch-window ()
+  "Split or switch window.
+
+If there is only one window in the current frame, split the frame and
+move to the new window. Otherwise, call `switch-buffer'."
+  (interactive)
+  (cond ((= 1 (let ((total-windows 0))
+                (dolist (frame (frame-list))
+                  (setq total-windows (+ total-windows (length (window-list frame)))))
+                total-windows))
+         (split-window-sensibly)
+         (call-interactively #'other-window))
+        (t (call-interactively #'switch-window))))
+
 (defalias 'jacob-return-macro
   (kmacro "<return>"))
 
@@ -393,6 +407,7 @@
 (keymap-set xah-fly-command-map "h" #'jacob-beginning-of-line)
 (keymap-set xah-fly-command-map "s" #'jacob-return-macro)
 (keymap-set xah-fly-command-map "x" #'jacob-kill-line)
+(keymap-set xah-fly-command-map "," #'jacob-split-or-switch-window)
 
 (keymap-set xah-fly-insert-map "M-SPC" #'xah-fly-command-mode-activate)
 
