@@ -193,6 +193,9 @@
 (require 'scroll-bar)
 (scroll-bar-mode 0)
 
+(require 'tab-bar)
+(setopt tab-bar-show 1)
+
 (require 'cus-edit)
 (setopt custom-file (concat user-emacs-directory "custom.el"))
 (when (file-exists-p custom-file)
