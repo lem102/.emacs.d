@@ -348,7 +348,7 @@ move to the new window. Otherwise, call `switch-buffer'."
                 total-windows))
          (split-window-sensibly)
          (call-interactively #'other-window))
-        (t (call-interactively #'switch-window))))
+        (t (call-interactively #'ace-window))))
 
 (defalias 'jacob-return-macro
   (kmacro "<return>"))
@@ -398,7 +398,6 @@ move to the new window. Otherwise, call `switch-buffer'."
 
 (keymap-set xah-fly-command-map "'" #'jacob-format-words)
 (keymap-set xah-fly-command-map "-" #'flymake-goto-prev-error)
-;; (keymap-set xah-fly-command-map "4" #'other-window-prefix)
 (keymap-set xah-fly-command-map "9" #'jacob-swap-visible-buffers)
 (keymap-set xah-fly-command-map ";" #'jacob-end-of-line)
 (keymap-set xah-fly-command-map "=" #'flymake-goto-next-error)
@@ -1591,10 +1590,10 @@ active, do not format the buffer."
 ;; (keymap-set jacob-xfk-map "c n" #'csharp-toolbox-guess-namespace)
 ;; (keymap-set jacob-xfk-map "c ;" #'csharp-toolbox-wd40)
 
-(jacob-require 'switch-window)
-(setopt switch-window-shortcut-style 'qwerty
-        switch-window-threshold 3)
-(keymap-set xah-fly-command-map "," #'switch-window)
+(jacob-require 'ace-window)
+
+(setopt aw-keys '(?j ?f ?k ?d ?l ?s ?\; ?a)
+        aw-minibuffer-flag t)
 
 (jacob-require-ensure-installed 'auctex)
 (require 'tex)
