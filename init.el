@@ -1667,6 +1667,8 @@ active, do not format the buffer."
 (keymap-set embark-identifier-map "r" #'eglot-rename)
 (push 'embark--ignore-target (alist-get 'eglot-rename embark-target-injection-hooks))
 
+(jacob-require 'embark-consult)
+
 (jacob-require 'expreg)
 
 (keymap-global-set "C-c SPC" #'expreg-expand)
