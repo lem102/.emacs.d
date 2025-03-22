@@ -24,83 +24,81 @@
 
 (add-to-list 'load-path (concat (file-name-directory user-init-file) "lisp"))
 
-;; c source code
-(setq-default truncate-lines nil)
-(setq-default tab-width 4) ; set default tab char's display width to 4 spaces
+(use-package emacs
+  :config
+  ;; c code
+  ;; enable emoji fonts
+  (set-fontset-font t
+                    'emoji
+                    (seq-find (lambda (font)
+                                (member font (font-family-list)))
+                              '("Symbola"
+                                "Segoe UI Emoji"
+                                "Noto Emoji"
+                                "Noto Color Emoji"
+                                "Apple Color Emoji")))
 
-;; enable emoji fonts
-(set-fontset-font t
-                  'emoji
-                  (seq-find (lambda (font)
-                              (member font (font-family-list)))
-                            '("Symbola"
-                              "Segoe UI Emoji"
-                              "Noto Emoji"
-                              "Noto Color Emoji"
-                              "Apple Color Emoji")))
+  (add-to-list 'default-frame-alist
+               `(font . ,(format "%s-%s"
+                                 (cdr (assoc-string system-type
+                                                    '(("windows-nt" . "Consolas")
+                                                      ("darwin" . "Menlo")
+                                                      ("gnu/linux" . "DejaVu Sans Mono")
+                                                      ("android" . "Droid Sans Mono"))))
+                                 jacob-font-size)))
 
-(add-to-list 'default-frame-alist
-             `(font . ,(format "%s-%s"
-                               (cdr (assoc-string system-type
-                                                  '(("windows-nt" . "Consolas")
-                                                    ("darwin" . "Menlo")
-                                                    ("gnu/linux" . "DejaVu Sans Mono")
-                                                    ("android" . "Droid Sans Mono"))))
-                               jacob-font-size)))
+  ;; mule-cmds.el
+  (prefer-coding-system 'utf-8)
 
-(setopt delete-by-moving-to-trash t
-        read-process-output-max (* 1024 1024)
-        frame-resize-pixelwise t
-        create-lockfiles nil
-        history-length 1000
-        history-delete-duplicates t
-        scroll-conservatively 101
-        use-dialog-box nil
-        use-short-answers t
-        ring-bell-function 'ignore
-        truncate-partial-width-windows nil
-        enable-recursive-minibuffers t
-        completion-ignore-case t
-        kill-buffer-query-functions (delq 'process-kill-buffer-query-function
-                                          kill-buffer-query-functions)
-        echo-keystrokes 0.01)
+  :custom (
+           ;; c code
+           (tab-width 4) ; set default tab char's display width to 4 spaces
+           (truncate-lines nil)
+           (delete-by-moving-to-trash t)
+           (read-process-output-max (* 1024 1024))
+           (frame-resize-pixelwise t)
+           (create-lockfiles nil)
+           (history-length 1000)
+           (history-delete-duplicates t)
+           (scroll-conservatively 101)
+           (use-dialog-box nil)
+           (use-short-answers t)
+           (ring-bell-function 'ignore)
+           (truncate-partial-width-windows nil)
+           (enable-recursive-minibuffers t)
+           (completion-ignore-case t)
+           (kill-buffer-query-functions (delq 'process-kill-buffer-query-function
+                                              kill-buffer-query-functions))
+           (echo-keystrokes 0.01)
+           ;; startup.el
+           (inhibit-startup-screen t)
+           (initial-scratch-message (format ";; %s\n\n"
+                                            (seq-random-elt
+                                             '("\"A journey of a thousand miles begins with a single step.\" - 老子"
+                                               "\"apex predator of grug is complexity\" - some grug"
+                                               "\"Perfection is achieved, not when there is nothing more to add, but when there is nothing left to take away.\" - Antoine de Saint-Exupéry"
+                                               "\"Always listen to Jiaqi.\" - Jacob Leeming"
+                                               "\"The king wisely had the computer scientist beheaded, and they all lived happily ever after.\" - anon"
+                                               "\"Success is going from failure to failure without losing your enthusiasm.\" - Winston Churchill (maybe)"))))
+           ;; lisp.el
+           (parens-require-spaces nil)
+           (delete-pair-blink-delay 0)
+           (insert-pair-alist (append insert-pair-alist
+                                      '((?k ?\( ?\))
+                                        (?l ?\[ ?\])
+                                        (?j ?\{ ?\})
+                                        (?u ?\" ?\")
+                                        (?i ?\' ?\')
+                                        (?h ?\< ?\>))))
+           ;; bindings.el
+           (mode-line-percent-position nil)
+           ;; paragraphs.el
+           (sentence-end-double-space nil)))
 
-;; startup
-(setopt inhibit-startup-screen t
-        initial-scratch-message (format ";; %s\n\n"
-                                        (seq-random-elt
-                                         '("\"A journey of a thousand miles begins with a single step.\" - 老子"
-                                           "\"apex predator of grug is complexity\" - some grug"
-                                           "\"Perfection is achieved, not when there is nothing more to add, but when there is nothing left to take away.\" - Antoine de Saint-Exupéry"
-                                           "\"Always listen to Jiaqi.\" - Jacob Leeming"
-                                           "\"The king wisely had the computer scientist beheaded, and they all lived happily ever after.\" - anon"
-                                           "\"Success is going from failure to failure without losing your enthusiasm.\" - Winston Churchill (maybe)"))))
-
-;; lisp
-(setopt parens-require-spaces nil
-        delete-pair-blink-delay 0
-        insert-pair-alist (append insert-pair-alist
-                                  '((?k ?\( ?\))
-                                    (?l ?\[ ?\])
-                                    (?j ?\{ ?\})
-                                    (?u ?\" ?\")
-                                    (?i ?\' ?\')
-                                    (?h ?\< ?\>))))
-
-;; mule-cmds
-(prefer-coding-system 'utf-8)
-
-;; bindings
-(setopt mode-line-percent-position nil)
-
-;; paragraphs
-(setopt sentence-end-double-space nil)
-
-(require 'package)
-
-(setopt package-archives '(("gnu" . "https://elpa.gnu.org/packages/")
-                           ("nongnu" . "https://elpa.nongnu.org/nongnu/")
-                           ("melpa" . "https://melpa.org/packages/")))
+(use-package package
+  :custom (package-archives '(("gnu" . "https://elpa.gnu.org/packages/")
+                              ("nongnu" . "https://elpa.nongnu.org/nongnu/")
+                              ("melpa" . "https://melpa.org/packages/"))))
 
 (defmacro jacob-defhookf (hook &rest body)
   "Define function with BODY and bind it to HOOK."
@@ -115,38 +113,39 @@
 
 (require 'jacob-require)
 
-(jacob-require 'no-littering)
+(use-package no-littering
+  :ensure t)
 
-(jacob-require 'delight)
+(use-package delight
+  :ensure t)
 
-(jacob-require 'which-key)         ; when upgrade to 30.1, switch to builtin
-(setopt which-key-idle-delay 0.01) ; needs to be set before loading the mode
-(which-key-mode 1)
-(delight 'which-key-mode nil t)
+(use-package which-key
+  :delight
+  :config
+  (which-key-mode 1)
+  :custom (which-key-idle-delay 0.01))
 
-(require 'mwheel)
+(use-package mwheel
+  :custom ((mouse-wheel-progressive-speed nil)
+           (mouse-wheel-scroll-amount '(10 ((shift) . hscroll)
+                                           ((meta))
+                                           ((control) . text-scale)))))
 
-(setopt mouse-wheel-progressive-speed nil
-        mouse-wheel-scroll-amount '(10 ((shift) . hscroll)
-                                       ((meta))
-                                       ((control) . text-scale)))
+(use-package tooltip
+  :custom (tooltip-delay 0.1))
 
-(require 'tooltip)
+(use-package files
+  :config
+  (auto-save-visited-mode 1)
+  :bind ("C-x C-c" . nil) ; `save-buffers-kill-terminal'
+  :custom ((auto-save-default nil)
+           (make-backup-files nil)
+           (backup-by-copying t)
+           (auto-save-visited-interval 2)   ; save file after two seconds
+           (confirm-kill-processes nil)))
 
-(setopt tooltip-delay 0.1)
-
-(require 'files)
-(auto-save-visited-mode 1)
-(keymap-global-unset "C-x C-c")         ; `save-buffers-kill-terminal'
-
-(setopt auto-save-default nil
-        make-backup-files nil
-        backup-by-copying t
-        confirm-kill-processes nil
-        auto-save-visited-interval 2)   ; save file after two seconds
-
-(require 'autorevert)
-(delight 'auto-revert-mode nil t)
+(use-package autorevert
+  :delight)
 
 (require 'window)
 
@@ -188,7 +187,7 @@
 (tool-bar-mode (if jacob-is-android 1 0))
 (when jacob-is-android
   (setopt tool-bar-button-margin 40
-		  tool-bar-position 'bottom))
+          tool-bar-position 'bottom))
 
 (require 'menu-bar)
 (menu-bar-mode (if jacob-is-android 1 0))
