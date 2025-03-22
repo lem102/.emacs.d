@@ -147,16 +147,15 @@
 (use-package autorevert
   :delight)
 
-(require 'window)
-
-(setopt switch-to-buffer-obey-display-actions t
-        display-buffer-alist '(((major-mode . sql-interactive-mode)
-                                (display-buffer-reuse-mode-window display-buffer-same-window))
-                               ((major-mode . prodigy-mode)
-                                (display-buffer-reuse-mode-window display-buffer-same-window))
-                               ((major-mode . magit-status-mode)
-                                (display-buffer-reuse-mode-window display-buffer-same-window)))
-        split-height-threshold nil)
+(use-package window
+  :custom ((switch-to-buffer-obey-display-actions t)
+           (display-buffer-alist '(((major-mode . sql-interactive-mode)
+                                    (display-buffer-reuse-mode-window display-buffer-same-window))
+                                   ((major-mode . prodigy-mode)
+                                    (display-buffer-reuse-mode-window display-buffer-same-window))
+                                   ((major-mode . magit-status-mode)
+                                    (display-buffer-reuse-mode-window display-buffer-same-window))))
+           (split-height-threshold nil)))
 
 (defvar-keymap jacob-recenter-repeat-map
   :repeat t
