@@ -2,6 +2,9 @@
 ;;; Commentary:
 ;;; Code:
 
+;; use-package
+(setopt use-package-enable-imenu-support t)
+
 ;; read environment file and variable setup
 
 (defvar jacob-font-size 11
@@ -552,30 +555,31 @@ For use in yasnippets."
   (jacob-xfk-local-key "g" #'revert-buffer)
   (jacob-xfk-local-key "w" #'jacob-help-edit))
 
-(jacob-require 'helpful)
-
-(keymap-global-set "C-h v" #'helpful-variable)
-(keymap-global-set "C-h f" #'helpful-callable)
-(keymap-global-set "C-h k" #'helpful-key)
-
-(keymap-set xah-fly-leader-key-map "j k" #'helpful-callable)
-(keymap-set xah-fly-leader-key-map "j l" #'helpful-variable)
-(keymap-set xah-fly-leader-key-map "j v" #'helpful-key)
-(keymap-set xah-fly-leader-key-map "j b" #'helpful-command)
-
-(jacob-defhookf helpful-mode-hook
-  (jacob-xfk-local-key "q" #'quit-window)
-  (jacob-xfk-local-key "g" #'helpful-update)
-  (jacob-xfk-local-key "e" #'backward-button)
-  (jacob-xfk-local-key "r" #'forward-button)
-  (jacob-xfk-local-key "s" #'push-button))
+(use-package helpful
+  :ensure t
+  :commands (helpful-update)
+  :bind (("C-h v" . helpful-variable)
+         ("C-h f" . helpful-callable)
+         ("C-h k" . helpful-key)
+         :map xah-fly-leader-key-map
+         ("j k" . helpful-callable)
+         ("j l" . helpful-variable)
+         ("j v" . helpful-key)
+         ("j b" . helpful-command))
+  :config
+  (jacob-defhookf helpful-mode-hook
+    (jacob-xfk-local-key "q" #'quit-window)
+    (jacob-xfk-local-key "g" #'helpful-update)
+    (jacob-xfk-local-key "e" #'backward-button)
+    (jacob-xfk-local-key "r" #'forward-button)
+    (jacob-xfk-local-key "s" #'push-button)))
 
 (require 'help-at-pt)
 (setq-default help-at-pt-display-when-idle '(flymake-diagnostic))
 (help-at-pt-set-timer)
 
-(require 'warnings)
-(setopt warning-minimum-level :error)
+(use-package warnings
+  :custom ((warning-minimum-level :error)))
 
 (require 'subword)
 (global-subword-mode 1)
@@ -630,10 +634,14 @@ For use in yasnippets."
   (jacob-xfk-local-key "q" #'quit-window)
   (jacob-xfk-local-key "g" #'revert-buffer))
 
-(jacob-require 'magit)
-(keymap-set project-prefix-map "v" #'magit)
+(use-package magit
+  :ensure t
+  :bind ( :map project-prefix-map
+          ("v" . magit)))
 
-(jacob-require 'forge)
+(use-package forge
+  :ensure t
+  :defer t)
 
 (jacob-require 'git-gutter-fringe)
 (global-git-gutter-mode 1)
@@ -1595,25 +1603,23 @@ active, do not format the buffer."
 
 (jacob-require 'ace-window)
 
-(setopt aw-keys '(?j ?f ?k ?d ?l ?s ?\; ?a)
+(setopt aw-keys '(?a ?s ?d ?f ?q ?w ?e ?r)
         aw-minibuffer-flag t)
 
-(jacob-require-ensure-installed 'auctex)
-(require 'tex)
+(use-package tex
+  :ensure auctex
+  :commands (TeX-PDF-mode)
+  :mode ("\\.tex\\'" . latex-mode)
+  :config
+  (jacob-defhookf LaTeX-mode-hook
+    (visual-fill-column-mode 1)
+    (toggle-word-wrap 1)
+    (TeX-PDF-mode 1))
+  :custom ((TeX-auto-save t)
+           (TeX-parse-self t)
+           (japanese-TeX-error-messages nil)))
 
 (jacob-require 'visual-fill-column)
-
-(jacob-defhookf LaTeX-mode-hook
-  (visual-fill-column-mode 1)
-  (toggle-word-wrap 1))
-
-(add-to-list 'auto-mode-alist '("\\.tex\\'" . latex-mode))
-
-(setopt TeX-auto-save t
-        TeX-parse-self t
-        japanese-TeX-error-messages nil)
-
-(TeX-global-PDF-mode 1)
 
 (jacob-require 'markdown-mode)
 
@@ -1915,10 +1921,11 @@ active, do not format the buffer."
 
 ;; elisp eval ?
 
-(jacob-require 'aider)
-
-;; (setenv "GEMINI_API_KEY" "")
-(setopt aider-args '("--model" "gemini/gemini-2.0-flash-exp"))
+(use-package aider
+  :ensure t
+  :defer t
+  ;; (setenv "GEMINI_API_KEY" "")
+  :custom ((aider-args '("--model" "gemini/gemini-2.0-flash-exp"))))
 
 (jacob-require 'gdscript-mode)
 
