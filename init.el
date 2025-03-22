@@ -162,9 +162,9 @@
   "p" #'recenter-top-bottom)
 
 (use-package frame
-  :custom (blink-cursor-blinks 0))          ; make cursor blink forever
-
-(keymap-global-unset "C-z")             ; `suspend-frame'
+  :custom ((blink-cursor-blinks 0))     ; make cursor blink forever
+  :bind (("C-z" . nil))                 ; `suspend-frame'
+  )
 
 (require 'novice)
 (setopt disabled-command-function nil)
