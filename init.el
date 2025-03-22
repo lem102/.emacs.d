@@ -161,8 +161,9 @@
   :repeat t
   "p" #'recenter-top-bottom)
 
-(require 'frame)
-(setopt blink-cursor-blinks 0)          ; make cursor blink forever
+(use-package frame
+  :custom (blink-cursor-blinks 0))          ; make cursor blink forever
+
 (keymap-global-unset "C-z")             ; `suspend-frame'
 
 (require 'novice)
