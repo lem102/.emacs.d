@@ -167,7 +167,7 @@
   )
 
 (require 'novice)
-(setopt disabled-command-function nil)
+(setq disabled-command-function nil)
 
 (require 'recentf)
 (recentf-mode 1)
