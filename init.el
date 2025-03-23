@@ -62,7 +62,8 @@
   :custom (
            ;; c code
            (tab-width 4) ; set default tab char's display width to 4 spaces
-           (truncate-lines nil)
+           (truncate-lines (cond (jacob-is-android t)
+                                 (t nil)))
            (delete-by-moving-to-trash t)
            (read-process-output-max (* 1024 1024))
            (frame-resize-pixelwise t)
@@ -139,7 +140,8 @@
                                            ((control) . text-scale)))))
 
 (use-package tooltip
-  :custom (tooltip-delay 0.1))
+  :custom (tooltip-delay (cond (jacob-is-android 0.7)
+                               (t 0.1))))
 
 (use-package files
   :config
