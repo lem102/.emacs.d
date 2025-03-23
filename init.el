@@ -1266,7 +1266,8 @@ hides this information."
     (jacob-xfk-local-key "SPC , d" #'geiser-eval-definition)))
 
 (use-package geiser-guile
-  :ensure t)
+  :ensure t
+  :after (scheme geiser))
 
 (use-package mermaid-mode
   :ensure t)
