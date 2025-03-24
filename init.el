@@ -28,7 +28,18 @@
 (when (file-exists-p "~/.emacs.d/environment.el")
   (load-file "~/.emacs.d/environment.el"))
 
-(add-to-list 'load-path (concat (file-name-directory user-init-file) "lisp"))
+;; custom hooks
+
+(defvar jacob-first-file-hook '()
+  "Hook for first file opened.")
+
+(defun jacob-run-first-file-hook (&rest _args)
+  "Run `jacob-first-file-hook', then remove this function from `find-file-hook'."
+  (when (member 'init features)
+    (run-hooks 'jacob-first-file-hook)
+    (advice-remove #'jacob-run-first-file-hook #'create-file-buffer)))
+
+(advice-add #'create-file-buffer :before #'jacob-run-first-file-hook)
 
 (use-package emacs
   :config
@@ -177,7 +188,6 @@
   :custom (disabled-command-function nil))
 
 (use-package recentf
-  :after xah-fly-keys
   :hook (after-init-hook . recentf-mode))
 
 (use-package savehist
@@ -186,21 +196,8 @@
   :custom
   (savehist-save-minibuffer-history t))
 
-;; TODO: before advice for find file?
-
-;; (defvar jacob-first-file-hook '()
-;;   "Hook for first file opened.")
-
-;; (defun jacob-run-first-file-hook ()
-;;   "Run `jacob-first-file-hook', then remove this function from `find-file-hook'."
-;;   (when (member 'init features)
-;;     (message "jacobwozere")
-;;     (run-hooks 'jacob-first-file-hook)
-;;     (advice-remove #'jacob-run-first-file-hook #'find-file)))
-
-;; (advice-add #'find-file :before #'jacob-run-first-file-hook)
-
 (use-package saveplace
+  :hook (jacob-first-file-hook . save-place-mode)
   :custom
   (save-place-forget-unreadable-files t))
 
@@ -248,14 +245,14 @@
 
 (use-package xah-fly-keys
   :ensure t
-  :demand
+  :hook (after-init-hook . xah-fly-keys)
   :delight
-  :custom
-  ;; must be set before requiring `xah-fly-keys'
-  (xah-fly-use-control-key nil)
-  (xah-fly-use-meta-key nil)
   :init
   (defvar-keymap jacob-xfk-map)
+
+  ;; must be set before requiring `xah-fly-keys'
+  (setopt xah-fly-use-control-key nil
+          xah-fly-use-meta-key nil)
   :config
 
   (defun jacob-xfk-local-key (key command)
@@ -267,7 +264,6 @@
                         command)))
 
   (xah-fly-keys-set-layout "qwerty")
-  (xah-fly-keys 1)
 
   (defun jacob-modeline-color-on () (set-face-background 'mode-line "firebrick"))
   (defun jacob-modeline-color-off () (set-face-background 'mode-line "dark olive green"))
@@ -1035,7 +1031,15 @@ which performs the deletion."
   :config
   (setopt inferior-lisp-program "sbcl"))
 
+(use-package ls-lisp
+  :demand
+  :config
+  (setopt ls-lisp-use-insert-directory-program nil
+          ls-lisp-dirs-first t))
+
 (use-package dired
+  :defer t
+  :after ls-lisp
   :config
   (jacob-defhookf dired-mode-hook
     (dired-hide-details-mode 1)
@@ -1058,19 +1062,17 @@ which performs the deletion."
           dired-guess-shell-alist-user '(("\\.mkv\\'" "mpv")
                                          ("\\.mp4\\'" "mpv"))))
 (use-package dired-aux
+  :defer t
+  :after dired
   :config
   (setopt dired-vc-rename-file t))
 
-(use-package ls-lisp
-  :config
-  (setopt ls-lisp-use-insert-directory-program nil
-          ls-lisp-dirs-first t))
-
 (use-package dired-rsync
   :ensure t
+  :defer t
+  :after dired
   :config
   (add-to-list 'mode-line-misc-info '(:eval dired-rsync-modeline-status 'append)))
-
 
 (use-package esh-mode
   :defer t
@@ -1411,7 +1413,8 @@ hides this information."
   (org-edna-mode 1))
 
 (use-package denote
-  :ensure t)
+  :ensure t
+  :defer t)
 
 (use-package pulse
   :config
@@ -1480,8 +1483,9 @@ hides this information."
 (use-package winner
   :config
   (winner-mode 1)
-  (keymap-set xah-fly-command-map "1" #'winner-undo)
-  (keymap-set xah-fly-command-map "2" #'winner-redo))
+  (with-eval-after-load "xah-fly-keys"
+    (keymap-set xah-fly-command-map "1" #'winner-undo)
+    (keymap-set xah-fly-command-map "2" #'winner-redo)))
 
 (use-package compile
   :config
@@ -1530,6 +1534,7 @@ Intended as before advice for `sql-send-paragraph'."
   (keymap-set jacob-xfk-map "s" #'jacob-sql-connect))
 
 (use-package doc-view
+  :defer t
   :config
   (jacob-defhookf doc-view-mode-hook
     (auto-revert-mode 1)
@@ -1708,6 +1713,7 @@ active, do not format the buffer."
   (delight 'rainbow-mode))
 
 (use-package eglot-booster
+  :after eglot
   :when (executable-find "emacs-lsp-booster")
   :vc ( :url "https://github.com/jdtsmith/eglot-booster"
         :rev :newest)
@@ -1715,7 +1721,7 @@ active, do not format the buffer."
   (eglot-booster-mode 1))
 
 (use-package dape
-  :after eglot
+  :defer t
   :config
   (setopt dape-info-hide-mode-line nil
           dape-buffer-window-arrangement 'right)
@@ -1805,6 +1811,15 @@ active, do not format the buffer."
 
 (use-package consult
   :ensure t
+  :defer t
+  :init
+  (with-eval-after-load "xah-fly-keys"
+    (message "xfk consult binds")
+    (keymap-set xah-fly-leader-key-map "v" #'consult-yank-from-kill-ring)
+    (keymap-set xah-fly-leader-key-map "f" #'consult-buffer)
+    (keymap-set xah-fly-leader-key-map "i j" #'consult-recent-file)
+    (keymap-set xah-fly-leader-key-map "e s" #'consult-line)
+    (keymap-set xah-fly-leader-key-map "k u" #'consult-goto-line))
   :config
   (defun jacob-project-search ()
     "Wrapper for grep commands."
@@ -1833,25 +1848,22 @@ active, do not format the buffer."
           consult--source-buffer (plist-put consult--source-buffer
                                             :state #'jacob-consult-buffer-state-no-tramp))
 
-  (keymap-set xah-fly-leader-key-map "v" #'consult-yank-from-kill-ring)
-  (keymap-set xah-fly-leader-key-map "f" #'consult-buffer)
-  (keymap-set xah-fly-leader-key-map "i j" #'consult-recent-file)
-  (keymap-set xah-fly-leader-key-map "e s" #'consult-line)
-  (keymap-set xah-fly-leader-key-map "k u" #'consult-goto-line)
-
   (keymap-set project-prefix-map "g" #'jacob-project-search))
 
 (use-package consult-imenu
-  :config
+  :defer t
+  :init
   (keymap-global-set "M-g i" #'consult-imenu))
 
 (use-package embark
+  :ensure t
+  :defer t
+  :init
+  (with-eval-after-load "xah-fly-keys"
+    (keymap-set xah-fly-command-map "\\" #'embark-act))
   :config
-  
   (setopt embark-cycle-key "\\"
           embark-help-key "h")
-
-  (keymap-set xah-fly-command-map "\\" #'embark-act)
 
   (keymap-set embark-flymake-map "a" #'eglot-code-actions)
   (push 'embark--ignore-target (alist-get 'eglot-code-actions embark-target-injection-hooks))
@@ -1860,7 +1872,8 @@ active, do not format the buffer."
   (push 'embark--ignore-target (alist-get 'eglot-rename embark-target-injection-hooks)))
 
 (use-package embark-consult
-  :ensure t)
+  :ensure t
+  :after (:and embark consult))
 
 (use-package expreg
   :ensure t
@@ -1871,8 +1884,9 @@ active, do not format the buffer."
     :repeat t
     "SPC" #'expreg-expand)
 
-  (keymap-set xah-fly-command-map "8" #'expreg-expand)
-  (keymap-set xah-fly-command-map "9" #'expreg-contract))
+  (with-eval-after-load "xah-fly-keys"
+    (keymap-set xah-fly-command-map "8" #'expreg-expand)
+    (keymap-set xah-fly-command-map "9" #'expreg-contract)))
 
 (use-package verb
   :ensure t
