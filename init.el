@@ -1270,10 +1270,12 @@ hides this information."
   :after (scheme geiser))
 
 (use-package mermaid-mode
-  :ensure t)
+  :ensure t
+  :mode ("\\.mermaid\\'"))
 
 (use-package ob-mermaid
-  :ensure t)
+  :ensure t
+  :after org)
 
 (use-package org
   :mode ("\\.org\\'" . org-mode)
@@ -1872,200 +1874,204 @@ active, do not format the buffer."
   (verb-json-get (oref (verb-stored-response response-id) body) "id"))
 
 (use-package sly
-  :ensure t)
+  :ensure t
+  :mode ("\\.lisp\\'")
+  :config
+  (sly-setup)
 
-(sly-setup)
+  (sly-symbol-completion-mode 0)
 
-(sly-symbol-completion-mode 0)
+  (jacob-defhookf sly-mode-hook
+    (jacob-xfk-local-key "SPC , m" #'sly-eval-last-expression)
+    (jacob-xfk-local-key "SPC , d" #'sly-compile-defun)
+    (jacob-xfk-local-key "SPC , e" #'sly-eval-buffer)
+    (jacob-xfk-local-key "SPC w k" #'sly-edit-definition))
 
-(jacob-defhookf sly-mode-hook
-  (jacob-xfk-local-key "SPC , m" #'sly-eval-last-expression)
-  (jacob-xfk-local-key "SPC , d" #'sly-compile-defun)
-  (jacob-xfk-local-key "SPC , e" #'sly-eval-buffer)
-  (jacob-xfk-local-key "SPC w k" #'sly-edit-definition))
+  (setopt sly-auto-start 'always)
 
-(setopt sly-auto-start 'always)
-
-(jacob-defhookf sly-db-hook
-  (jacob-xfk-local-key "q" #'sly-db-quit))
+  (jacob-defhookf sly-db-hook
+    (jacob-xfk-local-key "q" #'sly-db-quit)))
 
 (use-package sly-overlay
-  :ensure t)
+  :ensure t
+  :after sly)
 
 (use-package sly-macrostep
-  :ensure t)
+  :ensure t
+  :after sly)
 
 ;; (jacob-require sly-stepper "https://github.com/joaotavora/sly-stepper.git")
 
 (use-package sly-quicklisp
-  :ensure t)
+  :ensure t
+  :after sly)
 
 (use-package sql-indent
   :ensure t)
 
 (use-package gptel
-  :ensure t)
+  :ensure t
+  :config
+  (setopt gptel-default-mode #'org-mode
+          gptel-confirm-tool-calls t)
 
-(setopt gptel-default-mode #'org-mode
-        gptel-confirm-tool-calls t)
+  (gptel-make-tool :name "variable_completions"
+                   :function (lambda (query)
+                               (let (symbols)
+                                 (mapatoms (lambda (symbol)
+                                             (let ((name (symbol-name symbol)))
+                                               (when (and (boundp symbol)
+                                                          (string-match-p query name))
+                                                 (push symbol symbols)))))
+                                 symbols))
+                   :description "get the names of all the variables that match the search query"
+                   :args (list '( :name "search query"
+                                  :type string
+                                  :description "the search query"))
+                   :category "emacs")
 
-(gptel-make-tool :name "variable_completions"
-                 :function (lambda (query)
-                             (let (symbols)
-                               (mapatoms (lambda (symbol)
-                                           (let ((name (symbol-name symbol)))
-                                             (when (and (boundp symbol)
-                                                        (string-match-p query name))
-                                               (push symbol symbols)))))
-                               symbols))
-                 :description "get the names of all the variables that match the search query"
-                 :args (list '( :name "search query"
-                                :type string
-                                :description "the search query"))
-                 :category "emacs")
+  (gptel-make-tool :name "function_completions"
+                   :function (lambda (query)
+                               (let (symbols)
+                                 (mapatoms (lambda (symbol)
+                                             (let ((name (symbol-name symbol)))
+                                               (when (and (fboundp symbol)
+                                                          (string-match-p query name))
+                                                 (push symbol symbols)))))
+                                 symbols))
+                   :description "get the names of all the functions that match the search query"
+                   :args (list '( :name "search query"
+                                  :type string
+                                  :description "the search query"))
+                   :category "emacs")
 
-(gptel-make-tool :name "function_completions"
-                 :function (lambda (query)
-                             (let (symbols)
-                               (mapatoms (lambda (symbol)
-                                           (let ((name (symbol-name symbol)))
-                                             (when (and (fboundp symbol)
-                                                        (string-match-p query name))
-                                               (push symbol symbols)))))
-                               symbols))
-                 :description "get the names of all the functions that match the search query"
-                 :args (list '( :name "search query"
-                                :type string
-                                :description "the search query"))
-                 :category "emacs")
+  (gptel-make-tool :name "command_completions"
+                   :function (lambda (query)
+                               (let (symbols)
+                                 (mapatoms (lambda (symbol)
+                                             (let ((name (symbol-name symbol)))
+                                               (when (and (commandp symbol)
+                                                          (string-match-p query name))
+                                                 (push symbol symbols)))))
+                                 symbols))
+                   :description "get the names of all the commands that match the search query"
+                   :args (list '( :name "search query"
+                                  :type string
+                                  :description "the search query"))
+                   :category "emacs")
 
-(gptel-make-tool :name "command_completions"
-                 :function (lambda (query)
-                             (let (symbols)
-                               (mapatoms (lambda (symbol)
-                                           (let ((name (symbol-name symbol)))
-                                             (when (and (commandp symbol)
-                                                        (string-match-p query name))
-                                               (push symbol symbols)))))
-                               symbols))
-                 :description "get the names of all the commands that match the search query"
-                 :args (list '( :name "search query"
-                                :type string
-                                :description "the search query"))
-                 :category "emacs")
+  (gptel-make-tool :name "variable_documentation"
+                   :function (lambda (variable-name)
+                               (let ((symbol (intern-soft variable-name)))
+                                 (when (and symbol (boundp symbol))
+                                   (documentation-property symbol
+                                                           'variable-documentation))))
+                   :description "get the documentation for an emacs variable"
+                   :args (list '( :name "variable name"
+                                  :type string
+                                  :description "the variable name"))
+                   :category "emacs")
 
-(gptel-make-tool :name "variable_documentation"
-                 :function (lambda (variable-name)
-                             (let ((symbol (intern-soft variable-name)))
-                               (when (and symbol (boundp symbol))
-                                 (documentation-property symbol
-                                                         'variable-documentation))))
-                 :description "get the documentation for an emacs variable"
-                 :args (list '( :name "variable name"
-                                :type string
-                                :description "the variable name"))
-                 :category "emacs")
+  (gptel-make-tool :name "function_documentation"
+                   :function (lambda (function-name)
+                               (let ((symbol (intern-soft function-name)))
+                                 (when (and symbol (fboundp symbol))
+                                   (documentation symbol))))
+                   :description "get the documentation for an emacs function"
+                   :args (list '( :name "function name"
+                                  :type string
+                                  :description "the function name"))
+                   :category "emacs")
 
-(gptel-make-tool :name "function_documentation"
-                 :function (lambda (function-name)
-                             (let ((symbol (intern-soft function-name)))
-                               (when (and symbol (fboundp symbol))
-                                 (documentation symbol))))
-                 :description "get the documentation for an emacs function"
-                 :args (list '( :name "function name"
-                                :type string
-                                :description "the function name"))
-                 :category "emacs")
+  (gptel-make-tool :name "variable_value"
+                   :function (lambda (variable-name)
+                               (let ((symbol (intern-soft variable-name)))
+                                 (when (and symbol (boundp symbol))
+                                   (symbol-value symbol))))
+                   :description "get the value of an emacs variable"
+                   :args (list '( :name "variable name"
+                                  :type string
+                                  :description "the variable's name"))
+                   :category "emacs")
 
-(gptel-make-tool :name "variable_value"
-                 :function (lambda (variable-name)
-                             (let ((symbol (intern-soft variable-name)))
-                               (when (and symbol (boundp symbol))
-                                 (symbol-value symbol))))
-                 :description "get the value of an emacs variable"
-                 :args (list '( :name "variable name"
-                                :type string
-                                :description "the variable's name"))
-                 :category "emacs")
+  (gptel-make-tool :name "variable_source"
+                   :function (lambda (variable-name)
+                               (let ((symbol (intern-soft variable-name)))
+                                 (when (and symbol (boundp symbol))
+                                   (with-temp-buffer
+                                     (find-variable symbol)
+                                     (buffer-substring-no-properties (point)
+                                                                     (save-excursion
+                                                                       (end-of-defun)
+                                                                       (point)))))))
+                   :description "get the source code of an emacs variable"
+                   :args (list '( :name "variable name"
+                                  :type string
+                                  :description "the variable's name"))
+                   :category "emacs")
 
-(gptel-make-tool :name "variable_source"
-                 :function (lambda (variable-name)
-                             (let ((symbol (intern-soft variable-name)))
-                               (when (and symbol (boundp symbol))
-                                 (with-temp-buffer
-                                   (find-variable symbol)
-                                   (buffer-substring-no-properties (point)
-                                                                   (save-excursion
-                                                                     (end-of-defun)
-                                                                     (point)))))))
-                 :description "get the source code of an emacs variable"
-                 :args (list '( :name "variable name"
-                                :type string
-                                :description "the variable's name"))
-                 :category "emacs")
+  (defun jacob-gptel-function-source (function-name)
+    "Get the source code of an Emacs function called FUNCTION-NAME."
+    (let ((symbol (intern-soft function-name)))
+      (when (and symbol (fboundp symbol))
+        (save-window-excursion
+          (find-function symbol)
+          (buffer-substring-no-properties (point)
+                                          (save-excursion
+                                            (end-of-defun)
+                                            (point)))))))
 
-(defun jacob-gptel-function-source (function-name)
-  "Get the source code of an Emacs function called FUNCTION-NAME."
-  (let ((symbol (intern-soft function-name)))
-    (when (and symbol (fboundp symbol))
+  (gptel-make-tool :name "function_source"
+                   :function #'jacob-gptel-function-source
+                   :description "get the source code of an emacs function"
+                   :args (list '( :name "function name"
+                                  :type string
+                                  :description "the function's name"))
+                   :category "emacs")
+
+  (defun jacob-gptel-symbol-manual-section (symbol-name)
+    "Get the manual node for SYMBOL-NAME."
+    (when-let ((symbol (intern-soft symbol-name)))
       (save-window-excursion
-        (find-function symbol)
-        (buffer-substring-no-properties (point)
-                                        (save-excursion
-                                          (end-of-defun)
-                                          (point)))))))
+        (info-lookup-symbol symbol)
+        (buffer-string))))
 
-(gptel-make-tool :name "function_source"
-                 :function #'jacob-gptel-function-source
-                 :description "get the source code of an emacs function"
-                 :args (list '( :name "function name"
-                                :type string
-                                :description "the function's name"))
-                 :category "emacs")
+  (gptel-make-tool :name "symbol_manual_section"
+                   :function #'jacob-gptel-symbol-manual-section
+                   :description "get the manual page of an emacs symbol"
+                   :args (list '( :name "manual page name"
+                                  :type string
+                                  :description "the name of the manual page"))
+                   :category "emacs")
 
-(defun jacob-gptel-symbol-manual-section (symbol-name)
-  "Get the manual node for SYMBOL-NAME."
-  (when-let ((symbol (intern-soft symbol-name)))
+  (defun jacob-gptel-library-source (library-name)
+    "Get the source code of LIBRARY-NAME."
+    (when (locate-library library-name)
+      (save-window-excursion
+        (find-library library-name)
+        (buffer-string))))
+
+  (gptel-make-tool :name "library_source"
+                   :function #'jacob-gptel-library-source
+                   :description "get the source code of a library or package in emacs"
+                   :args (list '( :name "library name"
+                                  :type string
+                                  :description "the library name"))
+                   :category "emacs")
+
+  (defun jacob-gptel-manual-node-contents (node-name)
+    "Get the contents of the manul node NODE-NAME."
     (save-window-excursion
-      (info-lookup-symbol symbol)
-      (buffer-string))))
+      (Info-goto-node node-name)
+      (buffer-string)))
 
-(gptel-make-tool :name "symbol_manual_section"
-                 :function #'jacob-gptel-symbol-manual-section
-                 :description "get the manual page of an emacs symbol"
-                 :args (list '( :name "manual page name"
-                                :type string
-                                :description "the name of the manual page"))
-                 :category "emacs")
-
-(defun jacob-gptel-library-source (library-name)
-  "Get the source code of LIBRARY-NAME."
-  (when (locate-library library-name)
-    (save-window-excursion
-      (find-library library-name)
-      (buffer-string))))
-
-(gptel-make-tool :name "library_source"
-                 :function #'jacob-gptel-library-source
-                 :description "get the source code of a library or package in emacs"
-                 :args (list '( :name "library name"
-                                :type string
-                                :description "the library name"))
-                 :category "emacs")
-
-(defun jacob-gptel-manual-node-contents (node-name)
-  "Get the contents of the manul node NODE-NAME."
-  (save-window-excursion
-    (Info-goto-node node-name)
-    (buffer-string)))
-
-(gptel-make-tool :name "manual_node_contents"
-                 :function #'jacob-gptel-manual-node-contents
-                 :description "get the contents of the manual node."
-                 :args (list '( :name "manual node name"
-                                :type string
-                                :description "the manual node's name"))
-                 :category "emacs")
+  (gptel-make-tool :name "manual_node_contents"
+                   :function #'jacob-gptel-manual-node-contents
+                   :description "get the contents of the manual node."
+                   :args (list '( :name "manual node name"
+                                  :type string
+                                  :description "the manual node's name"))
+                   :category "emacs"))
 
 ;; manual nodes
 
