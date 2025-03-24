@@ -1,0 +1,4 @@
+# -*- mode: snippet -*-
+# key: con
+# --
+const ${1:x$(jacob-yas-camel-case yas-text)} = $0;
