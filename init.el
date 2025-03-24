@@ -189,9 +189,21 @@
   :custom
   (savehist-save-minibuffer-history t))
 
+;; TODO: before advice for find file?
+
+(defvar jacob-first-file-hook '()
+  "Hook for first file opened.")
+
+(defun jacob-run-first-file-hook ()
+  "Run `jacob-first-file-hook', then remove this function from `find-file-hook'."
+  (when (member 'init features)
+    (run-hooks 'jacob-first-file-hook)
+    (remove-hook 'find-file-hook #'jacob-run-first-file-hook)))
+
+(add-hook 'find-file-hook #'jacob-run-first-file-hook)
+
 (use-package saveplace
-  :config
-  (save-place-mode 1)
+  :hook (jacob-first-file-hook . save-place-mode)
   :custom
   (save-place-forget-unreadable-files t))
 
@@ -803,9 +815,8 @@ Useful for deleting ^M after `eglot-code-actions'."
   (keymap-set jacob-xfk-map "c" `("Code" . ,jacob-code-map)))
 
 (use-package csharp-mode
+  :defer t
   :config
-  (require 'csharp-mode)
-
   (defun jacob-csharp-create-variable ()
     "Create a variable declaration statement for an undeclared variable."
     (interactive)
@@ -1404,9 +1415,10 @@ hides this information."
 
 (use-package org-edna
   :ensure t
+  :after org
+  :delight
   :config
-  (org-edna-mode 1)
-  (delight 'org-edna-mode nil t))
+  (org-edna-mode 1))
 
 (use-package denote
   :ensure t)
@@ -1561,16 +1573,18 @@ Intended as before advice for `sql-send-paragraph'."
   (setopt message-send-mail-function 'smtpmail-send-it))
 
 (use-package gnus
+  :commands gnus
+  :init
+  (keymap-set jacob-xfk-map "g" #'gnus)
   :config
   (jacob-defhookf gnus-started-hook
     (gnus-demon-add-handler 'gnus-demon-scan-news 2 t))
 
   (setopt gnus-use-full-window t
-          gnus-always-read-dribble-file t)
-
-  (keymap-set jacob-xfk-map "g" #'gnus))
+          gnus-always-read-dribble-file t))
 
 (use-package gnus-group
+  :after gnus
   :config
   (jacob-defhookf gnus-group-mode-hook
     (jacob-xfk-local-key "q" #'gnus-group-exit)
@@ -1579,10 +1593,12 @@ Intended as before advice for `sql-send-paragraph'."
     (jacob-xfk-local-key "g" #'gnus-group-get-new-news)))
 
 (use-package gnus-notifications
+  :after gnus
   :config
   (add-hook 'gnus-after-getting-new-news-hook 'gnus-notifications))
 
 (use-package gnus-sum
+  :after gnus
   :config
   (jacob-defhookf gnus-summary-mode-hook
     (jacob-xfk-local-key "q" #'gnus-summary-exit)
@@ -1592,6 +1608,7 @@ Intended as before advice for `sql-send-paragraph'."
     (jacob-xfk-local-key "l" #'gnus-summary-next-page)))
 
 (use-package gnus-topic
+  :after gnus
   :config
   (add-hook 'gnus-group-mode-hook 'gnus-topic-mode)
   
@@ -1864,14 +1881,16 @@ active, do not format the buffer."
   (keymap-set xah-fly-command-map "9" #'expreg-contract))
 
 (use-package verb
-  :ensure t)
-(add-hook 'org-mode-hook #'verb-mode)
-(jacob-defhookf verb-response-body-mode-hook
-  (jacob-xfk-local-key "q" #'quit-window))
+  :ensure t
+  :after org
+  :config
+  (add-hook 'org-mode-hook #'verb-mode)
+  (jacob-defhookf verb-response-body-mode-hook
+    (jacob-xfk-local-key "q" #'quit-window))
 
-(defun jacob-verb-id (response-id)
-  "Get the id property from the stored verb response pertaining to RESPONSE-ID."
-  (verb-json-get (oref (verb-stored-response response-id) body) "id"))
+  (defun jacob-verb-id (response-id)
+    "Get the id property from the stored verb response pertaining to RESPONSE-ID."
+    (verb-json-get (oref (verb-stored-response response-id) body) "id")))
 
 (use-package sly
   :ensure t
@@ -2100,24 +2119,22 @@ active, do not format the buffer."
   :custom ((aider-args '("--model" "gemini/gemini-2.0-flash-exp"))))
 
 (use-package gdscript-mode
-  :ensure t)
+  :ensure t
+  :defer t
+  :config
+  (jacob-defhookf gdscript-mode-hook
+    (setopt indent-tabs-mode t))
 
-(jacob-defhookf gdscript-mode-hook
-  (setopt indent-tabs-mode t))
+  (push '((gdscript-mode gdscript-ts-mode) "localhost" 6008) eglot-server-programs)
 
-(push '((gdscript-mode gdscript-ts-mode) "localhost" 6008) eglot-server-programs)
+  (add-to-list 'treesit-auto-recipe-list (make-treesit-auto-recipe
+                                          :lang 'gdscript
+                                          :ts-mode 'gdscript-ts-mode
+                                          :remap 'gdscript-mode
+                                          :url "https://github.com/PrestonKnopp/tree-sitter-gdscript.git"
+                                          :ext "\\.gd\\'"))
 
-(require 'gdscript-ts-mode)
-
-(add-to-list 'treesit-auto-recipe-list (make-treesit-auto-recipe
-                                        :lang 'gdscript
-                                        :ts-mode 'gdscript-ts-mode
-                                        :remap 'gdscript-mode
-                                        :url "https://github.com/PrestonKnopp/tree-sitter-gdscript.git"
-                                        :ext "\\.gd\\'"))
-
-(add-to-list 'treesit-auto-langs 'gdscript)
-
+  (add-to-list 'treesit-auto-langs 'gdscript))
 
 (use-package eat
   :ensure t
