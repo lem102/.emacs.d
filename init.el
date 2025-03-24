@@ -246,7 +246,7 @@
 (use-package xah-fly-keys
   :ensure t
   :hook (after-init-hook . xah-fly-keys)
-  :delight
+  :delight (xah-fly-keys " 🛪")
   :init
   (defvar-keymap jacob-xfk-map)
 
@@ -472,7 +472,7 @@ move to the new window. Otherwise, call `switch-buffer'."
   ;; :custom ((yas-snippet-dirs ("/home/jacobl/.emacs.d/etc/yasnippet/snippets/")))
   ;; :bind (:map jacob-xfk-map
   ;;             ("y n" . yas-new-snippet))
-  :diminish yas
+  :delight yas-minor-mode
   :config
 
   (nbutlast yas-snippet-dirs 1)
