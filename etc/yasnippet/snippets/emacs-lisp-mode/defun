@@ -1,0 +1,6 @@
+# key: defun
+# name: defun
+# --
+(defun ${1:x} ($2)
+  "${3:TODO: write documentation.}"
+  $0)

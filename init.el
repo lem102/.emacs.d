@@ -25,9 +25,6 @@
 (defconst jacob-is-linux (eq system-type 'gnu/linux)
   "Is the current OS linux?")
 
-(defconst jacob-is-android (eq system-type 'android)
-  "Is the current OS android?")
-
 (when (file-exists-p "~/.emacs.d/environment.el")
   (load-file "~/.emacs.d/environment.el"))
 
@@ -191,40 +188,25 @@
 
 ;; TODO: before advice for find file?
 
-(defvar jacob-first-file-hook '()
-  "Hook for first file opened.")
+;; (defvar jacob-first-file-hook '()
+;;   "Hook for first file opened.")
 
-(defun jacob-run-first-file-hook ()
-  "Run `jacob-first-file-hook', then remove this function from `find-file-hook'."
-  (when (member 'init features)
-    (run-hooks 'jacob-first-file-hook)
-    (remove-hook 'find-file-hook #'jacob-run-first-file-hook)))
+;; (defun jacob-run-first-file-hook ()
+;;   "Run `jacob-first-file-hook', then remove this function from `find-file-hook'."
+;;   (when (member 'init features)
+;;     (message "jacobwozere")
+;;     (run-hooks 'jacob-first-file-hook)
+;;     (advice-remove #'jacob-run-first-file-hook #'find-file)))
 
-(add-hook 'find-file-hook #'jacob-run-first-file-hook)
+;; (advice-add #'find-file :before #'jacob-run-first-file-hook)
 
 (use-package saveplace
-  :hook (jacob-first-file-hook . save-place-mode)
   :custom
   (save-place-forget-unreadable-files t))
 
 (use-package custom
   :config
   (load-theme 'modus-vivendi-tinted))
-
-(use-package tool-bar
-  :config
-  (tool-bar-mode (if jacob-is-android 1 0))
-  :custom
-  (tool-bar-button-margin (if jacob-is-android 40 4))
-  (tool-bar-position (if jacob-is-android 'bottom 'top)))
-
-(use-package menu-bar
-  :config
-  (menu-bar-mode (if jacob-is-android 1 0)))
-
-(use-package scroll-bar
-  :config
-  (scroll-bar-mode 0))
 
 (use-package tab-bar
   :custom
@@ -736,12 +718,23 @@ For use in yasnippets."
   (setopt auto-insert-query t))
 
 (use-package tramp
+  :defer t
   :config
   (add-to-list 'tramp-remote-path 'tramp-own-remote-path)
   (setopt tramp-archive-enabled nil) ; lots of problems. for now, disable it!
   )
 
 (use-package eglot
+  :defer t
+  :init
+  (defvar-keymap jacob-code-map
+    "e" #'eglot
+    "a" #'eglot-code-actions
+    "r" #'eglot-rename
+    "i" #'eglot-find-implementation
+    "t" #'eglot-find-typeDefinition)
+
+  (keymap-set jacob-xfk-map "c" `("Code" . ,jacob-code-map))
   :config
   (jacob-defhookf eglot-managed-mode-hook
     (eglot-inlay-hints-mode 0)
@@ -803,19 +796,10 @@ Useful for deleting ^M after `eglot-code-actions'."
   (eglot--code-action eglot-code-action-organize-imports-ts "source.organizeImports.ts")
   (eglot--code-action eglot-code-action-add-missing-imports-ts "source.addMissingImports.ts")
 
-  (setopt eglot-ignored-server-capabilities '(:documentOnTypeFormattingProvider))
-
-  (defvar-keymap jacob-code-map
-    "e" #'eglot
-    "a" #'eglot-code-actions
-    "r" #'eglot-rename
-    "i" #'eglot-find-implementation
-    "t" #'eglot-find-typeDefinition)
-
-  (keymap-set jacob-xfk-map "c" `("Code" . ,jacob-code-map)))
+  (setopt eglot-ignored-server-capabilities '(:documentOnTypeFormattingProvider)))
 
 (use-package csharp-mode
-  :defer t
+  :mode ("//.csx?//'" . csharp-ts-mode)
   :config
   (defun jacob-csharp-create-variable ()
     "Create a variable declaration statement for an undeclared variable."
@@ -1563,10 +1547,10 @@ Intended as before advice for `sql-send-paragraph'."
     (setq-local transpose-sexps-function nil)))
 
 (use-package yaml-ts-mode
-  :config
-  (add-to-list 'auto-mode-alist '("\\.ya?ml\\'" . yaml-ts-mode)))
+  :mode ("\\.ya?ml\\'" . yaml-ts-mode))
 
 (use-package message
+  :after gnus
   :config
   (jacob-defhookf message-mode-hook
     (setq-local auto-save-visited-mode nil))
@@ -2120,9 +2104,9 @@ active, do not format the buffer."
 
 (use-package gdscript-mode
   :ensure t
-  :defer t
+  :mode ("\\.gd\\'" . gdscript-ts-mode)
   :config
-  (jacob-defhookf gdscript-mode-hook
+  (jacob-defhookf gdscript-ts-mode-hook
     (setopt indent-tabs-mode t))
 
   (push '((gdscript-mode gdscript-ts-mode) "localhost" 6008) eglot-server-programs)
