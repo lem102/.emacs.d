@@ -1006,6 +1006,7 @@ which performs the deletion."
 
 (use-package sharper
   :ensure t
+  :after csharp-mode
   :config
   (keymap-set jacob-xfk-map "d" #'sharper-main-transient))
 
@@ -1024,11 +1025,13 @@ which performs the deletion."
   (add-to-list 'auto-mode-alist '("\\.sln\\'". sln-mode)))
 
 (use-package fsharp-mode
+  :defer t
   :config
   (remove-hook 'project-find-functions #'fsharp-mode-project-root)
   (setopt compilation-error-regexp-alist (remq 'fsharp compilation-error-regexp-alist)))
 
 (use-package inf-lisp
+  :defer t
   :config
   (setopt inferior-lisp-program "sbcl"))
 
@@ -1070,6 +1073,7 @@ which performs the deletion."
 
 
 (use-package esh-mode
+  :defer t
   :config
   (setopt eshell-scroll-to-bottom-on-output t)
 
@@ -1378,17 +1382,19 @@ hides this information."
     (jacob-xfk-local-key "g" #'org-agenda-redo-all)))
 
 (use-package org-src
+  :after org
   :config
   (setopt org-src-preserve-indentation t))
 
 (use-package org-compat
+  :after org
   :config
   (setopt org-calendar-to-agenda-key nil  ; don't bind calendar key
           org-calendar-insert-diary-entry-key nil) ; don't bind calendar key
   )
 
 (use-package ox-latex
-  :defer t
+  :after org
   :config
   (setopt org-latex-pdf-process (list "latexmk -pdf %f -shell-escape")) ; probably requires texlive
   )
@@ -1541,6 +1547,7 @@ Intended as before advice for `sql-send-paragraph'."
   (treesit-auto-add-to-auto-mode-alist))
 
 (use-package typescript-ts-mode
+  :mode ("\\.ts" . typescript-ts-mode)
   :config
   (jacob-defhookf typescript-ts-mode-hook
     (setq-local forward-sexp-function nil)
@@ -1601,7 +1608,8 @@ Intended as before advice for `sql-send-paragraph'."
     (jacob-xfk-local-key "s" #'gnus-topic-select-group)))
 
 (use-package nxml-mode
-  :config
+  :defer t
+  :init
   (add-to-list 'auto-mode-alist '("Directory.Packages.props" . nxml-mode)))
 
 (use-package key-chord
@@ -1707,6 +1715,7 @@ active, do not format the buffer."
   (eglot-booster-mode 1))
 
 (use-package dape
+  :after eglot
   :config
   (setopt dape-info-hide-mode-line nil
           dape-buffer-window-arrangement 'right)
@@ -1738,6 +1747,7 @@ active, do not format the buffer."
 (use-package csharp-toolbox
   :vc ( :url "https://github.com/lem102/csharp-toolbox.git"
         :rev :newest)
+  :after csharp-mode
   :config
   ;; (keymap-set jacob-xfk-map "c f" #'csharp-toolbox-format-statement)
   ;; (keymap-set jacob-xfk-map "c t" #'csharp-toolbox-run-test)
@@ -2123,7 +2133,8 @@ active, do not format the buffer."
 (use-package eat
   :ensure t
   :when jacob-is-linux
-  :config
+  :defer t
+  :init
   (add-hook 'eshell-mode-hook #'eat-eshell-mode))
 
 (use-package pdf-tools
@@ -2140,6 +2151,7 @@ active, do not format the buffer."
 
 (use-package bluetooth
   :ensure t
+  :defer t
   :when jacob-is-linux)
 
 ;; use `bluetooth-list-devices' to display the bluetooth buffer
