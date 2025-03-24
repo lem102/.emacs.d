@@ -16,6 +16,13 @@
   :config
   (scroll-bar-mode 0))
 
+(when jacob-is-android
+  (setenv "PATH" (format "%s:%s" "/data/data/com.termux/files/usr/bin"
+		                 (getenv "PATH")))
+  (push "/data/data/com.termux/files/usr/bin" exec-path)
+
+  (setq touch-screen-display-keyboard t))
+
 ;; Local Variables:
 ;; flymake-mode: nil
 ;; End:
