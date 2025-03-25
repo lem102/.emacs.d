@@ -79,54 +79,55 @@ then remove this function from `find-file-hook'."
   ;; mule-cmds.el
   (prefer-coding-system 'utf-8)
 
-  :custom (
-           ;; c code
-           (tab-width 4) ; set default tab char's display width to 4 spaces
-           (truncate-lines (cond (jacob-is-android t)
-                                 (t nil)))
-           (delete-by-moving-to-trash t)
-           (read-process-output-max (* 1024 1024))
-           (frame-resize-pixelwise t)
-           (create-lockfiles nil)
-           (history-length 1000)
-           (history-delete-duplicates t)
-           (scroll-conservatively 101)
-           (use-dialog-box nil)
-           (use-short-answers t)
-           (ring-bell-function 'ignore)
-           (truncate-partial-width-windows nil)
-           (enable-recursive-minibuffers t)
-           (completion-ignore-case t)
-           (kill-buffer-query-functions (delq 'process-kill-buffer-query-function
-                                              kill-buffer-query-functions))
-           (echo-keystrokes 0.01)
-           ;; startup.el
-           (inhibit-startup-screen t)
-           (initial-scratch-message (format ";; %s\n\n"
-                                            (seq-random-elt
-                                             '("\"A journey of a thousand miles begins with a single step.\" - 老子"
-                                               "\"apex predator of grug is complexity\" - some grug"
-                                               "\"Perfection is achieved, not when there is nothing more to add, but when there is nothing left to take away.\" - Antoine de Saint-Exupéry"
-                                               "\"Always listen to Jiaqi.\" - Jacob Leeming"
-                                               "\"The king wisely had the computer scientist beheaded, and they all lived happily ever after.\" - anon"
-                                               "\"Success is going from failure to failure without losing your enthusiasm.\" - Winston Churchill (maybe)"))))
-           ;; lisp.el
-           (parens-require-spaces nil)
-           (delete-pair-blink-delay 0)
-           (insert-pair-alist (append insert-pair-alist
-                                      '((?k ?\( ?\))
-                                        (?l ?\[ ?\])
-                                        (?j ?\{ ?\})
-                                        (?u ?\" ?\")
-                                        (?i ?\' ?\')
-                                        (?h ?\< ?\>))))
-           ;; bindings.el
-           (mode-line-percent-position nil)
-           ;; paragraphs.el
-           (sentence-end-double-space nil)
-           ;; indent.el
-           ;; make tab key call indent command or insert tab character, depending on cursor position
-           (tab-always-indent 'complete)))
+  :custom
+  ;; c code
+  (tab-width 4) ; set default tab char's display width to 4 spaces
+  (truncate-lines (cond (jacob-is-android t)
+                        (t nil)))
+  (delete-by-moving-to-trash t)
+  (read-process-output-max (* 1024 1024))
+  (frame-resize-pixelwise t)
+  (create-lockfiles nil)
+  (history-length 1000)
+  (history-delete-duplicates t)
+  (scroll-conservatively 101)
+  (use-dialog-box nil)
+  (use-short-answers t)
+  (ring-bell-function 'ignore)
+  (truncate-partial-width-windows nil)
+  (enable-recursive-minibuffers t)
+  (completion-ignore-case t)
+  (kill-buffer-query-functions (delq 'process-kill-buffer-query-function
+                                     kill-buffer-query-functions))
+  (echo-keystrokes 0.01)
+  ;; startup.el
+  (inhibit-startup-screen t)
+  (initial-scratch-message (format ";; %s\n\n"
+                                   (seq-random-elt
+                                    '("\"A journey of a thousand miles begins with a single step.\" - 老子"
+                                      "\"apex predator of grug is complexity\" - some grug"
+                                      "\"Perfection is achieved, not when there is nothing more to add, but when there is nothing left to take away.\" - Antoine de Saint-Exupéry"
+                                      "\"Always listen to Jiaqi.\" - Jacob Leeming"
+                                      "\"The king wisely had the computer scientist beheaded, and they all lived happily ever after.\" - anon"
+                                      "\"Success is going from failure to failure without losing your enthusiasm.\" - Winston Churchill (maybe)"))))
+  (initial-major-mode #'fundamental-mode)
+  ;; lisp.el
+  (parens-require-spaces nil)
+  (delete-pair-blink-delay 0)
+  (insert-pair-alist (append insert-pair-alist
+                             '((?k ?\( ?\))
+                               (?l ?\[ ?\])
+                               (?j ?\{ ?\})
+                               (?u ?\" ?\")
+                               (?i ?\' ?\')
+                               (?h ?\< ?\>))))
+  ;; bindings.el
+  (mode-line-percent-position nil)
+  ;; paragraphs.el
+  (sentence-end-double-space nil)
+  ;; indent.el
+  ;; make tab key call indent command or insert tab character, depending on cursor position
+  (tab-always-indent 'complete))
 
 (use-package package
   :custom (package-archives '(("gnu" . "https://elpa.gnu.org/packages/")
@@ -149,6 +150,7 @@ then remove this function from `find-file-hook'."
 
 (use-package which-key
   :delight
+  ;; TODO: need an on first input hook
   :config
   (which-key-mode 1)
   :custom (which-key-idle-delay 0.01))
@@ -174,7 +176,8 @@ then remove this function from `find-file-hook'."
            (confirm-kill-processes nil)))
 
 (use-package autorevert
-  :delight)
+  :delight
+  :hook (jacob-first-file-hook . global-auto-revert-mode))
 
 (use-package window
   :custom
@@ -203,8 +206,7 @@ then remove this function from `find-file-hook'."
   :hook (after-init-hook . recentf-mode))
 
 (use-package savehist
-  :config
-  (savehist-mode 1)
+  :hook (jacob-first-minibuffer-activation-hook . savehist-mode)
   :custom
   (savehist-save-minibuffer-history t))
 
@@ -372,20 +374,6 @@ then remove this function from `find-file-hook'."
     (backward-paragraph)
     (kill-paragraph 1))
 
-  (defun jacob-split-or-switch-window ()
-    "Split or switch window.
-
-If there is only one window in the current frame, split the frame and
-move to the new window. Otherwise, call `switch-buffer'."
-    (interactive)
-    (cond ((= 1 (let ((total-windows 0))
-                  (dolist (frame (frame-list))
-                    (setq total-windows (+ total-windows (length (window-list frame)))))
-                  total-windows))
-           (split-window-sensibly)
-           (call-interactively #'other-window))
-          (t (call-interactively #'ace-window))))
-
   (defalias 'jacob-return-macro
     (kmacro "<return>"))
 
@@ -434,7 +422,7 @@ move to the new window. Otherwise, call `switch-buffer'."
 
   (keymap-set xah-fly-command-map "'" #'jacob-format-words)
   (keymap-set xah-fly-command-map "-" #'flymake-goto-prev-error)
-  (keymap-set xah-fly-command-map "9" #'jacob-swap-visible-buffers)
+  ;; (keymap-set xah-fly-command-map "9" #'jacob-swap-visible-buffers)
   (keymap-set xah-fly-command-map ";" #'jacob-end-of-line)
   (keymap-set xah-fly-command-map "=" #'flymake-goto-next-error)
   (keymap-set xah-fly-command-map "d" #'jacob-backspace)
@@ -442,7 +430,6 @@ move to the new window. Otherwise, call `switch-buffer'."
   (keymap-set xah-fly-command-map "h" #'jacob-beginning-of-line)
   (keymap-set xah-fly-command-map "s" #'jacob-return-macro)
   (keymap-set xah-fly-command-map "x" #'jacob-kill-line)
-  (keymap-set xah-fly-command-map "," #'jacob-split-or-switch-window)
 
   (keymap-set xah-fly-insert-map "M-SPC" #'xah-fly-command-mode-activate)
 
@@ -583,11 +570,13 @@ For use in yasnippets."
     (jacob-xfk-local-key "g" #'revert-buffer)))
 
 (use-package help
+  :defer t
   :config
   (setopt help-window-select t
           help-enable-variable-value-editing t))
 
 (use-package help-fns
+  :defer t
   :config
   (defun jacob-help-edit ()
     "Edit variable in current help buffer."
@@ -632,17 +621,19 @@ For use in yasnippets."
     (jacob-xfk-local-key "s" #'push-button)))
 
 (use-package help-at-pt
+  ;; TODO: does this actually do anything?
+  :defer t
   :config
-  (setq-default help-at-pt-display-when-idle '(flymake-diagnostic))
-  (help-at-pt-set-timer))
+  (setopt help-at-pt-display-when-idle t))
 
 (use-package warnings
   :custom ((warning-minimum-level :error)))
 
 (use-package subword
+  :delight subword-mode
+  ;; TODO: first input advice based hook
   :config
-  (global-subword-mode 1)
-  (delight 'subword-mode nil t))
+  (global-subword-mode 1))
 
 (use-package paren
   :config
@@ -658,10 +649,12 @@ For use in yasnippets."
   (delete-selection-mode 1))
 
 (use-package repeat
+  ;; TODO: first input advice based hook
   :config
   (repeat-mode 1))
 
 (use-package dabbrev
+  :defer t
   :config
   (setopt dabbrev-case-fold-search nil
           dabbrev-case-replace nil))
@@ -715,16 +708,18 @@ For use in yasnippets."
   :ensure t
   :defer t)
 
+;; FIXME: trying to optimise this package causes git gutter stuff to
+;; appear on the left margin
 (use-package git-gutter-fringe
   :ensure t
+  :delight git-gutter-mode              ; FIXME: not hidden in the mode line
   :config
   (global-git-gutter-mode 1)
-  (delight 'git-gutter-mode nil t)
-  (setopt git-gutter-fr:side 'right-fringe))
+  (setq git-gutter-fr:side 'right-fringe))
 
 (use-package autoinsert
+  :hook (jacob-first-file-hook . auto-insert-mode)
   :config
-  (auto-insert-mode t)
   (setopt auto-insert-query t))
 
 (use-package tramp
@@ -1021,21 +1016,23 @@ which performs the deletion."
   (keymap-set jacob-xfk-map "d" #'sharper-main-transient))
 
 (use-package csproj-mode
-  :ensure t)
+  :ensure t
+  :mode ("\\.csproj\\'" . csproj-mode))
 
 (use-package font-lock-ext ; dependency of `sln-mode'
   :vc ( :url "https://github.com/sensorflo/font-lock-ext.git"
-        :rev :newest))
+        :rev :newest)
+  :defer t)
 
 ;; TODO: package `sln-mode' for elpa/melpa?
 (use-package sln-mode
   :vc ( :url "https://github.com/sensorflo/sln-mode.git"
         :rev :newest)
-  :config
-  (add-to-list 'auto-mode-alist '("\\.sln\\'". sln-mode)))
+  :mode ("\\.sln\\'" . sln-mode))
 
 (use-package fsharp-mode
   :defer t
+  :mode ("\\.fs\\'" . fsharp-mode)
   :config
   (remove-hook 'project-find-functions #'fsharp-mode-project-root)
   (setopt compilation-error-regexp-alist (remq 'fsharp compilation-error-regexp-alist)))
@@ -1046,10 +1043,10 @@ which performs the deletion."
   (setopt inferior-lisp-program "sbcl"))
 
 (use-package ls-lisp
-  :demand
-  :config
-  (setopt ls-lisp-use-insert-directory-program nil
-          ls-lisp-dirs-first t))
+  :defer t
+  :init
+  (setq ls-lisp-use-insert-directory-program nil
+        ls-lisp-dirs-first t))
 
 (use-package dired
   :defer t
@@ -1106,6 +1103,18 @@ which performs the deletion."
       (with-current-buffer (get-buffer "*Eshell Async Command Output*")
         (rename-buffer buffer-name))))
 
+  (when jacob-is-windows
+    (defun jacob-confirm-terminate-batch-job ()
+      "Type y and enter to terminate batch job after sending ^C."
+      (when (not (null eshell-process-list))
+        (insert "y")
+        (eshell-send-input)))
+
+    (advice-add 'eshell-interrupt-process :after #'jacob-confirm-terminate-batch-job)))
+
+(use-package pcomplete
+  :defer t
+  :config
   (defun jacob-git-get-branches (&optional display-origin)
     "Get git branches for current repo.
 
@@ -1126,18 +1135,7 @@ hides this information."
                                       (goto-char (point-max))
                                       (+ 2 (line-beginning-position))))
       (split-string (buffer-substring-no-properties (point-min) (point-max)) "\n")))
-
-  (when jacob-is-windows
-    (defun jacob-confirm-terminate-batch-job ()
-      "Type y and enter to terminate batch job after sending ^C."
-      (when (not (null eshell-process-list))
-        (insert "y")
-        (eshell-send-input)))
-
-    (advice-add 'eshell-interrupt-process :after #'jacob-confirm-terminate-batch-job)))
-
-(use-package pcomplete
-  :config
+  
   (defun pcomplete/gco ()
     "Completion for the gco alias on git branches."
     (pcomplete-here* (jacob-git-get-branches)))
@@ -1147,12 +1145,13 @@ hides this information."
     (pcomplete-here* (jacob-git-get-branches t))))
 
 (use-package eldoc
+  :hook (prog-mode-hook . global-eldoc-mode)
+  :delight eldoc-mode
   :config
-  (global-eldoc-mode 1)
-  (delight 'eldoc-mode nil t)
   (setopt eldoc-documentation-strategy 'eldoc-documentation-compose))
 
 (use-package project
+  :defer t
   :config
   (setopt project-switch-commands '((project-find-file "Find file")
                                     (jacob-project-search "Find regexp")
@@ -1163,6 +1162,9 @@ hides this information."
 
 (use-package prodigy
   :ensure t
+  :defer t
+  :init
+  (keymap-set project-prefix-map "l" #'prodigy)
   :config
   (setopt prodigy-kill-process-buffer-on-stop t)
   
@@ -1174,8 +1176,6 @@ hides this information."
                        (service (plist-get args :service)))
                    (when (string-match-p "Hosting started *$" output)
                      (prodigy-set-status service 'ready)))))
-
-  (keymap-set project-prefix-map "l" #'prodigy)
 
   (jacob-defhookf prodigy-mode-hook
     (hl-line-mode 0)
@@ -1200,7 +1200,8 @@ hides this information."
   (delight 'hi-lock-mode nil t))
 
 (use-package highlight-defined
-  :ensure t)
+  :ensure t
+  :hook (emacs-lisp-mode-hook . highlight-defined-mode))
 
 (use-package hl-todo
   :config
@@ -1208,12 +1209,11 @@ hides this information."
 
 (use-package lisp-extra-font-lock
   :ensure t
-  :config
-  (lisp-extra-font-lock-global-mode 1))
+  :hook ((emacs-lisp-mode-hook lisp-mode-hook scheme-mode-hook) . lisp-extra-font-lock-mode))
 
 (use-package elisp-mode
+  :defer t
   :config
-  
   (defun jacob-move-past-close-and-reindent ()
     "Advice for `move-past-close-and-reindent'."
     (when (bolp)
@@ -1227,23 +1227,9 @@ hides this information."
       (indent-region (point-min) (point-max))))
 
   (jacob-defhookf emacs-lisp-mode-hook
-    (setq-local outline-regexp "^(\\(jacob-\\)*require '\\([a-z-]+\\)")
     (flymake-mode 1)
-    (highlight-defined-mode 1)
     (add-hook 'before-save-hook 'jacob-indent-buffer nil "LOCAL")
     (setq-local yas-key-syntaxes '("w_")))
-
-  (add-to-list 'lisp-imenu-generic-expression '(nil "^(\\(jacob-\\)*require '\\([a-z-]+\\)" 2))
-
-  ;; (yas-define-snippets #'emacs-lisp-mode
-  ;;                      '(("add-hook" "(add-hook '-hook$0 #')")
-  ;;                        ("cond" "(cond ($0t 0))")
-  ;;                        ("let" "(let (($0x 1))\n)")
-  ;;                        ("save-excursion" "(save-excursion\n$0)")
-  ;;                        ("defun" "(defun $0 ()\n)")
-  ;;                        ("keymap-set" "(keymap-set '$0 \"\" #')")
-  ;;                        ("lambda" "(lambda ($0)\n)")
-  ;;                        ("message" "(message $0)")))
 
   (defun jacob-eval-print-last-sexp ()
     "Run `eval-print-last-sexp', indent the result."
@@ -1254,14 +1240,14 @@ hides this information."
       (forward-line)
       (indent-pp-sexp t)))
 
-  (setopt elisp-flymake-byte-compile-load-path load-path)
-
   (keymap-set lisp-interaction-mode-map "C-j" #'jacob-eval-print-last-sexp)
   (keymap-set lisp-interaction-mode-map "(" #'insert-parentheses)
   (keymap-set lisp-interaction-mode-map ")" #'move-past-close-and-reindent)
 
   (keymap-set emacs-lisp-mode-map "(" #'insert-parentheses)
-  (keymap-set emacs-lisp-mode-map ")" #'move-past-close-and-reindent))
+  (keymap-set emacs-lisp-mode-map ")" #'move-past-close-and-reindent)
+
+  (setopt elisp-flymake-byte-compile-load-path load-path))
 
 (use-package scheme
   :mode ("\\.scm\\'" . scheme-mode)
@@ -1431,7 +1417,8 @@ hides this information."
   :defer t)
 
 (use-package pulse
-  :config
+  :defer t
+  :init
   (defun jacob-pulse-line (&rest _)
     "Pulse the current line."
     (pulse-momentary-highlight-region (save-excursion
@@ -1443,6 +1430,7 @@ hides this information."
                      scroll-up-command
                      scroll-down-command
                      other-window
+                     jacob-split-or-switch-window
                      xref-find-definitions
                      xref-pop-marker-stack
                      isearch-done))
@@ -1455,11 +1443,13 @@ hides this information."
 
   (advice-add #'eval-defun :after #'jacob-pulse-defun))
 
+;; TODO: defer this
 (use-package server
   :config
   (server-start))
 
 (use-package smerge-mode
+  :defer t
   :config
   (defvar-keymap jacob-smerge-repeat-map
     :repeat t
@@ -1521,8 +1511,8 @@ hides this information."
           compilation-scroll-output t))
 
 (use-package sql
-  :config
-  
+  :commands (sql-read-connection)
+  :init
   (defun jacob-sql-connect ()
     "Wrapper for `sql-connect' to set postgres password.
 CONNECTION is the connection settings."
@@ -1535,6 +1525,8 @@ CONNECTION is the connection settings."
                                                     t)))))
         (sql-connect connection))))
 
+  (keymap-set jacob-xfk-map "s" #'jacob-sql-connect)
+  :config
   (jacob-defhookf sql-interactive-mode-hook
     (when (eq sql-product 'postgres)
       (setq sql-prompt-regexp "^[-[:alnum:]_]*[-=]\\*?[#>] ")
@@ -1548,26 +1540,24 @@ Intended as before advice for `sql-send-paragraph'."
     (with-current-buffer sql-buffer
       (goto-char (point-max))))
 
-  (advice-add #'sql-send-paragraph :before #'jacob-sqli-end-of-buffer)
-
-  (keymap-set jacob-xfk-map "s" #'jacob-sql-connect))
+  (advice-add #'sql-send-paragraph :before #'jacob-sqli-end-of-buffer))
 
 (use-package doc-view
   :defer t
   :config
   (jacob-defhookf doc-view-mode-hook
-    (auto-revert-mode 1)
     (jacob-xfk-local-key "l" 'doc-view-next-page)
     (jacob-xfk-local-key "j" 'doc-view-previous-page)))
 
 (use-package treesit
+  :defer t
   :config
   (setopt treesit-font-lock-level 4))
 
 (use-package treesit-auto
   :ensure t
+  :hook (prog-mode-hook . global-treesit-auto-mode)
   :config
-  (global-treesit-auto-mode 1)
   (treesit-auto-add-to-auto-mode-alist))
 
 (use-package typescript-ts-mode
@@ -1643,8 +1633,12 @@ Intended as before advice for `sql-send-paragraph'."
 
 (use-package avy
   :ensure t
+  :defer t
+  :init
+  (key-chord-define-global "fj" #'avy-goto-char-timer)
+  (keymap-global-set "M-j" #'avy-goto-char-timer)
+  (keymap-set isearch-mode-map "M-j" #'avy-isearch)
   :config
-  
   (defun jacob-avy-xref (point)
     "Call `xref-find-definitions' at POINT."
     (goto-char point)
@@ -1698,18 +1692,13 @@ Intended as before advice for `sql-send-paragraph'."
                                (?i . avy-action-ispell)
                                (?z . avy-action-zap-to-char)
                                (?. . jacob-avy-xref)
-                               (?r . jacob-avy-eglot-rename)))
-
-  (key-chord-define-global "fj" #'avy-goto-char-timer)
-
-  (keymap-global-set "M-j" #'avy-goto-char-timer)
-  (keymap-set isearch-mode-map "M-j" #'avy-isearch))
+                               (?r . jacob-avy-eglot-rename))))
 
 (use-package apheleia
   :ensure t
   :delight
+  :hook (prog-mode-hook . apheleia-global-mode)
   :config
-  (apheleia-global-mode 1)
   (setq-default apheleia-inhibit t) ; set `apheleia-inhibit' to nil to enable
   (add-to-list 'apheleia-formatters '(csharpier "dotnet" "csharpier" "--write-stdout"))
   (add-to-list 'apheleia-mode-alist '(csharp-ts-mode . csharpier))
@@ -1728,9 +1717,8 @@ active, do not format the buffer."
 
 (use-package rainbow-mode
   :ensure t
-  :config
-  (add-hook 'prog-mode-hook #'rainbow-mode)
-  (delight 'rainbow-mode))
+  :delight rainbow-mode
+  :hook (jacob-first-file-hook . rainbow-mode))
 
 (use-package eglot-booster
   :after eglot
@@ -1784,6 +1772,24 @@ active, do not format the buffer."
 
 (use-package ace-window
   :ensure t
+  :defer t
+  :init
+  (defun jacob-split-or-switch-window ()
+    "Split or switch window.
+
+If there is only one window in the current frame, split the frame and
+move to the new window. Otherwise, call `switch-buffer'."
+    (interactive)
+    (cond ((= 1 (let ((total-windows 0))
+                  (dolist (frame (frame-list))
+                    (setq total-windows (+ total-windows (length (window-list frame)))))
+                  total-windows))
+           (split-window-sensibly)
+           (call-interactively #'other-window))
+          (t (call-interactively #'ace-window))))
+
+  (with-eval-after-load "xah-fly-keys"
+    (keymap-set xah-fly-command-map "," #'jacob-split-or-switch-window))
   :config
   (setopt aw-keys '(?a ?s ?d ?f ?q ?w ?e ?r)
           aw-minibuffer-flag t))
@@ -1802,26 +1808,26 @@ active, do not format the buffer."
            (japanese-TeX-error-messages nil)))
 
 (use-package visual-fill-column
-  :ensure t)
+  :ensure t
+  :hook ((org-mode-hook LaTeX-mode-hook) . visual-fill-column-mode))
 
 (use-package markdown-mode
-  :ensure t)
+  :ensure t
+  :defer t)
 
 (use-package feature-mode
-  :ensure t)
+  :ensure t
+  :defer t)
 
 (use-package vertico
   :ensure t
-  :config
-  (vertico-mode 1))
+  :hook (jacob-first-minibuffer-activation-hook . vertico-mode))
 
 (use-package vertico-mouse
-  :config
-  (vertico-mouse-mode 1))
+  :hook (vertico-mode-hook . vertico-mouse-mode))
 
 (use-package orderless
   :ensure t
-  :defer t
   :preface
   (defun jacob-load-orderless ()
     "Load the `orderless' library."
@@ -1832,7 +1838,6 @@ active, do not format the buffer."
 
 (use-package marginalia
   :ensure t
-  :defer t
   :hook (jacob-first-minibuffer-activation-hook . marginalia-mode))
 
 (use-package consult
@@ -1905,6 +1910,7 @@ active, do not format the buffer."
 
 (use-package expreg
   :ensure t
+  :defer t
   :init
   (keymap-global-set "C-c SPC" #'expreg-expand)
   
@@ -1919,7 +1925,7 @@ active, do not format the buffer."
 (use-package verb
   :ensure t
   :after org
-  :hook (org-mode-hook . #'verb-mode)
+  :hook (org-mode-hook . verb-mode)
   :config
   (jacob-defhookf verb-response-body-mode-hook
     (jacob-xfk-local-key "q" #'quit-window))
@@ -1962,7 +1968,8 @@ active, do not format the buffer."
   :after sly)
 
 (use-package sql-indent
-  :ensure t)
+  :ensure t
+  :hook (sql-mode-hook . sqlind-minor-mode))
 
 (use-package gptel
   :ensure t
