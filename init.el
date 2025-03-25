@@ -668,6 +668,7 @@ For use in yasnippets."
           dabbrev-case-replace nil))
 
 (use-package vc
+  :defer t
   :config
   (setopt vc-git-show-stash 0             ; show 0 stashes
           vc-ignore-dir-regexp (format "\\(%s\\)\\|\\(%s\\)" ; ignore tramp files
@@ -675,11 +676,13 @@ For use in yasnippets."
                                        tramp-file-name-regexp)))
 
 (use-package vc-git
+  :defer t
   :config
   (jacob-defhookf vc-git-log-view-mode-hook
     (jacob-xfk-local-key "q" #'quit-window)))
 
 (use-package vc-dir
+  :defer t
   :config
   (jacob-defhookf vc-dir-mode-hook
     (jacob-xfk-local-key "q" #'quit-window)
@@ -698,6 +701,7 @@ For use in yasnippets."
     (jacob-xfk-local-key "x" #'vc-dir-hide-up-to-date)))
 
 (use-package vc-annotate
+  :defer t
   :config
   (jacob-defhookf vc-annotate-mode-hook
     (jacob-xfk-local-key "q" #'quit-window)
@@ -1492,13 +1496,18 @@ hides this information."
           calendar-mark-holidays-flag t))
 
 (use-package winner
-  :config
-  (winner-mode 1)
+  :defer t
+  :init
   (with-eval-after-load "xah-fly-keys"
     (keymap-set xah-fly-command-map "1" #'winner-undo)
-    (keymap-set xah-fly-command-map "2" #'winner-redo)))
+    (keymap-set xah-fly-command-map "2" #'winner-redo))
+  :config
+  (winner-mode 1))
 
 (use-package compile
+  :defer t
+  :init
+  (keymap-global-set "<f5>" 'recompile)
   :config
   (jacob-defhookf compilation-mode-hook
     (jacob-xfk-local-key "g" #'recompile)
@@ -1508,9 +1517,7 @@ hides this information."
     (ansi-color-compilation-filter))
 
   (setopt compilation-always-kill t
-          compilation-scroll-output t)
-
-  (keymap-global-set "<f5>" 'recompile))
+          compilation-scroll-output t))
 
 (use-package sql
   :config
@@ -1957,6 +1964,7 @@ active, do not format the buffer."
 
 (use-package gptel
   :ensure t
+  :defer t
   :config
   (setopt gptel-default-mode #'org-mode
           gptel-confirm-tool-calls t)
@@ -2177,6 +2185,7 @@ active, do not format the buffer."
 
 (use-package pulseaudio-control
   :ensure t
+  :defer t
   :when jacob-is-linux)
 
 ;; use `pulseaudio-control-select-sink-by-name' to set the "sink" (the
@@ -2191,6 +2200,7 @@ active, do not format the buffer."
 
 (use-package grep
   :when jacob-is-windows
+  :defer t
   :config
   (setopt find-program "C:/Program Files (x86)/GnuWin32/bin/find.exe"))
 
