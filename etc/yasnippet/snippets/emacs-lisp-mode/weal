@@ -1,0 +1,4 @@
+# -*- mode: snippet -*-
+# key: weal
+# --
+with-eval-after-load

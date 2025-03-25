@@ -1,0 +1,4 @@
+# -*- mode: snippet -*-
+# key: keymap-global-set
+# --
+(keymap-global-set $0)

@@ -1,4 +1,4 @@
 # -*- mode: snippet -*-
 # key: kgs
 # --
-(keymap-global-set $0)
+keymap-global-set
