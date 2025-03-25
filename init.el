@@ -1836,6 +1836,9 @@ active, do not format the buffer."
     (keymap-set xah-fly-leader-key-map "i j" #'consult-recent-file)
     (keymap-set xah-fly-leader-key-map "e s" #'consult-line)
     (keymap-set xah-fly-leader-key-map "k u" #'consult-goto-line))
+
+  (keymap-global-set "C-x b" #'consult-buffer)
+  (keymap-global-set "M-y" #'consult-yank-from-kill-ring)
   :config
   (defun jacob-project-search ()
     "Wrapper for grep commands."
