@@ -41,6 +41,18 @@
 
 (advice-add #'create-file-buffer :before #'jacob-run-first-file-hook)
 
+(defvar jacob-first-minibuffer-activation-hook '()
+  "Hook for first time minibuffer activated.")
+
+(defun jacob-run-first-minibuffer-activation-hook (&rest _args)
+  "Run `jacob-first-minibuffer-activation-hook';
+then remove this function from `find-file-hook'."
+  (when (member 'init features)
+    (run-hooks 'jacob-first-minibuffer-activation-hook)
+    (advice-remove #'jacob-run-first-minibuffer-activation-hook #'completing-read)))
+
+(advice-add #'completing-read :before #'jacob-run-first-minibuffer-activation-hook)
+
 (use-package emacs
   :config
   ;; c code
@@ -229,19 +241,17 @@
   )
 
 (use-package bookmark
-  :commands (bookmark-store)
+  :defer t
   :config
-  (bookmark-store "emacs init file" '((filename . "~/.emacs.d/init.el")) nil)
-  (bookmark-store "emacs environment file" '((filename . "~/.emacs.d/environment.el")) nil)
-  :custom
-  (bookmark-set-fringe-mark nil)
-  (bookmark-watch-bookmark-file 'silent))
+  (setopt bookmark-set-fringe-mark nil
+          bookmark-watch-bookmark-file 'silent))
 
 (use-package flymake
-  :commands (flymake-goto-next-error flymake-goto-prev-error)
-  :bind
-  ("M-n" . #'flymake-goto-next-error)
-  ("M-p" . #'flymake-goto-prev-error))
+  :defer t
+  :init
+  (with-eval-after-load "xah-fly-keys"
+    (keymap-set xah-fly-command-map "M-n" #'flymake-goto-next-error)
+    (keymap-set xah-fly-command-map "M-p" #'flymake-goto-prev-error)))
 
 (use-package xah-fly-keys
   :ensure t
@@ -591,7 +601,6 @@ For use in yasnippets."
           (help-fns-edit-variable)
         (message "cannot find editable variable")))))
 
-
 (use-package help-mode
   :config
   (jacob-defhookf help-mode-hook
@@ -604,15 +613,17 @@ For use in yasnippets."
 
 (use-package helpful
   :ensure t
-  :commands (helpful-update)
-  :bind (("C-h v" . helpful-variable)
-         ("C-h f" . helpful-callable)
-         ("C-h k" . helpful-key)
-         :map xah-fly-leader-key-map
-         ("j k" . helpful-callable)
-         ("j l" . helpful-variable)
-         ("j v" . helpful-key)
-         ("j b" . helpful-command))
+  :defer t
+  :init
+  (keymap-global-set "C-h v" #'helpful-variable)
+  (keymap-global-set "C-h f" #'helpful-callable)
+  (keymap-global-set "C-h k" #'helpful-key)
+
+  (with-eval-after-load "xah-fly-keys"
+    (keymap-set xah-fly-leader-key-map "j k" #'helpful-callable)
+    (keymap-set xah-fly-leader-key-map "j l" #'helpful-variable)
+    (keymap-set xah-fly-leader-key-map "j v" #'helpful-key)
+    (keymap-set xah-fly-leader-key-map "j b" #'helpful-command))
   :config
   (jacob-defhookf helpful-mode-hook
     (jacob-xfk-local-key "q" #'quit-window)
@@ -1801,20 +1812,25 @@ active, do not format the buffer."
 
 (use-package orderless
   :ensure t
+  :defer t
+  :preface
+  (defun jacob-load-orderless ()
+    "Load the `orderless' library."
+    (require 'orderless))
+  :hook (jacob-first-minibuffer-activation-hook . jacob-load-orderless)
   :config
   (setopt completion-styles '(orderless initials)))
 
 (use-package marginalia
   :ensure t
-  :config
-  (marginalia-mode 1))
+  :defer t
+  :hook (jacob-first-minibuffer-activation-hook . marginalia-mode))
 
 (use-package consult
   :ensure t
   :defer t
   :init
   (with-eval-after-load "xah-fly-keys"
-    (message "xfk consult binds")
     (keymap-set xah-fly-leader-key-map "v" #'consult-yank-from-kill-ring)
     (keymap-set xah-fly-leader-key-map "f" #'consult-buffer)
     (keymap-set xah-fly-leader-key-map "i j" #'consult-recent-file)
