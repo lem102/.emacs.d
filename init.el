@@ -249,9 +249,8 @@ then remove this function from `find-file-hook'."
 (use-package flymake
   :defer t
   :init
-  (with-eval-after-load "xah-fly-keys"
-    (keymap-set xah-fly-command-map "M-n" #'flymake-goto-next-error)
-    (keymap-set xah-fly-command-map "M-p" #'flymake-goto-prev-error)))
+  (keymap-global-set "M-n" #'flymake-goto-next-error)
+  (keymap-global-set "M-p" #'flymake-goto-prev-error))
 
 (use-package xah-fly-keys
   :ensure t
@@ -1471,6 +1470,7 @@ hides this information."
     "SPC" #'smerge-keep-all))
 
 (use-package calendar
+  :defer t
   :config
   (jacob-defhookf calendar-mode-hook
     (jacob-xfk-local-key "q" 'quit-window)
@@ -1497,6 +1497,7 @@ hides this information."
 
 (use-package winner
   :defer t
+  :commands (winner-undo winner-redo)
   :init
   (with-eval-after-load "xah-fly-keys"
     (keymap-set xah-fly-command-map "1" #'winner-undo)
@@ -1706,6 +1707,7 @@ Intended as before advice for `sql-send-paragraph'."
 
 (use-package apheleia
   :ensure t
+  :delight
   :config
   (apheleia-global-mode 1)
   (setq-default apheleia-inhibit t) ; set `apheleia-inhibit' to nil to enable
@@ -1903,7 +1905,7 @@ active, do not format the buffer."
 
 (use-package expreg
   :ensure t
-  :config
+  :init
   (keymap-global-set "C-c SPC" #'expreg-expand)
   
   (defvar-keymap jacob-expreg-repeat-map
@@ -1917,8 +1919,8 @@ active, do not format the buffer."
 (use-package verb
   :ensure t
   :after org
+  :hook (org-mode-hook . #'verb-mode)
   :config
-  (add-hook 'org-mode-hook #'verb-mode)
   (jacob-defhookf verb-response-body-mode-hook
     (jacob-xfk-local-key "q" #'quit-window))
 
