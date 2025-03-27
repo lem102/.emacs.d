@@ -2,10 +2,6 @@
 ;;; Commentary:
 ;;; Code:
 
-(use-package no-littering
-  :ensure t
-  :demand)
-
 ;; use-package
 (require 'use-package)
 
@@ -13,6 +9,13 @@
         use-package-verbose t
         use-package-compute-statistics t
         use-package-hook-name-suffix nil)
+
+(use-package no-littering
+  :ensure t
+  :demand)
+
+(use-package on
+  :ensure t)
 
 ;; read environment file and variable setup
 
@@ -30,16 +33,16 @@
 
 ;; custom hooks
 
-(defvar jacob-first-file-hook '()
-  "Hook for first file opened.")
+;; (defvar jacob-first-file-hook '()
+;;   "Hook for first file opened.")
 
-(defun jacob-run-first-file-hook (&rest _args)
-  "Run `jacob-first-file-hook', then remove this function from `find-file-hook'."
-  (when (member 'init features)
-    (run-hooks 'jacob-first-file-hook)
-    (advice-remove #'jacob-run-first-file-hook #'create-file-buffer)))
+;; (defun jacob-run-first-file-hook (&rest _args)
+;;   "Run `jacob-first-file-hook', then remove this function from `find-file-hook'."
+;;   (when (member 'init features)
+;;     (run-hooks 'jacob-first-file-hook)
+;;     (advice-remove #'jacob-run-first-file-hook #'create-file-buffer)))
 
-(advice-add #'create-file-buffer :before #'jacob-run-first-file-hook)
+;; (advice-add #'create-file-buffer :before #'jacob-run-first-file-hook)
 
 (defvar jacob-first-minibuffer-activation-hook '()
   "Hook for first time minibuffer activated.")
@@ -150,9 +153,7 @@ then remove this function from `find-file-hook'."
 
 (use-package which-key
   :delight
-  ;; TODO: need an on first input hook
-  :config
-  (which-key-mode 1)
+  :hook (on-first-input-hook . which-key-mode)
   :custom (which-key-idle-delay 0.01))
 
 (use-package mwheel
@@ -177,7 +178,7 @@ then remove this function from `find-file-hook'."
 
 (use-package autorevert
   :delight
-  :hook (jacob-first-file-hook . global-auto-revert-mode))
+  :hook (on-first-file-hook . global-auto-revert-mode))
 
 (use-package window
   :custom
@@ -211,7 +212,7 @@ then remove this function from `find-file-hook'."
   (savehist-save-minibuffer-history t))
 
 (use-package saveplace
-  :hook (jacob-first-file-hook . save-place-mode)
+  :hook (on-first-file-hook . save-place-mode)
   :custom
   (save-place-forget-unreadable-files t))
 
@@ -631,22 +632,18 @@ For use in yasnippets."
 
 (use-package subword
   :delight subword-mode
-  ;; TODO: first input advice based hook
-  :config
-  (global-subword-mode 1))
+  :hook (on-first-input-hook . global-subword-mode))
 
 (use-package paren
+  :hook (on-first-input-hook . show-paren-mode)
   :config
-  (show-paren-mode 1)
   (setopt show-paren-when-point-inside-paren t))
 
 (use-package elec-pair
-  :config
-  (electric-pair-mode 1))
+  :hook (on-first-input-hook . electric-pair-mode))
 
 (use-package delsel
-  :config
-  (delete-selection-mode 1))
+  :hook (on-first-input-hook . delete-selection-mode))
 
 (use-package repeat
   ;; TODO: first input advice based hook
@@ -718,7 +715,7 @@ For use in yasnippets."
   (setq git-gutter-fr:side 'right-fringe))
 
 (use-package autoinsert
-  :hook (jacob-first-file-hook . auto-insert-mode)
+  :hook (on-first-file-hook . auto-insert-mode)
   :config
   (setopt auto-insert-query t))
 
@@ -1488,12 +1485,11 @@ hides this information."
 (use-package winner
   :defer t
   :commands (winner-undo winner-redo)
+  :hook (on-first-input-hook . winner-mode)
   :init
   (with-eval-after-load "xah-fly-keys"
     (keymap-set xah-fly-command-map "1" #'winner-undo)
-    (keymap-set xah-fly-command-map "2" #'winner-redo))
-  :config
-  (winner-mode 1))
+    (keymap-set xah-fly-command-map "2" #'winner-redo)))
 
 (use-package compile
   :defer t
@@ -1718,7 +1714,7 @@ active, do not format the buffer."
 (use-package rainbow-mode
   :ensure t
   :delight rainbow-mode
-  :hook (jacob-first-file-hook . rainbow-mode))
+  :hook (on-first-file-hook . rainbow-mode))
 
 (use-package eglot-booster
   :after eglot
