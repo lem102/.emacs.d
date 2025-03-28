@@ -11,8 +11,7 @@
         use-package-hook-name-suffix nil)
 
 (use-package no-littering
-  :ensure t
-  :demand)
+  :ensure t)
 
 (use-package on
   :ensure t)
@@ -32,17 +31,6 @@
   (load-file "~/.emacs.d/environment.el"))
 
 ;; custom hooks
-
-;; (defvar jacob-first-file-hook '()
-;;   "Hook for first file opened.")
-
-;; (defun jacob-run-first-file-hook (&rest _args)
-;;   "Run `jacob-first-file-hook', then remove this function from `find-file-hook'."
-;;   (when (member 'init features)
-;;     (run-hooks 'jacob-first-file-hook)
-;;     (advice-remove #'jacob-run-first-file-hook #'create-file-buffer)))
-
-;; (advice-add #'create-file-buffer :before #'jacob-run-first-file-hook)
 
 (defvar jacob-first-minibuffer-activation-hook '()
   "Hook for first time minibuffer activated.")
@@ -646,9 +634,7 @@ For use in yasnippets."
   :hook (on-first-input-hook . delete-selection-mode))
 
 (use-package repeat
-  ;; TODO: first input advice based hook
-  :config
-  (repeat-mode 1))
+  :hook (on-first-input-hook . repeat-mode))
 
 (use-package dabbrev
   :defer t
@@ -1043,11 +1029,9 @@ which performs the deletion."
         ls-lisp-dirs-first t))
 
 (use-package dired
-  :defer t
-  :after ls-lisp
+  :hook (dired-mode-hook . dired-hide-details-mode)
   :config
   (jacob-defhookf dired-mode-hook
-    (dired-hide-details-mode 1)
     (jacob-xfk-local-key "s" #'dired-find-file)
     (jacob-xfk-local-key "d" #'dired-do-delete) ; we skip the "flag, delete" process as files are sent to system bin on deletion
     (jacob-xfk-local-key "q" #'quit-window)
@@ -1437,10 +1421,8 @@ hides this information."
 
   (advice-add #'eval-defun :after #'jacob-pulse-defun))
 
-;; TODO: defer this
 (use-package server
-  :config
-  (server-start))
+  :hook (on-first-file-hook . server-start))
 
 (use-package smerge-mode
   :defer t
