@@ -386,32 +386,32 @@ then remove this function from `find-file-hook'."
   (keymap-global-set "C-w" #'xah-cut-line-or-region)
   (keymap-global-set "M-w" #'xah-copy-line-or-region)
 
-  (defvar-keymap jacob-movement-repeat-map
-    :repeat t
-    "n" #'next-line
-    "p" #'previous-line
-    "a" #'jacob-beginning-of-line
-    "e" #'jacob-end-of-line
-    "f" #'forward-word
-    "b" #'backward-word)
+  ;; (defvar-keymap jacob-movement-repeat-map
+  ;;   :repeat t
+  ;;   "n" #'next-line
+  ;;   "p" #'previous-line
+  ;;   "a" #'jacob-beginning-of-line
+  ;;   "e" #'jacob-end-of-line
+  ;;   "f" #'forward-word
+  ;;   "b" #'backward-word)
 
-  (defvar-keymap jacob-character-movement-repeat-map
-    :repeat t
-    "f" #'forward-char
-    "b" #'backward-char)
+  ;; (defvar-keymap jacob-character-movement-repeat-map
+  ;;   :repeat t
+  ;;   "f" #'forward-char
+  ;;   "b" #'backward-char)
 
-  (defvar-keymap jacob-sexp-repeat-map
-    :repeat t
-    "f" #'forward-sexp
-    "b" #'backward-sexp
-    "n" #'forward-list
-    "p" #'backward-list
-    "u" #'backward-up-list
-    "d" #'down-list
-    "k" #'kill-sexp
-    "<backspace>" #'backward-kill-sexp
-    "a" #'beginning-of-defun
-    "e" #'end-of-defun)
+  ;; (defvar-keymap jacob-sexp-repeat-map
+  ;;   :repeat t
+  ;;   "f" #'forward-sexp
+  ;;   "b" #'backward-sexp
+  ;;   "n" #'forward-list
+  ;;   "p" #'backward-list
+  ;;   "u" #'backward-up-list
+  ;;   "d" #'down-list
+  ;;   "k" #'kill-sexp
+  ;;   "<backspace>" #'backward-kill-sexp
+  ;;   "a" #'beginning-of-defun
+  ;;   "e" #'end-of-defun)
 
   (defvar-keymap jacob-isearch-repeat-map
     :repeat t
@@ -795,6 +795,8 @@ Useful for deleting ^M after `eglot-code-actions'."
                                                :initializationOptions
                                                (:enable t :lint t :suggest.names t))))))
 
+  (push '((gdscript-mode gdscript-ts-mode) "localhost" 6008) eglot-server-programs)
+
   (eglot--code-action eglot-code-action-organize-imports-ts "source.organizeImports.ts")
   (eglot--code-action eglot-code-action-add-missing-imports-ts "source.addMissingImports.ts")
 
@@ -1033,11 +1035,6 @@ which performs the deletion."
   :config
   (remove-hook 'project-find-functions #'fsharp-mode-project-root)
   (setopt compilation-error-regexp-alist (remq 'fsharp compilation-error-regexp-alist)))
-
-(use-package inf-lisp
-  :defer t
-  :config
-  (setopt inferior-lisp-program "sbcl"))
 
 (use-package ls-lisp
   :defer t
@@ -1554,6 +1551,15 @@ Intended as before advice for `sql-send-paragraph'."
   :ensure t
   :hook (prog-mode-hook . global-treesit-auto-mode)
   :config
+  (add-to-list 'treesit-auto-recipe-list (make-treesit-auto-recipe
+                                          :lang 'gdscript
+                                          :ts-mode 'gdscript-ts-mode
+                                          :remap 'gdscript-mode
+                                          :url "https://github.com/PrestonKnopp/tree-sitter-gdscript.git"
+                                          :ext "\\.gd\\'"))
+
+  (add-to-list 'treesit-auto-langs 'gdscript)
+  
   (treesit-auto-add-to-auto-mode-alist))
 
 (use-package typescript-ts-mode
@@ -1932,7 +1938,7 @@ move to the new window. Otherwise, call `switch-buffer'."
 
 (use-package sly
   :ensure t
-  :mode ("\\.lisp\\'")
+  :hook (lisp-mode-hook . sly-mode)
   :config
   (sly-setup)
 
@@ -1940,11 +1946,12 @@ move to the new window. Otherwise, call `switch-buffer'."
 
   (jacob-defhookf sly-mode-hook
     (jacob-xfk-local-key "SPC , m" #'sly-eval-last-expression)
-    (jacob-xfk-local-key "SPC , d" #'sly-compile-defun)
+    (jacob-xfk-local-key "SPC , d" #'sly-eval-defun)
     (jacob-xfk-local-key "SPC , e" #'sly-eval-buffer)
     (jacob-xfk-local-key "SPC w k" #'sly-edit-definition))
 
-  (setopt sly-auto-start 'always)
+  (setopt sly-auto-start 'always
+          inferior-lisp-program "sbcl")
 
   (jacob-defhookf sly-db-hook
     (jacob-xfk-local-key "q" #'sly-db-quit)))
@@ -2163,18 +2170,7 @@ move to the new window. Otherwise, call `switch-buffer'."
   :mode ("\\.gd\\'" . gdscript-ts-mode)
   :config
   (jacob-defhookf gdscript-ts-mode-hook
-    (setopt indent-tabs-mode t))
-
-  (push '((gdscript-mode gdscript-ts-mode) "localhost" 6008) eglot-server-programs)
-
-  (add-to-list 'treesit-auto-recipe-list (make-treesit-auto-recipe
-                                          :lang 'gdscript
-                                          :ts-mode 'gdscript-ts-mode
-                                          :remap 'gdscript-mode
-                                          :url "https://github.com/PrestonKnopp/tree-sitter-gdscript.git"
-                                          :ext "\\.gd\\'"))
-
-  (add-to-list 'treesit-auto-langs 'gdscript))
+    (setq indent-tabs-mode t)))
 
 (use-package eat
   :ensure t
