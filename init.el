@@ -95,7 +95,8 @@ then remove this function from `find-file-hook'."
   (completion-ignore-case t)
   (kill-buffer-query-functions (delq 'process-kill-buffer-query-function
                                      kill-buffer-query-functions))
-  (echo-keystrokes 0.01)
+  (echo-keystrokes (cond (jacob-is-android 1)
+                         (t 0.01)))
   ;; startup.el
   (inhibit-startup-screen t)
   (initial-scratch-message (format ";; %s\n\n"
@@ -142,7 +143,8 @@ then remove this function from `find-file-hook'."
 (use-package which-key
   :delight
   :hook (on-first-input-hook . which-key-mode)
-  :custom (which-key-idle-delay 0.01))
+  :custom (which-key-idle-delay (cond (jacob-is-android 1)
+                                      (t 0.01))))
 
 (use-package mwheel
   :custom ((mouse-wheel-progressive-speed nil)
