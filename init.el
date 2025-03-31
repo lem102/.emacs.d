@@ -10,6 +10,11 @@
         use-package-compute-statistics t
         use-package-hook-name-suffix nil)
 
+(use-package package
+  :custom (package-archives '(("gnu" . "https://elpa.gnu.org/packages/")
+                              ("nongnu" . "https://elpa.nongnu.org/nongnu/")
+                              ("melpa" . "https://melpa.org/packages/"))))
+
 (use-package no-littering
   :ensure t)
 
@@ -119,11 +124,6 @@ then remove this function from `find-file-hook'."
   ;; indent.el
   ;; make tab key call indent command or insert tab character, depending on cursor position
   (tab-always-indent 'complete))
-
-(use-package package
-  :custom (package-archives '(("gnu" . "https://elpa.gnu.org/packages/")
-                              ("nongnu" . "https://elpa.nongnu.org/nongnu/")
-                              ("melpa" . "https://melpa.org/packages/"))))
 
 (defmacro jacob-defhookf (hook &rest body)
   "Define function with BODY and bind it to HOOK."
