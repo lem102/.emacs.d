@@ -523,6 +523,11 @@ For use in yasnippets."
 For use in yasnippets."
     (string-replace " " "_" input))
 
+  (defun jacob-yas-screaming-snake-case (input)
+    "Convert INPUT to screaming snake case e.g. apple banana -> APPLE_BANANA.
+For use in yasnippets."
+    (upcase (string-replace " " "_" input)))
+
   (defun jacob-yas-kebab-case (input)
     "Convert INPUT to kebab case e.g. apple banana -> apple_banana.
 For use in yasnippets."
@@ -1031,22 +1036,24 @@ which performs the deletion."
         ls-lisp-dirs-first t))
 
 (use-package dired
-  :hook (dired-mode-hook . dired-hide-details-mode)
+  :defer t
+  :init
+  (with-eval-after-load "xah-fly-keys"
+    (jacob-defhookf dired-mode-hook
+      (dired-hide-details-mode 1)
+      (jacob-xfk-local-key "s" #'dired-find-file)
+      (jacob-xfk-local-key "d" #'dired-do-delete) ; we skip the "flag, delete" process as files are sent to system bin on deletion
+      (jacob-xfk-local-key "q" #'quit-window)
+      (jacob-xfk-local-key "i" #'dired-previous-line)
+      (jacob-xfk-local-key "k" #'dired-next-line)
+      (jacob-xfk-local-key "e" #'dired-mark)
+      (jacob-xfk-local-key "r" #'dired-unmark)
+      (jacob-xfk-local-key "g" #'revert-buffer)
+      (jacob-xfk-local-key "x" #'dired-do-rename)
+      (jacob-xfk-local-key "c" #'dired-do-copy)
+      (jacob-xfk-local-key "u" #'dired-up-directory)
+      (jacob-xfk-local-key "j" #'dired-goto-file)))
   :config
-  (jacob-defhookf dired-mode-hook
-    (jacob-xfk-local-key "s" #'dired-find-file)
-    (jacob-xfk-local-key "d" #'dired-do-delete) ; we skip the "flag, delete" process as files are sent to system bin on deletion
-    (jacob-xfk-local-key "q" #'quit-window)
-    (jacob-xfk-local-key "i" #'dired-previous-line)
-    (jacob-xfk-local-key "k" #'dired-next-line)
-    (jacob-xfk-local-key "e" #'dired-mark)
-    (jacob-xfk-local-key "r" #'dired-unmark)
-    (jacob-xfk-local-key "g" #'revert-buffer)
-    (jacob-xfk-local-key "x" #'dired-do-rename)
-    (jacob-xfk-local-key "c" #'dired-do-copy)
-    (jacob-xfk-local-key "u" #'dired-up-directory)
-    (jacob-xfk-local-key "j" #'dired-goto-file))
-  
   (setopt dired-recursive-copies 'always
           dired-dwim-target t
           dired-listing-switches "-hal" ; the h option needs to come first 🙃
@@ -1682,7 +1689,7 @@ Intended as before advice for `sql-send-paragraph'."
 
 (use-package apheleia
   :ensure t
-  :delight
+  :delight '(:eval (if apheleia-inhibit "" " ⚘"))
   :hook (prog-mode-hook . apheleia-global-mode)
   :config
   (setq-default apheleia-inhibit t) ; set `apheleia-inhibit' to nil to enable
@@ -1893,6 +1900,13 @@ move to the new window. Otherwise, call `switch-buffer'."
 (use-package embark-consult
   :ensure t
   :after (:and embark consult))
+
+(use-package find-file-in-repository
+  :ensure t
+  :defer t
+  :init
+  (with-eval-after-load "xah-fly-keys"
+    (keymap-set xah-fly-leader-key-map "i e" #'find-file-in-repository)))
 
 (use-package expreg
   :ensure t
