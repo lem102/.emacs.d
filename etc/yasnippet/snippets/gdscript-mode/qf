@@ -1,0 +1,4 @@
+# -*- mode: snippet -*-
+# key: qf
+# --
+queue_free()
