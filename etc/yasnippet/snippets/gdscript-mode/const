@@ -1,4 +1,4 @@
 # -*- mode: snippet -*-
-# key: con
+# key: const
 # --
 const ${1:X$(jacob-yas-screaming-snake-case yas-text)} = $0

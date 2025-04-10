@@ -1,6 +1,6 @@
 # key: defun
 # name: defun
 # --
-(defun ${1:x} ($2)
+(defun ${1:x$(jacob-yas-kebab-case yas-text)} ($2)
   "${3:TODO: write documentation.}"
   $0)
