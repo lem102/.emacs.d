@@ -806,6 +806,28 @@ Useful for deleting ^M after `eglot-code-actions'."
 (use-package csharp-mode
   :mode ("//.csx?//'" . csharp-ts-mode)
   :config
+
+  (defun jacob-csharp-guess-namespace ()
+    "Guess the current file's namespace."
+    (interactive)
+    (let* ((project-directory (locate-dominating-file (buffer-file-name)
+                                                      (lambda (directory)
+                                                        (seq-find (lambda (file)
+                                                                    (string-match-p "\\.csproj$" file))
+                                                                  (directory-files directory)))))
+           (relative-path (file-name-concat
+                           (file-name-nondirectory (directory-file-name (file-name-directory project-directory)))
+                           (file-relative-name (buffer-file-name) project-directory)))
+           (guessed-namespace (string-replace "/" "." (directory-file-name (file-name-directory relative-path))))
+           (current-namespace-range (car (treesit-query-range
+                                          (treesit-buffer-root-node)
+                                          '((file_scoped_namespace_declaration name: (_) @x))))))
+      (delete-region (car current-namespace-range)
+                     (cdr current-namespace-range))
+      (save-excursion
+        (goto-char (car current-namespace-range))
+        (insert guessed-namespace))))
+
   (defun jacob-csharp-create-variable ()
     "Create a variable declaration statement for an undeclared variable."
     (interactive)
