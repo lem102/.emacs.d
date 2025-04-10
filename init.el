@@ -1221,6 +1221,7 @@ hides this information."
   :hook (emacs-lisp-mode-hook . highlight-defined-mode))
 
 (use-package hl-todo
+  :ensure t
   :config
   (global-hl-todo-mode 1))
 
