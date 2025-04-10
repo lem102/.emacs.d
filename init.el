@@ -283,8 +283,12 @@ then remove this function from `find-file-hook'."
     "DWIM backspace command.
 
   If character to the left is a pair character as determined by
-  `insert-pair-alist', kill from the pair to its match.  If the
-  prefix argument is provided, just delete the pair characters."
+  `insert-pair-alist', kill from the pair to its match. If the prefix
+  argument is provided, only delete the pair characters.
+
+  If the character to the left of the cursor is whitespace, delete all
+  the whitespace backward from point to the first non whitespace
+  character."
     (interactive)
     (undo-boundary)
     (if (region-active-p)
@@ -297,18 +301,22 @@ then remove this function from `find-file-hook'."
                  #'kill-sexp)))
         (unless (ignore-errors
                   (funcall jacob-backspace-function f))
-          (cond ((= ?\" char-class)                         ; string
+          (cond ((= ?\  char-class)     ; whitespace
+                 (let ((start (point)))
+                   (skip-syntax-backward " <")
+                   (delete-region start (point))))
+                ((= ?\" char-class)     ; string
                  (if (nth 3 (syntax-ppss))
                      (backward-char)
                    (backward-sexp))
                  (funcall f))
-                ((= ?\( char-class)                         ; delete from start of pair
+                ((= ?\( char-class)     ; delete from start of pair
                  (backward-char)
                  (funcall f))
-                ((= ?\) char-class)                         ; delete from end of pair
+                ((= ?\) char-class)     ; delete from end of pair
                  (backward-sexp)
                  (funcall f))
-                (t                                          ; delete character
+                (t                      ; delete character
                  (backward-delete-char 1)))))))
 
   (defun jacob-beginning-of-line ()
