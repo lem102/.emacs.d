@@ -373,6 +373,13 @@ then remove this function from `find-file-hook'."
     (backward-paragraph)
     (kill-paragraph 1))
 
+  (defun jacob-find-file ()
+    "If in project, call `project-find-file'. Otherwise, call `find-file'."
+    (interactive)
+    (if (project-current)
+        (call-interactively #'project-find-file)
+      (call-interactively #'find-file)))
+
   (defalias 'jacob-return-macro
     (kmacro "<return>"))
 
@@ -432,6 +439,7 @@ then remove this function from `find-file-hook'."
 
   (keymap-set xah-fly-insert-map "M-SPC" #'xah-fly-command-mode-activate)
 
+  (keymap-set xah-fly-leader-key-map ", n" #'jacob-eval-and-replace)
   (keymap-set xah-fly-leader-key-map "/ b" #'vc-switch-branch)
   (keymap-set xah-fly-leader-key-map "/ c" #'vc-create-branch)
   (keymap-set xah-fly-leader-key-map "d i" #'insert-pair)
@@ -439,10 +447,10 @@ then remove this function from `find-file-hook'."
   (keymap-set xah-fly-leader-key-map "d k" #'insert-pair)
   (keymap-set xah-fly-leader-key-map "d l" #'insert-pair)
   (keymap-set xah-fly-leader-key-map "d u" #'insert-pair)
+  (keymap-set xah-fly-leader-key-map "i e" #'jacob-find-file)
   (keymap-set xah-fly-leader-key-map "l 3" #'jacob-async-shell-command)
   (keymap-set xah-fly-leader-key-map "l a" #'global-text-scale-adjust)
-  (keymap-set xah-fly-leader-key-map "w j" #'xref-find-references)
-  (keymap-set xah-fly-leader-key-map ", n" #'jacob-eval-and-replace))
+  (keymap-set xah-fly-leader-key-map "w j" #'xref-find-references))
 
 ;; TODO: fix this haunted declaration.
 
@@ -1931,13 +1939,6 @@ move to the new window. Otherwise, call `switch-buffer'."
 (use-package embark-consult
   :ensure t
   :after (:and embark consult))
-
-(use-package find-file-in-repository
-  :ensure t
-  :defer t
-  :init
-  (with-eval-after-load "xah-fly-keys"
-    (keymap-set xah-fly-leader-key-map "i e" #'find-file-in-repository)))
 
 (use-package expreg
   :ensure t
