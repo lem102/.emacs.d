@@ -1237,6 +1237,20 @@ hides this information."
   :ensure t
   :hook ((emacs-lisp-mode-hook lisp-mode-hook scheme-mode-hook) . lisp-extra-font-lock-mode))
 
+(use-package all-the-icons
+  :ensure t
+  :config
+  (setq mode-line-modes (remove "(" mode-line-modes))
+  (setq mode-line-modes (remove ")" mode-line-modes))
+  (setf (cl-second mode-line-modes)
+        `(:propertize ("" (:eval (all-the-icons-icon-for-mode major-mode)))
+			          help-echo "Major mode\n\
+mouse-1: Display major mode menu\n\
+mouse-2: Show help for major mode\n\
+mouse-3: Toggle minor modes"
+			          mouse-face mode-line-highlight
+			          local-map ,mode-line-major-mode-keymap)))
+
 (use-package elisp-mode
   :defer t
   :config
