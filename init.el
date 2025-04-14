@@ -267,12 +267,6 @@ then remove this function from `find-file-hook'."
 
   (xah-fly-keys-set-layout "qwerty")
 
-  (defun jacob-modeline-color-on () (set-face-background 'mode-line "firebrick"))
-  (defun jacob-modeline-color-off () (set-face-background 'mode-line "dark olive green"))
-
-  (add-hook 'xah-fly-command-mode-activate-hook 'jacob-modeline-color-on)
-  (add-hook 'xah-fly-insert-mode-activate-hook  'jacob-modeline-color-off)
-
   (keymap-set xah-fly-leader-key-map "SPC" jacob-xfk-map)
   (keymap-set jacob-xfk-map "p" `("Project" . ,project-prefix-map))
 
@@ -448,6 +442,9 @@ then remove this function from `find-file-hook'."
   (keymap-set xah-fly-leader-key-map "d l" #'insert-pair)
   (keymap-set xah-fly-leader-key-map "d u" #'insert-pair)
   (keymap-set xah-fly-leader-key-map "i e" #'jacob-find-file)
+  (keymap-set xah-fly-leader-key-map "i i" #'consult-bookmark)
+  (keymap-unset xah-fly-leader-key-map "i o") ; bookmark-jump
+  (keymap-unset xah-fly-leader-key-map "i p") ; bookmark-set
   (keymap-set xah-fly-leader-key-map "l 3" #'jacob-async-shell-command)
   (keymap-set xah-fly-leader-key-map "l a" #'global-text-scale-adjust)
   (keymap-set xah-fly-leader-key-map "w j" #'xref-find-references))
@@ -1240,9 +1237,7 @@ hides this information."
 (use-package all-the-icons
   :ensure t
   :config
-  (setq mode-line-modes (remove "(" mode-line-modes))
-  (setq mode-line-modes (remove ")" mode-line-modes))
-  (setf (cl-second mode-line-modes)
+  (setf (cl-third mode-line-modes)
         `(:propertize ("" (:eval (all-the-icons-icon-for-mode major-mode)))
 			          help-echo "Major mode\n\
 mouse-1: Display major mode menu\n\
@@ -1250,6 +1245,17 @@ mouse-2: Show help for major mode\n\
 mouse-3: Toggle minor modes"
 			          mouse-face mode-line-highlight
 			          local-map ,mode-line-major-mode-keymap)))
+
+(use-package all-the-icons-completion
+  :ensure t
+  :hook (jacob-first-minibuffer-activation-hook . all-the-icons-completion-mode)
+  :config
+  (with-eval-after-load "marginalia-mode"
+    (add-hook 'marginalia-mode-hook #'all-the-icons-completion-marginalia-setup)))
+
+(use-package all-the-icons-dired
+  :ensure t
+  :hook (dired-mode-hook . all-the-icons-dired-mode))
 
 (use-package elisp-mode
   :defer t
