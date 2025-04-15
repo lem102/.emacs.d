@@ -1781,6 +1781,7 @@ active, do not format the buffer."
   (eglot-booster-mode 1))
 
 (use-package dape
+  :ensure t
   :defer t
   :config
   (setopt dape-info-hide-mode-line nil
