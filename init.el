@@ -367,12 +367,14 @@ then remove this function from `find-file-hook'."
     (backward-paragraph)
     (kill-paragraph 1))
 
-  (defun jacob-find-file ()
-    "If in project, call `project-find-file'. Otherwise, call `find-file'."
-    (interactive)
-    (if (project-current)
-        (call-interactively #'project-find-file)
-      (call-interactively #'find-file)))
+  (defun jacob-find-file (force-find-file)
+    "If in project, call `project-find-file'. Otherwise, call `find-file'.
+
+If FORCE-FIND-FILE is non-nil call `find-file'."
+    (interactive "p")
+    (call-interactively (cond (force-find-file #'find-file)
+                              ((project-current) #'project-find-file)
+                              (t #'find-file))))
 
   (defalias 'jacob-return-macro
     (kmacro "<return>"))
