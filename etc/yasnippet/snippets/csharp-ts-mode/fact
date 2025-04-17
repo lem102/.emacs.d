@@ -1,0 +1,12 @@
+# -*- mode: snippet -*-
+# key: fact
+# --
+[Fact]
+public void ${1:MethodName$(jacob-yas-pascal-case yas-text)}_${2:WhenSituation$(jacob-yas-pascal-case yas-text)}_${3:ExpectedResultReturned$(jacob-yas-pascal-case yas-text)}()
+{
+    // Arrange
+    $0
+    // Act
+
+    // Assert
+}
