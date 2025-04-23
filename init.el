@@ -170,6 +170,15 @@ then remove this function from `find-file-hook'."
   :delight
   :hook (on-first-file-hook . global-auto-revert-mode))
 
+(use-package time
+  :hook (after-init-hook . display-time-mode)
+  :custom ((display-time-load-average-threshold 1)
+           (display-time-mail-file 1)   ; non-nil and not a string means don't check for mail
+           (display-time-24hr-format t)))
+
+(use-package battery
+  :hook (after-init-hook . display-battery-mode))
+
 (use-package window
   :custom
   (switch-to-buffer-obey-display-actions t)
@@ -211,8 +220,10 @@ then remove this function from `find-file-hook'."
   (load-theme 'modus-vivendi-tinted))
 
 (use-package tab-bar
-  :custom
-  (tab-bar-show 1))
+  :hook (after-init-hook . tab-bar-mode)
+  :config
+  (add-to-list 'tab-bar-format #'tab-bar-format-align-right "APPEND")
+  (add-to-list 'tab-bar-format #'tab-bar-format-global "APPEND"))
 
 (use-package cus-edit
   :custom
