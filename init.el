@@ -1268,6 +1268,7 @@ mouse-3: Toggle minor modes"
 
 (use-package all-the-icons-dired
   :ensure t
+  :delight all-the-icons-dired-mode
   :hook (dired-mode-hook . all-the-icons-dired-mode))
 
 (use-package elisp-mode
