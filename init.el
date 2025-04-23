@@ -2258,11 +2258,35 @@ move to the new window. Otherwise, call `switch-buffer'."
 ;; output device)
 
 (use-package bluetooth
+  ;; TODO: completing read interface to choose a bluetooth device
   :ensure t
   :defer t
   :when jacob-is-linux)
 
 ;; use `bluetooth-list-devices' to display the bluetooth buffer
+
+(use-package enwc
+  :when jacob-is-linux
+  :config
+  (defun jacob-connect-wifi ()
+    "Prompt for a connection. Connect to the selected connection."
+    (interactive)
+    (enwc-request-scan)
+    (let* ((essids (let ((essids '()))
+                     (maphash (lambda (network-id network-information)
+                                (push (alist-get 'essid network-information) essids))
+                              enwc--last-scan-results)
+                     essids))
+           (essid (completing-read "essid: " essids))
+           (network-id (let (network)
+                         (maphash (lambda (network-id network-information)
+                                    (when (string= essid (alist-get 'essid network-information))
+                                      (setq result network-id)))
+                                  enwc--last-scan-results)
+                         result)))
+      (enwc-connect-to-network network-id)))
+  :custom
+  (enwc-mode-line-format "  %s%% "))
 
 (use-package grep
   :when jacob-is-windows
