@@ -21,6 +21,41 @@
 (use-package on
   :ensure t)
 
+(keymap-global-unset "<menu-bar> <options>")
+
+(keymap-global-set "<menu-bar> <jacob>"
+                   (cons "jacob"
+                         (let ((keymap (make-sparse-keymap)))
+                           (keymap-set keymap
+       				                   "<mx>"
+                                       (cons "M-x"
+                                             #'execute-extended-command))
+
+                           (keymap-set keymap
+				                       "<restart>"
+                                       (cons "restart"
+                                             #'restart-emacs))
+
+                           (keymap-set keymap
+				                       "<bookmark-jump>"
+                                       (cons "bookmark"
+                                             #'bookmark-jump))
+
+                           (keymap-set keymap
+				                       "<magit>"
+                                       (cons "magit"
+                                             #'magit))
+                           keymap)))
+
+(keymap-global-set "<tool-bar> <jacob>"
+                   '(menu-item "test" keyboard-quit . (:image (image . (:type xpm :file "exit.xpm")))))
+
+(keymap-global-unset "<tool-bar> <open-file>")
+(keymap-global-unset "<tool-bar> <dired>")
+(keymap-global-unset "<tool-bar> <save-buffer>")
+
+;;(x-popup-menu t '("jacobtest" ("jacobtest2" ("key" . "value"))))
+
 ;; read environment file and variable setup
 
 (defvar jacob-font-size 11
