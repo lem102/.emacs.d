@@ -1,0 +1,4 @@
+# key: add-hook
+# name: add-hook
+# --
+(add-hook '${1:hook} #'${2:function})

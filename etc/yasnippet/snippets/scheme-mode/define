@@ -1,0 +1,4 @@
+# key: define
+# name: define
+# --
+(define ${1:x$(jacob-yas-kebab-case yas-text)} $0)
