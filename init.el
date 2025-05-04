@@ -207,12 +207,35 @@ then remove this function from `find-file-hook'."
 
 (use-package time
   :hook (after-init-hook . display-time-mode)
+  :config
+  (defun jacob-update-time-status ()
+    "TODO: fix this doc"
+    (string-match "\\([A-Za-z0-9 ]+\\) \\([0-9]+:[0-9]+\\)" display-time-string)
+    (setq display-time-string (concat " "
+                                      (match-string 1 display-time-string)
+                                      "  "
+                                      (match-string 2 display-time-string))))
+
+  (advice-add #'display-time-update :after #'jacob-update-time-status)
   :custom ((display-time-load-average-threshold 1)
            (display-time-mail-file 1)   ; non-nil and not a string means don't check for mail
-           (display-time-24hr-format t)))
+           (display-time-24hr-format t)
+           (display-time-day-and-date t)))
 
 (use-package battery
-  :hook (after-init-hook . display-battery-mode))
+  :hook (after-init-hook . display-battery-mode)
+  :config
+  (defun jacob-update-battery-status ()
+    "TODO: fix this doc"
+    (let ((status (alist-get ?B (funcall battery-status-function))))
+      (setq battery-mode-line-string (concat (cond ((string= "discharging" status)
+                                                    " ")
+                                                   (t
+                                                    (format "?battery? (%s) " status)))
+                                             battery-mode-line-string))))
+
+  (advice-add #'battery-update :after #'jacob-update-battery-status)
+  :custom (battery-mode-line-format "%b%p%% "))
 
 (use-package window
   :custom
@@ -677,12 +700,6 @@ For use in yasnippets."
     (jacob-xfk-local-key "r" #'forward-button)
     (jacob-xfk-local-key "s" #'push-button)))
 
-(use-package help-at-pt
-  ;; TODO: does this actually do anything?
-  :defer t
-  :config
-  (setopt help-at-pt-display-when-idle t))
-
 (use-package warnings
   :custom ((warning-minimum-level :error)))
 
@@ -1049,8 +1066,6 @@ which performs the deletion."
 
   (define-auto-insert "\\.cs$" ["template.cs" jacob-autoinsert-yas-expand])
 
-  ;; TODO: test the below code!
-
   (defun eglot-csharp-ls-metadata (xrefs)
     "Advice for `eglot--lsp-xrefs-for-method'.
 
@@ -1275,8 +1290,7 @@ hides this information."
 
 (use-package hl-todo
   :ensure t
-  :config
-  (global-hl-todo-mode 1))
+  :hook (after-init-hook . global-hl-todo-mode))
 
 (use-package lisp-extra-font-lock
   :ensure t
@@ -2302,7 +2316,10 @@ move to the new window. Otherwise, call `switch-buffer'."
 
 (use-package enwc
   :when jacob-is-linux
+  :init
+  (setq enwc-default-backend 'nm)
   :config
+
   (defun jacob-connect-wifi ()
     "Prompt for a connection. Connect to the selected connection."
     (interactive)
@@ -2320,8 +2337,27 @@ move to the new window. Otherwise, call `switch-buffer'."
                                   enwc--last-scan-results)
                          result)))
       (enwc-connect-to-network network-id)))
+
+  (defun jacob-update-network-status ()
+    "Return a string representing the status of the network connection."
+    (let ((access-point (dbus-get-property :system
+                                           enwc-nm-dbus-service
+                                           enwc-nm-wireless-dev
+                                           enwc-nm-dbus-wireless-interface
+                                           "ActiveAccessPoint")))
+      (setq enwc-display-string (concat (cond ((string= "/" access-point)
+                                               "")
+                                              (t
+                                               ""))
+                                        enwc-display-string))))
+
+  (advice-add #'enwc-update-mode-line :after #'jacob-update-network-status)
+
+  (enwc-setup)
+  (enwc-scan)
+
   :custom
-  (enwc-mode-line-format "  %s%% "))
+  (enwc-mode-line-format " %s%% "))
 
 (use-package grep
   :when jacob-is-windows
