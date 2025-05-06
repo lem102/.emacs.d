@@ -209,11 +209,11 @@ then remove this function from `find-file-hook'."
   :hook (after-init-hook . display-time-mode)
   :config
   (defun jacob-update-time-status ()
-    "TODO: fix this doc"
+    "Update `display-time-string' to include icons."
     (string-match "\\([A-Za-z0-9 ]+\\) \\([0-9]+:[0-9]+\\)" display-time-string)
-    (setq display-time-string (concat " "
+    (setq display-time-string (concat "📅 "
                                       (match-string 1 display-time-string)
-                                      "  "
+                                      " 🕘 "
                                       (match-string 2 display-time-string))))
 
   (advice-add #'display-time-update :after #'jacob-update-time-status)
@@ -226,10 +226,12 @@ then remove this function from `find-file-hook'."
   :hook (after-init-hook . display-battery-mode)
   :config
   (defun jacob-update-battery-status ()
-    "TODO: fix this doc"
+    "Update `battery-mode-line-string' to include an icon."
     (let ((status (alist-get ?B (funcall battery-status-function))))
       (setq battery-mode-line-string (concat (cond ((string= "discharging" status)
                                                     " ")
+                                                   ((string= "charging" status)
+                                                    " ")
                                                    (t
                                                     (format "?battery? (%s) " status)))
                                              battery-mode-line-string))))
@@ -2339,12 +2341,13 @@ move to the new window. Otherwise, call `switch-buffer'."
       (enwc-connect-to-network network-id)))
 
   (defun jacob-update-network-status ()
-    "Return a string representing the status of the network connection."
+    "Update `enwc-display-string' to include an icon."
     (let ((access-point (dbus-get-property :system
                                            enwc-nm-dbus-service
                                            enwc-nm-wireless-dev
                                            enwc-nm-dbus-wireless-interface
                                            "ActiveAccessPoint")))
+
       (setq enwc-display-string (concat (cond ((string= "/" access-point)
                                                "")
                                               (t
