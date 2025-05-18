@@ -243,7 +243,11 @@ then remove this function from `find-file-hook'."
                           ((major-mode . prodigy-mode)
                            (display-buffer-reuse-mode-window display-buffer-same-window))
                           ((major-mode . magit-status-mode)
-                           (display-buffer-reuse-mode-window display-buffer-same-window))))
+                           (display-buffer-reuse-mode-window display-buffer-same-window))
+                          ((or (derived-mode . slack-mode)
+                               (derived-mode . lui-mode))
+                           (display-buffer-in-side-window)
+                           (side . right))))
   (split-height-threshold nil))
 
 (defvar-keymap jacob-recenter-repeat-map
@@ -2365,74 +2369,36 @@ move to the new window. Otherwise, call `switch-buffer'."
   :config
   (setopt find-program "C:/Program Files (x86)/GnuWin32/bin/find.exe"))
 
-;; (jacob-require slack)
+(use-package just-mode
+  :ensure t
+  :defer t)
 
-;; (defun jacob-slack-modeline-formatter (alist)
-;;   "Hide the slack modeline if there are no notifications.
+;; (use-package just-ts-mode
+;;   :ensure t)
 
-;; Element in ALIST is ((team-name . ((thread . (has-unreads
-;; . mention-count)) (channel . (has-unreads . mention-count)))))"
-;;   (if (seq-find (lambda (team)
-;;                   (seq-find (lambda (room-type)
-;;                               (car (cdr room-type)))
-;;                             (cdr team)))
-;;                 alist)
-;;       (slack-default-modeline-formatter alist)
-;;     ""))
+(use-package slack
+  :ensure t
+  :config
 
-;; (defun jacob-slack-show-unread ()
-;;   "Open an unread slack message."
-;;   (interactive)
-;;   (let* ((team (slack-team-select))
-;;          (rooms (seq-filter #'(lambda (room)
-;;                                 (slack-room-has-unread-p room team))
-;;                             (append (slack-team-ims team)
-;;                                     (slack-team-groups team)
-;;                                     (slack-team-channels team)))))
-;;     (if (null rooms)
-;;         (message "no unread slack messages")
-;;       (slack-room-display (seq-first rooms) team))))
+  (use-package alert
+    :custom
+    (alert-default-style 'notifications))
 
-;; (setopt slack-enable-global-mode-string t
-;;         slack-buffer-emojify t
-;;         slack-prefer-current-team t
-;;         slack-thread-also-send-to-room nil
-;;         slack-modeline-formatter #'jacob-slack-modeline-formatter)
-
-;; (setopt alert-default-style 'notifications)
-
-;; (setopt lui-fill-type nil
-;;         lui-time-stamp-position 0
-;;         lui-time-stamp-format "%a %b %e %H:%M")
-
-;; (defun jacob-slack-hook-function ()
-;;   "Function to be run in slack mode hooks."
-;;   (toggle-word-wrap 1))
-
-;; (add-hook 'slack-message-buffer-mode-hook 'jacob-slack-hook-function)
-;; (add-hook 'slack-thread-message-buffer-mode-hook 'jacob-slack-hook-function)
-
-;; (add-to-list 'display-buffer-alist '((or (derived-mode . slack-mode)
-;;                                          (derived-mode . lui-mode))
-;;                                      (display-buffer-in-side-window)
-;;                                      (side . right)))
-
-;; (defun jacob-consult-slack-filter ()
-;;   "Filter for slack buffers."
-;;   (consult--buffer-query :sort 'visibility
-;;                          :as #'buffer-name
-;;                          :include "^*slack"))
-
-;; (defvar jacob-consult-slack-source
-;;   `( :name     "Slack"
-;;      :narrow   ?s
-;;      :category buffer
-;;      :face     consult-buffer
-;;      :history  buffer-name-history
-;;      :items    ,#'jacob-consult-slack-filter
-;;      :action   ,#'switch-to-buffer))
-
-;; (add-to-list 'consult-buffer-sources jacob-consult-slack-source "APPEND")
+  (use-package lui
+    ;; from circe.el
+    :custom
+    (lui-fill-type nil)
+    (lui-time-stamp-position 0)
+    (lui-time-stamp-format "%a %b %e %H:%M"))
+  
+  :hook
+  (slack-message-buffer-mode-hook . toggle-word-wrap)
+  (slack-thread-message-buffer-mode-hook . toggle-word-wrap)
+  :custom
+  (slack-enable-global-mode-string t)
+  (slack-buffer-emojify t)
+  (slack-prefer-current-team t)
+  (slack-thread-also-send-to-room nil))
 
 
 ;; personal functions
