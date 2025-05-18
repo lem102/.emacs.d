@@ -1,6 +1,6 @@
-namespace ${1:Xyz};
+namespace `(jacob-csharp-determine-file-namespace)`;
 
-class ${2:`(file-name-base (buffer-file-name))`}
+public class `(file-name-base (buffer-file-name))`
 {
     $0
 }
