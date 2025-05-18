@@ -2349,28 +2349,12 @@ move to the new window. Otherwise, call `switch-buffer'."
 ;; use `bluetooth-list-devices' to display the bluetooth buffer
 
 (use-package enwc
+  :ensure t
   :when jacob-is-linux
+  :hook (enwc-mode-hook . enwc-enable-auto-scan)
   :init
   (setq enwc-default-backend 'nm)
   :config
-
-  (defun jacob-connect-wifi ()
-    "Prompt for a connection. Connect to the selected connection."
-    (interactive)
-    (enwc-request-scan)
-    (let* ((essids (let ((essids '()))
-                     (maphash (lambda (network-id network-information)
-                                (push (alist-get 'essid network-information) essids))
-                              enwc--last-scan-results)
-                     essids))
-           (essid (completing-read "essid: " essids))
-           (network-id (let (network)
-                         (maphash (lambda (network-id network-information)
-                                    (when (string= essid (alist-get 'essid network-information))
-                                      (setq result network-id)))
-                                  enwc--last-scan-results)
-                         result)))
-      (enwc-connect-to-network network-id)))
 
   (defun jacob-update-network-status ()
     "Update `enwc-display-string' to include an icon."
@@ -2388,9 +2372,6 @@ move to the new window. Otherwise, call `switch-buffer'."
                                         enwc-display-string))))
 
   (advice-add #'enwc-update-mode-line :after #'jacob-update-network-status)
-
-  (enwc-setup)
-  (enwc-scan)
 
   :custom
   (enwc-mode-line-format " %s%% "))
