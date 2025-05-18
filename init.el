@@ -889,8 +889,13 @@ Useful for deleting ^M after `eglot-code-actions'."
                                                                   (directory-files directory)))))
            (relative-path (file-name-concat
                            (file-name-nondirectory (directory-file-name (file-name-directory project-directory)))
-                           (file-relative-name (buffer-file-name) project-directory)))
-           (guessed-namespace (string-replace "/" "." (directory-file-name (file-name-directory relative-path))))
+                           (file-relative-name (buffer-file-name) project-directory))))
+      (string-replace "/" "." (directory-file-name (file-name-directory relative-path)))))
+
+  (defun jacob-csharp-fix-namespace ()
+    "Fix the namespace of the current file."
+    (interactive)
+    (let* ((guessed-namespace (jacob-csharp-determine-file-namespace))
            (current-namespace-range (car (treesit-query-range
                                           (treesit-buffer-root-node)
                                           '((file_scoped_namespace_declaration name: (_) @x))))))
@@ -899,6 +904,32 @@ Useful for deleting ^M after `eglot-code-actions'."
       (save-excursion
         (goto-char (car current-namespace-range))
         (insert guessed-namespace))))
+
+  (defun jacob-csharp-move-file ()
+    "Move the current file.
+
+Update the class/record/interface name and the namespace to reflect the
+new location and/or name of the file."
+    (interactive)
+    (let* ((new-file-name (read-file-name "Move file to: "
+                                          nil
+                                          buffer-file-name))
+           (new-class-name (file-name-sans-extension
+                            (file-name-nondirectory
+                             new-file-name)))
+           (class-name-range (car
+                              (treesit-query-range (treesit-buffer-root-node)
+                                                   '((class_declaration (identifier) @identifier))))))
+      ;; 1. rename the file
+      (rename-visited-file new-file-name)
+      ;; 2. rename the class
+      (save-excursion
+        (delete-region (car class-name-range) (cdr class-name-range))
+        (goto-char (car class-name-range))
+        (insert new-class-name)))
+    ;; 3. update the namespace
+    (jacob-csharp-fix-namespace))
+
 
   (defun jacob-csharp-create-variable ()
     "Create a variable declaration statement for an undeclared variable."
@@ -1067,6 +1098,7 @@ which performs the deletion."
     (eglot-ensure))
 
   (define-auto-insert "\\.cs$" ["template.cs" jacob-autoinsert-yas-expand])
+  (define-auto-insert "Controller\\.cs$" ["controllerTemplate.cs" jacob-autoinsert-yas-expand])
 
   (defun eglot-csharp-ls-metadata (xrefs)
     "Advice for `eglot--lsp-xrefs-for-method'.
