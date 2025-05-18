@@ -132,6 +132,24 @@ then remove this function from `find-file-hook'."
                                      kill-buffer-query-functions))
   (echo-keystrokes (cond (jacob-is-android 1)
                          (t 0.01)))
+  (mode-line-format '("%e"
+                      (:eval (if (or (= (count-windows) 1)
+                                     (equal (selected-window) (old-selected-window)))
+                                 (list mode-line-front-space
+                                       mode-line-modified
+                                       mode-line-frame-identification
+                                       mode-line-buffer-identification
+                                       mode-line-position
+                                       '(project-mode-line project-mode-line-format)
+                                       '(vc-mode vc-mode)
+                                       " "
+                                       mode-line-modes)
+                               (list mode-line-buffer-identification)))
+                      mode-line-format-right-align
+                      (:eval (when (or (= (count-windows) 1)
+                                       (not (equal (selected-window) (old-selected-window))))
+                               (list mode-line-misc-info)))
+                      mode-line-end-spaces))
   ;; startup.el
   (inhibit-startup-screen t)
   (initial-scratch-message (format ";; %s\n\n"
@@ -207,37 +225,15 @@ then remove this function from `find-file-hook'."
 
 (use-package time
   :hook (after-init-hook . display-time-mode)
-  :config
-  (defun jacob-update-time-status ()
-    "Update `display-time-string' to include icons."
-    (string-match "\\([A-Za-z0-9 ]+\\) \\([0-9]+:[0-9]+\\)" display-time-string)
-    (setq display-time-string (concat "📅 "
-                                      (match-string 1 display-time-string)
-                                      " 🕘 "
-                                      (match-string 2 display-time-string))))
-
-  (advice-add #'display-time-update :after #'jacob-update-time-status)
   :custom ((display-time-load-average-threshold 1)
            (display-time-mail-file 1)   ; non-nil and not a string means don't check for mail
-           (display-time-24hr-format t)
-           (display-time-day-and-date t)))
+           (display-time-format "📅 %a %b %e 🕘 %H:%M")))
 
 (use-package battery
   :hook (after-init-hook . display-battery-mode)
-  :config
-  (defun jacob-update-battery-status ()
-    "Update `battery-mode-line-string' to include an icon."
-    (let ((status (alist-get ?B (funcall battery-status-function))))
-      (setq battery-mode-line-string (concat (cond ((string= "discharging" status)
-                                                    " ")
-                                                   ((string= "charging" status)
-                                                    " ")
-                                                   (t
-                                                    (format "?battery? (%s) " status)))
-                                             battery-mode-line-string))))
-
-  (advice-add #'battery-update :after #'jacob-update-battery-status)
-  :custom (battery-mode-line-format "%b%p%% "))
+  :custom
+  (battery-mode-line-format " %b%p%% ")
+  (battery-mode-line-limit 99))
 
 (use-package window
   :custom
@@ -2348,7 +2344,8 @@ move to the new window. Otherwise, call `switch-buffer'."
                                            enwc-nm-dbus-wireless-interface
                                            "ActiveAccessPoint")))
 
-      (setq enwc-display-string (concat (cond ((string= "/" access-point)
+      (setq enwc-display-string (concat " "
+                                        (cond ((string= "/" access-point)
                                                "")
                                               (t
                                                ""))
