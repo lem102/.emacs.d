@@ -263,7 +263,9 @@ then remove this function from `find-file-hook'."
   :custom (disabled-command-function nil))
 
 (use-package recentf
-  :hook (after-init-hook . recentf-mode))
+  :hook (after-init-hook . recentf-mode)
+  :custom
+  (recentf-max-saved-items 300))
 
 (use-package savehist
   :hook (jacob-first-minibuffer-activation-hook . savehist-mode)
@@ -275,15 +277,14 @@ then remove this function from `find-file-hook'."
   :custom
   (save-place-forget-unreadable-files t))
 
+(use-package modus-themes
+  :defer t
+  :custom
+  (modus-themes-to-toggle '(modus-operandi-tinted modus-vivendi-tinted)))
+
 (use-package custom
   :config
   (load-theme 'modus-vivendi-tinted))
-
-(use-package tab-bar
-  :hook (after-init-hook . tab-bar-mode)
-  :config
-  (add-to-list 'tab-bar-format #'tab-bar-format-align-right "APPEND")
-  (add-to-list 'tab-bar-format #'tab-bar-format-global "APPEND"))
 
 (use-package cus-edit
   :custom
@@ -879,9 +880,8 @@ Useful for deleting ^M after `eglot-code-actions'."
   :mode ("//.csx?//'" . csharp-ts-mode)
   :config
 
-  (defun jacob-csharp-guess-namespace ()
-    "Guess the current file's namespace."
-    (interactive)
+  (defun jacob-csharp-determine-file-namespace ()
+    "Return the namespace of the current file."
     (let* ((project-directory (locate-dominating-file (buffer-file-name)
                                                       (lambda (directory)
                                                         (seq-find (lambda (file)
@@ -1733,9 +1733,10 @@ Intended as before advice for `sql-send-paragraph'."
   :config
   (jacob-defhookf gnus-started-hook
     (gnus-demon-add-handler 'gnus-demon-scan-news 2 t))
-
-  (setopt gnus-use-full-window t
-          gnus-always-read-dribble-file t))
+  :custom
+  (gnus-use-full-window t)
+  (gnus-always-read-dribble-file t)
+  (gnus-select-method '(nnnil nil)))
 
 (use-package gnus-group
   :after gnus
@@ -1749,7 +1750,7 @@ Intended as before advice for `sql-send-paragraph'."
 (use-package gnus-notifications
   :after gnus
   :config
-  (add-hook 'gnus-after-getting-new-news-hook 'gnus-notifications))
+  (add-hook 'gnus-after-getting-new-news-hook #'gnus-notifications))
 
 (use-package gnus-sum
   :after gnus
@@ -2335,7 +2336,54 @@ move to the new window. Otherwise, call `switch-buffer'."
 (use-package pulseaudio-control
   :ensure t
   :defer t
-  :when jacob-is-linux)
+  :when jacob-is-linux
+  :config
+  (pulseaudio-control-default-sink-mode 1)
+  (pulseaudio-control-default-source-mode 1)
+  (pulseaudio-control-display-mode 1)
+
+  (defun pulseaudio-control-update-display-volume ()
+    "Update the display of `pulseaudio-control-display-volume-string'.
+
+Patched by jacob to put icons in resulting string."
+    (when-let ((volume-step-unit
+                (if (string-match (rx (group (or "%" "dB")))
+                                  pulseaudio-control-volume-step)
+                    (match-string 1 pulseaudio-control-volume-step)
+                  nil))
+               (vol-re
+                (rx (group (+ num)) (+ space) "/" (+ space) (group (+ num)) "%"
+                    (+ space) "/" (+ space)
+                    (group (? "-") (or (group (+ digit) (? (group "." (+ digit)))) "-inf"))
+                    " dB"))
+               (vol-sink (pulseaudio-control--get-current-sink-volume))
+               (vol-source (pulseaudio-control--get-current-source-volume)))
+      (cl-flet ((compute-vol
+                  (vol)
+                  (string-match vol-re vol)
+                  (string-to-number
+                   (pcase volume-step-unit
+                     ("%" (match-string 2 vol))
+                     ("dB" (match-string 3 vol))
+                     (_ (match-string 1 vol)))))
+                (format-vol
+                  (icon vol)
+                  (pcase volume-step-unit
+                    ("%" (format "%s %2d%%" icon vol))
+                    ("dB" (format "%s %d dB" icon vol))
+                    (_ (format "%s %d" icon vol)))))
+        (prog1
+            (setq pulseaudio-control-display-volume-string
+                  (format " %s 🔊%s "
+                          (format-vol
+                           (pulseaudio-control--update-display-string
+                            (compute-vol vol-source) 'source)
+                           (compute-vol vol-source))
+                          (format-vol
+                           (pulseaudio-control--update-display-string
+                            (compute-vol vol-sink) 'sink)
+                           (compute-vol vol-sink))))
+          (force-mode-line-update t))))))
 
 ;; use `pulseaudio-control-select-sink-by-name' to set the "sink" (the
 ;; output device)
