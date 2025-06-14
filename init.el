@@ -230,7 +230,12 @@ then remove this function from `find-file-hook'."
            (display-time-format "📅 %a %b %e 🕘 %H:%M")))
 
 (use-package battery
-  :hook (after-init-hook . display-battery-mode)
+  :config
+  (when (and battery-status-function
+             (not (string= "N/A"
+                           (battery-format "%c"
+                                           (funcall battery-status-function)))))
+    (display-battery-mode 1))  
   :custom
   (battery-mode-line-format " %b%p%% ")
   (battery-mode-line-limit 99))
