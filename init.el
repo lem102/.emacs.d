@@ -47,8 +47,13 @@
                                              #'magit))
                            keymap)))
 
-(keymap-global-set "<tool-bar> <jacob>"
-                   '(menu-item "test" keyboard-quit . (:image (image . (:type xpm :file "exit.xpm")))))
+(tool-bar-add-item "exit"
+                   #'keyboard-quit
+                   'keyboard-quit)
+
+(tool-bar-add-item "next-node"
+                   #'other-window
+                   'other-window)
 
 (keymap-global-unset "<tool-bar> <open-file>")
 (keymap-global-unset "<tool-bar> <dired>")
@@ -290,6 +295,13 @@ then remove this function from `find-file-hook'."
 (use-package custom
   :config
   (load-theme 'modus-vivendi-tinted))
+
+(use-package tab-bar
+  :unless jacob-is-android
+  :hook (after-init-hook . tab-bar-mode)
+  :config
+  (add-to-list 'tab-bar-format #'tab-bar-format-align-right "APPEND")
+  (add-to-list 'tab-bar-format #'tab-bar-format-global "APPEND"))
 
 (use-package cus-edit
   :custom
