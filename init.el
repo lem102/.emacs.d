@@ -626,6 +626,13 @@ For use in yasnippets."
 
   (jacob-defhookf minibuffer-setup-hook
     (jacob-xfk-local-key "g" #'embark-export)))
+(use-package ibuffer
+  :defer t
+  :config
+  (with-eval-after-load "xah-fly-keys"
+    (jacob-xfk-bind-for-mode ibuffer-mode
+	                         "q" #'quit-window
+                             "g" #'ibuffer-update)))
 
 (use-package replace
   :config
