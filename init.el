@@ -2502,16 +2502,6 @@ Patched by jacob to put icons in resulting string."
   (find-file user-init-file)
   (goto-char (random (point-max))))
 
-(defun jacob-toggle-modeline ()
-  "Toggle visibility of modeline."
-  (interactive)
-  (if mode-line-format
-      (setq mode-line-format nil)
-    (set 'mode-line-format (eval
-                            (car
-                             (get 'mode-line-format
-                                  'standard-value))))))
-
 (defun jacob-async-shell-command (command)
   "Wrapper command for (`async-shell-command' COMMAND)."
   (interactive
@@ -2616,20 +2606,6 @@ Otherwise, display error message."
         (other-window 1))
     (message "More/less than 2 windows in frame.")))
 
-(defun jacob-git-push-set-upstream ()
-  "Push current git branch to new upstream branch."
-  (interactive)
-  (shell-command "git push --set-upstream origin HEAD"))
-
-(defun jacob-github-push-set-upstream ()
-  "Push current git branch to new upstream branch.
-Try go to the create a pull request page if possible."
-  (interactive)
-  (with-temp-buffer
-    (shell-command "git push --set-upstream origin HEAD" t)
-    (when (search-forward "http" nil "NOERROR")
-      (browse-url-at-point))))
-
 (defvar jacob-gitlab-push-set-upstream-jira-url ""
   "URL for current employer's jira board.")
 
@@ -2659,22 +2635,6 @@ For use with GitLab only."
                                           "\" ")))))
     (with-temp-buffer
       (eshell-command command t))))
-
-(defun jacob-gitlab-link-at-point ()
-  "Create a gitlab link for the line of code at point."
-  (interactive)
-  (let* ((project (project-current))
-         (repository (project-name project))
-         (branch "development")
-         (filepath (file-relative-name buffer-file-name (project-root project)))
-         (line-number (line-number-at-pos))
-         (link (format "https://gitlab.com/tappit-leeds-devs/%s/-/blob/%s/%s#L%d"
-                       repository
-                       branch
-                       filepath
-                       line-number)))
-    (kill-new link)
-    (message "%s" link)))
 
 (provide 'init)
 
