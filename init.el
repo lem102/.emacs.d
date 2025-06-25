@@ -228,23 +228,6 @@ then remove this function from `find-file-hook'."
   :delight
   :hook (on-first-file-hook . global-auto-revert-mode))
 
-(use-package time
-  :hook (after-init-hook . display-time-mode)
-  :custom ((display-time-load-average-threshold 1)
-           (display-time-mail-file 1)   ; non-nil and not a string means don't check for mail
-           (display-time-format "📅 %a %b %e 🕘 %H:%M")))
-
-(use-package battery
-  :config
-  (when (and battery-status-function
-             (not (string= "N/A"
-                           (battery-format "%c"
-                                           (funcall battery-status-function)))))
-    (display-battery-mode 1))  
-  :custom
-  (battery-mode-line-format " %b%p%% ")
-  (battery-mode-line-limit 99))
-
 (use-package window
   :custom
   (switch-to-buffer-obey-display-actions t)
@@ -2349,97 +2332,6 @@ move to the new window. Otherwise, call `switch-buffer'."
   :ensure t
   :when jacob-is-linux
   :mode ("\\.[pP][dD][fF]\\'" . pdf-view-mode))
-
-(use-package pulseaudio-control
-  :ensure t
-  :defer t
-  :when jacob-is-linux
-  :config
-  (pulseaudio-control-default-sink-mode 1)
-  (pulseaudio-control-default-source-mode 1)
-  (pulseaudio-control-display-mode 1)
-
-  (defun pulseaudio-control-update-display-volume ()
-    "Update the display of `pulseaudio-control-display-volume-string'.
-
-Patched by jacob to put icons in resulting string."
-    (when-let ((volume-step-unit
-                (if (string-match (rx (group (or "%" "dB")))
-                                  pulseaudio-control-volume-step)
-                    (match-string 1 pulseaudio-control-volume-step)
-                  nil))
-               (vol-re
-                (rx (group (+ num)) (+ space) "/" (+ space) (group (+ num)) "%"
-                    (+ space) "/" (+ space)
-                    (group (? "-") (or (group (+ digit) (? (group "." (+ digit)))) "-inf"))
-                    " dB"))
-               (vol-sink (pulseaudio-control--get-current-sink-volume))
-               (vol-source (pulseaudio-control--get-current-source-volume)))
-      (cl-flet ((compute-vol
-                  (vol)
-                  (string-match vol-re vol)
-                  (string-to-number
-                   (pcase volume-step-unit
-                     ("%" (match-string 2 vol))
-                     ("dB" (match-string 3 vol))
-                     (_ (match-string 1 vol)))))
-                (format-vol
-                  (icon vol)
-                  (pcase volume-step-unit
-                    ("%" (format "%s %2d%%" icon vol))
-                    ("dB" (format "%s %d dB" icon vol))
-                    (_ (format "%s %d" icon vol)))))
-        (prog1
-            (setq pulseaudio-control-display-volume-string
-                  (format " %s 🔊%s "
-                          (format-vol
-                           (pulseaudio-control--update-display-string
-                            (compute-vol vol-source) 'source)
-                           (compute-vol vol-source))
-                          (format-vol
-                           (pulseaudio-control--update-display-string
-                            (compute-vol vol-sink) 'sink)
-                           (compute-vol vol-sink))))
-          (force-mode-line-update t))))))
-
-;; use `pulseaudio-control-select-sink-by-name' to set the "sink" (the
-;; output device)
-
-(use-package bluetooth
-  ;; TODO: completing read interface to choose a bluetooth device
-  :ensure t
-  :defer t
-  :when jacob-is-linux)
-
-;; use `bluetooth-list-devices' to display the bluetooth buffer
-
-(use-package enwc
-  :ensure t
-  :when jacob-is-linux
-  :hook (enwc-mode-hook . enwc-enable-auto-scan)
-  :init
-  (setq enwc-default-backend 'nm)
-  :config
-
-  (defun jacob-update-network-status ()
-    "Update `enwc-display-string' to include an icon."
-    (let ((access-point (dbus-get-property :system
-                                           enwc-nm-dbus-service
-                                           enwc-nm-wireless-dev
-                                           enwc-nm-dbus-wireless-interface
-                                           "ActiveAccessPoint")))
-
-      (setq enwc-display-string (concat " "
-                                        (cond ((string= "/" access-point)
-                                               "")
-                                              (t
-                                               ""))
-                                        enwc-display-string))))
-
-  (advice-add #'enwc-update-mode-line :after #'jacob-update-network-status)
-
-  :custom
-  (enwc-mode-line-format " %s%% "))
 
 (use-package grep
   :when jacob-is-windows
