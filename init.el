@@ -2451,9 +2451,6 @@ Patched by jacob to put icons in resulting string."
   :ensure t
   :defer t)
 
-;; (use-package just-ts-mode
-;;   :ensure t)
-
 (use-package slack
   :ensure t
   :config
