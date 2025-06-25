@@ -1657,6 +1657,10 @@ mouse-3: Toggle minor modes"
   (setopt compilation-always-kill t
           compilation-scroll-output t))
 
+(use-package winnow
+  :ensure t
+  :hook (compilation-mode-hook . winnow-mode))
+
 (use-package sql
   :commands (sql-read-connection)
   :init
