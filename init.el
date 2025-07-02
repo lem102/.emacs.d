@@ -283,13 +283,6 @@ then remove this function from `find-file-hook'."
   :config
   (load-theme 'modus-vivendi-tinted))
 
-(use-package tab-bar
-  :unless jacob-is-android
-  :hook (after-init-hook . tab-bar-mode)
-  :config
-  (add-to-list 'tab-bar-format #'tab-bar-format-align-right "APPEND")
-  (add-to-list 'tab-bar-format #'tab-bar-format-global "APPEND"))
-
 (use-package cus-edit
   :custom
   (custom-file (concat user-emacs-directory "custom.el"))
