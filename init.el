@@ -319,6 +319,124 @@ then remove this function from `find-file-hook'."
   (keymap-global-set "M-n" #'flymake-goto-next-error)
   (keymap-global-set "M-p" #'flymake-goto-prev-error))
 
+(defun jacob-end-of-line ()
+  "Go to content end, line end, forward paragraph."
+  (interactive)
+  (if (eolp)
+      (forward-paragraph)
+    (let ((content-end (save-excursion
+                         (when (comment-search-forward (line-end-position) "NOERROR")
+                           (goto-char (match-beginning 0))
+                           (skip-syntax-backward " <" (line-beginning-position))
+                           (unless (= (point) (line-beginning-position))
+                             (point))))))
+      (if (or (null content-end)
+              (= content-end (point)))
+          (move-end-of-line 1)
+        (goto-char content-end)))))
+
+(defun jacob-beginning-of-line ()
+  "Go to indentation, line start, backward paragraph."
+  (interactive)
+  (cond ((bolp)
+         (backward-paragraph))
+        ((= (save-excursion
+              (back-to-indentation)
+              (point))
+            (point))
+         (move-beginning-of-line 1))
+        (t
+         (back-to-indentation))))
+
+(defvar-local jacob-backspace-function nil
+  "Called by `jacob-backspace' if non-nil.")
+
+(defun jacob-backspace ()
+  "DWIM backspace command.
+
+  If character to the left is a pair character as determined by
+  `insert-pair-alist', kill from the pair to its match. If the prefix
+  argument is provided, only delete the pair characters.
+
+  If the character to the left of the cursor is whitespace, delete all
+  the whitespace backward from point to the first non whitespace
+  character."
+  (interactive)
+  (undo-boundary)
+  (if (region-active-p)
+      (delete-active-region)
+    (when (= 1 (point))
+      (user-error "Beginning of buffer"))
+    (let ((char-class (char-syntax (char-before)))
+          (f (if current-prefix-arg
+                 #'delete-pair
+               #'kill-sexp)))
+      (unless (ignore-errors
+                (funcall jacob-backspace-function f))
+        (cond ((= ?\" char-class)     ; string
+               (if (nth 3 (syntax-ppss))
+                   (backward-char)
+                 (backward-sexp))
+               (funcall f))
+              ((= ?\( char-class)     ; delete from start of pair
+               (backward-char)
+               (funcall f))
+              ((= ?\) char-class)     ; delete from end of pair
+               (backward-sexp)
+               (funcall f))
+              (t                      ; delete character
+               (backward-delete-char 1)))))))
+
+(defun jacob-kill-line ()
+  "If region is active, kill it.  Otherwise:
+
+  If point is at the beginning of the line, kill the whole line.
+
+  If point is at the end of the line, kill until the beginning of the line.
+
+  Otherwise, kill from point to the end of the line."
+  (interactive)
+  (cond ((region-active-p)
+         (call-interactively #'kill-region))
+        ((bolp)
+         (kill-whole-line))
+        ((eolp)
+         (kill-line 0))
+        (t
+         (kill-line))))
+
+(keymap-global-unset "C-w")             ; `kill-region'
+(keymap-global-unset "C-M-w")           ; `append-next-kill'
+
+(defun jacob-kill-paragraph ()
+  "Move to the beginning of the paragraph, then kill it."
+  (interactive)
+  (forward-paragraph)
+  (backward-paragraph)
+  (kill-paragraph 1))
+
+(defun jacob-comment-dwim ()
+  "Toggle comment on current line or active region."
+  (interactive)
+  (cond ((or (region-active-p)
+             (= (point) (line-end-position)))
+         (comment-dwim nil))
+        (t
+         (comment-or-uncomment-region (line-beginning-position) (line-end-position))
+         (forward-line))))
+
+(defun jacob-find-file (force-find-file)
+  "If in project, call `project-find-file'. Otherwise, call `find-file'.
+
+If FORCE-FIND-FILE is non-nil call `find-file'."
+  (interactive "P")
+  (call-interactively (cond (force-find-file #'find-file)
+                            ((project-current) #'project-find-file)
+                            (t #'find-file))))
+
+(with-eval-after-load "xah-fly-keys"
+  (keymap-set xah-fly-leader-key-map "i e" #'jacob-find-file))
+
 (use-package xah-fly-keys
   :ensure t
   :hook (after-init-hook . xah-fly-keys)
@@ -330,7 +448,6 @@ then remove this function from `find-file-hook'."
   (setopt xah-fly-use-control-key nil
           xah-fly-use-meta-key nil)
   :config
-
   (defun jacob-xfk-local-key (key command)
     "Bind KEY buffer locally to COMMAND in xfk command mode."
     (let ((existing-command (keymap-lookup xah-fly-command-map key nil "NO-REMAP")))
