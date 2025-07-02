@@ -181,7 +181,9 @@ then remove this function from `find-file-hook'."
   (sentence-end-double-space nil)
   ;; indent.el
   ;; make tab key call indent command or insert tab character, depending on cursor position
-  (tab-always-indent 'complete))
+  (tab-always-indent 'complete)
+  :bind ( :map mode-line-buffer-identification-keymap
+          ("<mode-line> <mouse-2>" . ibuffer)))
 
 (defmacro jacob-defhookf (hook &rest body)
   "Define function with BODY and bind it to HOOK."
@@ -309,9 +311,32 @@ then remove this function from `find-file-hook'."
 
 (use-package bookmark
   :defer t
+  :custom
+  (bookmark-set-fringe-mark nil)
+  (bookmark-watch-bookmark-file 'silent)
   :config
-  (setopt bookmark-set-fringe-mark nil
-          bookmark-watch-bookmark-file 'silent))
+  (defun jacob-bookmark-command (bookmark)
+    "Launch the command stored in bookmark.
+
+Intended for running applications."
+    (let ((command (bookmark-get-filename bookmark)))
+      (start-process-shell-command command nil command)))
+
+  (defun jacob-bookmark-firefox (bookmark)
+    "Open BOOKMARK in firefox."
+    (let ((command (concat "firefox-esr "
+                           (bookmark-get-filename bookmark))))
+      (start-process-shell-command command
+                                   nil
+                                   command)))
+
+  (defun jacob-bookmark-chrome (bookmark)
+    "Open BOOKMARK in chrome."
+    (let ((command (concat "google-chrome "
+                           (bookmark-get-filename bookmark))))
+      (start-process-shell-command command
+                                   nil
+                                   command))))
 
 (use-package flymake
   :defer t
@@ -864,33 +889,13 @@ For use in yasnippets."
     "i" #'eglot-find-implementation
     "t" #'eglot-find-typeDefinition)
 
-  (keymap-set jacob-xfk-map "c" `("Code" . ,jacob-code-map))
+  (with-eval-after-load "xah-fly-keys"
+    (keymap-set jacob-xfk-map "c" `("Code" . ,jacob-code-map)))
+
   :config
   (jacob-defhookf eglot-managed-mode-hook
     (eglot-inlay-hints-mode 0)
     (setq-local eldoc-documentation-strategy 'eldoc-documentation-compose))
-
-  ;; TODO: function that can smartly decide between jumping to
-  ;; definition or implementation (`xref-find-definitions' vs
-  ;; `eglot-find-implementation')
-
-  ;; WIP
-  (defun jacob-go-definition ()
-    "If not in an eglot buffer, do regular xref stuff.
-
-Otherwise, go to implementation.  If already at implementation go to
-definition."
-    (interactive)
-    (if (not eglot--managed-mode)
-        (call-interactively #'xref-find-definitions)
-      (let ((start-buffer (current-buffer)))
-        (ignore-errors
-          (eglot-find-implementation))
-        (when (eq start-buffer (current-buffer))
-          ;; TODO: won't work, this just takes us to the current
-          ;; method. if language server implemented go to declaration
-          ;; something might be possible.
-          (call-interactively #'xref-find-definitions)))))
 
   (defun jacob-remove-ret-character-from-buffer (&rest _)
     "Remove all occurances of ^M from the buffer.
@@ -1191,7 +1196,8 @@ which performs the deletion."
   :ensure t
   :after csharp-mode
   :config
-  (keymap-set jacob-xfk-map "d" #'sharper-main-transient))
+  (with-eval-after-load "xah-fly-keys"
+    (keymap-set jacob-xfk-map "d" #'sharper-main-transient)))
 
 (use-package csproj-mode
   :ensure t
@@ -1330,7 +1336,7 @@ hides this information."
   (setopt project-switch-commands '((project-find-file "Find file")
                                     (jacob-project-search "Find regexp")
                                     (project-find-dir "Find directory")
-                                    (magit "Version Control")
+                                    (magit-project-status "Version Control")
                                     (project-eshell "Shell")
                                     (project-compile "Compile"))))
 
@@ -1550,7 +1556,8 @@ mouse-3: Toggle minor modes"
     "a" #'org-agenda
     "c" #'org-capture)
 
-  (keymap-set jacob-xfk-map "a" `("Agenda" . ,jacob-org-agenda-map))  
+  (with-eval-after-load "xah-fly-keys"
+    (keymap-set jacob-xfk-map "a" `("Agenda" . ,jacob-org-agenda-map)))
   :config
   (setopt org-agenda-skip-scheduled-if-done t
           org-agenda-skip-deadline-if-done t
@@ -1727,13 +1734,16 @@ CONNECTION is the connection settings."
                                                     t)))))
         (sql-connect connection))))
 
-  (keymap-set jacob-xfk-map "s" #'jacob-sql-connect)
+  (with-eval-after-load "xah-fly-keys"
+    (keymap-set jacob-xfk-map "s" #'jacob-sql-connect))
   :config
   (jacob-defhookf sql-interactive-mode-hook
     (when (eq sql-product 'postgres)
       (setq sql-prompt-regexp "^[-[:alnum:]_]*[-=]\\*?[#>] ")
-      (setq sql-prompt-cont-regexp "^\\(?:\\sw\\|\\s_\\)*[-(]\\*?[#>] "))
-    (jacob-xfk-local-key "SPC , d" #'sql-send-paragraph))
+      (setq sql-prompt-cont-regexp "^\\(?:\\sw\\|\\s_\\)*[-(]\\*?[#>] ")))
+
+  (jacob-xfk-bind-for-mode sql-interactive-mode
+                           "SPC , d" #'sql-send-paragraph)
 
   (defun jacob-sqli-end-of-buffer ()
     "Move point to end of sqli buffer before sending paragraph.
@@ -1791,7 +1801,8 @@ Intended as before advice for `sql-send-paragraph'."
 (use-package gnus
   :commands gnus
   :init
-  (keymap-set jacob-xfk-map "g" #'gnus)
+  (with-eval-after-load "xah-fly-keys"
+    (keymap-set jacob-xfk-map "g" #'gnus))
   :config
   (jacob-defhookf gnus-started-hook
     (gnus-demon-add-handler 'gnus-demon-scan-news 2 t))
