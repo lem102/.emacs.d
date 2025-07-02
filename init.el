@@ -165,7 +165,6 @@ then remove this function from `find-file-hook'."
                                       "\"Always listen to Jiaqi.\" - Jacob Leeming"
                                       "\"The king wisely had the computer scientist beheaded, and they all lived happily ever after.\" - anon"
                                       "\"Success is going from failure to failure without losing your enthusiasm.\" - Winston Churchill (maybe)"))))
-  (initial-major-mode #'fundamental-mode)
   ;; lisp.el
   (parens-require-spaces nil)
   (delete-pair-blink-delay 0)
