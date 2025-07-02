@@ -198,6 +198,9 @@ then remove this function from `find-file-hook'."
 (use-package delight
   :ensure t)
 
+(use-package indent-aux
+  :hook (after-init-hook . kill-ring-deindent-mode))
+
 (use-package which-key
   :delight
   :hook (on-first-input-hook . which-key-mode)
