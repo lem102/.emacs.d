@@ -533,9 +533,11 @@ If FORCE-FIND-FILE is non-nil call `find-file'."
 
 (defvar-keymap jacob-yas-map
   "n" #'yas-new-snippet
-  "v" #'yas-visit-snippet-file)
+  "v" #'yas-visit-snippet-file
+  "i" #'yas-insert-snippet)
 
-(keymap-set jacob-xfk-map "y" `("Yasnippet" . ,jacob-yas-map))
+(with-eval-after-load "xah-fly-keys"
+  (keymap-set jacob-xfk-map "y" `("Yasnippet" . ,jacob-yas-map)))
 
 ;; tbh i'm not sure wtf is going on
 
