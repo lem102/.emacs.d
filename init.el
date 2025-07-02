@@ -456,127 +456,51 @@ If FORCE-FIND-FILE is non-nil call `find-file'."
       (keymap-local-set (format "<remap> <%s>" existing-command)
                         command)))
 
+  (defmacro jacob-xfk-bind-for-mode (mode &rest bindings)
+    "Use BINDINGS when in a certain MODE."
+    (unless (cl-evenp (length bindings))
+      (user-error "`jacob-xfk-bind-for-mode' %s bindings is not a plist"
+                  mode))
+    (let* ((hook (intern (concat (symbol-name mode) "-hook")))
+           (hook-function (intern (concat "jacob-" (symbol-name hook) "-function")))
+           (binding-alist (seq-reduce (lambda (p c)
+                                        "Convert the plist into an alist"
+                                        (cond ((and (caar p)
+                                                    (null (cdar p)))
+                                               (cons (cons (caar p) c)
+                                                     (cdr p)))
+                                              (t (cons (cons c nil)
+                                                       p))))
+                                      bindings
+                                      '()))
+           (hook-function-body (seq-map (lambda (pair)
+                                          "PAIR is `'(key command)', return code to bind key to command locally."
+                                          (let ((key (car pair))
+                                                (command (cdr pair)))
+                                            `(let ((existing-command (keymap-lookup xah-fly-command-map
+                                                                                    ,key
+                                                                                    nil
+                                                                                    "NO-REMAP")))
+                                               (unless existing-command
+                                                 (user-error "%s is not bound to a key in `xah-fly-command-map'"
+                                                             ,key))
+                                               (keymap-local-set (format "<remap> <%s>"
+                                                                         existing-command)
+                                                                 ,command))))
+                                        binding-alist)))
+      `(progn
+         (defun ,hook-function ()
+           ,(format "Auto-generated hook function for `%s'." (symbol-name hook))
+           ,@hook-function-body)
+         (add-hook ',hook #',hook-function))))
+
   (xah-fly-keys-set-layout "qwerty")
 
   (keymap-set xah-fly-leader-key-map "SPC" jacob-xfk-map)
   (keymap-set jacob-xfk-map "p" `("Project" . ,project-prefix-map))
 
-  (defvar-local jacob-backspace-function nil
-    "Called by `jacob-backspace' if non-nil.")
-
-  (defun jacob-backspace ()
-    "DWIM backspace command.
-
-  If character to the left is a pair character as determined by
-  `insert-pair-alist', kill from the pair to its match. If the prefix
-  argument is provided, only delete the pair characters.
-
-  If the character to the left of the cursor is whitespace, delete all
-  the whitespace backward from point to the first non whitespace
-  character."
-    (interactive)
-    (undo-boundary)
-    (if (region-active-p)
-        (delete-active-region)
-      (when (= 1 (point))
-        (user-error "Beginning of buffer"))
-      (let ((char-class (char-syntax (char-before)))
-            (f (if current-prefix-arg
-                   #'delete-pair
-                 #'kill-sexp)))
-        (unless (ignore-errors
-                  (funcall jacob-backspace-function f))
-          (cond ((= ?\  char-class)     ; whitespace
-                 (let ((start (point)))
-                   (skip-syntax-backward " <")
-                   (delete-region start (point))))
-                ((= ?\" char-class)     ; string
-                 (if (nth 3 (syntax-ppss))
-                     (backward-char)
-                   (backward-sexp))
-                 (funcall f))
-                ((= ?\( char-class)     ; delete from start of pair
-                 (backward-char)
-                 (funcall f))
-                ((= ?\) char-class)     ; delete from end of pair
-                 (backward-sexp)
-                 (funcall f))
-                (t                      ; delete character
-                 (backward-delete-char 1)))))))
-
-  (defun jacob-beginning-of-line ()
-    "Go to indentation, line start, backward paragraph."
-    (interactive)
-    (cond ((bolp)
-           (backward-paragraph))
-          ((= (save-excursion
-                (back-to-indentation)
-                (point))
-              (point))
-           (move-beginning-of-line 1))
-          (t
-           (back-to-indentation))))
-
-  (defun jacob-end-of-line ()
-    "Go to content end, line end, forward paragraph."
-    (interactive)
-    (if (eolp)
-        (forward-paragraph)
-      (let ((content-end (save-excursion
-                           (when (comment-search-forward (line-end-position) "NOERROR")
-                             (goto-char (match-beginning 0))
-                             (skip-syntax-backward " <" (line-beginning-position))
-                             (unless (= (point) (line-beginning-position))
-                               (point))))))
-        (if (or (null content-end)
-                (= content-end (point)))
-            (move-end-of-line 1)
-          (goto-char content-end)))))
-
-  (defun jacob-kill-line ()
-    "If region is active, kill it.  Otherwise:
-
-  If point is at the beginning of the line, kill the whole line.
-
-  If point is at the end of the line, kill until the beginning of the line.
-
-  Otherwise, kill from point to the end of the line."
-    (interactive)
-    (cond ((region-active-p)
-           (call-interactively #'kill-region))
-          ((bolp)
-           (kill-whole-line))
-          ((eolp)
-           (kill-line 0))
-          (t
-           (kill-line))))
-
-  (defun jacob-kill-paragraph ()
-    "Move to the beginning of the paragraph, then kill it."
-    (interactive)
-    (forward-paragraph)
-    (backward-paragraph)
-    (kill-paragraph 1))
-
-  (defun jacob-find-file (force-find-file)
-    "If in project, call `project-find-file'. Otherwise, call `find-file'.
-
-If FORCE-FIND-FILE is non-nil call `find-file'."
-    (interactive "p")
-    (call-interactively (cond (force-find-file #'find-file)
-                              ((project-current) #'project-find-file)
-                              (t #'find-file))))
-
   (defalias 'jacob-return-macro
     (kmacro "<return>"))
-
-  (keymap-global-set "C-a" #'jacob-beginning-of-line)
-  (keymap-global-set "C-e" #'jacob-end-of-line)
-  (keymap-global-set "C-k" #'jacob-kill-line)
-  (keymap-global-set "<backspace>" #'jacob-backspace)
-  (keymap-global-set "M-;" #'xah-comment-dwim)
-  (keymap-global-set "C-w" #'xah-cut-line-or-region)
-  (keymap-global-set "M-w" #'xah-copy-line-or-region)
 
   ;; (defvar-keymap jacob-movement-repeat-map
   ;;   :repeat t
@@ -634,10 +558,9 @@ If FORCE-FIND-FILE is non-nil call `find-file'."
   (keymap-set xah-fly-leader-key-map "d k" #'insert-pair)
   (keymap-set xah-fly-leader-key-map "d l" #'insert-pair)
   (keymap-set xah-fly-leader-key-map "d u" #'insert-pair)
-  (keymap-set xah-fly-leader-key-map "i e" #'jacob-find-file)
   (keymap-set xah-fly-leader-key-map "i i" #'consult-bookmark)
-  (keymap-unset xah-fly-leader-key-map "i o") ; bookmark-jump
-  (keymap-unset xah-fly-leader-key-map "i p") ; bookmark-set
+  (keymap-unset xah-fly-leader-key-map "i o") ; `bookmark-jump'
+  (keymap-unset xah-fly-leader-key-map "i p") ; `bookmark-set'
   (keymap-set xah-fly-leader-key-map "l 3" #'jacob-async-shell-command)
   (keymap-set xah-fly-leader-key-map "l a" #'global-text-scale-adjust)
   (keymap-set xah-fly-leader-key-map "w j" #'xref-find-references))
@@ -745,8 +668,9 @@ For use in yasnippets."
   :config
   (define-key minibuffer-local-completion-map "SPC" 'self-insert-command)
 
-  (jacob-defhookf minibuffer-setup-hook
-    (jacob-xfk-local-key "g" #'embark-export)))
+  (jacob-xfk-bind-for-mode minibuffer-setup
+                           "g" #'embark-export))
+
 (use-package ibuffer
   :defer t
   :config
@@ -757,28 +681,30 @@ For use in yasnippets."
 
 (use-package replace
   :config
-  (jacob-defhookf occur-mode-hook
-    (jacob-xfk-local-key "q" 'quit-window)
-    (jacob-xfk-local-key "i" 'occur-prev)
-    (jacob-xfk-local-key "k" 'occur-next)))
+  (jacob-xfk-bind-for-mode occur-mode
+                           "q" 'quit-window
+                           "i" 'occur-prev
+                           "k" 'occur-next))
 
 (use-package info
   :config
-  (jacob-defhookf Info-mode-hook
-    (jacob-xfk-local-key "q" 'quit-window)
-    (jacob-xfk-local-key "r" 'Info-scroll-up)
-    (jacob-xfk-local-key "e" 'Info-scroll-down)
-    (jacob-xfk-local-key "w" 'Info-up)
-    (jacob-xfk-local-key "g" 'Info-menu)))
+  (jacob-xfk-bind-for-mode Info-mode
+                           "q" #'quit-window
+                           "r" #'Info-scroll-up
+                           "e" #'Info-scroll-down
+                           "w" #'Info-up
+                           "g" #'Info-menu))
+
+
 
 (use-package diff
   :config
-  (jacob-defhookf diff-mode-hook
-    (jacob-xfk-local-key "q" #'quit-window)
-    (jacob-xfk-local-key "e" #'diff-hunk-prev)
-    (jacob-xfk-local-key "r" #'diff-hunk-next)
-    (jacob-xfk-local-key "x" #'diff-hunk-kill)
-    (jacob-xfk-local-key "g" #'revert-buffer)))
+  (jacob-xfk-bind-for-mode diff-mode
+                           "q" #'quit-window
+                           "e" #'diff-hunk-prev
+                           "r" #'diff-hunk-next
+                           "x" #'diff-hunk-kill
+                           "g" #'revert-buffer))
 
 (use-package help
   :defer t
@@ -802,13 +728,13 @@ For use in yasnippets."
 
 (use-package help-mode
   :config
-  (jacob-defhookf help-mode-hook
-    (jacob-xfk-local-key "s" #'help-view-source)
-    (jacob-xfk-local-key "q" #'quit-window)
-    (jacob-xfk-local-key "e" #'help-go-back)
-    (jacob-xfk-local-key "r" #'help-go-forward)
-    (jacob-xfk-local-key "g" #'revert-buffer)
-    (jacob-xfk-local-key "w" #'jacob-help-edit)))
+  (jacob-xfk-bind-for-mode help-mode
+                           "s" #'help-view-source
+                           "q" #'quit-window
+                           "e" #'help-go-back
+                           "r" #'help-go-forward
+                           "g" #'revert-buffer
+                           "w" #'jacob-help-edit))
 
 (use-package helpful
   :ensure t
@@ -824,12 +750,12 @@ For use in yasnippets."
     (keymap-set xah-fly-leader-key-map "j v" #'helpful-key)
     (keymap-set xah-fly-leader-key-map "j b" #'helpful-command))
   :config
-  (jacob-defhookf helpful-mode-hook
-    (jacob-xfk-local-key "q" #'quit-window)
-    (jacob-xfk-local-key "g" #'helpful-update)
-    (jacob-xfk-local-key "e" #'backward-button)
-    (jacob-xfk-local-key "r" #'forward-button)
-    (jacob-xfk-local-key "s" #'push-button)))
+  (jacob-xfk-bind-for-mode helpful-mode
+                           "q" #'quit-window
+                           "g" #'helpful-update
+                           "e" #'backward-button
+                           "r" #'forward-button
+                           "s" #'push-button))
 
 (use-package warnings
   :custom ((warning-minimum-level :error)))
@@ -869,39 +795,39 @@ For use in yasnippets."
 (use-package vc-git
   :defer t
   :config
-  (jacob-defhookf vc-git-log-view-mode-hook
-    (jacob-xfk-local-key "q" #'quit-window)))
+  (jacob-xfk-bind-for-mode vc-git-log-view-mode
+                           "q" #'quit-window))
 
 (use-package vc-dir
   :defer t
   :config
-  (jacob-defhookf vc-dir-mode-hook
-    (jacob-xfk-local-key "q" #'quit-window)
-    (jacob-xfk-local-key "g" #'revert-buffer)
-    (jacob-xfk-local-key "i" #'vc-dir-previous-line)
-    (jacob-xfk-local-key "k" #'vc-dir-next-line)
-    (jacob-xfk-local-key "o" #'vc-dir-next-directory)
-    (jacob-xfk-local-key "u" #'vc-dir-previous-directory)
-    (jacob-xfk-local-key "s" #'vc-dir-find-file)
-    (jacob-xfk-local-key "e" #'vc-dir-mark)
-    (jacob-xfk-local-key "r" #'vc-dir-unmark)
-    (jacob-xfk-local-key "v" #'vc-next-action)
-    (jacob-xfk-local-key "p" #'vc-push)
-    (jacob-xfk-local-key ";" #'jacob-git-push-set-upstream)
-    (jacob-xfk-local-key "=" #'vc-diff)
-    (jacob-xfk-local-key "x" #'vc-dir-hide-up-to-date)))
+  (jacob-xfk-bind-for-mode vc-dir-mode
+                           "q" #'quit-window
+                           "g" #'revert-buffer
+                           "i" #'vc-dir-previous-line
+                           "k" #'vc-dir-next-line
+                           "o" #'vc-dir-next-directory
+                           "u" #'vc-dir-previous-directory
+                           "s" #'vc-dir-find-file
+                           "e" #'vc-dir-mark
+                           "r" #'vc-dir-unmark
+                           "v" #'vc-next-action
+                           "p" #'vc-push
+                           ";" #'jacob-git-push-set-upstream
+                           "=" #'vc-diff
+                           "x" #'vc-dir-hide-up-to-date))
 
 (use-package vc-annotate
   :defer t
   :config
-  (jacob-defhookf vc-annotate-mode-hook
-    (jacob-xfk-local-key "q" #'quit-window)
-    (jacob-xfk-local-key "g" #'revert-buffer)))
+  (jacob-xfk-bind-for-mode vc-annotate-mode
+                           "q" #'quit-window
+                           "g" #'revert-buffer))
 
 (use-package magit
   :ensure t
   :bind ( :map project-prefix-map
-          ("v" . magit)))
+          ("v" . magit-project-status)))
 
 (use-package forge
   :ensure t
@@ -1298,21 +1224,22 @@ which performs the deletion."
 (use-package dired
   :defer t
   :init
+  (add-hook 'dired-mode-hook #'dired-hide-details-mode)
+
   (with-eval-after-load "xah-fly-keys"
-    (jacob-defhookf dired-mode-hook
-      (dired-hide-details-mode 1)
-      (jacob-xfk-local-key "s" #'dired-find-file)
-      (jacob-xfk-local-key "d" #'dired-do-delete) ; we skip the "flag, delete" process as files are sent to system bin on deletion
-      (jacob-xfk-local-key "q" #'quit-window)
-      (jacob-xfk-local-key "i" #'dired-previous-line)
-      (jacob-xfk-local-key "k" #'dired-next-line)
-      (jacob-xfk-local-key "e" #'dired-mark)
-      (jacob-xfk-local-key "r" #'dired-unmark)
-      (jacob-xfk-local-key "g" #'revert-buffer)
-      (jacob-xfk-local-key "x" #'dired-do-rename)
-      (jacob-xfk-local-key "c" #'dired-do-copy)
-      (jacob-xfk-local-key "u" #'dired-up-directory)
-      (jacob-xfk-local-key "j" #'dired-goto-file)))
+    (jacob-xfk-bind-for-mode dired-mode
+                             "s" #'dired-find-file
+                             "d" #'dired-do-delete                                        ; we skip the "flag, delete" process as files are sent to system bin on deletion
+                             "q" #'quit-window
+                             "i" #'dired-previous-line
+                             "k" #'dired-next-line
+                             "e" #'dired-mark
+                             "r" #'dired-unmark
+                             "g" #'revert-buffer
+                             "x" #'dired-do-rename
+                             "c" #'dired-do-copy
+                             "u" #'dired-up-directory
+                             "j" #'dired-goto-file))
   :config
   (setopt dired-recursive-copies 'always
           dired-dwim-target t
@@ -1424,23 +1351,25 @@ hides this information."
                    (when (string-match-p "Hosting started *$" output)
                      (prodigy-set-status service 'ready)))))
 
-  (jacob-defhookf prodigy-mode-hook
-    (hl-line-mode 0)
-    (jacob-xfk-local-key "d" #'prodigy-stop)
-    (jacob-xfk-local-key "e" #'prodigy-mark)
-    (jacob-xfk-local-key "g" #'jacob-project-search)
-    (jacob-xfk-local-key "f" #'project-find-file)
-    (jacob-xfk-local-key "i" #'prodigy-prev)
-    (jacob-xfk-local-key "k" #'prodigy-next)
-    (jacob-xfk-local-key "q" #'quit-window)
-    (jacob-xfk-local-key "r" #'prodigy-unmark)
-    (jacob-xfk-local-key "s" #'prodigy-restart)
-    (jacob-xfk-local-key "v" #'prodigy-display-process))
+  (add-hook 'prodigy-mode-hook #'hl-line-mode)
 
-  (jacob-defhookf prodigy-view-mode-hook
-    (compilation-minor-mode 1)
-    (jacob-xfk-local-key "q" #'quit-window)
-    (jacob-xfk-local-key "g" #'prodigy-restart)))
+  (jacob-xfk-bind-for-mode prodigy-mode
+                           "d" #'prodigy-stop
+                           "e" #'prodigy-mark
+                           "g" #'jacob-project-search
+                           "f" #'project-find-file
+                           "i" #'prodigy-prev
+                           "k" #'prodigy-next
+                           "q" #'quit-window
+                           "r" #'prodigy-unmark
+                           "s" #'prodigy-restart
+                           "v" #'prodigy-display-process)
+
+  (add-hook 'prodigy-view-mode-hook #'compilation-minor-mode)
+
+  (jacob-xfk-bind-for-mode prodigy-view-mode
+                           "q" #'quit-window
+                           "g" #'prodigy-restart))
 
 (use-package hi-lock
   :config
@@ -1533,9 +1462,9 @@ mouse-3: Toggle minor modes"
 (use-package geiser-mode
   :after (scheme geiser)
   :config
-  (jacob-defhookf geiser-mode-hook
-    (jacob-xfk-local-key "SPC , m" #'geiser-eval-last-sexp)
-    (jacob-xfk-local-key "SPC , d" #'geiser-eval-definition)))
+  (jacob-xfk-bind-for-mode geiser-mode
+                           "SPC , m" #'geiser-eval-last-sexp
+                           "SPC , d" #'geiser-eval-definition))
 
 (use-package geiser-guile
   :ensure t
@@ -1650,9 +1579,11 @@ mouse-3: Toggle minor modes"
 
   (jacob-defhookf org-agenda-mode-hook
     (setq-local tool-bar-map org-agenda-tool-bar-map)
-    (hl-line-mode 1)
-    (jacob-xfk-local-key "q" #'quit-window)
-    (jacob-xfk-local-key "g" #'org-agenda-redo-all)))
+    (hl-line-mode 1))
+
+  (jacob-xfk-bind-for-mode org-agenda-mode
+                           "q" #'quit-window
+                           "g" #'org-agenda-redo-all))
 
 (use-package org-src
   :after org
@@ -1731,19 +1662,19 @@ mouse-3: Toggle minor modes"
 (use-package calendar
   :defer t
   :config
-  (jacob-defhookf calendar-mode-hook
-    (jacob-xfk-local-key "q" 'quit-window)
-    (jacob-xfk-local-key "i" 'calendar-backward-week)
-    (jacob-xfk-local-key "k" 'calendar-forward-week)
-    (jacob-xfk-local-key "j" 'calendar-backward-day)
-    (jacob-xfk-local-key "l" 'calendar-forward-day)
-    (jacob-xfk-local-key "u" 'calendar-backward-month)
-    (jacob-xfk-local-key "o" 'calendar-forward-month)
-    (jacob-xfk-local-key "d" 'diary-view-entries)
-    (jacob-xfk-local-key "s" 'diary-insert-entry)
-    (jacob-xfk-local-key "m" 'diary-mark-entries)
-    (jacob-xfk-local-key "." 'calendar-goto-today)
-    (jacob-xfk-local-key "t" 'calendar-set-mark))
+  (jacob-xfk-bind-for-mode calendar-mode
+                           "q" #'quit-window
+                           "i" #'calendar-backward-week
+                           "k" #'calendar-forward-week
+                           "j" #'calendar-backward-day
+                           "l" #'calendar-forward-day
+                           "u" #'calendar-backward-month
+                           "o" #'calendar-forward-month
+                           "d" #'diary-view-entries
+                           "s" #'diary-insert-entry
+                           "m" #'diary-mark-entries
+                           "." #'calendar-goto-today
+                           "t" #'calendar-set-mark)
 
   (add-hook 'calendar-today-visible-hook 'calendar-mark-today)
 
@@ -1768,12 +1699,11 @@ mouse-3: Toggle minor modes"
   :init
   (keymap-global-set "<f5>" 'recompile)
   :config
-  (jacob-defhookf compilation-mode-hook
-    (jacob-xfk-local-key "g" #'recompile)
-    (jacob-xfk-local-key "q" #'quit-window))
+  (jacob-xfk-bind-for-mode compilation-mode
+                           "g" #'recompile
+                           "q" #'quit-window)
 
-  (jacob-defhookf compilation-filter-hook
-    (ansi-color-compilation-filter))
+  (add-hook 'compilation-filter-hook #'ansi-color-compilation-filter)
 
   (setopt compilation-always-kill t
           compilation-scroll-output t))
@@ -1817,9 +1747,9 @@ Intended as before advice for `sql-send-paragraph'."
 (use-package doc-view
   :defer t
   :config
-  (jacob-defhookf doc-view-mode-hook
-    (jacob-xfk-local-key "l" 'doc-view-next-page)
-    (jacob-xfk-local-key "j" 'doc-view-previous-page)))
+  (jacob-xfk-bind-for-mode doc-view-mode
+                           "l" 'doc-view-next-page
+                           "j" 'doc-view-previous-page))
 
 (use-package treesit
   :defer t
@@ -1873,11 +1803,11 @@ Intended as before advice for `sql-send-paragraph'."
 (use-package gnus-group
   :after gnus
   :config
-  (jacob-defhookf gnus-group-mode-hook
-    (jacob-xfk-local-key "q" #'gnus-group-exit)
-    (jacob-xfk-local-key "i" #'gnus-group-prev-group)
-    (jacob-xfk-local-key "k" #'gnus-group-next-group)
-    (jacob-xfk-local-key "g" #'gnus-group-get-new-news)))
+  (jacob-xfk-bind-for-mode gnus-group-mode
+                           "q" #'gnus-group-exit
+                           "i" #'gnus-group-prev-group
+                           "k" #'gnus-group-next-group
+                           "g" #'gnus-group-get-new-news))
 
 (use-package gnus-notifications
   :after gnus
@@ -1887,21 +1817,20 @@ Intended as before advice for `sql-send-paragraph'."
 (use-package gnus-sum
   :after gnus
   :config
-  (jacob-defhookf gnus-summary-mode-hook
-    (jacob-xfk-local-key "q" #'gnus-summary-exit)
-    (jacob-xfk-local-key "i" #'gnus-summary-prev-article)
-    (jacob-xfk-local-key "k" #'gnus-summary-next-article)
-    (jacob-xfk-local-key "j" #'gnus-summary-prev-page)
-    (jacob-xfk-local-key "l" #'gnus-summary-next-page)))
+  (jacob-xfk-bind-for-mode gnus-summary-mode
+                           "q" #'gnus-summary-exit
+                           "i" #'gnus-summary-prev-article
+                           "k" #'gnus-summary-next-article
+                           "j" #'gnus-summary-prev-page
+                           "l" #'gnus-summary-next-page))
 
 (use-package gnus-topic
   :after gnus
   :config
   (add-hook 'gnus-group-mode-hook 'gnus-topic-mode)
   
-  (defun jacob-gnus-topic-mode-hook-function ()
-    "Hook function to be used with `gnus-topic-mode-hook'."
-    (jacob-xfk-local-key "s" #'gnus-topic-select-group)))
+  (jacob-xfk-bind-for-mode gnus-topic-mode
+                           "s" #'gnus-topic-select-group))
 
 (use-package nxml-mode
   :defer t
@@ -2082,10 +2011,9 @@ move to the new window. Otherwise, call `switch-buffer'."
   :commands (TeX-PDF-mode)
   :mode ("\\.tex\\'" . latex-mode)
   :config
-  (jacob-defhookf LaTeX-mode-hook
-    (visual-fill-column-mode 1)
-    (toggle-word-wrap 1)
-    (TeX-PDF-mode 1))
+  (add-hook 'LaTeX-mode-hook #'visual-fill-column-mode 1)
+  (add-hook 'LaTeX-mode-hook #'toggle-word-wrap 1)
+  (add-hook 'LaTeX-mode-hook #'TeX-PDF-mode 1)
   :custom ((TeX-auto-save t)
            (TeX-parse-self t)
            (japanese-TeX-error-messages nil)))
@@ -2210,8 +2138,8 @@ move to the new window. Otherwise, call `switch-buffer'."
   :after org
   :hook (org-mode-hook . verb-mode)
   :config
-  (jacob-defhookf verb-response-body-mode-hook
-    (jacob-xfk-local-key "q" #'quit-window))
+  (jacob-xfk-bind-for-mode verb-response-body-mode
+                           "q" #'quit-window)
 
   (defun jacob-verb-id (response-id)
     "Get the id property from the stored verb response pertaining to RESPONSE-ID."
@@ -2225,17 +2153,17 @@ move to the new window. Otherwise, call `switch-buffer'."
 
   (sly-symbol-completion-mode 0)
 
-  (jacob-defhookf sly-mode-hook
-    (jacob-xfk-local-key "SPC , m" #'sly-eval-last-expression)
-    (jacob-xfk-local-key "SPC , d" #'sly-eval-defun)
-    (jacob-xfk-local-key "SPC , e" #'sly-eval-buffer)
-    (jacob-xfk-local-key "SPC w k" #'sly-edit-definition))
+  (jacob-xfk-bind-for-mode sly-mode
+                           "SPC , m" #'sly-eval-last-expression
+                           "SPC , d" #'sly-eval-defun
+                           "SPC , e" #'sly-eval-buffer
+                           "SPC w k" #'sly-edit-definition)
 
   (setopt sly-auto-start 'always
           inferior-lisp-program "sbcl")
 
-  (jacob-defhookf sly-db-hook
-    (jacob-xfk-local-key "q" #'sly-db-quit)))
+  (jacob-xfk-bind-for-mode sly-db
+                           "q" #'sly-db-quit))
 
 (use-package sly-overlay
   :ensure t
@@ -2450,8 +2378,7 @@ move to the new window. Otherwise, call `switch-buffer'."
   :ensure t
   :mode ("\\.gd\\'" . gdscript-ts-mode)
   :config
-  (jacob-defhookf gdscript-ts-mode-hook
-    (setq indent-tabs-mode t)))
+  (add-hook 'gdscript-ts-mode-hook #'indent-tabs-mode))
 
 (use-package eat
   :ensure t
