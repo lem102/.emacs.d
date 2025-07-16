@@ -13,8 +13,6 @@
         use-package-compute-statistics t
         use-package-hook-name-suffix nil)
 
-(require 'jacob-xah-fly-keys-config)
-
 (use-package package
   :custom (package-archives '(("gnu" . "https://elpa.gnu.org/packages/")
                               ("nongnu" . "https://elpa.nongnu.org/nongnu/")
@@ -143,22 +141,17 @@ then remove this function from `find-file-hook'."
   (echo-keystrokes (cond (jacob-is-android 1)
                          (t 0.01)))
   (mode-line-format '("%e"
-                      (:eval (if (or (= (count-windows) 1)
-                                     (equal (selected-window) (old-selected-window)))
-                                 (list mode-line-front-space
-                                       mode-line-modified
-                                       mode-line-frame-identification
-                                       mode-line-buffer-identification
-                                       mode-line-position
-                                       '(project-mode-line project-mode-line-format)
-                                       '(vc-mode vc-mode)
-                                       " "
-                                       mode-line-modes)
-                               (list mode-line-buffer-identification)))
+                      mode-line-front-space
+                      mode-line-modified
+                      mode-line-frame-identification
+                      mode-line-buffer-identification
+                      mode-line-position
+                      (project-mode-line project-mode-line-format)
+                      (vc-mode vc-mode)
+                      " "
+                      mode-line-modes
                       mode-line-format-right-align
-                      (:eval (when (or (= (count-windows) 1)
-                                       (not (equal (selected-window) (old-selected-window))))
-                               (list mode-line-misc-info)))
+                      mode-line-misc-info
                       mode-line-end-spaces))
   ;; startup.el
   (inhibit-startup-screen t)
@@ -204,6 +197,7 @@ then remove this function from `find-file-hook'."
 (use-package delight
   :ensure t)
 
+(delight 'yas-minor-mode nil "yasnippet")
 (delight 'xah-fly-keys " 🛪")
 
 (use-package indent-aux
@@ -462,104 +456,9 @@ If FORCE-FIND-FILE is non-nil call `find-file'."
 (with-eval-after-load "xah-fly-keys"
   (keymap-set xah-fly-leader-key-map "i e" #'jacob-find-file))
 
-;; TODO: fix this haunted declaration.
+(require 'jacob-xah-fly-keys)
 
-;; the bodge fix is to `:demand' it.
-
-;; not sure how to implement the keybindings i have created
-
-;; there is a conflict with no littering i think
-
-(defvar-keymap jacob-yas-map
-  "n" #'yas-new-snippet
-  "v" #'yas-visit-snippet-file
-  "i" #'yas-insert-snippet)
-
-(with-eval-after-load "xah-fly-keys"
-  (keymap-set jacob-xfk-map "y" `("Yasnippet" . ,jacob-yas-map)))
-
-;; tbh i'm not sure wtf is going on
-
-(use-package yasnippet
-  :ensure t
-  :commands (yas-new-snippet)
-  :demand                               ; needed
-  ;; :custom ((yas-snippet-dirs ("/home/jacobl/.emacs.d/etc/yasnippet/snippets/")))
-  ;; :bind (:map jacob-xfk-map
-  ;;             ("y n" . yas-new-snippet))
-  :delight yas-minor-mode
-  :config
-
-  (nbutlast yas-snippet-dirs 1)
-  
-  (defun jacob-point-in-text-p ()
-    "Return t if in comment or string.  Else nil."
-    (let ((xsyntax-state (syntax-ppss)))
-      (or (nth 3 xsyntax-state)
-          (nth 4 xsyntax-state))))
-  
-  (defun jacob-point-in-code-p ()
-    "Return t if outside of string or comment.  Else nil."
-    (not (jacob-point-in-text-p)))
-
-  (jacob-defhookf snippet-mode-hook
-    (setq-local auto-save-visited-mode nil))
-
-  (yas-global-mode 1)
-
-  (setopt yas-new-snippet-default "# -*- mode: snippet -*-
-# key: $1
-# --
-$0`(yas-escape-text yas-selected-text)`")
-
-  (defun jacob-autoinsert-yas-expand ()
-    "Replace text in yasnippet template."
-    (yas-expand-snippet (buffer-string) (point-min) (point-max)))
-
-  (defun jacob-yas-camel-case (input)
-    "Convert INPUT to camel case e.g. apple banana -> appleBanana.
-For use in yasnippets."
-    (let* ((space-at-end (if (string-match-p " $" input) " " ""))
-           (words (split-string input))
-           (capitalised-words (seq-reduce (lambda (previous current)
-                                            (concat previous (capitalize current)))
-                                          (cdr words)
-                                          (car words))))
-      (concat capitalised-words space-at-end)))
-
-  (defun jacob-yas-pascal-case (input)
-    "Convert INPUT to pascal case e.g. apple banana -> AppleBanana.
-For use in yasnippets."
-    (let ((space-at-end (if (string-match-p " $" input)
-                            " "
-                          "")))
-      (with-temp-buffer
-        (insert input)
-        (goto-char (point-min))
-        (subword-mode 1)
-        (while (not (= (point) (point-max)))
-          (call-interactively #'capitalize-word))
-        (goto-char (point-min))
-        (while (search-forward " " nil "NOERROR")
-          (replace-match ""))
-        (goto-char (point-max))
-        (insert space-at-end)
-        (buffer-substring-no-properties (point-min) (point-max)))))
-
-  (defun jacob-yas-snake-case (input)
-    "Convert INPUT to snake case e.g. apple banana -> apple_banana.
-For use in yasnippets."
-    (string-replace " " "_" input))
-
-  (defun jacob-yas-screaming-snake-case (input)
-    "Convert INPUT to screaming snake case e.g. apple banana -> APPLE_BANANA.
-For use in yasnippets."
-    (upcase (string-replace " " "_" input)))
-
-  (defun jacob-yas-kebab-case (input)
-    "Convert INPUT to kebab case e.g. apple banana -> apple_banana.
-For use in yasnippets."
-    (string-replace " " "-" input)))
+(require 'jacob-yasnippet)
 
 (use-package minibuffer
   :config
@@ -861,7 +760,6 @@ new location and/or name of the file."
     ;; 3. update the namespace
     (jacob-csharp-fix-namespace))
 
-
   (defun jacob-csharp-create-variable ()
     "Create a variable declaration statement for an undeclared variable."
     (interactive)
@@ -993,7 +891,10 @@ which performs the deletion."
              ((parent-is "parameter_list") parent-bol csharp-ts-mode-indent-offset)
              ((parent-is "implicit_parameter_list") parent-bol csharp-ts-mode-indent-offset)
              ((parent-is "member_access_expression") parent-bol csharp-ts-mode-indent-offset)
+
+             ((match "block" "lambda_expression") parent-bol 0)
              ((parent-is "lambda_expression") parent-bol csharp-ts-mode-indent-offset)
+
              ((parent-is "try_statement") parent-bol 0)
              ((parent-is "catch_clause") parent-bol 0)
              ((parent-is "record_declaration") parent-bol 0)
@@ -1002,7 +903,8 @@ which performs the deletion."
              ((parent-is "return_statement") parent-bol csharp-ts-mode-indent-offset)
              ((parent-is "record_declaration") parent-bol 0)
              ((parent-is "interface_declaration") parent-bol 0)
-             )))
+             ((parent-is "arrow_expression_clause") parent-bol csharp-ts-mode-indent-offset)
+             ((parent-is "property_pattern_clause") parent-bol csharp-ts-mode-indent-offset))))
 
   ;; TODO: merge into emacs core
   (nconc csharp-ts-mode--font-lock-settings
@@ -1064,12 +966,7 @@ which performs the deletion."
 
   (add-to-list 'auto-mode-alist '("\\.csx\\'". csharp-ts-mode)))
 
-(use-package sharper
-  :ensure t
-  :after csharp-mode
-  :config
-  (with-eval-after-load "xah-fly-keys"
-    (keymap-set jacob-xfk-map "d" #'sharper-main-transient)))
+(require 'jacob-sharper)
 
 (use-package csproj-mode
   :ensure t
@@ -1103,6 +1000,7 @@ which performs the deletion."
   :defer t
   :init
   (add-hook 'dired-mode-hook #'dired-hide-details-mode)
+  (add-hook 'dired-mode-hook #'auto-revert-mode)
 
   (with-eval-after-load "xah-fly-keys"
     (jacob-xfk-bind-for-mode dired-mode
@@ -1264,30 +1162,6 @@ hides this information."
 (use-package lisp-extra-font-lock
   :ensure t
   :hook ((emacs-lisp-mode-hook lisp-mode-hook scheme-mode-hook) . lisp-extra-font-lock-mode))
-
-(use-package all-the-icons
-  :ensure t
-  :config
-  (setf (cl-third mode-line-modes)
-        `(:propertize ("" (:eval (all-the-icons-icon-for-mode major-mode)))
-			          help-echo "Major mode\n\
-mouse-1: Display major mode menu\n\
-mouse-2: Show help for major mode\n\
-mouse-3: Toggle minor modes"
-			          mouse-face mode-line-highlight
-			          local-map ,mode-line-major-mode-keymap)))
-
-(use-package all-the-icons-completion
-  :ensure t
-  :hook (jacob-first-minibuffer-activation-hook . all-the-icons-completion-mode)
-  :config
-  (with-eval-after-load "marginalia-mode"
-    (add-hook 'marginalia-mode-hook #'all-the-icons-completion-marginalia-setup)))
-
-(use-package all-the-icons-dired
-  :ensure t
-  :delight all-the-icons-dired-mode
-  :hook (dired-mode-hook . all-the-icons-dired-mode))
 
 (use-package elisp-mode
   :defer t
@@ -1670,51 +1544,6 @@ Intended as before advice for `sql-send-paragraph'."
     (setq-local auto-save-visited-mode nil))
   (setopt message-send-mail-function 'smtpmail-send-it))
 
-(use-package gnus
-  :commands gnus
-  :init
-  (with-eval-after-load "xah-fly-keys"
-    (keymap-set jacob-xfk-map "g" #'gnus))
-  :config
-  (jacob-defhookf gnus-started-hook
-    (gnus-demon-add-handler 'gnus-demon-scan-news 2 t))
-  :custom
-  (gnus-use-full-window t)
-  (gnus-always-read-dribble-file t)
-  (gnus-select-method '(nnnil nil)))
-
-(use-package gnus-group
-  :after gnus
-  :config
-  (jacob-xfk-bind-for-mode gnus-group-mode
-                           "q" #'gnus-group-exit
-                           "i" #'gnus-group-prev-group
-                           "k" #'gnus-group-next-group
-                           "g" #'gnus-group-get-new-news))
-
-(use-package gnus-notifications
-  :after gnus
-  :config
-  (add-hook 'gnus-after-getting-new-news-hook #'gnus-notifications))
-
-(use-package gnus-sum
-  :after gnus
-  :config
-  (jacob-xfk-bind-for-mode gnus-summary-mode
-                           "q" #'gnus-summary-exit
-                           "i" #'gnus-summary-prev-article
-                           "k" #'gnus-summary-next-article
-                           "j" #'gnus-summary-prev-page
-                           "l" #'gnus-summary-next-page))
-
-(use-package gnus-topic
-  :after gnus
-  :config
-  (add-hook 'gnus-group-mode-hook 'gnus-topic-mode)
-  
-  (jacob-xfk-bind-for-mode gnus-topic-mode
-                           "s" #'gnus-topic-select-group))
-
 (use-package nxml-mode
   :defer t
   :init
@@ -1987,7 +1816,10 @@ move to the new window. Otherwise, call `switch-buffer'."
   :defer t
   :init
   (with-eval-after-load "xah-fly-keys"
-    (keymap-set xah-fly-command-map "\\" #'embark-act))
+    (keymap-set xah-fly-command-map "\\" #'embark-act)
+
+    (jacob-xfk-bind-for-mode embark-collect
+                             "q" #'quit-window))
   :config
   (setopt embark-cycle-key "\\"
           embark-help-key "h")
@@ -2284,30 +2116,6 @@ move to the new window. Otherwise, call `switch-buffer'."
 (use-package just-mode
   :ensure t
   :defer t)
-
-(use-package slack
-  :ensure t
-  :config
-
-  (use-package alert
-    :custom
-    (alert-default-style 'notifications))
-
-  (use-package lui
-    ;; from circe.el
-    :custom
-    (lui-fill-type nil)
-    (lui-time-stamp-position 0)
-    (lui-time-stamp-format "%a %b %e %H:%M"))
-  
-  :hook
-  (slack-message-buffer-mode-hook . toggle-word-wrap)
-  (slack-thread-message-buffer-mode-hook . toggle-word-wrap)
-  :custom
-  (slack-enable-global-mode-string t)
-  (slack-buffer-emojify t)
-  (slack-prefer-current-team t)
-  (slack-thread-also-send-to-room nil))
 
 
 ;; personal functions
