@@ -253,6 +253,8 @@ then remove this function from `find-file-hook'."
   "p" #'recenter-top-bottom)
 
 (use-package frame
+  :config
+  (blink-cursor-mode 0)
   :custom (blink-cursor-blinks 0)     ; make cursor blink forever
   :bind ("C-z" . nil)                 ; `suspend-frame'
   )
