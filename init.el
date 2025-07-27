@@ -483,6 +483,7 @@ If FORCE-FIND-FILE is non-nil call `find-file'."
                            "k" 'occur-next))
 
 (use-package info
+  :defer
   :config
   (jacob-xfk-bind-for-mode Info-mode
                            "q" #'quit-window
@@ -491,7 +492,10 @@ If FORCE-FIND-FILE is non-nil call `find-file'."
                            "w" #'Info-up
                            "g" #'Info-menu))
 
-
+(use-package man
+  :defer
+  :custom
+  (Man-notify-method 'pushy))
 
 (use-package diff
   :config
