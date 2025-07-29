@@ -1476,9 +1476,12 @@ hides this information."
   :init
   (defun jacob-sql-connect ()
     "Wrapper for `sql-connect' to set postgres password.
-CONNECTION is the connection settings."
+CONNECTION is the connection settings. If there is only one connection,
+use it without prompting."
     (interactive)
-    (let ((connection (sql-read-connection "Connection: ")))
+    (let ((connection (if (= 1 (length sql-connection-alist))
+                          (symbol-name (caar sql-connection-alist))
+                        (sql-read-connection "Connection: "))))
       (with-environment-variables
           (("PGPASSWORD" (cadr (assoc 'sql-password
                                       (assoc-string connection
