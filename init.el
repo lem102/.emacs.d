@@ -446,18 +446,6 @@ Intended for running applications."
          (comment-or-uncomment-region (line-beginning-position) (line-end-position))
          (forward-line))))
 
-(defun jacob-find-file (force-find-file)
-  "If in project, call `project-find-file'. Otherwise, call `find-file'.
-
-If FORCE-FIND-FILE is non-nil call `find-file'."
-  (interactive "P")
-  (call-interactively (cond (force-find-file #'find-file)
-                            ((project-current) #'project-find-file)
-                            (t #'find-file))))
-
-(with-eval-after-load "xah-fly-keys"
-  (keymap-set xah-fly-leader-key-map "i e" #'jacob-find-file))
-
 (require 'jacob-xah-fly-keys)
 
 (require 'jacob-yasnippet)
