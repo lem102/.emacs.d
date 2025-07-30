@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# key: cond
+# --
+(cond ($1 $0)
+      (t ...))
