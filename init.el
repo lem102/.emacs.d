@@ -1617,7 +1617,7 @@ Intended as before advice for `sql-send-paragraph'."
 (use-package apheleia
   :ensure t
   :delight '(:eval (if apheleia-inhibit "" " ⚘"))
-  :hook (prog-mode-hook . apheleia-global-mode)
+  :hook (prog-mode-hook . apheleia-mode-maybe)
   :config
   (setq-default apheleia-inhibit t) ; set `apheleia-inhibit' to nil to enable
   (add-to-list 'apheleia-formatters '(csharpier "dotnet" "csharpier" "--write-stdout"))
