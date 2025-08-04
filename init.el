@@ -485,7 +485,10 @@ Intended for running applications."
 (use-package man
   :defer
   :custom
-  (Man-notify-method 'pushy))
+  (Man-notify-method 'pushy)
+  :config
+  (jacob-xfk-bind-for-mode Man-mode
+                           "q" #'quit-window))
 
 (use-package diff
   :config
