@@ -1002,7 +1002,7 @@ which performs the deletion."
   (with-eval-after-load "xah-fly-keys"
     (jacob-xfk-bind-for-mode dired-mode
                              "s" #'dired-find-file
-                             "d" #'dired-do-delete                                        ; we skip the "flag, delete" process as files are sent to system bin on deletion
+                             "d" #'dired-do-delete ; we skip the "flag, delete" process as files are sent to system bin on deletion
                              "q" #'quit-window
                              "i" #'dired-previous-line
                              "k" #'dired-next-line

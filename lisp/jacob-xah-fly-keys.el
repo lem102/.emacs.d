@@ -59,7 +59,7 @@
 (defvar-keymap jacob-xfk-map)
 
 (defun jacob-xah-fly-keys-config ()
-  "Configure `xah-fly-keys'."
+  "Configure symbol `xah-fly-keys'."
   (xah-fly-keys 1)
 
   (xah-fly-keys-set-layout "qwerty")
@@ -78,13 +78,9 @@
   (keymap-global-set "<f7>" #'xah-fly-leader-key-map)
   (keymap-global-set "M-SPC" #'xah-fly-command-mode-activate)
 
-;;  (add-hook 'xah-fly-insert-mode-activate-hook #'jacob-restore-cursor-colour)
-;;  (add-hook 'xah-fly-command-mode-activate-hook #'jacob-restore-cursor-colour)
-
-  (keymap-set xah-fly-command-map "x" #'jacob-kill-line)
-
-  (keymap-set xah-fly-command-map "s" #'jacob-return-macro)
-
+  ;; (keymap-set xah-fly-command-map "g" #'expreg-expand)
+  ;; (keymap-set xah-fly-command-map "t" #'set-mark-command)
+  
   ;; (keymap-set xah-fly-command-map "'" #'jacob-format-words)
   ;; (keymap-set xah-fly-command-map "-" #'flymake-goto-prev-error)
   ;; (keymap-set xah-fly-command-map ";" #'jacob-end-of-line)
@@ -92,19 +88,19 @@
   ;; (keymap-set xah-fly-command-map "d" #'jacob-backspace)
   ;; (keymap-set xah-fly-command-map "g" #'jacob-kill-paragraph)
   ;; (keymap-set xah-fly-command-map "h" #'jacob-beginning-of-line)
-  ;; (keymap-set xah-fly-command-map "s" #'jacob-return-macro)
-  ;; (keymap-set xah-fly-command-map "x" #'jacob-kill-line)
+  (keymap-set xah-fly-command-map "s" #'jacob-return-macro)
+  (keymap-set xah-fly-command-map "x" #'jacob-kill-line)
 
   ;; (keymap-set xah-fly-insert-map "M-SPC" #'xah-fly-command-mode-activate)
 
   ;; (keymap-set xah-fly-leader-key-map ", n" #'jacob-eval-and-replace)
   ;; (keymap-set xah-fly-leader-key-map "/ b" #'vc-switch-branch)
   ;; (keymap-set xah-fly-leader-key-map "/ c" #'vc-create-branch)
-  ;; (keymap-set xah-fly-leader-key-map "d i" #'xah-insert-ascii-single-quote)
-  ;; (keymap-set xah-fly-leader-key-map "d j" #'xah-insert-brace)
-  ;; (keymap-set xah-fly-leader-key-map "d k" #'xah-insert-paren)
-  ;; (keymap-set xah-fly-leader-key-map "d l" #'xah-insert-square-bracket)
-  ;; (keymap-set xah-fly-leader-key-map "d u" #'xah-insert-ascii-double-quote)
+  ;; (keymap-set xah-fly-leader-key-map "d i" #'insert-pair)
+  ;; (keymap-set xah-fly-leader-key-map "d j" #'insert-pair)
+  ;; (keymap-set xah-fly-leader-key-map "d k" #'insert-pair)
+  ;; (keymap-set xah-fly-leader-key-map "d l" #'insert-pair)
+  ;; (keymap-set xah-fly-leader-key-map "d u" #'insert-pair)
   ;; (keymap-set xah-fly-leader-key-map "i i" #'consult-bookmark)
   ;; (keymap-unset xah-fly-leader-key-map "i o") ; `bookmark-jump'
   ;; (keymap-unset xah-fly-leader-key-map "i p") ; `bookmark-set'
