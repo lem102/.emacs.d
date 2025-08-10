@@ -23,14 +23,16 @@ use it without prompting."
                                                   t)))))
       (sql-connect connection))))
 
-(keymap-set jacob-xfk-map "s" #'jacob-sql-connect)
-
 (defun jacob-sqli-end-of-buffer ()
   "Move point to end of sqli buffer before sending paragraph.
 
 Intended as before advice for `sql-send-paragraph'."
   (with-current-buffer sql-buffer
     (goto-char (point-max))))
+
+(defun jacob-sql-init ()
+  "Initialize symbol `sql'."
+  (keymap-set jacob-xfk-map "s" #'jacob-sql-connect))
 
 (defun jacob-sql-config ()
   "Configure symbol `sql'."
@@ -46,6 +48,8 @@ Intended as before advice for `sql-send-paragraph'."
 
 (use-package sql
   :commands (sql-read-connection)
+  :init
+  (jacob-sql-init)
   :config
   (jacob-sql-config))
 
