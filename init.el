@@ -1716,7 +1716,8 @@ move to the new window. Otherwise, call `switch-buffer'."
     (keymap-set xah-fly-command-map "," #'jacob-split-or-switch-window))
   :config
   (setopt aw-keys '(?a ?s ?d ?f ?q ?w ?e ?r)
-          aw-minibuffer-flag t))
+          aw-minibuffer-flag t
+          aw-scope 'frame))
 
 (use-package tex
   :ensure auctex
