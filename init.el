@@ -1430,43 +1430,7 @@ which performs the deletion."
   :ensure t
   :hook (compilation-mode-hook . winnow-mode))
 
-(use-package sql
-  :commands (sql-read-connection)
-  :init
-  (defun jacob-sql-connect ()
-    "Wrapper for `sql-connect' to set postgres password.
-CONNECTION is the connection settings. If there is only one connection,
-use it without prompting."
-    (interactive)
-    (let ((connection (if (= 1 (length sql-connection-alist))
-                          (symbol-name (caar sql-connection-alist))
-                        (sql-read-connection "Connection: "))))
-      (with-environment-variables
-          (("PGPASSWORD" (cadr (assoc 'sql-password
-                                      (assoc-string connection
-                                                    sql-connection-alist
-                                                    t)))))
-        (sql-connect connection))))
-
-  (with-eval-after-load "xah-fly-keys"
-    (keymap-set jacob-xfk-map "s" #'jacob-sql-connect))
-  :config
-  (jacob-defhookf sql-interactive-mode-hook
-    (when (eq sql-product 'postgres)
-      (setq sql-prompt-regexp "^[-[:alnum:]_]*[-=]\\*?[#>] ")
-      (setq sql-prompt-cont-regexp "^\\(?:\\sw\\|\\s_\\)*[-(]\\*?[#>] ")))
-
-  (jacob-xfk-bind-for-mode sql-interactive-mode
-                           "SPC , d" #'sql-send-paragraph)
-
-  (defun jacob-sqli-end-of-buffer ()
-    "Move point to end of sqli buffer before sending paragraph.
-
-Intended as before advice for `sql-send-paragraph'."
-    (with-current-buffer sql-buffer
-      (goto-char (point-max))))
-
-  (advice-add #'sql-send-paragraph :before #'jacob-sqli-end-of-buffer))
+(require 'jacob-sql)
 
 (use-package doc-view
   :defer t
