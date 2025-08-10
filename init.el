@@ -1059,38 +1059,6 @@ which performs the deletion."
 
     (advice-add 'eshell-interrupt-process :after #'jacob-confirm-terminate-batch-job)))
 
-(use-package pcomplete
-  :defer t
-  :config
-  (defun jacob-git-get-branches (&optional display-origin)
-    "Get git branches for current repo.
-
-Non-nil DISPLAY-ORIGIN displays whether a branch is from origin, nil
-hides this information."
-    (with-temp-buffer
-      (insert (shell-command-to-string "git branch -a"))
-      (backward-delete-char 1)            ; delete rouge newline at end
-      (goto-char (point-min))
-      (flush-lines "->")
-      (while (re-search-forward (if display-origin
-                                    "remotes/"
-                                  "remotes/origin/")
-                                nil
-                                t)
-        (replace-match ""))
-      (delete-rectangle (point-min) (progn
-                                      (goto-char (point-max))
-                                      (+ 2 (line-beginning-position))))
-      (split-string (buffer-substring-no-properties (point-min) (point-max)) "\n")))
-  
-  (defun pcomplete/gco ()
-    "Completion for the gco alias on git branches."
-    (pcomplete-here* (jacob-git-get-branches)))
-
-  (defun pcomplete/grh ()
-    "Completion for the grh alias on git branches."
-    (pcomplete-here* (jacob-git-get-branches t))))
-
 (use-package eldoc
   :hook (prog-mode-hook . global-eldoc-mode)
   :delight eldoc-mode
