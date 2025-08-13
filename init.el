@@ -280,11 +280,11 @@ then remove this function from `find-file-hook'."
 (use-package modus-themes
   :defer t
   :custom
-  (modus-themes-to-toggle '(modus-operandi modus-vivendi)))
+  (modus-themes-to-toggle '(modus-operandi-tinted modus-vivendi-tinted)))
 
 (use-package custom
   :config
-  (load-theme 'modus-operandi))
+  (load-theme 'modus-vivendi-tinted))
 
 (use-package cus-edit
   :custom
