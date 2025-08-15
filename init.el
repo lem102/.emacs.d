@@ -1336,6 +1336,10 @@ which performs the deletion."
   :ensure t
   :defer t)
 
+(use-package howm
+  :ensure t
+  :hook (after-init-hook . howm-menu))
+
 (use-package pulse
   :defer t
   :init
