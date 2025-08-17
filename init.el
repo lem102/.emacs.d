@@ -1783,7 +1783,9 @@ move to the new window. Otherwise, call `switch-buffer'."
 
   (with-eval-after-load "xah-fly-keys"
     (keymap-set xah-fly-command-map "8" #'expreg-expand)
-    (keymap-set xah-fly-command-map "9" #'expreg-contract)))
+    (keymap-set xah-fly-command-map "9" #'expreg-contract))
+
+  (setopt expreg-functions (delq 'expreg--subword expreg-functions)))
 
 (use-package verb
   :ensure t
