@@ -703,265 +703,7 @@ Useful for deleting ^M after `eglot-code-actions'."
 
   (setopt eglot-ignored-server-capabilities '(:documentOnTypeFormattingProvider)))
 
-(use-package csharp-mode
-  :mode ("//.csx?//'" . csharp-ts-mode)
-  :config
-
-  (defun jacob-csharp-determine-file-namespace ()
-    "Return the namespace of the current file."
-    (let* ((project-directory (locate-dominating-file (buffer-file-name)
-                                                      (lambda (directory)
-                                                        (seq-find (lambda (file)
-                                                                    (string-match-p "\\.csproj$" file))
-                                                                  (directory-files directory)))))
-           (relative-path (file-name-concat
-                           (file-name-nondirectory (directory-file-name (file-name-directory project-directory)))
-                           (file-relative-name (buffer-file-name) project-directory))))
-      (string-replace "/" "." (directory-file-name (file-name-directory relative-path)))))
-
-  (defun jacob-csharp-fix-namespace ()
-    "Fix the namespace of the current file."
-    (interactive)
-    (let* ((guessed-namespace (jacob-csharp-determine-file-namespace))
-           (current-namespace-range (car (treesit-query-range
-                                          (treesit-buffer-root-node)
-                                          '((file_scoped_namespace_declaration name: (_) @x))))))
-      (delete-region (car current-namespace-range)
-                     (cdr current-namespace-range))
-      (save-excursion
-        (goto-char (car current-namespace-range))
-        (insert guessed-namespace))))
-
-  (defun jacob-csharp-move-file ()
-    "Move the current file.
-
-Update the class/record/interface name and the namespace to reflect the
-new location and/or name of the file."
-    (interactive)
-    (let* ((new-file-name (read-file-name "Move file to: "
-                                          nil
-                                          buffer-file-name))
-           (new-class-name (file-name-sans-extension
-                            (file-name-nondirectory
-                             new-file-name)))
-           (class-name-range (car
-                              (treesit-query-range (treesit-buffer-root-node)
-                                                   '((class_declaration (identifier) @identifier))))))
-      ;; 1. rename the file
-      (rename-visited-file new-file-name)
-      ;; 2. rename the class
-      (save-excursion
-        (delete-region (car class-name-range) (cdr class-name-range))
-        (goto-char (car class-name-range))
-        (insert new-class-name)))
-    ;; 3. update the namespace
-    (jacob-csharp-fix-namespace))
-
-  (defun jacob-csharp-create-variable ()
-    "Create a variable declaration statement for an undeclared variable."
-    (interactive)
-    (let* ((identifier
-            (thing-at-point 'symbol "NO-PROPERTIES"))
-           (first-occurance
-            (seq-first (seq-sort #'<
-                                 (mapcar #'treesit-node-start
-                                         (mapcar #'cdr
-                                                 (treesit-query-capture (csharp-toolbox--get-method-node)
-                                                                        `(((identifier) @id (:equal @id ,identifier))))))))))
-      (goto-char first-occurance)
-      (goto-char (treesit-beginning-of-thing "_statement$"))
-      (forward-line -1)
-      (end-of-line)
-      (newline 1 "INTERACTIVE")
-      (insert (format "var %s = Guid.NewGuid();" identifier))))
-
-  (defun jacob-csharp-forward-statement ()
-    "Move forward over a csharp statement."
-    (interactive)
-    (treesit-end-of-thing "statement"))
-
-  (defun jacob-csharp-backward-statement ()
-    "Move backward over a csharp statement."
-    (interactive)
-    (treesit-beginning-of-thing "statement"))
-
-  (defun jacob-csharp-beginning-of-line-or-statement ()
-    "Move cursor to the beginning of line or previous csharp statement."
-    (interactive)
-    (let ((p (point)))
-      (if (eq last-command this-command)
-          (call-interactively 'jacob-csharp-backward-statement)
-        (back-to-indentation)
-        (when (eq p (point))
-          (beginning-of-line)))))
-
-  (defun jacob-csharp-end-of-line-or-statement ()
-    "Move cursor to the end of line or next csharp statement."
-    (interactive)
-    (if (eq last-command this-command)
-        (call-interactively 'jacob-csharp-forward-statement)
-      (end-of-line)))
-
-  (defun jacob-backspace-csharp (f)
-    "Function for `jacob-backspace' to help with csharp.
-
-Figure out if the `<' or `>' before point is part of a
-`type_argument_list', and delete accordingly.  F is a function
-which performs the deletion."
-    (when (or (= (char-before) ?<)
-              (= (char-before) ?>))
-      (let ((node-parent (save-excursion
-                           (backward-char)
-                           (treesit-node-type
-                            (treesit-node-parent
-                             (treesit-node-at (point)))))))
-        (when (string= node-parent "type_argument_list")
-          (let ((table (copy-syntax-table csharp-mode-syntax-table)))
-            (modify-syntax-entry ?< "(>" table)
-            (modify-syntax-entry ?> ")>" table)
-            (with-syntax-table table
-              (if (= (char-before) ?<)
-                  (backward-char)
-                (backward-sexp))
-              (funcall f)))
-          t))))
-
-  ;; TODO: include only my modifications rather than the whole data structure
-  (setopt csharp-ts-mode--indent-rules
-          '((c-sharp
-             ((parent-is "compilation_unit") parent-bol 0)
-             ((node-is "}") parent-bol 0)
-             ((node-is ")") parent-bol 0)
-             ((node-is "]") parent-bol 0)
-             ((and (parent-is "comment") c-ts-common-looking-at-star)
-              c-ts-common-comment-start-after-first-star -1)
-             ((parent-is "comment") prev-adaptive-prefix 0)
-             ((parent-is "namespace_declaration") parent-bol 0)
-             ((parent-is "class_declaration") parent-bol 0)
-             ((parent-is "constructor_declaration") parent-bol 0)
-             ((parent-is "initializer_expression") parent-bol csharp-ts-mode-indent-offset)
-             ((match "{" "anonymous_object_creation_expression") parent-bol 0)
-             ((parent-is "anonymous_object_creation_expression") parent-bol csharp-ts-mode-indent-offset)
-             ((match "{" "object_creation_expression") parent-bol 0)
-             ((parent-is "object_creation_expression") parent-bol 0)
-             ((parent-is "method_declaration") parent-bol 0)
-             ((parent-is "enum_declaration") parent-bol 0)
-             ((parent-is "operator_declaration") parent-bol 0)
-             ((parent-is "field_declaration") parent-bol 0)
-             ((parent-is "struct_declaration") parent-bol 0)
-             ((parent-is "declaration_list") parent-bol csharp-ts-mode-indent-offset)
-             ((parent-is "argument_list") parent-bol csharp-ts-mode-indent-offset)
-             ((parent-is "interpolation") parent-bol csharp-ts-mode-indent-offset)
-             ((parent-is "binary_expression") parent 0)
-             ((parent-is "block") parent-bol csharp-ts-mode-indent-offset)
-             ((parent-is "local_function_statement") parent-bol 0)
-             ((match "block" "if_statement") parent-bol 0)
-             ((match "else" "if_statement") parent-bol 0)
-             ((parent-is "if_statement") parent-bol csharp-ts-mode-indent-offset)
-             ((parent-is "for_statement") parent-bol 0)
-             ((parent-is "for_each_statement") parent-bol 0)
-             ((parent-is "while_statement") parent-bol 0)
-             ((match "{" "switch_expression") parent-bol 0)
-             ((parent-is "switch_statement") parent-bol 0)
-             ((parent-is "switch_body") parent-bol csharp-ts-mode-indent-offset)
-             ((parent-is "switch_section") parent-bol csharp-ts-mode-indent-offset)
-             ((parent-is "switch_expression") parent-bol csharp-ts-mode-indent-offset)
-             ((parent-is "case_statement") parent-bol 0)
-             ((parent-is "do_statement") parent-bol 0)
-             ((parent-is "equals_value_clause") parent-bol csharp-ts-mode-indent-offset)
-             ((parent-is "ternary_expression") parent-bol csharp-ts-mode-indent-offset)
-             ((parent-is "conditional_expression") parent-bol csharp-ts-mode-indent-offset)
-             ((parent-is "statement_block") parent-bol csharp-ts-mode-indent-offset)
-             ((parent-is "type_arguments") parent-bol csharp-ts-mode-indent-offset)
-             ((parent-is "variable_declarator") parent-bol csharp-ts-mode-indent-offset)
-             ((parent-is "arguments") parent-bol csharp-ts-mode-indent-offset)
-             ((parent-is "array") parent-bol csharp-ts-mode-indent-offset)
-             ((parent-is "formal_parameters") parent-bol csharp-ts-mode-indent-offset)
-             ((parent-is "template_substitution") parent-bol csharp-ts-mode-indent-offset)
-             ((parent-is "object_pattern") parent-bol csharp-ts-mode-indent-offset)
-             ((parent-is "object") parent-bol csharp-ts-mode-indent-offset)
-             ((parent-is "object_type") parent-bol csharp-ts-mode-indent-offset)
-             ((parent-is "enum_body") parent-bol csharp-ts-mode-indent-offset)
-             ((parent-is "arrow_function") parent-bol csharp-ts-mode-indent-offset)
-             ((parent-is "parenthesized_expression") parent-bol csharp-ts-mode-indent-offset)
-             ;; what i have added
-             ((parent-is "parameter_list") parent-bol csharp-ts-mode-indent-offset)
-             ((parent-is "implicit_parameter_list") parent-bol csharp-ts-mode-indent-offset)
-             ((parent-is "member_access_expression") parent-bol csharp-ts-mode-indent-offset)
-
-             ((match "block" "lambda_expression") parent-bol 0)
-             ((parent-is "lambda_expression") parent-bol csharp-ts-mode-indent-offset)
-
-             ((parent-is "try_statement") parent-bol 0)
-             ((parent-is "catch_clause") parent-bol 0)
-             ((parent-is "record_declaration") parent-bol 0)
-             ((parent-is "interface_declaration") parent-bol 0)
-             ((parent-is "throw_expression") parent-bol csharp-ts-mode-indent-offset)
-             ((parent-is "return_statement") parent-bol csharp-ts-mode-indent-offset)
-             ((parent-is "record_declaration") parent-bol 0)
-             ((parent-is "interface_declaration") parent-bol 0)
-             ((parent-is "arrow_expression_clause") parent-bol csharp-ts-mode-indent-offset)
-             ((parent-is "property_pattern_clause") parent-bol csharp-ts-mode-indent-offset))))
-
-  ;; TODO: merge into emacs core
-  (nconc csharp-ts-mode--font-lock-settings
-         (treesit-font-lock-rules
-          :language 'c-sharp
-          :feature 'property
-          :override t
-          `((property_declaration
-             type: (generic_name name: (identifier) @font-lock-type-face)
-             name: (identifier) @font-lock-variable-name-face))))
-
-  (add-to-list 'compilation-error-regexp-alist-alist
-               '(jacob-dotnet-stacktrace-re
-                 "   at [^
-]+ in \\(.+\\):line \\([[:digit:]]+\\)"
-                 1
-                 2))
-
-  (add-to-list 'compilation-error-regexp-alist 'jacob-dotnet-stacktrace-re)
-
-  (jacob-defhookf csharp-ts-mode-hook
-    (setq treesit-defun-type-regexp "\\(method\\|constructor\\|field\\)_declaration")
-    (setq jacob-backspace-function #'jacob-backspace-csharp)
-    (eglot-ensure))
-
-  (define-auto-insert "\\.cs$" ["template.cs" jacob-autoinsert-yas-expand])
-  (define-auto-insert "Controller\\.cs$" ["controllerTemplate.cs" jacob-autoinsert-yas-expand])
-
-  (defun eglot-csharp-ls-metadata (xrefs)
-    "Advice for `eglot--lsp-xrefs-for-method'.
-
-- For showing `csharp-ls' metadata in Emacs.
-
-- Check the first xref from XREFS to see if it's referring to a
-  non-existant metadata file.
-
-- If so, create it in a “sensible” location and modify the xref to
-  point there."
-    (dolist (xref-match-item xrefs)
-      (when-let ((xref-file-location (xref-item-location xref-match-item))
-                 (uri (xref-file-location-file xref-file-location))
-                 (uri-path (when (string-match "^csharp:\\(.*\\)$" uri)
-                             (match-string 1 uri)))
-                 (target-path (concat (directory-file-name (project-root (project-current)))
-                                      uri-path))
-                 (source (plist-get (eglot--request (eglot-current-server)
-                                                    :csharp/metadata
-                                                    `(:textDocument (:uri ,uri)))
-                                    :source)))
-        (with-temp-buffer
-          (insert source)
-          (write-file target-path nil))
-
-        (setf (xref-file-location-file xref-file-location)
-              target-path)))
-    xrefs)
-
-  (advice-add #'eglot--lsp-xrefs-for-method :filter-return #'eglot-csharp-ls-metadata)
-
-  (add-to-list 'auto-mode-alist '("\\.csx\\'". csharp-ts-mode)))
+(require 'jacob-csharp-mode)
 
 (require 'jacob-sharper)
 
@@ -1618,18 +1360,6 @@ active, do not format the buffer."
 
   (remove-hook 'dape-start-hook #'dape-info))
 
-(use-package csharp-toolbox
-  :vc ( :url "https://github.com/lem102/csharp-toolbox.git"
-        :rev :newest)
-  :after csharp-mode
-  :config
-  ;; (keymap-set jacob-xfk-map "c f" #'csharp-toolbox-format-statement)
-  ;; (keymap-set jacob-xfk-map "c t" #'csharp-toolbox-run-test)
-  ;; (keymap-set jacob-xfk-map "c a" #'csharp-toolbox-toggle-async)
-  ;; (keymap-set jacob-xfk-map "c n" #'csharp-toolbox-guess-namespace)
-  ;; (keymap-set jacob-xfk-map "c ;" #'csharp-toolbox-wd40)
-  )
-
 (use-package ace-window
   :ensure t
   :defer t
@@ -1785,6 +1515,7 @@ move to the new window. Otherwise, call `switch-buffer'."
     (keymap-set xah-fly-command-map "8" #'expreg-expand)
     (keymap-set xah-fly-command-map "9" #'expreg-contract))
 
+  :config
   (setopt expreg-functions (delq 'expreg--subword expreg-functions)))
 
 (use-package verb
@@ -2026,7 +1757,7 @@ move to the new window. Otherwise, call `switch-buffer'."
   :ensure t
   :defer t
   ;; (setenv "GEMINI_API_KEY" "")
-  :custom ((aider-args '("--model" "gemini/gemini-2.0-flash-exp"))))
+  :custom ((aider-args '("--model" "gemini/gemini-2.0-flash-exp" "--edit-format" "whole"))))
 
 (use-package gdscript-mode
   :ensure t
