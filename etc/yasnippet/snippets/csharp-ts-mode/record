@@ -1,0 +1,4 @@
+# key: record
+# name: record
+# --
+public record ${1:X$(jacob-yas-pascal-case yas-text)}($0);

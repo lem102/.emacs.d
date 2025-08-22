@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# key: func
+# --
+DestroyFunc $1
+AddToFunc $1
++ I $0
