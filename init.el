@@ -18,11 +18,9 @@
                               ("nongnu" . "https://elpa.nongnu.org/nongnu/")
                               ("melpa" . "https://melpa.org/packages/"))))
 
-(use-package no-littering
-  :ensure t)
+(use-package no-littering)
 
-(use-package on
-  :ensure t)
+(use-package on)
 
 (keymap-global-unset "<menu-bar> <options>")
 
@@ -194,8 +192,7 @@ then remove this function from `find-file-hook'."
          ,@body)
        (add-hook ',hook #',function-name))))
 
-(use-package delight
-  :ensure t)
+(use-package delight)
 
 (delight 'yas-minor-mode nil "yasnippet")
 (delight 'xah-fly-keys " 🛪")
@@ -530,7 +527,6 @@ Intended for running applications."
                            "w" #'jacob-help-edit))
 
 (use-package helpful
-  :ensure t
   :defer t
   :init
   (keymap-global-set "C-h v" #'helpful-variable)
@@ -618,18 +614,15 @@ Intended for running applications."
                            "g" #'revert-buffer))
 
 (use-package magit
-  :ensure t
   :bind ( :map project-prefix-map
           ("v" . magit-project-status)))
 
 (use-package forge
-  :ensure t
   :defer t)
 
 ;; FIXME: trying to optimise this package causes git gutter stuff to
 ;; appear on the left margin
 (use-package git-gutter-fringe
-  :ensure t
   :delight git-gutter-mode              ; FIXME: not hidden in the mode line
   :config
   (global-git-gutter-mode 1)
@@ -708,18 +701,13 @@ Useful for deleting ^M after `eglot-code-actions'."
 (require 'jacob-sharper)
 
 (use-package csproj-mode
-  :ensure t
   :mode ("\\.csproj\\'" . csproj-mode))
 
 (use-package font-lock-ext ; dependency of `sln-mode'
-  :vc ( :url "https://github.com/sensorflo/font-lock-ext.git"
-        :rev :newest)
   :defer t)
 
 ;; TODO: package `sln-mode' for elpa/melpa?
 (use-package sln-mode
-  :vc ( :url "https://github.com/sensorflo/sln-mode.git"
-        :rev :newest)
   :mode ("\\.sln\\'" . sln-mode))
 
 (use-package fsharp-mode
@@ -768,7 +756,6 @@ Useful for deleting ^M after `eglot-code-actions'."
   (setopt dired-vc-rename-file t))
 
 (use-package dired-rsync
-  :ensure t
   :defer t
   :after dired
   :config
@@ -818,7 +805,6 @@ Useful for deleting ^M after `eglot-code-actions'."
                                     (project-compile "Compile"))))
 
 (use-package prodigy
-  :ensure t
   :defer t
   :init
   (keymap-set project-prefix-map "l" #'prodigy)
@@ -859,15 +845,12 @@ Useful for deleting ^M after `eglot-code-actions'."
   (delight 'hi-lock-mode nil t))
 
 (use-package highlight-defined
-  :ensure t
   :hook (emacs-lisp-mode-hook . highlight-defined-mode))
 
 (use-package hl-todo
-  :ensure t
   :hook (after-init-hook . global-hl-todo-mode))
 
 (use-package lisp-extra-font-lock
-  :ensure t
   :hook ((emacs-lisp-mode-hook lisp-mode-hook scheme-mode-hook) . lisp-extra-font-lock-mode))
 
 (use-package elisp-mode
@@ -915,7 +898,6 @@ Useful for deleting ^M after `eglot-code-actions'."
   (keymap-set scheme-mode-map ")" #'move-past-close-and-reindent))
 
 (use-package geiser
-  :ensure t
   :after scheme)
 
 (use-package geiser-mode
@@ -926,15 +908,12 @@ Useful for deleting ^M after `eglot-code-actions'."
                            "SPC , d" #'geiser-eval-definition))
 
 (use-package geiser-guile
-  :ensure t
   :after (scheme geiser))
 
 (use-package mermaid-mode
-  :ensure t
   :mode ("\\.mermaid\\'"))
 
 (use-package ob-mermaid
-  :ensure t
   :after org)
 
 (use-package org
@@ -1068,18 +1047,15 @@ Useful for deleting ^M after `eglot-code-actions'."
 ;; (ox-extras-activate '(latex-header-blocks ignore-headlines))
 
 (use-package org-edna
-  :ensure t
   :after org
   :delight
   :config
   (org-edna-mode 1))
 
 (use-package denote
-  :ensure t
   :defer t)
 
 (use-package howm
-  :ensure t
   :hook (after-init-hook . howm-menu))
 
 (use-package pulse
@@ -1173,7 +1149,6 @@ Useful for deleting ^M after `eglot-code-actions'."
           compilation-scroll-output t))
 
 (use-package winnow
-  :ensure t
   :hook (compilation-mode-hook . winnow-mode))
 
 (require 'jacob-sql)
@@ -1191,7 +1166,6 @@ Useful for deleting ^M after `eglot-code-actions'."
   (setopt treesit-font-lock-level 4))
 
 (use-package treesit-auto
-  :ensure t
   :hook (prog-mode-hook . global-treesit-auto-mode)
   :config
   (add-to-list 'treesit-auto-recipe-list (make-treesit-auto-recipe
@@ -1228,12 +1202,10 @@ Useful for deleting ^M after `eglot-code-actions'."
   (add-to-list 'auto-mode-alist '("Directory.Packages.props" . nxml-mode)))
 
 (use-package key-chord
-  :ensure t
   :config
   (key-chord-mode 1))
 
 (use-package avy
-  :ensure t
   :defer t
   :init
   (key-chord-define-global "fj" #'avy-goto-char-timer)
@@ -1296,7 +1268,6 @@ Useful for deleting ^M after `eglot-code-actions'."
                                (?r . jacob-avy-eglot-rename))))
 
 (use-package apheleia
-  :ensure t
   :delight '(:eval (if apheleia-inhibit "" " ⚘"))
   :hook (prog-mode-hook . apheleia-mode-maybe)
   :config
@@ -1317,20 +1288,16 @@ active, do not format the buffer."
   (add-to-list 'apheleia-skip-functions #'jacob-apheleia-skip-function))
 
 (use-package rainbow-mode
-  :ensure t
   :delight rainbow-mode
   :hook (on-first-file-hook . rainbow-mode))
 
 (use-package eglot-booster
   :after eglot
   :when (executable-find "emacs-lsp-booster")
-  :vc ( :url "https://github.com/jdtsmith/eglot-booster"
-        :rev :newest)
   :config
   (eglot-booster-mode 1))
 
 (use-package dape
-  :ensure t
   :defer t
   :config
   (setopt dape-info-hide-mode-line nil
@@ -1361,7 +1328,6 @@ active, do not format the buffer."
   (remove-hook 'dape-start-hook #'dape-info))
 
 (use-package ace-window
-  :ensure t
   :defer t
   :init
   (defun jacob-split-or-switch-window ()
@@ -1398,26 +1364,21 @@ move to the new window. Otherwise, call `switch-buffer'."
            (japanese-TeX-error-messages nil)))
 
 (use-package visual-fill-column
-  :ensure t
   :hook ((org-mode-hook LaTeX-mode-hook) . visual-fill-column-mode))
 
 (use-package markdown-mode
-  :ensure t
   :defer t)
 
 (use-package feature-mode
-  :ensure t
   :defer t)
 
 (use-package vertico
-  :ensure t
   :hook (jacob-first-minibuffer-activation-hook . vertico-mode))
 
 (use-package vertico-mouse
   :hook (vertico-mode-hook . vertico-mouse-mode))
 
 (use-package orderless
-  :ensure t
   :preface
   (defun jacob-load-orderless ()
     "Load the `orderless' library."
@@ -1427,11 +1388,9 @@ move to the new window. Otherwise, call `switch-buffer'."
   (setopt completion-styles '(orderless initials)))
 
 (use-package marginalia
-  :ensure t
   :hook (jacob-first-minibuffer-activation-hook . marginalia-mode))
 
 (use-package consult
-  :ensure t
   :defer t
   :init
   (with-eval-after-load "xah-fly-keys"
@@ -1479,7 +1438,6 @@ move to the new window. Otherwise, call `switch-buffer'."
   (keymap-global-set "M-g i" #'consult-imenu))
 
 (use-package embark
-  :ensure t
   :defer t
   :init
   (with-eval-after-load "xah-fly-keys"
@@ -1498,11 +1456,9 @@ move to the new window. Otherwise, call `switch-buffer'."
   (push 'embark--ignore-target (alist-get 'eglot-rename embark-target-injection-hooks)))
 
 (use-package embark-consult
-  :ensure t
   :after (:and embark consult))
 
 (use-package expreg
-  :ensure t
   :defer t
   :init
   (keymap-global-set "C-c SPC" #'expreg-expand)
@@ -1519,7 +1475,6 @@ move to the new window. Otherwise, call `switch-buffer'."
   (setopt expreg-functions (delq 'expreg--subword expreg-functions)))
 
 (use-package verb
-  :ensure t
   :after org
   :hook (org-mode-hook . verb-mode)
   :config
@@ -1531,7 +1486,6 @@ move to the new window. Otherwise, call `switch-buffer'."
     (verb-json-get (oref (verb-stored-response response-id) body) "id")))
 
 (use-package sly
-  :ensure t
   :hook (lisp-mode-hook . sly-mode)
   :config
   (sly-setup)
@@ -1551,25 +1505,20 @@ move to the new window. Otherwise, call `switch-buffer'."
                            "q" #'sly-db-quit))
 
 (use-package sly-overlay
-  :ensure t
   :after sly)
 
 (use-package sly-macrostep
-  :ensure t
   :after sly)
 
 ;; (jacob-require sly-stepper "https://github.com/joaotavora/sly-stepper.git")
 
 (use-package sly-quicklisp
-  :ensure t
   :after sly)
 
 (use-package sql-indent
-  :ensure t
   :hook (sql-mode-hook . sqlind-minor-mode))
 
 (use-package gptel
-  :ensure t
   :defer t
   :config
   (setopt gptel-default-mode #'org-mode
@@ -1754,26 +1703,22 @@ move to the new window. Otherwise, call `switch-buffer'."
 ;; elisp eval ?
 
 (use-package aider
-  :ensure t
   :defer t
   ;; (setenv "GEMINI_API_KEY" "")
   :custom ((aider-args '("--model" "gemini/gemini-2.0-flash-exp" "--edit-format" "whole"))))
 
 (use-package gdscript-mode
-  :ensure t
   :mode ("\\.gd\\'" . gdscript-ts-mode)
   :config
   (add-hook 'gdscript-ts-mode-hook #'indent-tabs-mode))
 
 (use-package eat
-  :ensure t
   :when jacob-is-linux
   :defer t
   :init
   (add-hook 'eshell-mode-hook #'eat-eshell-mode))
 
 (use-package pdf-tools
-  :ensure t
   :when jacob-is-linux
   :mode ("\\.[pP][dD][fF]\\'" . pdf-view-mode))
 
@@ -1784,7 +1729,6 @@ move to the new window. Otherwise, call `switch-buffer'."
   (setopt find-program "C:/Program Files (x86)/GnuWin32/bin/find.exe"))
 
 (use-package just-mode
-  :ensure t
   :defer t)
 
 

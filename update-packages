@@ -1,0 +1,71 @@
+#!/usr/bin/env -S emacs -x
+;; -*- lexical-binding: t; flymake-mode: nil; -*-
+
+(require 'package)
+(require 'package-vc)
+
+(add-to-list 'package-archives
+             (cons "melpa" "https://melpa.org/packages/")
+             "APPEND")
+
+(setq package-selected-packages '(no-littering
+                                  on
+                                  delight
+                                  helpful
+                                  magit
+                                  forge
+                                  git-gutter-fringe
+                                  csproj-mode
+                                  dired-rsync
+                                  prodigy
+                                  highlight-defined
+                                  hl-todo
+                                  lisp-extra-font-lock
+                                  geiser
+                                  geiser-guile
+                                  mermaid-mode
+                                  ob-mermaid
+                                  org-edna
+                                  denote
+                                  howm
+                                  winnow
+                                  treesit-auto
+                                  key-chord
+                                  avy
+                                  apheleia
+                                  rainbow-mode
+                                  dape
+                                  ace-window
+                                  visual-fill-column
+                                  markdown-mode
+                                  feature-mode
+                                  vertico
+                                  orderless
+                                  marginalia
+                                  consult
+                                  embark
+                                  embark-consult
+                                  expreg
+                                  verb
+                                  sly
+                                  sly-overlay
+                                  sly-macrostep
+                                  sly-quicklisp
+                                  sql-indent
+                                  gptel
+                                  aider
+                                  gdscript-mode
+                                  eat
+                                  pdf-tools
+                                  just-mode)
+      package-vc-selected-packages '((eglot-booster :url "https://github.com/jdtsmith/eglot-booster")
+                                     (sln-mode :url "https://github.com/sensorflo/sln-mode.git")
+                                     (font-lock-ext :url "https://github.com/sensorflo/font-lock-ext.git")))
+
+(package-refresh-contents)
+
+(package-install-selected-packages)
+(package-vc-install-selected-packages)
+
+(package-upgrade-all)
+
