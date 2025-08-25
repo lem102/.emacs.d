@@ -86,7 +86,7 @@
 then remove this function from `find-file-hook'."
   (when (member 'init features)
     (run-hooks 'jacob-first-minibuffer-activation-hook)
-    (advice-remove #'jacob-run-first-minibuffer-activation-hook #'completing-read)))
+    (advice-remove #'completing-read #'jacob-run-first-minibuffer-activation-hook)))
 
 (advice-add #'completing-read :before #'jacob-run-first-minibuffer-activation-hook)
 
