@@ -60,7 +60,8 @@
                                   just-mode)
       package-vc-selected-packages '((eglot-booster :url "https://github.com/jdtsmith/eglot-booster")
                                      (sln-mode :url "https://github.com/sensorflo/sln-mode.git")
-                                     (font-lock-ext :url "https://github.com/sensorflo/font-lock-ext.git")))
+                                     (font-lock-ext :url "https://github.com/sensorflo/font-lock-ext.git")
+                                     (icicles :url "https://github.com/emacsmirror/icicles.git")))
 
 (package-refresh-contents)
 
