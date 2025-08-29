@@ -10,52 +10,6 @@
   (setq xah-fly-use-control-key nil
         xah-fly-use-meta-key nil))
 
-(defun jacob-xfk-local-key (key command)
-  "Bind KEY buffer locally to COMMAND in xfk command mode."
-  (let ((existing-command (keymap-lookup xah-fly-command-map key nil "NO-REMAP")))
-    (unless existing-command
-      (user-error "%s is not bound to a key in `xah-fly-command-map'" key))
-    (keymap-local-set (format "<remap> <%s>" existing-command)
-                      command)))
-
-(defmacro jacob-xfk-bind-for-mode (mode &rest bindings)
-  "Use BINDINGS when in a certain MODE."
-  (unless (cl-evenp (length bindings))
-    (user-error "`jacob-xfk-bind-for-mode' %s bindings is not a plist"
-                mode))
-  (let* ((hook (intern (concat (symbol-name mode) "-hook")))
-         (hook-function (intern (concat "jacob-" (symbol-name hook) "-function")))
-         (binding-alist (seq-reduce (lambda (p c)
-                                      "Convert the plist into an alist"
-                                      (cond ((and (caar p)
-                                                  (null (cdar p)))
-                                             (cons (cons (caar p) c)
-                                                   (cdr p)))
-                                            (t (cons (cons c nil)
-                                                     p))))
-                                    bindings
-                                    '()))
-         (hook-function-body (seq-map (lambda (pair)
-                                        "PAIR is `'(key command)', return code to bind key to command locally."
-                                        (let ((key (car pair))
-                                              (command (cdr pair)))
-                                          `(let ((existing-command (keymap-lookup xah-fly-command-map
-                                                                                  ,key
-                                                                                  nil
-                                                                                  "NO-REMAP")))
-                                             (unless existing-command
-                                               (user-error "%s is not bound to a key in `xah-fly-command-map'"
-                                                           ,key))
-                                             (keymap-local-set (format "<remap> <%s>"
-                                                                       existing-command)
-                                                               ,command))))
-                                      binding-alist)))
-    `(progn
-       (defun ,hook-function ()
-         ,(format "Auto-generated hook function for `%s'." (symbol-name hook))
-         ,@hook-function-body)
-       (add-hook ',hook #',hook-function))))
-
 (defvar-keymap jacob-xfk-map)
 
 (defun jacob-xah-fly-keys-config ()
