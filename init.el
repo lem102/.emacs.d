@@ -1610,14 +1610,6 @@ move to the new window. Otherwise, call `switch-buffer'."
 
 (require 'jacob-gptel)
 
-;; features
-
-;; load paths
-
-;; symbol exists
-
-;; elisp eval ?
-
 (use-package aider
   :demand jacob-is-server-running
   :defer t)
