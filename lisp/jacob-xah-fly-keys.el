@@ -81,9 +81,7 @@
   ;; (keymap-set xah-fly-command-map "t" #'set-mark-command)
   
   ;; (keymap-set xah-fly-command-map "'" #'jacob-format-words)
-  ;; (keymap-set xah-fly-command-map "-" #'flymake-goto-prev-error)
   ;; (keymap-set xah-fly-command-map ";" #'jacob-end-of-line)
-  ;; (keymap-set xah-fly-command-map "=" #'flymake-goto-next-error)
   (keymap-set xah-fly-command-map "d" #'jacob-backspace)
   (keymap-set xah-fly-command-map "g" #'jacob-kill-paragraph)
   (keymap-set xah-fly-command-map "h" #'jacob-beginning-of-line)
