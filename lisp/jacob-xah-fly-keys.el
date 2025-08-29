@@ -36,7 +36,6 @@
   ;; (keymap-set xah-fly-command-map "'" #'jacob-format-words)
   (keymap-set xah-fly-command-map ";" #'jacob-end-of-line)
   (keymap-set xah-fly-command-map "d" #'jacob-backspace)
-  (keymap-set xah-fly-command-map "g" #'jacob-kill-paragraph)
   (keymap-set xah-fly-command-map "h" #'jacob-beginning-of-line)
   (keymap-set xah-fly-command-map "s" #'jacob-return-macro)
   (keymap-set xah-fly-command-map "x" #'jacob-kill-line)
