@@ -5,9 +5,6 @@
 
 ;;; Code:
 
-(defvar-local jacob-forward-paragraph-function nil
-  "Function to use for forward paragraph in `jacob-end-of-line'.")
-
 (defun jacob-xfk-local-key (key command)
   "Bind KEY buffer locally to COMMAND in xfk command mode."
   (let ((existing-command (keymap-lookup xah-fly-command-map key nil "NO-REMAP")))
@@ -53,6 +50,9 @@
          ,(format "Auto-generated hook function for `%s'." (symbol-name hook))
          ,@hook-function-body)
        (add-hook ',hook #',hook-function))))
+
+(defvar-local jacob-forward-paragraph-function nil
+  "Function to use for forward paragraph in `jacob-end-of-line'.")
 
 (defun jacob-end-of-line ()
   "Go to content end, line end, forward paragraph."
