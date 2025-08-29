@@ -98,6 +98,9 @@
   (backward-paragraph)
   (kill-paragraph 1))
 
+(defalias 'jacob-return-macro
+  (kmacro "<return>"))
+
 (provide 'jacob-xah-fly-keys-functions)
 
 ;;; jacob-xah-fly-keys-functions.el ends here

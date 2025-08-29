@@ -5,8 +5,6 @@
 
 ;;; Code:
 
-(require 'jacob-xah-fly-keys-functions)
-
 (defun jacob-xah-fly-keys-initialise ()
   "Initialise `xah-fly-keys'."
   (setq xah-fly-use-control-key nil
@@ -69,8 +67,7 @@
   (keymap-set xah-fly-leader-key-map "SPC" jacob-xfk-map)
   (keymap-set jacob-xfk-map "p" `("Project" . ,project-prefix-map))
 
-  (defalias 'jacob-return-macro
-    (kmacro "<return>"))
+  (require 'jacob-xah-fly-keys-functions)
 
   (defvar-keymap jacob-isearch-repeat-map
     :repeat t
