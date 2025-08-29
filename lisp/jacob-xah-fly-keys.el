@@ -76,7 +76,6 @@
     "r" #'isearch-repeat-backward)
 
   (keymap-global-set "<f7>" #'xah-fly-leader-key-map)
-  (keymap-global-set "M-SPC" #'xah-fly-command-mode-activate)
 
   (keymap-set xah-fly-command-map "g" #'expreg-expand)
   ;; (keymap-set xah-fly-command-map "t" #'set-mark-command)
