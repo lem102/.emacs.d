@@ -84,9 +84,9 @@
   ;; (keymap-set xah-fly-command-map "-" #'flymake-goto-prev-error)
   ;; (keymap-set xah-fly-command-map ";" #'jacob-end-of-line)
   ;; (keymap-set xah-fly-command-map "=" #'flymake-goto-next-error)
-  ;; (keymap-set xah-fly-command-map "d" #'jacob-backspace)
+  (keymap-set xah-fly-command-map "d" #'jacob-backspace)
   ;; (keymap-set xah-fly-command-map "g" #'jacob-kill-paragraph)
-  ;; (keymap-set xah-fly-command-map "h" #'jacob-beginning-of-line)
+  (keymap-set xah-fly-command-map "h" #'jacob-beginning-of-line)
   (keymap-set xah-fly-command-map "s" #'jacob-return-macro)
   (keymap-set xah-fly-command-map "x" #'jacob-kill-line)
 
