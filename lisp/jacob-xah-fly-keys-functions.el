@@ -55,7 +55,9 @@
   "Go to content end, line end, forward paragraph."
   (interactive)
   (if (eolp)
-      (forward-paragraph)
+      (if jacob-forward-paragraph-function
+          (funcall jacob-forward-paragraph-function)
+        (forward-paragraph))
     (let ((content-end (save-excursion
                          (when (comment-search-forward (line-end-position) "NOERROR")
                            (goto-char (match-beginning 0))
