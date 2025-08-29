@@ -5,6 +5,8 @@
 
 ;;; Code:
 
+(require 'jacob-xah-fly-keys-functions)
+
 (defun jacob-xah-fly-keys-initialise ()
   "Initialise `xah-fly-keys'."
   (setq xah-fly-use-control-key nil
