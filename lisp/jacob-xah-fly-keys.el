@@ -104,8 +104,8 @@
   ;; (keymap-set xah-fly-leader-key-map "l 3" #'jacob-async-shell-command)
   ;; (keymap-set xah-fly-leader-key-map "l a" #'global-text-scale-adjust)
 
-  ;; (keymap-set xah-fly-leader-key-map "w j" #'xref-find-references)
-  ;; (keymap-set xah-fly-leader-key-map "w l" #'xref-go-back)
+  (keymap-set xah-fly-leader-key-map "w j" #'xref-find-references)
+  (keymap-set xah-fly-leader-key-map "w l" #'xref-go-back)
   )
 
 (use-package xah-fly-keys
