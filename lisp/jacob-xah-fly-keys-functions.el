@@ -5,6 +5,12 @@
 
 ;;; Code:
 
+(defvar-local jacob-forward-paragraph-function nil
+  "Function to use for forward paragraph in `jacob-end-of-line'.")
+
+(defvar-local jacob-backward-paragraph-function nil
+  "Function to use for backward paragraph in `jacob-beginning-of-line'.")
+
 (defun jacob-xfk-local-key (key command)
   "Bind KEY buffer locally to COMMAND in xfk command mode."
   (let ((existing-command (keymap-lookup xah-fly-command-map key nil "NO-REMAP")))
@@ -51,9 +57,6 @@
          ,@hook-function-body)
        (add-hook ',hook #',hook-function))))
 
-(defvar-local jacob-forward-paragraph-function nil
-  "Function to use for forward paragraph in `jacob-end-of-line'.")
-
 (defun jacob-end-of-line ()
   "Go to content end, line end, forward paragraph."
   (interactive)
@@ -76,7 +79,9 @@
   "Go to indentation, line start, backward paragraph."
   (interactive)
   (cond ((bolp)
-         (backward-paragraph))
+         (if jacob-backward-paragraph-function
+             (funcall jacob-backward-paragraph-function)
+           (backward-paragraph)))
         ((= (save-excursion
               (back-to-indentation)
               (point))
