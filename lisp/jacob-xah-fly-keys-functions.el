@@ -148,3 +148,5 @@
   (kmacro "<return>"))
 
 (provide 'jacob-xah-fly-keys-functions)
+
+;;; jacob-xah-fly-keys-functions.el ends here
