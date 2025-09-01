@@ -1151,14 +1151,9 @@ Useful for deleting ^M after `eglot-code-actions'."
   :init
   (add-to-list 'auto-mode-alist '("Directory.Packages.props" . nxml-mode)))
 
-(use-package key-chord
-  :config
-  (key-chord-mode 1))
-
 (use-package avy
   :defer t
   :init
-  (key-chord-define-global "fj" #'avy-goto-char-timer)
   (keymap-global-set "M-j" #'avy-goto-char-timer)
   (keymap-set isearch-mode-map "M-j" #'avy-isearch)
   :config
