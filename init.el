@@ -620,14 +620,6 @@ Intended for running applications."
 (use-package forge
   :defer t)
 
-;; FIXME: trying to optimise this package causes git gutter stuff to
-;; appear on the left margin
-(use-package git-gutter-fringe
-  :delight git-gutter-mode              ; FIXME: not hidden in the mode line
-  :config
-  (global-git-gutter-mode 1)
-  (setq git-gutter-fr:side 'right-fringe))
-
 (use-package autoinsert
   :hook (on-first-file-hook . auto-insert-mode)
   :config
