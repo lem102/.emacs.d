@@ -5,10 +5,6 @@
 (add-to-list 'load-path (concat (file-name-directory user-init-file)
                                 "lisp"))
 
-(require 'server)
-
-(defvar jacob-is-server-running (server-running-p))
-
 ;; use-package
 (require 'use-package)
 
@@ -202,12 +198,10 @@ then remove this function from `find-file-hook'."
 (delight 'xah-fly-keys " 🛪")
 
 (use-package indent-aux
-  :demand jacob-is-server-running
   :hook (after-init-hook . kill-ring-deindent-mode))
 
 (use-package which-key
   :delight
-  :demand jacob-is-server-running
   :hook (on-first-input-hook . which-key-mode)
   :custom (which-key-idle-delay (cond (jacob-is-android 1)
                                       (t 0.01))))
@@ -223,7 +217,6 @@ then remove this function from `find-file-hook'."
                                (t 0.1))))
 
 (use-package files
-  :demand jacob-is-server-running
   :config
   (auto-save-visited-mode 1)
   :bind ("C-x C-c" . nil) ; `save-buffers-kill-terminal'
@@ -235,7 +228,6 @@ then remove this function from `find-file-hook'."
 
 (use-package autorevert
   :delight
-  :demand jacob-is-server-running
   :hook (on-first-file-hook . global-auto-revert-mode))
 
 (use-package window
@@ -258,7 +250,6 @@ then remove this function from `find-file-hook'."
   "p" #'recenter-top-bottom)
 
 (use-package frame
-  :demand jacob-is-server-running
   :config
   (blink-cursor-mode 0)
   :custom (blink-cursor-blinks 0)     ; make cursor blink forever
@@ -269,25 +260,21 @@ then remove this function from `find-file-hook'."
   :custom (disabled-command-function nil))
 
 (use-package recentf
-  :demand jacob-is-server-running
   :hook (after-init-hook . recentf-mode)
   :custom
   (recentf-max-saved-items 300))
 
 (use-package savehist
-  :demand jacob-is-server-running
   :hook (jacob-first-minibuffer-activation-hook . savehist-mode)
   :custom
   (savehist-save-minibuffer-history t))
 
 (use-package saveplace
-  :demand jacob-is-server-running
   :hook (on-first-file-hook . save-place-mode)
   :custom
   (save-place-forget-unreadable-files t))
 
 (use-package modus-themes
-  :demand jacob-is-server-running
   :defer t
   :custom
   (modus-themes-to-toggle '(modus-operandi-tinted modus-vivendi-tinted)))
@@ -316,7 +303,6 @@ then remove this function from `find-file-hook'."
   )
 
 (use-package bookmark
-  :demand jacob-is-server-running
   :defer t
   :custom
   (bookmark-set-fringe-mark nil)
@@ -346,7 +332,6 @@ Intended for running applications."
                                    command))))
 
 (use-package flymake
-  :demand jacob-is-server-running
   :defer t
   :init
   (keymap-global-set "M-n" #'flymake-goto-next-error)
@@ -470,7 +455,6 @@ Intended for running applications."
                            "g" #'embark-export))
 
 (use-package ibuffer
-  :demand jacob-is-server-running
   :defer t
   :config
   (with-eval-after-load "xah-fly-keys"
@@ -486,7 +470,6 @@ Intended for running applications."
                            "k" 'occur-next))
 
 (use-package info
-  :demand jacob-is-server-running
   :defer
   :config
   (jacob-xfk-bind-for-mode Info-mode
@@ -497,7 +480,6 @@ Intended for running applications."
                            "g" #'Info-menu))
 
 (use-package man
-  :demand jacob-is-server-running
   :defer
   :custom
   (Man-notify-method 'pushy)
@@ -515,14 +497,12 @@ Intended for running applications."
                            "g" #'revert-buffer))
 
 (use-package help
-  :demand jacob-is-server-running
   :defer t
   :config
   (setopt help-window-select t
           help-enable-variable-value-editing t))
 
 (use-package help-fns
-  :demand jacob-is-server-running
   :defer t
   :config
   (defun jacob-help-edit ()
@@ -547,7 +527,6 @@ Intended for running applications."
                            "w" #'jacob-help-edit))
 
 (use-package helpful
-  :demand jacob-is-server-running
   :defer t
   :init
   (keymap-global-set "C-h v" #'helpful-variable)
@@ -571,37 +550,30 @@ Intended for running applications."
   :custom ((warning-minimum-level :error)))
 
 (use-package subword
-  :demand jacob-is-server-running
   :delight subword-mode
   :hook (on-first-input-hook . global-subword-mode))
 
 (use-package paren
-  :demand jacob-is-server-running
   :hook (on-first-input-hook . show-paren-mode)
   :config
   (setopt show-paren-when-point-inside-paren t))
 
 (use-package elec-pair
-  :demand jacob-is-server-running
   :hook (on-first-input-hook . electric-pair-mode))
 
 (use-package delsel
-  :demand jacob-is-server-running
   :hook (on-first-input-hook . delete-selection-mode))
 
 (use-package repeat
-  :demand jacob-is-server-running
   :hook (on-first-input-hook . repeat-mode))
 
 (use-package dabbrev
-  :demand jacob-is-server-running
   :defer t
   :config
   (setopt dabbrev-case-fold-search nil
           dabbrev-case-replace nil))
 
 (use-package vc
-  :demand jacob-is-server-running
   :defer t
   :config
   (setopt vc-git-show-stash 0             ; show 0 stashes
@@ -610,14 +582,12 @@ Intended for running applications."
                                        tramp-file-name-regexp)))
 
 (use-package vc-git
-  :demand jacob-is-server-running
   :defer t
   :config
   (jacob-xfk-bind-for-mode vc-git-log-view-mode
                            "q" #'quit-window))
 
 (use-package vc-dir
-  :demand jacob-is-server-running
   :defer t
   :config
   (jacob-xfk-bind-for-mode vc-dir-mode
@@ -637,7 +607,6 @@ Intended for running applications."
                            "x" #'vc-dir-hide-up-to-date))
 
 (use-package vc-annotate
-  :demand jacob-is-server-running
   :defer t
   :config
   (jacob-xfk-bind-for-mode vc-annotate-mode
@@ -645,12 +614,10 @@ Intended for running applications."
                            "g" #'revert-buffer))
 
 (use-package magit
-  :demand jacob-is-server-running
   :bind ( :map project-prefix-map
           ("v" . magit-project-status)))
 
 (use-package forge
-  :demand jacob-is-server-running
   :defer t)
 
 ;; FIXME: trying to optimise this package causes git gutter stuff to
@@ -662,13 +629,11 @@ Intended for running applications."
   (setq git-gutter-fr:side 'right-fringe))
 
 (use-package autoinsert
-  :demand jacob-is-server-running
   :hook (on-first-file-hook . auto-insert-mode)
   :config
   (setopt auto-insert-query t))
 
 (use-package tramp
-  :demand jacob-is-server-running
   :defer t
   :config
   (add-to-list 'tramp-remote-path 'tramp-own-remote-path)
@@ -676,7 +641,6 @@ Intended for running applications."
   )
 
 (use-package eglot
-  :demand jacob-is-server-running
   :defer t
   :init
   (defvar-keymap jacob-code-map
@@ -737,20 +701,17 @@ Useful for deleting ^M after `eglot-code-actions'."
 (require 'jacob-sharper)
 
 (use-package csproj-mode
-  :demand jacob-is-server-running
   :mode ("\\.csproj\\'" . csproj-mode))
 
 (use-package font-lock-ext ; dependency of `sln-mode'
-  :demand jacob-is-server-running
   :defer t)
 
 ;; TODO: package `sln-mode' for elpa/melpa?
 (use-package sln-mode
-  :demand jacob-is-server-running
   :mode ("\\.sln\\'" . sln-mode))
 
 (use-package fsharp-mode
-  :demand jacob-is-server-running
+  :defer t
   :mode ("\\.fs\\'" . fsharp-mode)
   :config
   (remove-hook 'project-find-functions #'fsharp-mode-project-root)
@@ -759,7 +720,6 @@ Useful for deleting ^M after `eglot-code-actions'."
 (require 'jacob-dired)
 
 (use-package esh-mode
-  :demand jacob-is-server-running
   :defer t
   :config
   (setopt eshell-scroll-to-bottom-on-output t)
@@ -787,14 +747,12 @@ Useful for deleting ^M after `eglot-code-actions'."
     (advice-add 'eshell-interrupt-process :after #'jacob-confirm-terminate-batch-job)))
 
 (use-package eldoc
-  :demand jacob-is-server-running
   :hook (prog-mode-hook . global-eldoc-mode)
   :delight eldoc-mode
   :config
   (setopt eldoc-documentation-strategy 'eldoc-documentation-compose))
 
 (use-package project
-  :demand jacob-is-server-running
   :defer t
   :config
   (setopt project-switch-commands '((project-find-file "Find file")
@@ -805,7 +763,6 @@ Useful for deleting ^M after `eglot-code-actions'."
                                     (project-compile "Compile"))))
 
 (use-package prodigy
-  :demand jacob-is-server-running
   :defer t
   :init
   (keymap-set project-prefix-map "l" #'prodigy)
@@ -846,19 +803,15 @@ Useful for deleting ^M after `eglot-code-actions'."
   (delight 'hi-lock-mode nil t))
 
 (use-package highlight-defined
-  :demand jacob-is-server-running
   :hook (emacs-lisp-mode-hook . highlight-defined-mode))
 
 (use-package hl-todo
-  :demand jacob-is-server-running
   :hook (after-init-hook . global-hl-todo-mode))
 
 (use-package lisp-extra-font-lock
-  :demand jacob-is-server-running
   :hook ((emacs-lisp-mode-hook lisp-mode-hook scheme-mode-hook) . lisp-extra-font-lock-mode))
 
 (use-package elisp-mode
-  :demand jacob-is-server-running
   :defer t
   :config
   (defun jacob-move-past-close-and-reindent ()
@@ -897,7 +850,6 @@ Useful for deleting ^M after `eglot-code-actions'."
   (setopt elisp-flymake-byte-compile-load-path load-path))
 
 (use-package scheme
-  :demand jacob-is-server-running
   :mode ("\\.scm\\'" . scheme-mode)
   :config
   (keymap-set scheme-mode-map "(" #'insert-parentheses)
@@ -917,15 +869,12 @@ Useful for deleting ^M after `eglot-code-actions'."
   :after (scheme geiser))
 
 (use-package mermaid-mode
-  :demand jacob-is-server-running
   :mode ("\\.mermaid\\'"))
 
 (use-package ob-mermaid
-  :demand jacob-is-server-running
   :after org)
 
 (use-package org
-  :demand jacob-is-server-running
   :mode ("\\.org\\'" . org-mode)
   :config
   (defun jacob-org-babel-tangle-delete-whitespace ()
@@ -991,7 +940,6 @@ Useful for deleting ^M after `eglot-code-actions'."
     (toggle-word-wrap 1)))
 
 (use-package org-agenda
-  :demand jacob-is-server-running
   :commands (org-agenda org-capture)
   :init
   (defvar-keymap jacob-org-agenda-map
@@ -1035,13 +983,11 @@ Useful for deleting ^M after `eglot-code-actions'."
                            "g" #'org-agenda-redo-all))
 
 (use-package org-src
-  :demand jacob-is-server-running
   :after org
   :config
   (setopt org-src-preserve-indentation t))
 
 (use-package org-compat
-  :demand jacob-is-server-running
   :after org
   :config
   (setopt org-calendar-to-agenda-key nil  ; don't bind calendar key
@@ -1049,7 +995,6 @@ Useful for deleting ^M after `eglot-code-actions'."
   )
 
 (use-package ox-latex
-  :demand jacob-is-server-running
   :after org
   :config
   (setopt org-latex-pdf-process (list "latexmk -pdf %f -shell-escape")) ; probably requires texlive
@@ -1060,22 +1005,18 @@ Useful for deleting ^M after `eglot-code-actions'."
 ;; (ox-extras-activate '(latex-header-blocks ignore-headlines))
 
 (use-package org-edna
-  :demand jacob-is-server-running
   :after org
   :delight
   :config
   (org-edna-mode 1))
 
 (use-package denote
-  :demand jacob-is-server-running
   :defer t)
 
 (use-package howm
-  :demand jacob-is-server-running
   :hook (after-init-hook . howm-menu))
 
 (use-package pulse
-  :demand jacob-is-server-running
   :defer t
   :init
   (defun jacob-pulse-line (&rest _)
@@ -1102,8 +1043,10 @@ Useful for deleting ^M after `eglot-code-actions'."
 
   (advice-add #'eval-defun :after #'jacob-pulse-defun))
 
+(use-package server
+  :hook (on-first-file-hook . server-start))
+
 (use-package smerge-mode
-  :demand jacob-is-server-running
   :defer t
   :config
   (defvar-keymap jacob-smerge-repeat-map
@@ -1115,7 +1058,6 @@ Useful for deleting ^M after `eglot-code-actions'."
     "SPC" #'smerge-keep-all))
 
 (use-package calendar
-  :demand jacob-is-server-running
   :defer t
   :config
   (jacob-xfk-bind-for-mode calendar-mode
@@ -1142,7 +1084,6 @@ Useful for deleting ^M after `eglot-code-actions'."
           calendar-mark-holidays-flag t))
 
 (use-package winner
-  :demand jacob-is-server-running
   :defer t
   :commands (winner-undo winner-redo)
   :hook (on-first-input-hook . winner-mode)
@@ -1152,7 +1093,6 @@ Useful for deleting ^M after `eglot-code-actions'."
     (keymap-set xah-fly-command-map "2" #'winner-redo)))
 
 (use-package compile
-  :demand jacob-is-server-running
   :defer t
   :init
   (keymap-global-set "<f5>" 'recompile)
@@ -1167,13 +1107,11 @@ Useful for deleting ^M after `eglot-code-actions'."
           compilation-scroll-output t))
 
 (use-package winnow
-  :demand jacob-is-server-running
   :hook (compilation-mode-hook . winnow-mode))
 
 (require 'jacob-sql)
 
 (use-package doc-view
-  :demand jacob-is-server-running
   :defer t
   :config
   (jacob-xfk-bind-for-mode doc-view-mode
@@ -1181,13 +1119,11 @@ Useful for deleting ^M after `eglot-code-actions'."
                            "j" 'doc-view-previous-page))
 
 (use-package treesit
-  :demand jacob-is-server-running
   :defer t
   :config
   (setopt treesit-font-lock-level 4))
 
 (use-package treesit-auto
-  :demand jacob-is-server-running
   :hook (prog-mode-hook . global-treesit-auto-mode)
   :config
   (add-to-list 'treesit-auto-recipe-list (make-treesit-auto-recipe
@@ -1202,7 +1138,6 @@ Useful for deleting ^M after `eglot-code-actions'."
   (treesit-auto-add-to-auto-mode-alist))
 
 (use-package typescript-ts-mode
-  :demand jacob-is-server-running
   :mode ("\\.ts" . typescript-ts-mode)
   :config
   (jacob-defhookf typescript-ts-mode-hook
@@ -1210,7 +1145,6 @@ Useful for deleting ^M after `eglot-code-actions'."
     (setq-local transpose-sexps-function nil)))
 
 (use-package yaml-ts-mode
-  :demand jacob-is-server-running
   :mode ("\\.ya?ml\\'" . yaml-ts-mode))
 
 (use-package message
@@ -1221,7 +1155,6 @@ Useful for deleting ^M after `eglot-code-actions'."
   (setopt message-send-mail-function 'smtpmail-send-it))
 
 (use-package nxml-mode
-  :demand jacob-is-server-running
   :defer t
   :init
   (add-to-list 'auto-mode-alist '("Directory.Packages.props" . nxml-mode)))
@@ -1231,7 +1164,6 @@ Useful for deleting ^M after `eglot-code-actions'."
   (key-chord-mode 1))
 
 (use-package avy
-  :demand jacob-is-server-running
   :defer t
   :init
   (key-chord-define-global "fj" #'avy-goto-char-timer)
@@ -1294,7 +1226,6 @@ Useful for deleting ^M after `eglot-code-actions'."
                                (?r . jacob-avy-eglot-rename))))
 
 (use-package apheleia
-  :demand jacob-is-server-running
   :delight '(:eval (if apheleia-inhibit "" " ⚘"))
   :hook (prog-mode-hook . apheleia-mode-maybe)
   :config
@@ -1315,7 +1246,6 @@ active, do not format the buffer."
   (add-to-list 'apheleia-skip-functions #'jacob-apheleia-skip-function))
 
 (use-package rainbow-mode
-  :demand jacob-is-server-running
   :delight rainbow-mode
   :hook (on-first-file-hook . rainbow-mode))
 
@@ -1326,7 +1256,6 @@ active, do not format the buffer."
   (eglot-booster-mode 1))
 
 (use-package dape
-  :demand jacob-is-server-running
   :defer t
   :config
   (setopt dape-info-hide-mode-line nil
@@ -1357,7 +1286,6 @@ active, do not format the buffer."
   (remove-hook 'dape-start-hook #'dape-info))
 
 (use-package ace-window
-  :demand jacob-is-server-running
   :defer t
   :init
   (defun jacob-split-or-switch-window ()
@@ -1382,7 +1310,6 @@ move to the new window. Otherwise, call `switch-buffer'."
           aw-scope 'frame))
 
 (use-package tex
-  :demand jacob-is-server-running
   :ensure auctex
   :commands (TeX-PDF-mode)
   :mode ("\\.tex\\'" . latex-mode)
@@ -1395,27 +1322,21 @@ move to the new window. Otherwise, call `switch-buffer'."
            (japanese-TeX-error-messages nil)))
 
 (use-package visual-fill-column
-  :demand jacob-is-server-running
   :hook ((org-mode-hook LaTeX-mode-hook) . visual-fill-column-mode))
 
 (use-package markdown-mode
-  :demand jacob-is-server-running
   :defer t)
 
 (use-package feature-mode
-  :demand jacob-is-server-running
   :defer t)
 
 (use-package vertico
-  :demand jacob-is-server-running
   :hook (jacob-first-minibuffer-activation-hook . vertico-mode))
 
 (use-package vertico-mouse
-  :demand jacob-is-server-running
   :hook (vertico-mode-hook . vertico-mouse-mode))
 
 (use-package orderless
-  :demand jacob-is-server-running
   :preface
   (defun jacob-load-orderless ()
     "Load the `orderless' library."
@@ -1425,11 +1346,9 @@ move to the new window. Otherwise, call `switch-buffer'."
   (setopt completion-styles '(orderless initials)))
 
 (use-package marginalia
-  :demand jacob-is-server-running
   :hook (jacob-first-minibuffer-activation-hook . marginalia-mode))
 
 (use-package consult
-  :demand jacob-is-server-running
   :defer t
   :init
   (with-eval-after-load "xah-fly-keys"
@@ -1472,13 +1391,11 @@ move to the new window. Otherwise, call `switch-buffer'."
   (keymap-set project-prefix-map "g" #'jacob-project-search))
 
 (use-package consult-imenu
-  :demand jacob-is-server-running
   :defer t
   :init
   (keymap-global-set "M-g i" #'consult-imenu))
 
 (use-package embark
-  :demand jacob-is-server-running
   :defer t
   :init
   (with-eval-after-load "xah-fly-keys"
@@ -1500,7 +1417,6 @@ move to the new window. Otherwise, call `switch-buffer'."
   :after (:and embark consult))
 
 (use-package expreg
-  :demand jacob-is-server-running
   :defer t
   :init
   (keymap-global-set "C-c SPC" #'expreg-expand)
@@ -1528,7 +1444,6 @@ move to the new window. Otherwise, call `switch-buffer'."
     (verb-json-get (oref (verb-stored-response response-id) body) "id")))
 
 (use-package sly
-  :demand jacob-is-server-running
   :hook (lisp-mode-hook . sly-mode)
   :config
   (sly-setup)
@@ -1559,43 +1474,37 @@ move to the new window. Otherwise, call `switch-buffer'."
   :after sly)
 
 (use-package sql-indent
-  :demand jacob-is-server-running
   :hook (sql-mode-hook . sqlind-minor-mode))
 
 (require 'jacob-gptel)
 
 (use-package aider
-  :demand jacob-is-server-running
-  :defer t)
+  :defer t
+  ;; (setenv "GEMINI_API_KEY" "")
+  :custom ((aider-args '("--model" "gemini/gemini-2.0-flash-exp" "--edit-format" "whole"))))
 
 (use-package gdscript-mode
-  :demand jacob-is-server-running
   :mode ("\\.gd\\'" . gdscript-ts-mode)
   :config
   (add-hook 'gdscript-ts-mode-hook #'indent-tabs-mode))
 
 (use-package eat
-  :demand jacob-is-server-running
   :when jacob-is-linux
   :defer t
   :init
   (add-hook 'eshell-mode-hook #'eat-eshell-mode))
 
 (use-package pdf-tools
-  :demand jacob-is-server-running
   :when jacob-is-linux
   :mode ("\\.[pP][dD][fF]\\'" . pdf-view-mode))
 
 (use-package grep
-  :demand jacob-is-server-running
+  :when jacob-is-windows
   :defer t
   :config
-  (setopt find-program (if (eq system-type 'gnu/linux)
-                           "C:/Program Files (x86)/GnuWin32/bin/find.exe"
-                         "find")))
+  (setopt find-program "C:/Program Files (x86)/GnuWin32/bin/find.exe"))
 
 (use-package just-mode
-  :demand jacob-is-server-running
   :defer t)
 
 
