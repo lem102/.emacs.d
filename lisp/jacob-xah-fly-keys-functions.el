@@ -147,13 +147,6 @@
         (t
          (kill-line))))
 
-(defun jacob-kill-paragraph ()
-  "Move to the beginning of the paragraph, then kill it."
-  (interactive)
-  (forward-paragraph)
-  (backward-paragraph)
-  (kill-paragraph 1))
-
 (defalias 'jacob-return-macro
   (kmacro "<return>"))
 

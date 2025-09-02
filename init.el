@@ -127,7 +127,6 @@ then remove this function from `find-file-hook'."
   (create-lockfiles nil)
   (history-length 1000)
   (history-delete-duplicates t)
-  (scroll-conservatively 101)
   (use-dialog-box nil)
   (use-short-answers t)
   (ring-bell-function 'ignore)
@@ -405,44 +404,6 @@ Intended for running applications."
               (t                      ; delete character
                (backward-delete-char 1)))))))
 
-(defun jacob-kill-line ()
-  "If region is active, kill it.  Otherwise:
-
-  If point is at the beginning of the line, kill the whole line.
-
-  If point is at the end of the line, kill until the beginning of the line.
-
-  Otherwise, kill from point to the end of the line."
-  (interactive)
-  (cond ((region-active-p)
-         (call-interactively #'kill-region))
-        ((bolp)
-         (kill-whole-line))
-        ((eolp)
-         (kill-line 0))
-        (t
-         (kill-line))))
-
-(keymap-global-unset "C-w")             ; `kill-region'
-(keymap-global-unset "C-M-w")           ; `append-next-kill'
-
-(defun jacob-kill-paragraph ()
-  "Move to the beginning of the paragraph, then kill it."
-  (interactive)
-  (forward-paragraph)
-  (backward-paragraph)
-  (kill-paragraph 1))
-
-(defun jacob-comment-dwim ()
-  "Toggle comment on current line or active region."
-  (interactive)
-  (cond ((or (region-active-p)
-             (= (point) (line-end-position)))
-         (comment-dwim nil))
-        (t
-         (comment-or-uncomment-region (line-beginning-position) (line-end-position))
-         (forward-line))))
-
 (require 'jacob-xah-fly-keys)
 
 (require 'jacob-yasnippet)
@@ -661,6 +622,8 @@ Useful for deleting ^M after `eglot-code-actions'."
 
   (advice-add 'eglot-code-actions :after #'jacob-remove-ret-character-from-buffer)
   (advice-add 'eglot-rename :after #'jacob-remove-ret-character-from-buffer)
+
+  (advice-add 'eglot-code-actions :after #'revert-buffer)
 
   (add-to-list 'eglot-server-programs '((csharp-mode csharp-ts-mode) . (lambda (_interactive _project)
                                                                          "Don't activate eglot when in a C# script."
@@ -995,12 +958,6 @@ Useful for deleting ^M after `eglot-code-actions'."
 ;; (require 'ox-extra)
 
 ;; (ox-extras-activate '(latex-header-blocks ignore-headlines))
-
-(use-package org-edna
-  :after org
-  :delight
-  :config
-  (org-edna-mode 1))
 
 (use-package denote
   :defer t)
@@ -1398,7 +1355,12 @@ move to the new window. Otherwise, call `switch-buffer'."
   (push 'embark--ignore-target (alist-get 'eglot-code-actions embark-target-injection-hooks))
 
   (keymap-set embark-identifier-map "r" #'eglot-rename)
-  (push 'embark--ignore-target (alist-get 'eglot-rename embark-target-injection-hooks)))
+  (push 'embark--ignore-target (alist-get 'eglot-rename embark-target-injection-hooks))
+
+  (keymap-unset embark-general-map "w")
+  (keymap-set embark-general-map "c" #'embark-copy-as-kill)
+
+  (keymap-set embark-general-map "x" #'kill-region))
 
 (use-package embark-consult
   :after (:and embark consult))
