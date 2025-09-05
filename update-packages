@@ -10,7 +10,7 @@
 
 (setq package-selected-packages '(no-littering
                                   on
-                                  delight
+                                  blackout
                                   helpful
                                   magit
                                   forge

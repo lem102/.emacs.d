@@ -81,6 +81,7 @@ For use in yasnippets."
 (use-package yasnippet
   :ensure t
   :demand
+  :blackout "yas"
   :config
   (jacob-yasnippet-config)
   :custom

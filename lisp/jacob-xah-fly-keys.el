@@ -65,6 +65,7 @@
 (use-package xah-fly-keys
   :ensure t
   :demand
+  :blackout (xah-fly-keys . " 🛪")
   :init
   (jacob-xah-fly-keys-initialise)
   :config

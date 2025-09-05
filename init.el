@@ -1,4 +1,4 @@
-;;; init.el --- Jacob's main init file. -*-lexical-binding: t-*-
+;;; init.el --- Jacob's main init file. -*-lexical-binding: t; apheleia-inhibit: nil; -*-
 ;;; Commentary:
 ;;; Code:
 
@@ -191,16 +191,13 @@ then remove this function from `find-file-hook'."
          ,@body)
        (add-hook ',hook #',function-name))))
 
-(use-package delight)
-
-(delight 'yas-minor-mode nil "yasnippet")
-(delight 'xah-fly-keys " 🛪")
+(use-package blackout)
 
 (use-package indent-aux
   :hook (after-init-hook . kill-ring-deindent-mode))
 
 (use-package which-key
-  :delight
+  :blackout
   :hook (on-first-input-hook . which-key-mode)
   :custom (which-key-idle-delay (cond (jacob-is-android 1)
                                       (t 0.01))))
@@ -230,7 +227,7 @@ then remove this function from `find-file-hook'."
            (confirm-kill-processes nil)))
 
 (use-package autorevert
-  :delight
+  :blackout
   :hook (on-first-file-hook . global-auto-revert-mode))
 
 (use-package window
@@ -517,7 +514,7 @@ Intended for running applications."
   :custom ((warning-minimum-level :error)))
 
 (use-package subword
-  :delight subword-mode
+  :blackout
   :hook (on-first-input-hook . global-subword-mode))
 
 (use-package paren
@@ -709,7 +706,7 @@ Useful for deleting ^M after `eglot-code-actions'."
 
 (use-package eldoc
   :hook (prog-mode-hook . global-eldoc-mode)
-  :delight eldoc-mode
+  :blackout
   :config
   (setopt eldoc-documentation-strategy 'eldoc-documentation-compose))
 
@@ -760,8 +757,7 @@ Useful for deleting ^M after `eglot-code-actions'."
                            "g" #'prodigy-restart))
 
 (use-package hi-lock
-  :config
-  (delight 'hi-lock-mode nil t))
+  :blackout)
 
 (use-package highlight-defined
   :hook (emacs-lisp-mode-hook . highlight-defined-mode))
@@ -774,6 +770,7 @@ Useful for deleting ^M after `eglot-code-actions'."
 
 (use-package elisp-mode
   :defer t
+  :hook (emacs-lisp-mode-hook . flymake-mode)
   :config
   (defun jacob-move-past-close-and-reindent ()
     "Advice for `move-past-close-and-reindent'."
@@ -782,14 +779,7 @@ Useful for deleting ^M after `eglot-code-actions'."
 
   (advice-add #'move-past-close-and-reindent :after #'jacob-move-past-close-and-reindent)
 
-  (defun jacob-indent-buffer ()
-    "Indent whole buffer.  Designed for use in `before-save-hook'."
-    (unless (ignore-errors smerge-mode)
-      (indent-region (point-min) (point-max))))
-
   (jacob-defhookf emacs-lisp-mode-hook
-    (flymake-mode 1)
-    (add-hook 'before-save-hook 'jacob-indent-buffer nil "LOCAL")
     (setq-local yas-key-syntaxes '("w_")))
 
   (defun jacob-eval-print-last-sexp ()
@@ -969,7 +959,12 @@ Useful for deleting ^M after `eglot-code-actions'."
   :defer t)
 
 (use-package howm
+  :blackout
   :hook (after-init-hook . howm-menu))
+
+(use-package action-lock
+  :defer t
+  :blackout)
 
 (use-package pulse
   :defer t
@@ -1176,7 +1171,9 @@ Useful for deleting ^M after `eglot-code-actions'."
                                (?r . jacob-avy-eglot-rename))))
 
 (use-package apheleia
-  :delight '(:eval (if apheleia-inhibit "" " ⚘"))
+  :blackout (apheleia-mode . '(:eval (if apheleia-inhibit
+                                         ""
+                                       " ⚘")))
   :hook (prog-mode-hook . apheleia-mode-maybe)
   :config
   (setq-default apheleia-inhibit t) ; set `apheleia-inhibit' to nil to enable
@@ -1196,7 +1193,7 @@ active, do not format the buffer."
   (add-to-list 'apheleia-skip-functions #'jacob-apheleia-skip-function))
 
 (use-package rainbow-mode
-  :delight rainbow-mode
+  :blackout
   :hook (on-first-file-hook . rainbow-mode))
 
 (use-package eglot-booster
@@ -1374,7 +1371,15 @@ move to the new window. Otherwise, call `switch-buffer'."
   (keymap-unset embark-general-map "w")
   (keymap-set embark-general-map "c" #'embark-copy-as-kill)
 
-  (keymap-unset embark-variable-map "c")
+  (defvar-keymap embark-variable-map
+    :doc "Keymap for Embark variable actions."
+    :parent embark-symbol-map
+    "=" #'set-variable
+    "s" #'customize-set-variable        ; modified
+    "u" #'customize-variable
+    "v" #'embark-save-variable-value
+    "<" #'embark-insert-variable-value
+    "t" #'embark-toggle-variable)
 
   (keymap-set embark-general-map "x" #'kill-region))
 
