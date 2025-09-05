@@ -34,7 +34,7 @@
                                   rainbow-mode
                                   dape
                                   ace-window
-                                  visual-fill-column
+                                  visual-replace-regexp
                                   markdown-mode
                                   feature-mode
                                   vertico

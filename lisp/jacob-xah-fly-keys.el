@@ -53,7 +53,6 @@
   ;; (keymap-set xah-fly-leader-key-map "d k" #'insert-pair)
   ;; (keymap-set xah-fly-leader-key-map "d l" #'insert-pair)
   ;; (keymap-set xah-fly-leader-key-map "d u" #'insert-pair)
-  (keymap-set xah-fly-leader-key-map "i i" #'consult-bookmark)
   (keymap-unset xah-fly-leader-key-map "i o") ; `bookmark-jump'
   (keymap-unset xah-fly-leader-key-map "i p") ; `bookmark-set'
   ;; (keymap-set xah-fly-leader-key-map "l 3" #'jacob-async-shell-command)

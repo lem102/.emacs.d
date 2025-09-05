@@ -205,6 +205,10 @@ then remove this function from `find-file-hook'."
   :custom (which-key-idle-delay (cond (jacob-is-android 1)
                                       (t 0.01))))
 
+(use-package mouse
+  :config
+  (context-menu-mode 1))
+
 (use-package mwheel
   :custom ((mouse-wheel-progressive-speed nil)
            (mouse-wheel-scroll-amount '(10 ((shift) . hscroll)
@@ -298,6 +302,7 @@ then remove this function from `find-file-hook'."
   :custom
   (indent-tabs-mode nil)               ; use spaces to indent
   (save-interprogram-paste-before-kill t)
+  (read-extended-command-predicate command-completion-default-include-p)
   :bind ("C-x u" . nil)                 ; `undo'
   )
 
@@ -411,9 +416,10 @@ Intended for running applications."
 (use-package minibuffer
   :config
   (define-key minibuffer-local-completion-map "SPC" 'self-insert-command)
-
-  (jacob-xfk-bind-for-mode minibuffer-setup
-                           "g" #'embark-export))
+  :custom
+  (completion-styles '(basic initials))
+  (completion-category-defaults nil)
+  (completion-category-overrides '((file (styles basic partial-completion)))))
 
 (use-package ibuffer
   :defer t
@@ -1084,7 +1090,7 @@ Useful for deleting ^M after `eglot-code-actions'."
 
   (add-to-list 'treesit-auto-langs 'gdscript)
   
-  (treesit-auto-add-to-auto-mode-alist))
+  (treesit-auto-add-to-auto-mode-alist 'all))
 
 (use-package typescript-ts-mode
   :mode ("\\.ts" . typescript-ts-mode)
@@ -1265,8 +1271,9 @@ move to the new window. Otherwise, call `switch-buffer'."
            (TeX-parse-self t)
            (japanese-TeX-error-messages nil)))
 
-(use-package visual-fill-column
-  :hook ((org-mode-hook LaTeX-mode-hook) . visual-fill-column-mode))
+(use-package visual-replace-regexp
+  :hook ((on-first-input-hook . visual-replace-global-mode)
+         (visual-replace-minibuffer-mode-hook . visual-replace-toggle-query)))
 
 (use-package markdown-mode
   :defer t)
@@ -1275,7 +1282,11 @@ move to the new window. Otherwise, call `switch-buffer'."
   :defer t)
 
 (use-package vertico
-  :hook (jacob-first-minibuffer-activation-hook . vertico-mode))
+  :hook (jacob-first-minibuffer-activation-hook . vertico-mode)
+  :custom (vertico-resize t))
+
+(use-package vertico-reverse
+  :hook (vertico-mode-hook . vertico-reverse-mode))
 
 (use-package vertico-mouse
   :hook (vertico-mode-hook . vertico-mouse-mode))
@@ -1287,7 +1298,7 @@ move to the new window. Otherwise, call `switch-buffer'."
     (require 'orderless))
   :hook (jacob-first-minibuffer-activation-hook . jacob-load-orderless)
   :config
-  (setopt completion-styles '(orderless initials)))
+  (add-to-list 'completion-styles 'orderless))
 
 (use-package marginalia
   :hook (jacob-first-minibuffer-activation-hook . marginalia-mode))
@@ -1299,8 +1310,11 @@ move to the new window. Otherwise, call `switch-buffer'."
     (keymap-set xah-fly-leader-key-map "v" #'consult-yank-from-kill-ring)
     (keymap-set xah-fly-leader-key-map "f" #'consult-buffer)
     (keymap-set xah-fly-leader-key-map "i j" #'consult-recent-file)
+    (keymap-set xah-fly-leader-key-map "i i" #'consult-bookmark)
     (keymap-set xah-fly-leader-key-map "e s" #'consult-line)
-    (keymap-set xah-fly-leader-key-map "k u" #'consult-goto-line))
+    (keymap-set xah-fly-leader-key-map "k u" #'consult-goto-line)
+    (keymap-set xah-fly-leader-key-map "j g" #'consult-info)
+    (keymap-set xah-fly-leader-key-map "j c" #'consult-man))
 
   (keymap-global-set "C-x b" #'consult-buffer)
   (keymap-global-set "M-y" #'consult-yank-from-kill-ring)
@@ -1359,6 +1373,8 @@ move to the new window. Otherwise, call `switch-buffer'."
 
   (keymap-unset embark-general-map "w")
   (keymap-set embark-general-map "c" #'embark-copy-as-kill)
+
+  (keymap-unset embark-variable-map "c")
 
   (keymap-set embark-general-map "x" #'kill-region))
 
