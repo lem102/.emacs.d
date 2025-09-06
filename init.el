@@ -1386,18 +1386,24 @@ move to the new window. Otherwise, call `switch-buffer'."
 (use-package embark-consult
   :after (:and embark consult))
 
+(use-package corfu
+  :config
+  (global-corfu-mode 1)
+
+  (keymap-unset corfu-map "M-SPC")
+  :custom
+  (corfu-quit-at-boundary nil)
+  (corfu-auto t))
+
+(use-package cape
+  :init
+  (add-to-list 'completion-at-point-functions #'cape-dabbrev))
+
 (use-package expreg
   :defer t
   :init
-  (keymap-global-set "C-c SPC" #'expreg-expand)
-  
-  (defvar-keymap jacob-expreg-repeat-map
-    :repeat t
-    "SPC" #'expreg-expand)
-
   (with-eval-after-load "xah-fly-keys"
-    (keymap-set xah-fly-command-map "8" #'expreg-expand)
-    (keymap-set xah-fly-command-map "9" #'expreg-contract))
+    (keymap-set xah-fly-command-map "g" 'expreg-expand))
 
   :config
   (setopt expreg-functions (delq 'expreg--subword expreg-functions)))
