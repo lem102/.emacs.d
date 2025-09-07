@@ -50,6 +50,7 @@
   :ensure t
   :demand
   :blackout (xah-fly-keys . " 🛪")
+  :if (not (eq system-type 'android))
   :init
   (jacob-xah-fly-keys-initialise)
   :config

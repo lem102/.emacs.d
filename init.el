@@ -428,37 +428,41 @@ Intended for running applications."
 
 (use-package replace
   :config
-  (jacob-xfk-bind-for-mode occur-mode
-                           "q" 'quit-window
-                           "i" 'occur-prev
-                           "k" 'occur-next))
+  (with-eval-after-load "xah-fly-keys"
+    (jacob-xfk-bind-for-mode occur-mode
+                             "q" 'quit-window
+                             "i" 'occur-prev
+                             "k" 'occur-next)))
 
 (use-package info
   :defer
   :config
-  (jacob-xfk-bind-for-mode Info-mode
-                           "q" #'quit-window
-                           "r" #'Info-scroll-up
-                           "e" #'Info-scroll-down
-                           "w" #'Info-up
-                           "g" #'Info-menu))
+  (with-eval-after-load "xah-fly-keys"
+    (jacob-xfk-bind-for-mode Info-mode
+                             "q" #'quit-window
+                             "r" #'Info-scroll-up
+                             "e" #'Info-scroll-down
+                             "w" #'Info-up
+                             "g" #'Info-menu)))
 
 (use-package man
   :defer
   :custom
   (Man-notify-method 'pushy)
   :config
-  (jacob-xfk-bind-for-mode Man-mode
-                           "q" #'quit-window))
+  (with-eval-after-load "xah-fly-keys"
+    (jacob-xfk-bind-for-mode Man-mode
+                             "q" #'quit-window)))
 
 (use-package diff
   :config
-  (jacob-xfk-bind-for-mode diff-mode
-                           "q" #'quit-window
-                           "e" #'diff-hunk-prev
-                           "r" #'diff-hunk-next
-                           "x" #'diff-hunk-kill
-                           "g" #'revert-buffer))
+  (with-eval-after-load "xah-fly-keys"
+    (jacob-xfk-bind-for-mode diff-mode
+                             "q" #'quit-window
+                             "e" #'diff-hunk-prev
+                             "r" #'diff-hunk-next
+                             "x" #'diff-hunk-kill
+                             "g" #'revert-buffer)))
 
 (use-package help
   :defer t
@@ -482,13 +486,14 @@ Intended for running applications."
 
 (use-package help-mode
   :config
-  (jacob-xfk-bind-for-mode help-mode
-                           "s" #'help-view-source
-                           "q" #'quit-window
-                           "e" #'help-go-back
-                           "r" #'help-go-forward
-                           "g" #'revert-buffer
-                           "w" #'jacob-help-edit))
+  (with-eval-after-load "xah-fly-keys"
+    (jacob-xfk-bind-for-mode help-mode
+                             "s" #'help-view-source
+                             "q" #'quit-window
+                             "e" #'help-go-back
+                             "r" #'help-go-forward
+                             "g" #'revert-buffer
+                             "w" #'jacob-help-edit)))
 
 (use-package helpful
   :defer t
@@ -503,12 +508,13 @@ Intended for running applications."
     (keymap-set xah-fly-leader-key-map "j v" #'helpful-key)
     (keymap-set xah-fly-leader-key-map "j b" #'helpful-command))
   :config
-  (jacob-xfk-bind-for-mode helpful-mode
-                           "q" #'quit-window
-                           "g" #'helpful-update
-                           "e" #'backward-button
-                           "r" #'forward-button
-                           "s" #'push-button))
+  (with-eval-after-load "xah-fly-keys"
+    (jacob-xfk-bind-for-mode helpful-mode
+                             "q" #'quit-window
+                             "g" #'helpful-update
+                             "e" #'backward-button
+                             "r" #'forward-button
+                             "s" #'push-button)))
 
 (use-package warnings
   :custom ((warning-minimum-level :error)))
@@ -548,34 +554,37 @@ Intended for running applications."
 (use-package vc-git
   :defer t
   :config
-  (jacob-xfk-bind-for-mode vc-git-log-view-mode
-                           "q" #'quit-window))
+  (with-eval-after-load "xah-fly-keys"
+    (jacob-xfk-bind-for-mode vc-git-log-view-mode
+                             "q" #'quit-window)))
 
 (use-package vc-dir
   :defer t
   :config
-  (jacob-xfk-bind-for-mode vc-dir-mode
-                           "q" #'quit-window
-                           "g" #'revert-buffer
-                           "i" #'vc-dir-previous-line
-                           "k" #'vc-dir-next-line
-                           "o" #'vc-dir-next-directory
-                           "u" #'vc-dir-previous-directory
-                           "s" #'vc-dir-find-file
-                           "e" #'vc-dir-mark
-                           "r" #'vc-dir-unmark
-                           "v" #'vc-next-action
-                           "p" #'vc-push
-                           ";" #'jacob-git-push-set-upstream
-                           "=" #'vc-diff
-                           "x" #'vc-dir-hide-up-to-date))
+  (with-eval-after-load "xah-fly-keys"
+    (jacob-xfk-bind-for-mode vc-dir-mode
+                             "q" #'quit-window
+                             "g" #'revert-buffer
+                             "i" #'vc-dir-previous-line
+                             "k" #'vc-dir-next-line
+                             "o" #'vc-dir-next-directory
+                             "u" #'vc-dir-previous-directory
+                             "s" #'vc-dir-find-file
+                             "e" #'vc-dir-mark
+                             "r" #'vc-dir-unmark
+                             "v" #'vc-next-action
+                             "p" #'vc-push
+                             ";" #'jacob-git-push-set-upstream
+                             "=" #'vc-diff
+                             "x" #'vc-dir-hide-up-to-date)))
 
 (use-package vc-annotate
   :defer t
   :config
-  (jacob-xfk-bind-for-mode vc-annotate-mode
-                           "q" #'quit-window
-                           "g" #'revert-buffer))
+  (with-eval-after-load "xah-fly-keys"
+    (jacob-xfk-bind-for-mode vc-annotate-mode
+                             "q" #'quit-window
+                             "g" #'revert-buffer)))
 
 (use-package magit
   :bind ( :map project-prefix-map
@@ -617,7 +626,7 @@ Intended for running applications."
   (defun jacob-remove-ret-character-from-buffer (&rest _)
     "Remove all occurances of ^M from the buffer.
 
-Useful for deleting ^M after `eglot-code-actions'."
+    Useful for deleting ^M after `eglot-code-actions'."
     (save-excursion
       (goto-char (point-min))
       (while (search-forward (char-to-string 13) nil t)
@@ -738,23 +747,25 @@ Useful for deleting ^M after `eglot-code-actions'."
 
   (add-hook 'prodigy-mode-hook #'hl-line-mode)
 
-  (jacob-xfk-bind-for-mode prodigy-mode
-                           "d" #'prodigy-stop
-                           "e" #'prodigy-mark
-                           "g" #'jacob-project-search
-                           "f" #'project-find-file
-                           "i" #'prodigy-prev
-                           "k" #'prodigy-next
-                           "q" #'quit-window
-                           "r" #'prodigy-unmark
-                           "s" #'prodigy-restart
-                           "v" #'prodigy-display-process)
+  (with-eval-after-load "xah-fly-keys"
+    (jacob-xfk-bind-for-mode prodigy-mode
+                             "d" #'prodigy-stop
+                             "e" #'prodigy-mark
+                             "g" #'jacob-project-search
+                             "f" #'project-find-file
+                             "i" #'prodigy-prev
+                             "k" #'prodigy-next
+                             "q" #'quit-window
+                             "r" #'prodigy-unmark
+                             "s" #'prodigy-restart
+                             "v" #'prodigy-display-process))
 
   (add-hook 'prodigy-view-mode-hook #'compilation-minor-mode)
 
-  (jacob-xfk-bind-for-mode prodigy-view-mode
-                           "q" #'quit-window
-                           "g" #'prodigy-restart))
+  (with-eval-after-load "xah-fly-keys"
+    (jacob-xfk-bind-for-mode prodigy-view-mode
+                             "q" #'quit-window
+                             "g" #'prodigy-restart)))
 
 (use-package hi-lock
   :blackout)
@@ -812,9 +823,10 @@ Useful for deleting ^M after `eglot-code-actions'."
 (use-package geiser-mode
   :after (scheme geiser)
   :config
-  (jacob-xfk-bind-for-mode geiser-mode
-                           "SPC , m" #'geiser-eval-last-sexp
-                           "SPC , d" #'geiser-eval-definition))
+  (with-eval-after-load "xah-fly-keys"
+    (jacob-xfk-bind-for-mode geiser-mode
+                             "SPC , m" #'geiser-eval-last-sexp
+                             "SPC , d" #'geiser-eval-definition)))
 
 (use-package geiser-guile
   :after (scheme geiser))
@@ -929,9 +941,10 @@ Useful for deleting ^M after `eglot-code-actions'."
     (setq-local tool-bar-map org-agenda-tool-bar-map)
     (hl-line-mode 1))
 
-  (jacob-xfk-bind-for-mode org-agenda-mode
-                           "q" #'quit-window
-                           "g" #'org-agenda-redo-all))
+  (with-eval-after-load "xah-fly-keys"
+    (jacob-xfk-bind-for-mode org-agenda-mode
+                             "q" #'quit-window
+                             "g" #'org-agenda-redo-all)))
 
 (use-package org-src
   :after org
@@ -1010,19 +1023,20 @@ Useful for deleting ^M after `eglot-code-actions'."
 (use-package calendar
   :defer t
   :config
-  (jacob-xfk-bind-for-mode calendar-mode
-                           "q" #'quit-window
-                           "i" #'calendar-backward-week
-                           "k" #'calendar-forward-week
-                           "j" #'calendar-backward-day
-                           "l" #'calendar-forward-day
-                           "u" #'calendar-backward-month
-                           "o" #'calendar-forward-month
-                           "d" #'diary-view-entries
-                           "s" #'diary-insert-entry
-                           "m" #'diary-mark-entries
-                           "." #'calendar-goto-today
-                           "t" #'calendar-set-mark)
+  (with-eval-after-load "xah-fly-keys"
+    (jacob-xfk-bind-for-mode calendar-mode
+                             "q" #'quit-window
+                             "i" #'calendar-backward-week
+                             "k" #'calendar-forward-week
+                             "j" #'calendar-backward-day
+                             "l" #'calendar-forward-day
+                             "u" #'calendar-backward-month
+                             "o" #'calendar-forward-month
+                             "d" #'diary-view-entries
+                             "s" #'diary-insert-entry
+                             "m" #'diary-mark-entries
+                             "." #'calendar-goto-today
+                             "t" #'calendar-set-mark))
 
   (add-hook 'calendar-today-visible-hook 'calendar-mark-today)
 
@@ -1047,9 +1061,10 @@ Useful for deleting ^M after `eglot-code-actions'."
   :init
   (keymap-global-set "<f5>" 'recompile)
   :config
-  (jacob-xfk-bind-for-mode compilation-mode
-                           "g" #'recompile
-                           "q" #'quit-window)
+  (with-eval-after-load "xah-fly-keys"
+    (jacob-xfk-bind-for-mode compilation-mode
+                             "g" #'recompile
+                             "q" #'quit-window))
 
   (add-hook 'compilation-filter-hook #'ansi-color-compilation-filter)
 
@@ -1064,9 +1079,10 @@ Useful for deleting ^M after `eglot-code-actions'."
 (use-package doc-view
   :defer t
   :config
-  (jacob-xfk-bind-for-mode doc-view-mode
-                           "l" 'doc-view-next-page
-                           "j" 'doc-view-previous-page))
+  (with-eval-after-load "xah-fly-keys"
+    (jacob-xfk-bind-for-mode doc-view-mode
+                             "l" 'doc-view-next-page
+                             "j" 'doc-view-previous-page)))
 
 (use-package treesit
   :defer t
@@ -1182,8 +1198,8 @@ Useful for deleting ^M after `eglot-code-actions'."
 
   (defun jacob-apheleia-skip-function ()
     "Function for `apheleia-skip-functions'.
-If point is in a yasnippet field or the minibuffer or region are
-active, do not format the buffer."
+    If point is in a yasnippet field or the minibuffer or region are
+    active, do not format the buffer."
     (or (seq-find (lambda (overlay)
                     (overlay-get overlay 'yas--snippet))
                   (overlays-at (point)))
@@ -1238,8 +1254,8 @@ active, do not format the buffer."
   (defun jacob-split-or-switch-window ()
     "Split or switch window.
 
-If there is only one window in the current frame, split the frame and
-move to the new window. Otherwise, call `switch-buffer'."
+    If there is only one window in the current frame, split the frame and
+    move to the new window. Otherwise, call `switch-buffer'."
     (interactive)
     (cond ((= 1 (let ((total-windows 0))
                   (dolist (frame (frame-list))
@@ -1356,8 +1372,9 @@ move to the new window. Otherwise, call `switch-buffer'."
   (with-eval-after-load "xah-fly-keys"
     (keymap-set xah-fly-command-map "\\" #'embark-act)
 
-    (jacob-xfk-bind-for-mode embark-collect
-                             "q" #'quit-window))
+    (with-eval-after-load "xah-fly-keys"
+      (jacob-xfk-bind-for-mode embark-collect
+                               "q" #'quit-window)))
   :config
   (setopt embark-cycle-key "\\"
           embark-help-key "h")
@@ -1412,8 +1429,9 @@ move to the new window. Otherwise, call `switch-buffer'."
   :after org
   :hook (org-mode-hook . verb-mode)
   :config
-  (jacob-xfk-bind-for-mode verb-response-body-mode
-                           "q" #'quit-window)
+  (with-eval-after-load "xah-fly-keys"
+    (jacob-xfk-bind-for-mode verb-response-body-mode
+                             "q" #'quit-window))
 
   (defun jacob-verb-id (response-id)
     "Get the id property from the stored verb response pertaining to RESPONSE-ID."
@@ -1426,11 +1444,12 @@ move to the new window. Otherwise, call `switch-buffer'."
 
   (sly-symbol-completion-mode 0)
 
-  (jacob-xfk-bind-for-mode sly-mode
-                           "SPC , m" #'sly-eval-last-expression
-                           "SPC , d" #'sly-eval-defun
-                           "SPC , e" #'sly-eval-buffer
-                           "SPC w k" #'sly-edit-definition)
+  (with-eval-after-load "xah-fly-keys"
+    (jacob-xfk-bind-for-mode sly-mode
+                             "SPC , m" #'sly-eval-last-expression
+                             "SPC , d" #'sly-eval-defun
+                             "SPC , e" #'sly-eval-buffer
+                             "SPC w k" #'sly-edit-definition))
 
   (setopt sly-auto-start 'always
           inferior-lisp-program "sbcl")
@@ -1528,18 +1547,18 @@ move to the new window. Otherwise, call `switch-buffer'."
 
 (defvar jacob-format-words-style-and-start nil
   "Pair of currently selected style and starting point.
-If nil, means you havent used the command for the first time yet.")
+  If nil, means you havent used the command for the first time yet.")
 
 (defun jacob-format-words ()
   "Command for formating words into identifiers when writing code.
 
-On first use, ask for formatting style (e.g. kebab, camel,
-etc).  Format one word backwards in selected style and store the style
-and the position of point after formatting, return point to where it
-was when command called.
+  On first use, ask for formatting style (e.g. kebab, camel,
+                                               etc).  Format one word backwards in selected style and store the style
+  and the position of point after formatting, return point to where it
+  was when command called.
 
-On consecutive use, apply stored formatting to word before stored
-point."
+  On consecutive use, apply stored formatting to word before stored
+  point."
   (interactive)
 
   (undo-boundary)
@@ -1599,7 +1618,7 @@ point."
 
 (defun jacob-swap-visible-buffers ()
   "If two windows in current frame, swap their buffers.
-Otherwise, display error message."
+  Otherwise, display error message."
   (interactive)
   (if (length= (window-list) 2)
       (let* ((current-window (car (window-list)))
@@ -1616,10 +1635,10 @@ Otherwise, display error message."
 
 (defun jacob-gitlab-push-set-upstream ()
   "Push the current branch and create an upstream branch.
-Use GitLab push options to create a merge request and set all
-necessary values.
+  Use GitLab push options to create a merge request and set all
+  necessary values.
 
-For use with GitLab only."
+  For use with GitLab only."
   (interactive)
   (let* ((branch-name (with-temp-buffer
                         (eshell-command "git symbolic-ref HEAD --short" t)
