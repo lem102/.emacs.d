@@ -912,7 +912,6 @@ Intended for running applications."
                                    ("KILL" . +org-todo-cancel)))
 
   (jacob-defhookf org-mode-hook
-    (visual-fill-column-mode 1)
     (toggle-truncate-lines 0)
     (toggle-word-wrap 1)))
 
@@ -1291,7 +1290,6 @@ Intended for running applications."
   :commands (TeX-PDF-mode)
   :mode ("\\.tex\\'" . latex-mode)
   :config
-  (add-hook 'LaTeX-mode-hook #'visual-fill-column-mode 1)
   (add-hook 'LaTeX-mode-hook #'toggle-word-wrap 1)
   (add-hook 'LaTeX-mode-hook #'TeX-PDF-mode 1)
   :custom ((TeX-auto-save t)
