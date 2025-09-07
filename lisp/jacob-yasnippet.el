@@ -71,7 +71,8 @@ For use in yasnippets."
 
 (defun jacob-yasnippet-config ()
   "Configuration for `yasnippet'."
-  (yas-global-mode 1)
+  (yas-reload-all)
+  (add-hook 'prog-mode-hook #'yas-minor-mode)
 
   (jacob-defhookf snippet-mode-hook
     (setq-local auto-save-visited-mode nil))

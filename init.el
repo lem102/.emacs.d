@@ -1435,7 +1435,6 @@ Intended for running applications."
   :init
   (with-eval-after-load "xah-fly-keys"
     (keymap-set xah-fly-command-map "g" 'expreg-expand))
-
   :config
   (setopt expreg-functions (delq 'expreg--subword expreg-functions)))
 
