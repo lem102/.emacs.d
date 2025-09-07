@@ -48,17 +48,31 @@
                                              #'magit))
                            keymap)))
 
-(tool-bar-add-item "exit"
-                   #'keyboard-quit
-                   'keyboard-quit)
+(use-package tool-bar
+  :config
+  (modifier-bar-mode 1)
 
-(tool-bar-add-item "next-node"
-                   #'other-window
-                   'other-window)
+  (defun jacob-tool-bar-config ()
+    "Configure the toolbar. For use in `after-init-hook'."
+    (tool-bar-add-item "exit"
+                       #'keyboard-quit
+                       'keyboard-quit)
 
-(keymap-global-unset "<tool-bar> <open-file>")
-(keymap-global-unset "<tool-bar> <dired>")
-(keymap-global-unset "<tool-bar> <save-buffer>")
+    (tool-bar-add-item "next-node"
+                       #'other-window
+                       'other-window)
+
+    (keymap-global-unset "<tool-bar> <open-file>")
+    (keymap-global-unset "<tool-bar> <dired>")
+    (keymap-global-unset "<tool-bar> <save-buffer>")
+    (keymap-global-unset "<tool-bar> <copy>")
+    (keymap-global-unset "<tool-bar> <cut>")
+    (keymap-global-unset "<tool-bar> <paste>")
+    (keymap-global-unset "<tool-bar> <separator-1>")
+    (keymap-global-unset "<tool-bar> <separator-2>")
+    (keymap-global-unset "<tool-bar> <separator-3>"))
+
+  (add-hook 'after-init-hook #'jacob-tool-bar-config))
 
 ;;(x-popup-menu t '("jacobtest" ("jacobtest2" ("key" . "value"))))
 
