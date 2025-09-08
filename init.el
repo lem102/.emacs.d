@@ -77,9 +77,9 @@
 
   (setq tool-bar-map (make-sparse-keymap))
 
-  (tool-bar-add-item "exit" #'keyboard-quit 'keyboard-quit)
+  (tool-bar-add-item "cancel" #'keyboard-quit 'keyboard-quit)
   (tool-bar-add-item "next-node" #'other-window 'other-window)
-  (tool-bar-add-item "next-node" #'imenu 'imenu)
+  (tool-bar-add-item "index" #'imenu 'imenu)
   :custom
   (tool-bar-button-margin (if jacob-is-android 40 4))
   (tool-bar-position (if jacob-is-android 'bottom 'top)))
