@@ -39,31 +39,35 @@
 
 (use-package on)
 
-(keymap-global-unset "<menu-bar> <options>")
+(use-package menu-bar
+  :config
+  (menu-bar-mode (if jacob-is-android 1 0))
 
-(keymap-global-set "<menu-bar> <jacob>"
-                   (cons "jacob"
-                         (let ((keymap (make-sparse-keymap)))
-                           (keymap-set keymap
-       				                   "<mx>"
-                                       (cons "M-x"
-                                             #'execute-extended-command))
+  (keymap-global-unset "<menu-bar> <options>")
 
-                           (keymap-set keymap
-				                       "<restart>"
-                                       (cons "restart"
-                                             #'restart-emacs))
+  (keymap-global-set "<menu-bar> <jacob>"
+                     (cons "jacob"
+                           (let ((keymap (make-sparse-keymap)))
+                             (keymap-set keymap
+                                         "<mx>"
+                                         (cons "M-x"
+                                               #'execute-extended-command))
 
-                           (keymap-set keymap
-				                       "<bookmark-jump>"
-                                       (cons "bookmark"
-                                             #'bookmark-jump))
+                             (keymap-set keymap
+                                         "<restart>"
+                                         (cons "restart"
+                                               #'restart-emacs))
 
-                           (keymap-set keymap
-				                       "<magit>"
-                                       (cons "magit"
-                                             #'magit))
-                           keymap)))
+                             (keymap-set keymap
+                                         "<bookmark-jump>"
+                                         (cons "bookmark"
+                                               #'bookmark-jump))
+
+                             (keymap-set keymap
+                                         "<magit>"
+                                         (cons "magit"
+                                               #'magit))
+                             keymap))))
 
 (use-package tool-bar
   :config
@@ -1297,7 +1301,9 @@ Intended for running applications."
   :defer t)
 
 (use-package mct
-  :if jacob-is-android)
+  :if jacob-is-android
+  :config
+  (mct-mode 1))
 
 (use-package vertico
   :if (not jacob-is-android)
