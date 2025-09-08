@@ -1378,8 +1378,8 @@ Intended for running applications."
 (use-package imenu
   :defer t
   :custom
-  (imenu-use-popup-menu nil)
-  (imenu-flatten t))
+  (imenu-use-popup-menu (not jacob-is-android))
+  (imenu-flatten jacob-is-android))
 
 (use-package consult-imenu
   :defer t
