@@ -38,6 +38,7 @@
                                   markdown-mode
                                   feature-mode
                                   vertico
+                                  mct
                                   orderless
                                   marginalia
                                   consult

@@ -1296,14 +1296,20 @@ Intended for running applications."
 (use-package feature-mode
   :defer t)
 
+(use-package mct
+  :if jacob-is-android)
+
 (use-package vertico
+  :if (not jacob-is-android)
   :hook (jacob-first-minibuffer-activation-hook . vertico-mode)
   :custom (vertico-resize t))
 
 (use-package vertico-reverse
+  :if (not jacob-is-android)
   :hook (vertico-mode-hook . vertico-reverse-mode))
 
 (use-package vertico-mouse
+  :if (not jacob-is-android)
   :hook (vertico-mode-hook . vertico-mouse-mode))
 
 (use-package orderless
