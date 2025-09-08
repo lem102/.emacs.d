@@ -1363,6 +1363,12 @@ Intended for running applications."
 
   (keymap-set project-prefix-map "g" #'jacob-project-search))
 
+(use-package imenu
+  :defer t
+  :custom
+  (imenu-use-popup-menu nil)
+  (imenu-flatten t))
+
 (use-package consult-imenu
   :defer t
   :init
