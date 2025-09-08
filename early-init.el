@@ -1,16 +1,8 @@
-(defconst jacob-is-android (eq system-type 'android)
-  "Is the current OS android?")
-
-(tool-bar-mode (if jacob-is-android 1 0))
-
-(setopt tool-bar-button-margin (if jacob-is-android 40 4)
-        tool-bar-position (if jacob-is-android 'bottom 'top))
-
-(menu-bar-mode (if jacob-is-android 1 0))
-
+(tool-bar-mode 0)
+(menu-bar-mode 0)
 (scroll-bar-mode 0)
 
-(when jacob-is-android
+(when (eq system-type 'android)
   (setenv "PATH" (format "%s:%s" "/data/data/com.termux/files/usr/bin"
 		                 (getenv "PATH")))
   (push "/data/data/com.termux/files/usr/bin" exec-path)

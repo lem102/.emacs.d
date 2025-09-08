@@ -5,6 +5,23 @@
 (add-to-list 'load-path (concat (file-name-directory user-init-file)
                                 "lisp"))
 
+;; read environment file and variable setup
+
+(defvar jacob-font-size 11
+  "Font size to use.")
+
+(defconst jacob-is-windows (eq system-type 'windows-nt)
+  "Is the current OS windows?")
+
+(defconst jacob-is-linux (eq system-type 'gnu/linux)
+  "Is the current OS linux?")
+
+(defconst jacob-is-android (eq system-type 'android)
+  "Is the current OS android?")
+
+(when (file-exists-p "~/.emacs.d/environment.el")
+  (load-file "~/.emacs.d/environment.el"))
+
 ;; use-package
 (require 'use-package)
 
@@ -50,45 +67,18 @@
 
 (use-package tool-bar
   :config
-  (modifier-bar-mode 1)
+  ;; (tool-bar-mode (if jacob-is-android 1 0))
+  (tool-bar-mode 1)
+  (modifier-bar-mode (if jacob-is-android 1 0))
 
-  (defun jacob-tool-bar-config ()
-    "Configure the toolbar. For use in `after-init-hook'."
-    (tool-bar-add-item "exit"
-                       #'keyboard-quit
-                       'keyboard-quit)
+  (setq tool-bar-map (make-sparse-keymap))
 
-    (tool-bar-add-item "next-node"
-                       #'other-window
-                       'other-window)
-
-    (keymap-global-unset "<tool-bar> <open-file>")
-    (keymap-global-unset "<tool-bar> <dired>")
-    (keymap-global-unset "<tool-bar> <save-buffer>")
-    (keymap-global-unset "<tool-bar> <copy>")
-    (keymap-global-unset "<tool-bar> <cut>")
-    (keymap-global-unset "<tool-bar> <paste>")
-    (keymap-global-unset "<tool-bar> <separator-1>")
-    (keymap-global-unset "<tool-bar> <separator-2>")
-    (keymap-global-unset "<tool-bar> <separator-3>"))
-
-  (add-hook 'after-init-hook #'jacob-tool-bar-config))
-
-;;(x-popup-menu t '("jacobtest" ("jacobtest2" ("key" . "value"))))
-
-;; read environment file and variable setup
-
-(defvar jacob-font-size 11
-  "Font size to use.")
-
-(defconst jacob-is-windows (eq system-type 'windows-nt)
-  "Is the current OS windows?")
-
-(defconst jacob-is-linux (eq system-type 'gnu/linux)
-  "Is the current OS linux?")
-
-(when (file-exists-p "~/.emacs.d/environment.el")
-  (load-file "~/.emacs.d/environment.el"))
+  (tool-bar-add-item "exit" #'keyboard-quit 'keyboard-quit)
+  (tool-bar-add-item "next-node" #'other-window 'other-window)
+  (tool-bar-add-item "next-node" #'imenu 'imenu)
+  :custom
+  (tool-bar-button-margin (if jacob-is-android 40 4))
+  (tool-bar-position (if jacob-is-android 'bottom 'top)))
 
 ;; custom hooks
 
