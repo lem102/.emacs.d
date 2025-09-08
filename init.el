@@ -1353,6 +1353,8 @@ Intended for running applications."
         (consult-git-grep)
       (consult-grep)))
 
+  (keymap-set project-prefix-map "g" #'jacob-project-search)
+
   (defun jacob-consult-buffer-state-no-tramp ()
     "Buffer state function that doesn't preview Tramp buffers."
     (let ((orig-state (consult--buffer-state))
@@ -1371,9 +1373,7 @@ Intended for running applications."
           xref-show-xrefs-function 'consult-xref
           xref-show-definitions-function 'consult-xref
           consult--source-buffer (plist-put consult--source-buffer
-                                            :state #'jacob-consult-buffer-state-no-tramp))
-
-  (keymap-set project-prefix-map "g" #'jacob-project-search))
+                                            :state #'jacob-consult-buffer-state-no-tramp)))
 
 (use-package imenu
   :defer t
