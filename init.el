@@ -1094,8 +1094,8 @@ Intended for running applications."
 
 (use-package treesit
   :defer t
-  :config
-  (setopt treesit-font-lock-level 4))
+  :custom
+  (treesit-font-lock-level 4))
 
 (use-package treesit-auto
   :hook (prog-mode-hook . global-treesit-auto-mode)
