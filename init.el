@@ -1313,8 +1313,7 @@ Intended for running applications."
 
 (use-package mct
   :if jacob-is-android
-  :config
-  (mct-mode 1))
+  :hook (jacob-first-minibuffer-activation-hook . mct-mode))
 
 (use-package vertico
   :if (not jacob-is-android)
