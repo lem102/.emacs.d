@@ -254,6 +254,13 @@ then remove this function from `find-file-hook'."
                            (side . right))))
   (split-height-threshold nil))
 
+(use-package zoom
+  :defer t
+  :blackout
+  :hook (jacob-first-minibuffer-activation-hook . zoom-mode)
+  :custom
+  (zoom-size '(0.618 . 0.618)))
+
 (defvar-keymap jacob-recenter-repeat-map
   :repeat t
   "p" #'recenter-top-bottom)
