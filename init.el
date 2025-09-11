@@ -1121,6 +1121,9 @@ Intended for running applications."
 (use-package yaml-ts-mode
   :mode ("\\.ya?ml\\'" . yaml-ts-mode))
 
+(use-package php-ts-mode
+  :mode ("\\.php\\'" . php-ts-mode))
+
 (use-package message
   :after gnus
   :config
