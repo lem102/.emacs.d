@@ -71,8 +71,7 @@
 
 (use-package tool-bar
   :config
-  ;; (tool-bar-mode (if jacob-is-android 1 0))
-  (tool-bar-mode 1)
+  (tool-bar-mode (if jacob-is-android 1 0))
   (modifier-bar-mode (if jacob-is-android 1 0))
 
   (setq tool-bar-map (make-sparse-keymap))
@@ -82,7 +81,8 @@
   (tool-bar-add-item "index" #'imenu 'imenu)
   :custom
   (tool-bar-button-margin (if jacob-is-android 40 4))
-  (tool-bar-position (if jacob-is-android 'bottom 'top)))
+  (tool-bar-position (if jacob-is-android 'bottom 'top))
+  (tool-bar-style 'image))
 
 ;; custom hooks
 
@@ -101,6 +101,7 @@ then remove this function from `find-file-hook'."
 (use-package emacs
   :config
   ;; c code
+  (setq-default vertical-scroll-bar 'right)
   ;; enable emoji fonts
   (set-fontset-font t
                     'emoji
@@ -126,6 +127,7 @@ then remove this function from `find-file-hook'."
 
   :custom
   ;; c code
+  (scroll-conservatively 101)
   (tab-width 4) ; set default tab char's display width to 4 spaces
   (truncate-lines (cond (jacob-is-android t)
                         (t nil)))
@@ -215,8 +217,7 @@ then remove this function from `find-file-hook'."
   (context-menu-mode 1))
 
 (use-package mwheel
-  :custom ((mouse-wheel-progressive-speed nil)
-           (mouse-wheel-scroll-amount '(10 ((shift) . hscroll)
+  :custom ((mouse-wheel-scroll-amount '(10 ((shift) . hscroll)
                                            ((meta))
                                            ((control) . text-scale)))))
 
