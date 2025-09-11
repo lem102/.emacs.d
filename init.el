@@ -1428,9 +1428,8 @@ Intended for running applications."
   :after (:and embark consult))
 
 (use-package corfu
+  :hook (prog-mode-hook . corfu-mode)
   :config
-  (global-corfu-mode 1)
-
   (keymap-unset corfu-map "M-SPC")
   :custom
   (corfu-quit-at-boundary nil)
