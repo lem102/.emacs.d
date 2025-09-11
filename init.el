@@ -1321,10 +1321,6 @@ Intended for running applications."
   :hook (jacob-first-minibuffer-activation-hook . vertico-mode)
   :custom (vertico-resize t))
 
-(use-package vertico-reverse
-  :if (not jacob-is-android)
-  :hook (vertico-mode-hook . vertico-reverse-mode))
-
 (use-package vertico-mouse
   :if (not jacob-is-android)
   :hook (vertico-mode-hook . vertico-mouse-mode))
