@@ -667,6 +667,8 @@ Intended for running applications."
 
   (push '((gdscript-mode gdscript-ts-mode) "localhost" 6008) eglot-server-programs)
 
+  (add-to-list 'eglot-server-programs '(scala-ts-mode "metals"))
+
   (eglot--code-action eglot-code-action-organize-imports-ts "source.organizeImports.ts")
   (eglot--code-action eglot-code-action-add-missing-imports-ts "source.addMissingImports.ts")
 
@@ -1204,8 +1206,12 @@ Intended for running applications."
   :hook (prog-mode-hook . apheleia-mode-maybe)
   :config
   (setq-default apheleia-inhibit t) ; set `apheleia-inhibit' to nil to enable
+
   (add-to-list 'apheleia-formatters '(csharpier "dotnet" "csharpier" "--write-stdout"))
   (add-to-list 'apheleia-mode-alist '(csharp-ts-mode . csharpier))
+
+  (add-to-list 'apheleia-formatters '(scalafmt "scalafmt" "--stdin" "--non-interactive" "--quiet" "--stdout"))
+  (add-to-list 'apheleia-mode-alist '(scala-ts-mode . scalafmt))
 
   (defun jacob-apheleia-skip-function ()
     "Function for `apheleia-skip-functions'.
