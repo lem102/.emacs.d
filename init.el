@@ -290,7 +290,7 @@ then remove this function from `find-file-hook'."
 
 (use-package custom
   :config
-  (load-theme 'modus-vivendi-tinted))
+  (load-theme 'modus-operandi-tinted))
 
 (use-package cus-edit
   :custom
