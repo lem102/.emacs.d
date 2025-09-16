@@ -990,6 +990,7 @@ Intended for running applications."
   :blackout)
 
 (use-package pulse
+  :disabled
   :defer t
   :init
   (defun jacob-pulse-line (&rest _)
@@ -1287,7 +1288,8 @@ Intended for running applications."
   :config
   (setopt aw-keys '(?a ?s ?d ?f ?q ?w ?e ?r)
           aw-minibuffer-flag t
-          aw-scope 'frame))
+          aw-scope 'frame
+          aw-dispatch-when-more-than 3))
 
 (use-package tex
   :ensure auctex
@@ -1514,7 +1516,11 @@ Intended for running applications."
 
 (use-package pdf-tools
   :when jacob-is-linux
-  :mode ("\\.[pP][dD][fF]\\'" . pdf-view-mode))
+  :mode ("\\.[pP][dD][fF]\\'" . pdf-view-mode)
+  :config
+  (with-eval-after-load "xah-fly-keys"
+    (jacob-xfk-bind-for-mode pdf-view-mode
+                             "c" #'pdf-view-kill-ring-save)))
 
 (use-package grep
   :when jacob-is-windows
