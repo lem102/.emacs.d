@@ -58,7 +58,13 @@
                                   gdscript-mode
                                   eat
                                   pdf-tools
-                                  just-mode)
+                                  just-mode
+                                  auctex
+                                  exec-path-from-shell
+                                  scala-ts-mode
+                                  sbt-mode
+                                  lsp-metals
+                                  visual-replace)
       package-vc-selected-packages '((eglot-booster :url "https://github.com/jdtsmith/eglot-booster")
                                      (sln-mode :url "https://github.com/sensorflo/sln-mode.git")
                                      (font-lock-ext :url "https://github.com/sensorflo/font-lock-ext.git")))

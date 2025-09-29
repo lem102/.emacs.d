@@ -19,6 +19,9 @@
 (defconst jacob-is-android (eq system-type 'android)
   "Is the current OS android?")
 
+(defconst jacob-is-mac (eq system-type 'darwin)
+  "Is the current OS a mac?")
+
 (when (file-exists-p "~/.emacs.d/environment.el")
   (load-file "~/.emacs.d/environment.el"))
 
@@ -41,7 +44,7 @@
 
 (use-package menu-bar
   :config
-  (menu-bar-mode (if jacob-is-android 1 0))
+  (menu-bar-mode (if (or jacob-is-mac jacob-is-android) 1 0))
 
   (keymap-global-unset "<menu-bar> <options>")
 
@@ -290,7 +293,7 @@ then remove this function from `find-file-hook'."
 
 (use-package custom
   :config
-  (load-theme 'modus-operandi-tinted))
+  (load-theme 'modus-vivendi-tinted))
 
 (use-package cus-edit
   :custom
@@ -673,6 +676,22 @@ Intended for running applications."
   (eglot--code-action eglot-code-action-add-missing-imports-ts "source.addMissingImports.ts")
 
   (setopt eglot-ignored-server-capabilities '(:documentOnTypeFormattingProvider)))
+
+(use-package lsp-mode
+  :hook (scala-ts-mode-hook . lsp)
+  :custom
+  (lsp-headerline-breadcrumb-enable nil)
+  (lsp-lens-enable nil))
+
+(use-package lsp-metals
+  :after lsp-mode
+  :custom
+  (lsp-metals-super-method-lenses-enabled nil)
+  (lsp-metals-inlay-hints-enable-inferred-types nil)
+  (lsp-metals-inlay-hints-enable-type-parameters nil)
+  (lsp-metals-inlay-hints-enable-implicit-arguments nil)
+  (lsp-metals-inlay-hints-enable-implicit-conversions nil)
+  (lsp-metals-inlay-hints-enable-hints-in-pattern-match nil))
 
 (require 'jacob-csharp-mode)
 
@@ -1292,7 +1311,6 @@ Intended for running applications."
           aw-dispatch-when-more-than 3))
 
 (use-package tex
-  :ensure auctex
   :commands (TeX-PDF-mode)
   :mode ("\\.tex\\'" . latex-mode)
   :config
@@ -1430,14 +1448,6 @@ Intended for running applications."
 (use-package embark-consult
   :after (:and embark consult))
 
-(use-package corfu
-  :hook (prog-mode-hook . corfu-mode)
-  :config
-  (keymap-unset corfu-map "M-SPC")
-  :custom
-  (corfu-quit-at-boundary nil)
-  (corfu-auto t))
-
 (use-package cape
   :init
   (add-to-list 'completion-at-point-functions #'cape-dabbrev))
@@ -1513,6 +1523,11 @@ Intended for running applications."
   :defer t
   :init
   (add-hook 'eshell-mode-hook #'eat-eshell-mode))
+
+(use-package exec-path-from-shell
+  :if jacob-is-mac
+  :config
+  (exec-path-from-shell-initialize))
 
 (use-package pdf-tools
   :when jacob-is-linux
