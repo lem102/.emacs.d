@@ -1,0 +1,4 @@
+# -*- mode: snippet -*-
+# key: val
+# --
+val ${1:x} = $0

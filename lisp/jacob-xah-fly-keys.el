@@ -42,6 +42,7 @@
   (keymap-set xah-fly-leader-key-map "/ c" #'vc-create-branch)
   (keymap-unset xah-fly-leader-key-map "i o") ; `bookmark-jump'
   (keymap-unset xah-fly-leader-key-map "i p") ; `bookmark-set'
+  (keymap-set xah-fly-leader-key-map "i p" `("Project" . ,project-prefix-map))
 
   (keymap-set xah-fly-leader-key-map "w j" #'xref-find-references)
   (keymap-set xah-fly-leader-key-map "w l" #'xref-go-back))
