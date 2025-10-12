@@ -1,0 +1,4 @@
+# -*- mode: snippet -*-
+# key: def
+# --
+def ${1:x}($2): $3 = $0

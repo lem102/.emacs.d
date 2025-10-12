@@ -1,0 +1,4 @@
+# -*- mode: snippet -*-
+# key: message
+# --
+(message "%s" $0)

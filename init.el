@@ -647,7 +647,8 @@ Intended for running applications."
   (advice-add 'eglot-code-actions :after #'jacob-remove-ret-character-from-buffer)
   (advice-add 'eglot-rename :after #'jacob-remove-ret-character-from-buffer)
 
-  (advice-add 'eglot-code-actions :after #'revert-buffer)
+  ;; TODO: this causes problems for scala metals
+  ;; (advice-add 'eglot-code-actions :after #'revert-buffer)
 
   (add-to-list 'eglot-server-programs '((csharp-mode csharp-ts-mode) . (lambda (_interactive _project)
                                                                          "Don't activate eglot when in a C# script."
@@ -670,7 +671,7 @@ Intended for running applications."
 
   (push '((gdscript-mode gdscript-ts-mode) "localhost" 6008) eglot-server-programs)
 
-  (add-to-list 'eglot-server-programs '(scala-ts-mode "metals"))
+  (add-to-list 'eglot-server-programs '(scala-ts-mode . ("metals" "-Dmetals.http=on")))
 
   (eglot--code-action eglot-code-action-organize-imports-ts "source.organizeImports.ts")
   (eglot--code-action eglot-code-action-add-missing-imports-ts "source.addMissingImports.ts")
@@ -678,7 +679,7 @@ Intended for running applications."
   (setopt eglot-ignored-server-capabilities '(:documentOnTypeFormattingProvider)))
 
 (use-package lsp-mode
-  :hook (scala-ts-mode-hook . lsp)
+  ;; :hook (scala-ts-mode-hook . lsp)
   :custom
   (lsp-headerline-breadcrumb-enable nil)
   (lsp-lens-enable nil))
@@ -713,6 +714,35 @@ Intended for running applications."
   :config
   (remove-hook 'project-find-functions #'fsharp-mode-project-root)
   (setopt compilation-error-regexp-alist (remq 'fsharp compilation-error-regexp-alist)))
+
+(use-package scala-ts-mode
+  :defer t
+  :config
+  (defun jacob-bloop-compile ()
+    "Recompile the project with bloop."
+    (interactive)
+    (let ((default-directory (project-root (project-current))))
+      (shell-command "bloop compile microservice")))
+
+  (defun jacob-scala-test-file ()
+    "Test the current file."
+    (interactive)
+    (let ((package (treesit-node-text
+                    (car
+                     (treesit-query-capture (treesit-buffer-root-node)
+                                            '((package_clause name: (package_identifier (identifier) @x)))
+                                            nil
+                                            nil
+                                            "NODE_ONLY"))))
+          (class (treesit-node-text
+                  (car
+                   (treesit-query-capture (treesit-buffer-root-node)
+                                          '((class_definition name: (identifier) @x))
+                                          nil
+                                          nil
+                                          "NODE_ONLY"))))
+          (default-directory (project-root (project-current))))
+      (sbt-command (format "testOnly %s.%s" package class)))))
 
 (require 'jacob-dired)
 

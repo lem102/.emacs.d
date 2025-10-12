@@ -23,13 +23,10 @@
 
   (require 'jacob-xah-fly-keys-functions)
 
-  (defvar-keymap jacob-isearch-repeat-map
-    :repeat t
-    "s" #'isearch-repeat-forward
-    "r" #'isearch-repeat-backward)
-
   (keymap-global-set "<f7>" #'xah-fly-leader-key-map)
   (keymap-global-set "M-SPC" #'xah-fly-command-mode-activate)
+
+  (keymap-set xah-fly-command-map "t" #'set-mark-command)
 
   (keymap-set xah-fly-command-map ";" #'jacob-end-of-line)
   (keymap-set xah-fly-command-map "d" #'jacob-backspace)
