@@ -27,6 +27,8 @@
   (keymap-global-set "M-SPC" #'xah-fly-command-mode-activate)
 
   (keymap-set xah-fly-command-map "t" #'set-mark-command)
+  (keymap-set xah-fly-leader-key-map "s" #'exchange-point-and-mark)
+  (keymap-set xah-fly-command-map "@" #'delete-window)
 
   (keymap-set xah-fly-command-map ";" #'jacob-end-of-line)
   (keymap-set xah-fly-command-map "d" #'jacob-backspace)

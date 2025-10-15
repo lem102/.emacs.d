@@ -394,29 +394,37 @@ Intended for running applications."
   character."
   (interactive)
   (undo-boundary)
+  (push-mark)
   (if (region-active-p)
       (delete-active-region)
     (when (= 1 (point))
       (user-error "Beginning of buffer"))
     (let ((char-class (char-syntax (char-before)))
-          (f (if current-prefix-arg
-                 #'delete-pair
-               #'kill-sexp)))
+          (delete-function (if current-prefix-arg
+                               #'delete-pair
+                             #'kill-sexp)))
       (unless (ignore-errors
-                (funcall jacob-backspace-function f))
+                (funcall jacob-backspace-function delete-function))
         (cond ((= ?\" char-class)     ; string
                (if (nth 3 (syntax-ppss))
-                   (backward-char)
+                   (progn
+                     (backward-char)
+                     (save-excursion
+                       (forward-sexp)
+                       (push-mark)))
                  (backward-sexp))
-               (funcall f))
+               (funcall delete-function))
               ((= ?\( char-class)     ; delete from start of pair
                (backward-char)
-               (funcall f))
+               (save-excursion
+                 (forward-sexp)
+                 (push-mark))
+               (funcall delete-function))
               ((= ?\) char-class)     ; delete from end of pair
                (backward-sexp)
-               (funcall f))
+               (funcall delete-function))
               (t                      ; delete character
-               (backward-delete-char 1)))))))
+               (delete-char -1)))))))
 
 (require 'jacob-xah-fly-keys)
 
@@ -925,37 +933,7 @@ Intended for running applications."
 
   (setopt org-startup-folded t
           org-tags-column 0
-          org-capture-templates '(("i" "Inbox" entry (file "") "* TODO %?\n:PROPERTIES:\n:CREATED: %U\n:END:"))
-          org-todo-keywords '((sequence
-                               "TODO(t)"  ; A task that needs doing & is ready to do
-                               "PROJ(p)"  ; A project, which usually contains other tasks
-                               "LOOP(r)"  ; A recurring task
-                               "STRT(s)"  ; A task that is in progress
-                               "WAIT(w)"  ; Something external is holding up this task
-                               "HOLD(h)"  ; This task is paused/on hold because of me
-                               "IDEA(i)"  ; An unconfirmed and unapproved task or notion
-                               "|"
-                               "DONE(d)"  ; Task successfully completed
-                               "KILL(k)") ; Task was cancelled, aborted, or is no longer applicable
-                              (sequence
-                               "[ ](T)"   ; A task that needs doing
-                               "[-](S)"   ; Task is in progress
-                               "[?](W)"   ; Task is being held up or paused
-                               "|"
-                               "[X](D)")  ; Task was completed
-                              (sequence
-                               "|"
-                               "OKAY(o)"
-                               "YES(y)"
-                               "NO(n)"))
-          org-todo-keyword-faces '(("[-]"  . +org-todo-active)
-                                   ("STRT" . +org-todo-active)
-                                   ("[?]"  . +org-todo-onhold)
-                                   ("WAIT" . +org-todo-onhold)
-                                   ("HOLD" . +org-todo-onhold)
-                                   ("PROJ" . +org-todo-project)
-                                   ("NO"   . +org-todo-cancel)
-                                   ("KILL" . +org-todo-cancel)))
+          org-capture-templates '(("i" "Inbox" entry (file "") "* TODO %?\n:PROPERTIES:\n:CREATED: %U\n:END:")))
 
   (jacob-defhookf org-mode-hook
     (toggle-truncate-lines 0)
