@@ -752,6 +752,11 @@ Intended for running applications."
           (default-directory (project-root (project-current))))
       (sbt-command (format "testOnly %s.%s" package class)))))
 
+(use-package web-mode
+  :defer t
+  :config
+  (add-to-list 'auto-mode-alist '("\\.scala\\.html\\'" . web-mode)))
+
 (require 'jacob-dired)
 
 (use-package esh-mode
