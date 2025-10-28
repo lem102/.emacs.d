@@ -753,6 +753,28 @@ Intended for running applications."
           (default-directory (project-root (project-current))))
       (sbt-command (format "testOnly %s.%s" package class)))))
 
+(use-package sbt-mode
+  :defer t
+  :config
+  (defun jacob-compilation-project-file ()
+    "Somehow determine the filepath for the compilation error"
+    (save-match-data
+      (let (
+            (filename-from-error (match-string 1)) ;; FIXME: this will break when filename is not in first re group
+            )
+        (seq-find (lambda (f)
+                    (string= (file-name-nondirectory f)
+                             filename-from-error))
+                  (project-files (project-current))))))
+
+  (add-to-list 'compilation-error-regexp-alist-alist
+               '(jacob-sbt-test-fail-re
+                 ".* (\\([a-zA-Z\\.]+\\):\\([0-9]+\\))"
+                 jacob-compilation-project-file
+                 2))
+
+  (add-to-list 'compilation-error-regexp-alist 'jacob-sbt-test-fail-re))
+
 (use-package web-mode
   :defer t
   :config
