@@ -1604,18 +1604,18 @@ Intended for running applications."
 
 (defvar jacob-format-words-style-and-start nil
   "Pair of currently selected style and starting point.
-  If nil, means you havent used the command for the first time yet.")
+If nil, means you havent used the command for the first time yet.")
 
 (defun jacob-format-words ()
   "Command for formating words into identifiers when writing code.
 
-  On first use, ask for formatting style (e.g. kebab, camel,
-                                               etc).  Format one word backwards in selected style and store the style
-  and the position of point after formatting, return point to where it
-  was when command called.
+On first use, ask for formatting style (e.g. kebab, camel,
+etc).  Format one word backwards in selected style and store the style
+and the position of point after formatting, return point to where it
+was when command called.
 
-  On consecutive use, apply stored formatting to word before stored
-  point."
+On consecutive use, apply stored formatting to word before stored
+point."
   (interactive)
 
   (undo-boundary)
@@ -1675,7 +1675,7 @@ Intended for running applications."
 
 (defun jacob-swap-visible-buffers ()
   "If two windows in current frame, swap their buffers.
-  Otherwise, display error message."
+Otherwise, display error message."
   (interactive)
   (if (length= (window-list) 2)
       (let* ((current-window (car (window-list)))
@@ -1692,10 +1692,10 @@ Intended for running applications."
 
 (defun jacob-gitlab-push-set-upstream ()
   "Push the current branch and create an upstream branch.
-  Use GitLab push options to create a merge request and set all
-  necessary values.
+Use GitLab push options to create a merge request and set all
+necessary values.
 
-  For use with GitLab only."
+For use with GitLab only."
   (interactive)
   (let* ((branch-name (with-temp-buffer
                         (eshell-command "git symbolic-ref HEAD --short" t)
