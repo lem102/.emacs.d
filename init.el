@@ -730,7 +730,8 @@ Intended for running applications."
     "Recompile the project with bloop."
     (interactive)
     (let ((default-directory (project-root (project-current))))
-      (shell-command "bloop compile microservice")))
+      (shell-command "bloop clean")
+      (async-shell-command "bloop compile")))
 
   (defun jacob-scala-test-file ()
     "Test the current file."
