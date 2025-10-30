@@ -625,6 +625,11 @@ Intended for running applications."
   (setopt tramp-archive-enabled nil) ; lots of problems. for now, disable it!
   )
 
+(use-package dump-jump
+  :config
+  ;; TODO: investigate why this doesn't work for git-grep
+  (setq-default dumb-jump-force-searcher 'grep))
+
 (use-package eglot
   :defer t
   :init
@@ -641,7 +646,8 @@ Intended for running applications."
   :config
   (jacob-defhookf eglot-managed-mode-hook
     (eglot-inlay-hints-mode 0)
-    (setq-local eldoc-documentation-strategy 'eldoc-documentation-compose))
+    (setq-local eldoc-documentation-strategy 'eldoc-documentation-compose-eagerly)
+    (setq-local xref-backend-functions '(eglot-xref-backend dumb-jump-xref-activate t)))
 
   (defun jacob-remove-ret-character-from-buffer (&rest _)
     "Remove all occurances of ^M from the buffer.
