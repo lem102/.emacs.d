@@ -779,7 +779,19 @@ Intended for running applications."
                  jacob-compilation-project-file
                  2))
 
-  (add-to-list 'compilation-error-regexp-alist 'jacob-sbt-test-fail-re))
+  (add-to-list 'compilation-error-regexp-alist 'jacob-sbt-test-fail-re)
+
+  (add-to-list 'compilation-error-regexp-alist-alist
+               '(jacob-sbt-error
+                 "^\\[error][[:space:]]--[[:space:]].*Error: \\([^:]+\\):\\([[:digit:]]+\\):\\([[:digit:]]+\\)" 1 2 3 nil 1))
+
+  (add-to-list 'compilation-error-regexp-alist 'jacob-sbt-error)
+
+  (add-to-list 'compilation-error-regexp-alist-alist
+               '(jacob-sbt-warning
+                 "^\\[warn][[:space:]]--[[:space:]].*Warning: \\([^:]+\\):\\([[:digit:]]+\\):\\([[:digit:]]+\\)" 1 2 3 1 1))
+
+  (add-to-list 'compilation-error-regexp-alist 'jacob-sbt-warning))
 
 (use-package web-mode
   :defer t
