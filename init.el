@@ -625,10 +625,11 @@ Intended for running applications."
   (setopt tramp-archive-enabled nil) ; lots of problems. for now, disable it!
   )
 
-(use-package dump-jump
+(use-package dumb-jump
   :config
-  ;; TODO: investigate why this doesn't work for git-grep
-  (setq-default dumb-jump-force-searcher 'grep))
+  (when jacob-is-mac
+    ;; problems on mac mean git grep doesn't work :(
+    (setq-default dumb-jump-force-searcher 'grep)))
 
 (use-package eglot
   :defer t
