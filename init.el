@@ -751,7 +751,23 @@ Disables the eglot backend when inside a `.g8' template."
                                           nil
                                           "NODE_ONLY"))))
           (default-directory (project-root (project-current))))
-      (sbt-command (format "testOnly %s.%s" package class)))))
+      (compile (format "sbt \"~testOnly %s.%s\"" package class))))
+
+  (defun jacob-scala-dollar ()
+    "Insert a dollar. If inside a string, enable string interpolation."
+    (interactive)
+    (unless (eq major-mode 'scala-ts-mode)
+      (user-error "Not in a `scala-ts-mode' buffer"))
+    (insert "$")
+    (let ((string-node (treesit-parent-until (treesit-node-at (point))
+                                             "string"
+                                             "INCLUDE-NODE")))
+      (when string-node
+        (save-excursion
+          (goto-char (treesit-node-start string-node))
+          (insert "s")))))
+
+  (keymap-set scala-ts-mode-map "$" #'jacob-scala-dollar))
 
 (use-package sbt-mode
   :defer t
