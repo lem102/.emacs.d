@@ -430,6 +430,8 @@ Intended for running applications."
 
 (require 'jacob-yasnippet)
 
+(require 'jacob-fly-keys)
+
 (use-package minibuffer
   :config
   (define-key minibuffer-local-completion-map "SPC" 'self-insert-command)
