@@ -144,11 +144,32 @@
          (kill-whole-line))
         ((eolp)
          (kill-line 0))
+        ((and (= ?\( (char-syntax (char-before)))
+              (= ?\) (char-syntax (char-after))))
+         (kill-line))
+        ((= ?\) (char-syntax (char-after)))
+         (puni-backward-kill-line))
         (t
-         (kill-line))))
+         (puni-kill-line))))
 
 (defalias 'jacob-return-macro
   (kmacro "<return>"))
+
+(defun jacob-mark-line ()
+  "Mark the current line."
+  (interactive)
+  (if (region-active-p)
+      (end-of-line 2)
+    (push-mark (line-beginning-position) "NOMSG" "ACTIVATE")
+    (end-of-line)))
+
+(defun jacob-mark-paragraph ()
+  "TODO: write documentation."
+  (interactive)
+  (unless (region-active-p)
+    (backward-paragraph)
+    (push-mark (point) "NOMSG" "ACTIVATE"))
+  (forward-paragraph))
 
 (provide 'jacob-xah-fly-keys-functions)
 

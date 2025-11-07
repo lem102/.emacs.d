@@ -54,7 +54,8 @@
   :init
   (jacob-xah-fly-keys-initialise)
   :config
-  (jacob-xah-fly-keys-config))
+  (jacob-xah-fly-keys-config)
+  (xah-fly-keys 0))
 
 (provide 'jacob-xah-fly-keys)
 
