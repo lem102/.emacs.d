@@ -1147,7 +1147,8 @@ Disables the eglot backend when inside a `.g8' template."
   (add-hook 'compilation-filter-hook #'ansi-color-compilation-filter)
 
   (setopt compilation-always-kill t
-          compilation-scroll-output t))
+          compilation-scroll-output t
+          compilation-ask-about-save nil))
 
 (use-package winnow
   :hook (compilation-mode-hook . winnow-mode))
