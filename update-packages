@@ -15,6 +15,7 @@
                                   magit
                                   forge
                                   csproj-mode
+                                  sharper
                                   dired-rsync
                                   prodigy
                                   highlight-defined
@@ -62,9 +63,11 @@
                                   exec-path-from-shell
                                   scala-ts-mode
                                   sbt-mode
-                                  lsp-metals
                                   visual-replace
-                                  dump-jump)
+                                  dump-jump
+                                  xah-fly-keys
+                                  ryo-modal
+                                  yasnippet)
       package-vc-selected-packages '((eglot-booster :url "https://github.com/jdtsmith/eglot-booster")
                                      (sln-mode :url "https://github.com/sensorflo/sln-mode.git")
                                      (font-lock-ext :url "https://github.com/sensorflo/font-lock-ext.git")))
