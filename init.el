@@ -659,6 +659,14 @@ Intended for running applications."
       (while (search-forward (char-to-string 13) nil t)
         (replace-match ""))))
 
+  (defun jacob-eglot-xref-backend ()
+    "Custom eglot xref backend.
+Disables the eglot backend when inside a `.g8' template."
+    (unless (string-match-p ".g8" default-directory)
+      'eglot))
+
+  (advice-add 'eglot-xref-backend :override #'jacob-eglot-xref-backend)
+
   (advice-add 'eglot-code-actions :after #'jacob-remove-ret-character-from-buffer)
   (advice-add 'eglot-rename :after #'jacob-remove-ret-character-from-buffer)
 
@@ -691,23 +699,8 @@ Intended for running applications."
   (eglot--code-action eglot-code-action-organize-imports-ts "source.organizeImports.ts")
   (eglot--code-action eglot-code-action-add-missing-imports-ts "source.addMissingImports.ts")
 
-  (setopt eglot-ignored-server-capabilities '(:documentOnTypeFormattingProvider)))
-
-(use-package lsp-mode
-  ;; :hook (scala-ts-mode-hook . lsp)
-  :custom
-  (lsp-headerline-breadcrumb-enable nil)
-  (lsp-lens-enable nil))
-
-(use-package lsp-metals
-  :after lsp-mode
-  :custom
-  (lsp-metals-super-method-lenses-enabled nil)
-  (lsp-metals-inlay-hints-enable-inferred-types nil)
-  (lsp-metals-inlay-hints-enable-type-parameters nil)
-  (lsp-metals-inlay-hints-enable-implicit-arguments nil)
-  (lsp-metals-inlay-hints-enable-implicit-conversions nil)
-  (lsp-metals-inlay-hints-enable-hints-in-pattern-match nil))
+  (setopt eglot-ignored-server-capabilities '(:documentOnTypeFormattingProvider)
+          eglot-stay-out-of '(imenu)))
 
 (require 'jacob-csharp-mode)
 
