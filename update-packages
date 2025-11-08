@@ -64,7 +64,7 @@
                                   scala-ts-mode
                                   sbt-mode
                                   visual-replace
-                                  dump-jump
+                                  dumb-jump
                                   xah-fly-keys
                                   ryo-modal
                                   yasnippet)

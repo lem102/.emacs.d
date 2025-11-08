@@ -35,8 +35,8 @@
                                                 'box
                                               'bar)))))
 
-(add-hook 'minibuffer-setup-hook #'jacob-disable-jacob-fly-keys-mode)
-(add-hook 'minibuffer-exit-hook #'jacob-enable-jacob-fly-keys-mode)
+(add-hook 'minibuffer-setup-hook #'jacob-fly-keys-disable)
+(add-hook 'minibuffer-exit-hook #'jacob-fly-keys-enable)
 
 (ryo-modal-keys
  ("j" backward-char)
