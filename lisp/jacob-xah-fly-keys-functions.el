@@ -171,6 +171,23 @@
     (push-mark (point) "NOMSG" "ACTIVATE"))
   (forward-paragraph))
 
+(defun jacob-copy-line-or-region ()
+  "Copy current line or region."
+  (interactive)
+  (cond ((region-active-p)
+         (kill-ring-save nil nil "REGION"))
+        ((eq last-command this-command)
+         (forward-line)
+         (kill-append "\n"
+                      nil)
+         (kill-append (concat "\n"
+                              (buffer-substring (line-beginning-position)
+                                                (line-end-position)))
+                      nil))
+        (t
+         (kill-ring-save (line-beginning-position) (line-end-position))
+         (forward-line))))
+
 (provide 'jacob-xah-fly-keys-functions)
 
 ;;; jacob-xah-fly-keys-functions.el ends here

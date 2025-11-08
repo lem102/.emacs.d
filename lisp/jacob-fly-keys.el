@@ -63,8 +63,7 @@
  ("f" jacob-fly-keys-disable)
 
  ("g" expreg-expand)
-
- ("w" xah-shrink-whitespaces)
+ ("w" delete-all-space)
 
  ("e" backward-kill-word)
  ("r" kill-word)
@@ -74,7 +73,7 @@
  ("p" recenter-top-bottom)
 
  ("x" jacob-kill-line)
- ("c" xah-copy-line-or-region)
+ ("c" jacob-copy-line-or-region)
  ("v" xah-paste-or-paste-previous)
 
  ("z" xah-comment-dwim)
