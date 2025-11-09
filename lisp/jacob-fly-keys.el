@@ -9,6 +9,7 @@
 (require 'ryo-modal)
 (require 'eglot)
 (require 'winner)
+(require 'jacob-xah-fly-keys-functions)
 
 (define-global-minor-mode jacob-fly-keys-mode ryo-modal-mode
   (lambda ()
@@ -119,10 +120,12 @@
     (("k" helpful-callable)
      ("l" helpful-variable)
      ("v" helpful-key)
-     ("i" describe-char)))
+     ("i" describe-char)
+     ("g" info)))
    ("l"
-    (("e" toggle-frame-maximized)
-     ("a" global-text-scale-adjust)
+    (("a" global-text-scale-adjust)
+     ("e" toggle-frame-maximized)
+     ("d" eshell)
      ("o" count-words)))
    ("g"
     (("h" xah-delete-current-text-block)
