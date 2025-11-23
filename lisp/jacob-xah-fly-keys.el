@@ -8,7 +8,9 @@
 (defun jacob-xah-fly-keys-initialise ()
   "Initialise `xah-fly-keys'."
   (setq xah-fly-use-control-key nil
-        xah-fly-use-meta-key nil))
+        xah-fly-use-meta-key nil
+        xah-fly-command-mode-cursor-color nil
+        xah-fly-insert-mode-cursor-color nil))
 
 (defvar-keymap jacob-xfk-map)
 
