@@ -935,7 +935,10 @@ Disables the eglot backend when inside a `.g8' template."
   (keymap-set emacs-lisp-mode-map "(" #'insert-parentheses)
   (keymap-set emacs-lisp-mode-map ")" #'move-past-close-and-reindent)
 
-  (setopt elisp-flymake-byte-compile-load-path load-path))
+  (setopt elisp-flymake-byte-compile-load-path load-path)
+
+  (font-lock-add-keywords 'emacs-lisp-mode
+                          '(("(use-package \\([[:word:]-]+\\)" 1 'font-lock-function-name-face))))
 
 (use-package scheme
   :mode ("\\.scm\\'" . scheme-mode)
