@@ -938,7 +938,23 @@ Disables the eglot backend when inside a `.g8' template."
   (setopt elisp-flymake-byte-compile-load-path load-path)
 
   (font-lock-add-keywords 'emacs-lisp-mode
-                          '(("(use-package \\([[:word:]-]+\\)" 1 'font-lock-function-name-face))))
+                          '(("(use-package \\([[:word:]-]+\\)" 1 'font-lock-function-name-face)))
+
+  (defun jacob-font-lock-programming-setup ()
+    "Setup faces locally for programming."
+    (dolist (face '(font-lock-type-face
+                    font-lock-keyword-face
+                    font-lock-variable-use-face
+                    font-lock-function-call-face
+                    font-lock-preprocessor-face
+                    font-lock-property-use-face
+                    font-lock-builtin-face))
+      (face-remap-add-relative face :foreground nil))
+
+    (face-remap-add-relative 'font-lock-comment-face
+                             :inherit 'font-lock-warning-face))
+
+  (add-hook 'emacs-lisp-mode-hook #'jacob-font-lock-programming-setup))
 
 (use-package scheme
   :mode ("\\.scm\\'" . scheme-mode)
