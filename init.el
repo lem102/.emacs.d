@@ -1106,7 +1106,7 @@ Disables the eglot backend when inside a `.g8' template."
   (advice-add #'eval-defun :after #'jacob-pulse-defun))
 
 (use-package server
-  :hook (on-first-file-hook . server-start))
+  :hook (after-init-hook . server-start))
 
 (use-package smerge-mode
   :defer t
