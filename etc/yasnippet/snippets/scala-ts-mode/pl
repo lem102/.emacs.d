@@ -1,0 +1,4 @@
+# -*- mode: snippet -*-
+# key: pl
+# --
+println($0)
