@@ -293,7 +293,8 @@ then remove this function from `find-file-hook'."
 
 (use-package custom
   :config
-  (load-theme 'modus-vivendi-tinted))
+  (load-theme 'modus-vivendi)
+  )
 
 (use-package cus-edit
   :custom
@@ -312,6 +313,7 @@ then remove this function from `find-file-hook'."
   (indent-tabs-mode nil)               ; use spaces to indent
   (save-interprogram-paste-before-kill t)
   (read-extended-command-predicate command-completion-default-include-p)
+  (kill-do-not-save-duplicates t)
   :bind ("C-x u" . nil)                 ; `undo'
   )
 
@@ -426,11 +428,9 @@ Intended for running applications."
               (t                      ; delete character
                (delete-char -1)))))))
 
-(require 'jacob-xah-fly-keys)
-
 (require 'jacob-yasnippet)
 
-(require 'jacob-fly-keys)
+(require 'jacob-ryo-modal)
 
 (use-package minibuffer
   :config
@@ -897,12 +897,14 @@ Disables the eglot backend when inside a `.g8' template."
   :blackout)
 
 (use-package highlight-defined
+  :disabled
   :hook (emacs-lisp-mode-hook . highlight-defined-mode))
 
 (use-package hl-todo
   :hook (after-init-hook . global-hl-todo-mode))
 
 (use-package lisp-extra-font-lock
+  :disabled
   :hook ((emacs-lisp-mode-hook lisp-mode-hook scheme-mode-hook) . lisp-extra-font-lock-mode))
 
 (use-package elisp-mode

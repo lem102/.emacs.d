@@ -5,7 +5,7 @@
 
 ;;; Code:
 
-(require 'jacob-xah-fly-keys)
+;; (require 'jacob-xah-fly-keys)
 
 (defun jacob-sql-connect ()
   "Wrapper for `sql-connect' to set postgres password.
@@ -32,7 +32,9 @@ Intended as before advice for `sql-send-paragraph'."
 
 (defun jacob-sql-init ()
   "Initialize symbol `sql'."
-  (keymap-set jacob-xfk-map "s" #'jacob-sql-connect))
+  ;; TODO: revisit
+  ;; (keymap-set jacob-xfk-map "s" #'jacob-sql-connect)
+  )
 
 (defun jacob-sql-config ()
   "Configure symbol `sql'."

@@ -77,7 +77,9 @@ For use in yasnippets."
   (jacob-defhookf snippet-mode-hook
     (setq-local auto-save-visited-mode nil))
 
-  (keymap-set jacob-xfk-map "y" `("Yasnippet" . ,jacob-yas-map)))
+  ;; TODO: review
+  ;; (keymap-set jacob-xfk-map "y" `("Yasnippet" . ,jacob-yas-map))
+  )
 
 (use-package yasnippet
   :ensure t

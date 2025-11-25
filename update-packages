@@ -65,7 +65,6 @@
                                   sbt-mode
                                   visual-replace
                                   dumb-jump
-                                  xah-fly-keys
                                   ryo-modal
                                   yasnippet)
       package-vc-selected-packages '((eglot-booster :url "https://github.com/jdtsmith/eglot-booster")

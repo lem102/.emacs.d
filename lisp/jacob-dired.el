@@ -18,27 +18,27 @@
   :init
   (add-hook 'dired-mode-hook #'dired-hide-details-mode)
   (add-hook 'dired-mode-hook #'auto-revert-mode)
-
-  (with-eval-after-load "xah-fly-keys"
-    (jacob-xfk-bind-for-mode dired-mode
-                             "s" #'dired-find-file
-                             "d" #'dired-do-delete ; we skip the "flag, delete" process as files are sent to system bin on deletion
-                             "q" #'quit-window
-                             "i" #'dired-previous-line
-                             "k" #'dired-next-line
-                             "e" #'dired-mark
-                             "r" #'dired-unmark
-                             "g" #'revert-buffer
-                             "x" #'dired-do-rename
-                             "c" #'dired-do-copy
-                             "u" #'dired-up-directory
-                             "j" #'dired-goto-file))
   :config
   (setopt dired-recursive-copies 'always
           dired-dwim-target t
           dired-listing-switches "-hal" ; the h option needs to come first 🙃
           dired-guess-shell-alist-user '(("\\.mkv\\'" "mpv")
-                                         ("\\.mp4\\'" "mpv"))))
+                                         ("\\.mp4\\'" "mpv")))
+
+  (with-eval-after-load "ryo-modal"
+    (ryo-modal-major-mode-keys 'dired-mode
+                               ("s" dired-find-file)
+                               ("d" dired-do-delete)
+                               ("q" quit-window)
+                               ("i" dired-previous-line)
+                               ("k" dired-next-line)
+                               ("e" dired-mark)
+                               ("r" dired-unmark)
+                               ("g" revert-buffer)
+                               ("x" dired-do-rename)
+                               ("c" dired-do-copy)
+                               ("u" dired-up-directory)
+                               ("j" dired-goto-file))))
 
 (use-package dired-aux
   :defer t
