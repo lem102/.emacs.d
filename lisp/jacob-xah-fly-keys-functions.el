@@ -226,6 +226,22 @@ If that fails, attempt to move backward out of the current list."
   (interactive)
   (kill-new (buffer-string)))
 
+(defun jacob-toggle-word-case ()
+  "Toggle the case of the word at point."
+  (interactive)
+  (let* ((word (thing-at-point 'word))
+         ;; case fold search nil
+         )
+    ;; save excursion plus backward word to get to the right place
+    ;; use cond to select function e.g. capitalize-word f
+    (cond ((not (string-match-p "[[:upper:]]" word))
+           ...)
+          ((string-match-p "^[[:upper:]][^[:upper:]]*$" word)
+           ...)
+          ((not (string-match-p "[[:lower:]]" word))
+           ...)
+          (t ...))))
+
 (provide 'jacob-xah-fly-keys-functions)
 
 ;;; jacob-xah-fly-keys-functions.el ends here

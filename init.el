@@ -5,6 +5,8 @@
 (add-to-list 'load-path (concat (file-name-directory user-init-file)
                                 "lisp"))
 
+(require 'jacob-ryo-modal)
+
 ;; read environment file and variable setup
 
 (defvar jacob-font-size 11
@@ -429,8 +431,6 @@ Intended for running applications."
                (delete-char -1)))))))
 
 (require 'jacob-yasnippet)
-
-(require 'jacob-ryo-modal)
 
 (use-package minibuffer
   :config

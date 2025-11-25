@@ -80,8 +80,7 @@
  ("v" yank)
 
  ("z" jacob-comment)
- ;; TODO: replace
- ;; ("b" xah-toggle-letter-case)
+ ("b" jacob-toggle-word-case)
 
  ("\\" embark-act)
  ("'" delete-other-windows)
