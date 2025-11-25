@@ -102,8 +102,7 @@
    ("." universal-argument)
    ;; TODO: replace
    ;; ("b" xah-toggle-previous-letter-case)
-   ;; TODO: replace
-   ;; ("c" xah-copy-all)
+   ("c" jacob-copy-buffer)
    ("e"
     (("s" consult-line)
      ("e" highlight-symbol-at-point)
@@ -112,6 +111,7 @@
    ("n" end-of-buffer)
    ("h" beginning-of-buffer)
    ("p" project-prefix-map)
+   ("y" isearch-forward-symbol-at-point)
    ("/"
     (("m" magit-project-status)
      ("h" vc-annotate)))
@@ -135,11 +135,8 @@
      ("d" eshell)
      ("o" count-words)))
    ("g"
-    ;; TODO: replace
-    (;; ("h" xah-delete-current-text-block)
-     ;; TODO: replace
-
-     ;; ("j" xah-select-block)
+    (("h" kill-paragraph)
+     ("j" mark-paragraph)
      ))
    ("o"
     (("e" kmacro-start-macro)
@@ -148,14 +145,12 @@
      ("i" string-rectangle)
      ("h" delete-rectangle)))
    ("i"
-    ;; let's put other project commands in here!
     (("e" find-file)
      ("o" consult-bookmark)))
    ("k"
     (("u" consult-goto-line)))
    ("r" visual-replace)
-   ;; TODO: replace
-   ;; ("u" xah-close-current-buffer)
+   ("u" kill-this-buffer)
    ("w"
     (("k" xref-find-definitions)
      ("l" xref-go-back)))

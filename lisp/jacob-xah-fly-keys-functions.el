@@ -221,6 +221,11 @@ If that fails, attempt to move backward out of the current list."
       (backward-sexp)
     (scan-error (backward-up-list))))
 
+(defun jacob-copy-buffer ()
+  "Copy the text of the current buffer."
+  (interactive)
+  (kill-new (buffer-string)))
+
 (provide 'jacob-xah-fly-keys-functions)
 
 ;;; jacob-xah-fly-keys-functions.el ends here
