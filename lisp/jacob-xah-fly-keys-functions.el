@@ -188,6 +188,39 @@
          (kill-ring-save (line-beginning-position) (line-end-position))
          (forward-line))))
 
+(defun jacob-delete-whitespace ()
+  "Delete different parts of whitespace on repeated invocations."
+  (interactive)
+  (if (string-blank-p (buffer-substring (line-beginning-position)
+                                        (line-end-position)))
+      (delete-blank-lines)
+    (delete-all-space)))
+
+(defun jacob-comment ()
+  "Custom comment command."
+  (interactive)
+  (let ((is-line-blank (string-blank-p (buffer-substring (line-beginning-position)
+                                                         (line-end-position)))))
+    (if is-line-blank
+        (comment-dwim nil)
+      (comment-line 1))))
+
+(defun jacob-forward-sexp ()
+  "Move forward one sexp.
+If that fails, attempt to move forward out of the current list."
+  (interactive)
+  (condition-case nil
+      (forward-sexp)
+    (scan-error (up-list))))
+
+(defun jacob-backward-sexp ()
+  "Move backward one sexp.
+If that fails, attempt to move backward out of the current list."
+  (interactive)
+  (condition-case nil
+      (backward-sexp)
+    (scan-error (backward-up-list))))
+
 (provide 'jacob-xah-fly-keys-functions)
 
 ;;; jacob-xah-fly-keys-functions.el ends here

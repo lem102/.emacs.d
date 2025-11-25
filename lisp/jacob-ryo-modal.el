@@ -1,4 +1,4 @@
-;;; jacob-fly-keys.el --- ryo-modal setup -*- lexical-binding: t; -*-
+;;; jacob-ryo-modal.el --- ryo-modal setup -*- lexical-binding: t; -*-
 
 ;;; Commentary:
 ;; setup for ryo-modal
@@ -11,33 +11,35 @@
 (require 'winner)
 (require 'jacob-xah-fly-keys-functions)
 
-(define-global-minor-mode jacob-fly-keys-mode ryo-modal-mode
+(setq ryo-modal-cursor-color nil)
+
+(define-global-minor-mode global-ryo-modal-mode ryo-modal-mode
   (lambda ()
     (ryo-modal-mode 1)))
 
-(defun jacob-fly-keys-enable ()
-  "Enable `jacob-fly-keys-mode'."
+(add-hook 'minibuffer-setup-hook #'global-ryo-modal-mode-disable)
+(add-hook 'minibuffer-exit-hook #'global-ryo-modal-mode-enable)
+
+(defun global-ryo-modal-mode-enable ()
+  "Enable `global-ryo-modal-mode'."
   (interactive)
-  (unless jacob-fly-keys-mode
-    (jacob-fly-keys-mode 1)))
+  (unless global-ryo-modal-mode
+    (global-ryo-modal-mode 1)))
 
-(defun jacob-fly-keys-disable ()
-  "Disable `jacob-fly-keys-mode'."
+(defun global-ryo-modal-mode-disable ()
+  "Disable `global-ryo-modal-mode'."
   (interactive)
-  (when jacob-fly-keys-mode
-    (jacob-fly-keys-mode 0)))
+  (when global-ryo-modal-mode
+    (global-ryo-modal-mode 0)))
 
-(keymap-global-set "M-SPC" #'jacob-fly-keys-enable)
+(keymap-global-set "M-SPC" #'global-ryo-modal-mode-enable)
 
-(jacob-defhookf jacob-fly-keys-mode-hook
-  (global-hl-line-mode (if jacob-fly-keys-mode 1 0))
+(jacob-defhookf global-ryo-modal-mode-hook
+  (global-hl-line-mode (if global-ryo-modal-mode 1 0))
   (modify-all-frames-parameters (list (cons 'cursor-type
-                                            (if jacob-fly-keys-mode
+                                            (if global-ryo-modal-mode
                                                 'box
                                               'bar)))))
-
-(add-hook 'minibuffer-setup-hook #'jacob-fly-keys-disable)
-(add-hook 'minibuffer-exit-hook #'jacob-fly-keys-enable)
 
 (ryo-modal-keys
  ("j" backward-char)
@@ -55,17 +57,17 @@
  ("n" isearch-forward)
  ("," other-window)
 
- ("m" backward-sexp)
- ("." forward-sexp)
+ ("m" jacob-backward-sexp)
+ ("." jacob-forward-sexp)
 
  ("a" execute-extended-command)
  ("s" jacob-return-macro)
  ("d" jacob-backspace)
- ("f" jacob-fly-keys-disable)
+ ("f" global-ryo-modal-mode-disable)
 
  ("g" expreg-expand)
- ("w" delete-all-space)
 
+ ("w" jacob-delete-whitespace)
  ("e" backward-kill-word)
  ("r" kill-word)
 
@@ -75,10 +77,11 @@
 
  ("x" jacob-kill-line)
  ("c" jacob-copy-line-or-region)
- ("v" xah-paste-or-paste-previous)
+ ("v" yank)
 
- ("z" xah-comment-dwim)
- ("b" xah-toggle-letter-case)
+ ("z" jacob-comment)
+ ;; TODO: replace
+ ;; ("b" xah-toggle-letter-case)
 
  ("\\" embark-act)
  ("'" delete-other-windows)
@@ -97,7 +100,10 @@
    ("4" split-window-below)
    (";" save-buffer)
    ("." universal-argument)
-   ("b" xah-toggle-previous-letter-case)
+   ;; TODO: replace
+   ;; ("b" xah-toggle-previous-letter-case)
+   ;; TODO: replace
+   ;; ("c" xah-copy-all)
    ("e"
     (("s" consult-line)
      ("e" highlight-symbol-at-point)
@@ -120,6 +126,7 @@
     (("k" helpful-callable)
      ("l" helpful-variable)
      ("v" helpful-key)
+     ("y" describe-face)
      ("i" describe-char)
      ("g" info)))
    ("l"
@@ -128,8 +135,12 @@
      ("d" eshell)
      ("o" count-words)))
    ("g"
-    (("h" xah-delete-current-text-block)
-     ("j" xah-select-block)))
+    ;; TODO: replace
+    (;; ("h" xah-delete-current-text-block)
+     ;; TODO: replace
+
+     ;; ("j" xah-select-block)
+     ))
    ("o"
     (("e" kmacro-start-macro)
      ("r" kmacro-end-macro)
@@ -143,7 +154,8 @@
    ("k"
     (("u" consult-goto-line)))
    ("r" visual-replace)
-   ("u" xah-close-current-buffer)
+   ;; TODO: replace
+   ;; ("u" xah-close-current-buffer)
    ("w"
     (("k" xref-find-definitions)
      ("l" xref-go-back)))
@@ -152,10 +164,18 @@
    ("SPC"
     (("c"
       (("e" eglot)
-       ("r" eglot-rename))))))))
+       ("r" eglot-rename))))
+    (("y"
+      (("n" yas-new-snippet)
+       ("v" yas-visit-snippet-file))))))))
 
-(add-hook 'after-init-hook #'jacob-fly-keys-enable)
+(add-hook 'after-init-hook #'global-ryo-modal-mode-enable)
 
-(provide 'jacob-fly-keys)
+;; isearch
 
-;;; jacob-fly-keys.el ends here
+(keymap-set isearch-mode-map "<right>" #'isearch-repeat-forward)
+(keymap-set isearch-mode-map "<left>" #'isearch-repeat-backward)
+
+(provide 'jacob-ryo-modal)
+
+;;; jacob-ryo-modal ends here
