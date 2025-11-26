@@ -18,7 +18,7 @@
 (require 'eglot)
 (require 'winner)
 (require 'jacob-init-helpers)
-(require 'jacob-xah-fly-keys-functions)
+(require 'jacob-editing-commands)
 
 (define-global-minor-mode global-ryo-modal-mode ryo-modal-mode
   (lambda ()

@@ -1,4 +1,4 @@
-;;; jacob-xah-fly-keys-functions.el --- Functions for xah-fly-keys
+;;; jacob-editing-commands.el --- Editing commands
 
 ;;; Commentary:
 ;;
@@ -250,6 +250,6 @@ If that fails, attempt to move backward out of the current list."
              #'upcase-region)))
     (funcall f (1- (point)) (point))))
 
-(provide 'jacob-xah-fly-keys-functions)
+(provide 'jacob-editing-commands)
 
-;;; jacob-xah-fly-keys-functions.el ends here
+;;; jacob-editing-commands.el ends here
