@@ -20,8 +20,6 @@
 (require 'jacob-init-helpers)
 (require 'jacob-xah-fly-keys-functions)
 
-;; (setq ryo-modal-cursor-color nil)
-
 (define-global-minor-mode global-ryo-modal-mode ryo-modal-mode
   (lambda ()
     (ryo-modal-mode 1)))
@@ -49,6 +47,15 @@
                                             (if global-ryo-modal-mode
                                                 'box
                                               'bar)))))
+
+;; HACK: Patch ryo-modal-mode to revert changes to cursor colour.
+(defun jacob-ryo-modal-fix-cursor (&rest _args)
+  "Revert the colour of the cursor to the current theme's default."
+  (remove-hook 'post-command-hook #'ryo-modal--cursor-color-update)
+  (custom-theme-recalc-face 'cursor))
+
+(advice-add #'ryo-modal-mode :after #'jacob-ryo-modal-fix-cursor)
+
 
 (ryo-modal-keys
  ("j" backward-char)
@@ -161,7 +168,8 @@
    ("r" visual-replace)
    ("u" kill-current-buffer)
    ("w"
-    (("k" xref-find-definitions)
+    (("j" xref-find-references)
+     ("k" xref-find-definitions)
      ("l" xref-go-back)))
    ("v" consult-yank-from-kill-ring)
    ;; move these out of the SPC SPC area
