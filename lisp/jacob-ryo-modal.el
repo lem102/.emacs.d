@@ -6,12 +6,21 @@
 
 ;;; Code:
 
+(eval-when-compile
+  (require 'expreg)
+  (require 'embark)
+  (require 'consult)
+  (require 'magit)
+  (require 'helpful)
+  (require 'visual-replace))
+
 (require 'ryo-modal)
 (require 'eglot)
 (require 'winner)
+(require 'jacob-init-helpers)
 (require 'jacob-xah-fly-keys-functions)
 
-(setq ryo-modal-cursor-color nil)
+;; (setq ryo-modal-cursor-color nil)
 
 (define-global-minor-mode global-ryo-modal-mode ryo-modal-mode
   (lambda ()
@@ -99,8 +108,7 @@
    ("4" split-window-below)
    (";" save-buffer)
    ("." universal-argument)
-   ;; TODO: replace
-   ;; ("b" xah-toggle-previous-letter-case)
+   ("b" jacob-toggle-previous-letter-case)
    ("c" jacob-copy-buffer)
    ("e"
     (("s" consult-line)
@@ -132,7 +140,9 @@
     (("a" global-text-scale-adjust)
      ("e" toggle-frame-maximized)
      ("d" eshell)
-     ("o" count-words)))
+     ("o" count-words)
+     ("n" toggle-debug-on-error)
+     ("i" toggle-case-fold-search)))
    ("g"
     (("h" kill-paragraph)
      ("j" mark-paragraph)
@@ -149,7 +159,7 @@
    ("k"
     (("u" consult-goto-line)))
    ("r" visual-replace)
-   ("u" kill-this-buffer)
+   ("u" kill-current-buffer)
    ("w"
     (("k" xref-find-definitions)
      ("l" xref-go-back)))

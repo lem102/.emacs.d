@@ -5,6 +5,7 @@
 (add-to-list 'load-path (concat (file-name-directory user-init-file)
                                 "lisp"))
 
+(require 'jacob-init-helpers)
 (require 'jacob-ryo-modal)
 
 ;; read environment file and variable setup
@@ -194,17 +195,6 @@ then remove this function from `find-file-hook'."
   (tab-always-indent 'complete)
   :bind ( :map mode-line-buffer-identification-keymap
           ("<mode-line> <mouse-2>" . ibuffer)))
-
-(defmacro jacob-defhookf (hook &rest body)
-  "Define function with BODY and bind it to HOOK."
-  (declare (indent defun))
-  (let* ((hook-name (symbol-name hook))
-         (function-name (intern (concat "jacob-" hook-name "-function"))))
-    `(progn
-       (defun ,function-name ()
-         ,(format "Auto-generated hook function for `%s'." hook-name)
-         ,@body)
-       (add-hook ',hook #',function-name))))
 
 (use-package blackout)
 
@@ -398,9 +388,9 @@ Intended for running applications."
   character."
   (interactive)
   (undo-boundary)
-  (push-mark)
   (if (region-active-p)
       (delete-active-region)
+    (push-mark)
     (when (= 1 (point))
       (user-error "Beginning of buffer"))
     (let ((char-class (char-syntax (char-before)))

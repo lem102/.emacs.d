@@ -229,18 +229,26 @@ If that fails, attempt to move backward out of the current list."
 (defun jacob-toggle-word-case ()
   "Toggle the case of the word at point."
   (interactive)
-  (let* ((word (thing-at-point 'word))
-         ;; case fold search nil
-         )
-    ;; save excursion plus backward word to get to the right place
-    ;; use cond to select function e.g. capitalize-word f
-    (cond ((not (string-match-p "[[:upper:]]" word))
-           ...)
-          ((string-match-p "^[[:upper:]][^[:upper:]]*$" word)
-           ...)
-          ((not (string-match-p "[[:lower:]]" word))
-           ...)
-          (t ...))))
+  (let* ((case-fold-search nil)
+         (word (thing-at-point 'word)))
+    (save-excursion
+      (backward-word)
+      (funcall (cond ((not (string-match-p "[[:upper:]]" word))
+                      #'capitalize-word)
+                     ((string-match-p "^[[:upper:]][^[:upper:]]*$" word)
+                      #'upcase-word)
+                     (t
+                      #'downcase-word))
+               1))))
+
+(defun jacob-toggle-previous-letter-case ()
+  "Toggle the case of the previous letter."
+  (interactive)
+  (let ((case-fold-search nil)
+        (f (if (string-match-p "[[:upper:]]" (char-to-string (char-before)))
+               #'downcase-region
+             #'upcase-region)))
+    (funcall f (1- (point)) (point))))
 
 (provide 'jacob-xah-fly-keys-functions)
 
