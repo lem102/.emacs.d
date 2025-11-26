@@ -136,7 +136,8 @@
    ("f" consult-buffer)
    ("s" exchange-point-and-mark)
    ("j"
-    (("k" helpful-callable)
+    (("c" man)
+     ("k" helpful-callable)
      ("l" helpful-variable)
      ("v" helpful-key)
      ("y" describe-face)
@@ -144,8 +145,9 @@
      ("g" info)))
    ("l"
     (("a" global-text-scale-adjust)
-     ("e" toggle-frame-maximized)
      ("d" eshell)
+     ("e" toggle-frame-maximized)
+     ("f" shell)
      ("o" count-words)
      ("n" toggle-debug-on-error)
      ("i" toggle-case-fold-search)))
