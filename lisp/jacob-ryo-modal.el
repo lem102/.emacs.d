@@ -56,7 +56,6 @@
 
 (advice-add #'ryo-modal-mode :after #'jacob-ryo-modal-fix-cursor)
 
-
 (ryo-modal-keys
  ("j" backward-char)
  ("k" next-line)
@@ -190,4 +189,4 @@
 
 (provide 'jacob-ryo-modal)
 
-;;; jacob-ryo-modal ends here
+;;; jacob-ryo-modal.el ends here
