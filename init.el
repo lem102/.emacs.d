@@ -1297,31 +1297,7 @@ Disables the eglot backend when inside a `.g8' template."
                                (?. . jacob-avy-xref)
                                (?r . jacob-avy-eglot-rename))))
 
-(use-package apheleia
-  :blackout (apheleia-mode . '(:eval (if apheleia-inhibit
-                                         ""
-                                       " ⚘")))
-  :hook (prog-mode-hook . apheleia-mode-maybe)
-  :config
-  (setq-default apheleia-inhibit t) ; set `apheleia-inhibit' to nil to enable
-
-  (add-to-list 'apheleia-formatters '(csharpier "dotnet" "csharpier" "--write-stdout"))
-  (add-to-list 'apheleia-mode-alist '(csharp-ts-mode . csharpier))
-
-  (add-to-list 'apheleia-formatters '(scalafmt "scalafmt" "--stdin" "--non-interactive" "--quiet" "--stdout"))
-  (add-to-list 'apheleia-mode-alist '(scala-ts-mode . scalafmt))
-
-  (defun jacob-apheleia-skip-function ()
-    "Function for `apheleia-skip-functions'.
-    If point is in a yasnippet field or the minibuffer or region are
-    active, do not format the buffer."
-    (or (seq-find (lambda (overlay)
-                    (overlay-get overlay 'yas--snippet))
-                  (overlays-at (point)))
-        (minibuffer-window-active-p (car (window-list)))
-        (region-active-p)))
-
-  (add-to-list 'apheleia-skip-functions #'jacob-apheleia-skip-function))
+(require 'jacob-apheleia)
 
 (use-package rainbow-mode
   :blackout
