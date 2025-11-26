@@ -1386,50 +1386,7 @@ Disables the eglot backend when inside a `.g8' template."
 (use-package marginalia
   :hook (jacob-first-minibuffer-activation-hook . marginalia-mode))
 
-(use-package consult
-  :defer t
-  :init
-  (with-eval-after-load "xah-fly-keys"
-    (keymap-set xah-fly-leader-key-map "v" #'consult-yank-from-kill-ring)
-    (keymap-set xah-fly-leader-key-map "f" #'consult-buffer)
-    (keymap-set xah-fly-leader-key-map "i j" #'consult-recent-file)
-    (keymap-set xah-fly-leader-key-map "i i" #'consult-bookmark)
-    (keymap-set xah-fly-leader-key-map "e s" #'consult-line)
-    (keymap-set xah-fly-leader-key-map "k u" #'consult-goto-line)
-    (keymap-set xah-fly-leader-key-map "j g" #'consult-info)
-    (keymap-set xah-fly-leader-key-map "j c" #'consult-man))
-
-  (keymap-global-set "C-x b" #'consult-buffer)
-  (keymap-global-set "M-y" #'consult-yank-from-kill-ring)
-  :config
-  (defun jacob-project-search ()
-    "Wrapper for grep commands."
-    (interactive)
-    (if (vc-find-root default-directory ".git")
-        (consult-git-grep)
-      (consult-grep)))
-
-  (keymap-set project-prefix-map "g" #'jacob-project-search)
-
-  (defun jacob-consult-buffer-state-no-tramp ()
-    "Buffer state function that doesn't preview Tramp buffers."
-    (let ((orig-state (consult--buffer-state))
-          (filter (lambda (action candidate)
-                    (if (and candidate
-                             (or (eq action 'return)
-                                 (let ((buffer (get-buffer candidate)))
-                                   (and buffer
-                                        (not (file-remote-p (buffer-local-value 'default-directory buffer)))))))
-                        candidate
-                      nil))))
-      (lambda (action candidate)
-        (funcall orig-state action (funcall filter action candidate)))))
-
-  (setopt completion-in-region-function 'consult-completion-in-region
-          xref-show-xrefs-function 'consult-xref
-          xref-show-definitions-function 'consult-xref
-          consult--source-buffer (plist-put consult--source-buffer
-                                            :state #'jacob-consult-buffer-state-no-tramp)))
+(require 'jacob-consult)
 
 (use-package imenu
   :defer t

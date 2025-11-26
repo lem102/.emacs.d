@@ -1,7 +1,7 @@
 ;;; jacob-apheleia.el --- Configuration for apheleia
 
 ;;; Commentary:
-;;
+;; 
 
 ;;; Code:
 
@@ -17,8 +17,8 @@
   (add-to-list 'apheleia-skip-functions #'jacob-apheleia-skip-function))
 
 (use-package apheleia
-  :blackout (apheleia-mode . " ⚘")
-  :hook ((emacs-lisp-mode scala-ts-mode) . apheleia-mode)
+  :blackout " ⚘"
+  :hook (emacs-lisp-mode-hook scala-ts-mode-hook)
   :config (jacob-apheleia-config))
 
 (provide 'jacob-apheleia)
