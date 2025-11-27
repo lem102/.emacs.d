@@ -13,6 +13,9 @@
 (defvar jacob-font-size 11
   "Font size to use.")
 
+(defvar jacob-theme 'modus-vivendi
+  "Theme to use.")
+
 (defconst jacob-is-windows (eq system-type 'windows-nt)
   "Is the current OS windows?")
 
@@ -26,7 +29,7 @@
   "Is the current OS a mac?")
 
 (when (file-exists-p "~/.emacs.d/environment.el")
-  (load-file "~/.emacs.d/environment.el"))
+  (ignore-errors (load-file "~/.emacs.d/environment.el")))
 
 ;; use-package
 (require 'use-package)
@@ -285,8 +288,7 @@ then remove this function from `find-file-hook'."
 
 (use-package custom
   :config
-  (load-theme 'modus-vivendi)
-  )
+  (load-theme jacob-theme "NO-CONFIRM"))
 
 (use-package cus-edit
   :custom
