@@ -1540,6 +1540,23 @@ Disables the eglot backend when inside a `.g8' template."
 
 ;; personal functions
 
+(defun jacob-rofi ()
+  "Rofi like thing. for linux n that."
+  (interactive)
+  (let (frame)
+    (setq frame (make-frame '((minibuffer . only))))
+    (let* ((ids (string-lines (shell-command-to-string "wmctrl -l | awk '{print $1}'")
+                              "OMIT-NULLS"))
+           (titles (string-lines (shell-command-to-string "wmctrl -l | awk '{print substr($0, index($0,$4))}'")
+                                 "OMIT-NULLS"))
+           (id-titles (seq-map (lambda (l)
+                                 (cons (cadr l) (car l)))
+                               (cl-mapcar 'list ids titles))))
+      (shell-command (format "wmctrl -ia %s"
+                             (cdr (assoc (completing-read "xyz: " id-titles)
+                                         id-titles)))))
+    (delete-frame frame)))
+
 (define-minor-mode jacob-screen-sharing-mode
   "Minor mode for sharing screens."
   :global t
