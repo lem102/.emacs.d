@@ -129,7 +129,8 @@
     (("m" magit-project-status)
      ("h" vc-annotate)))
    (","
-    (("d" eval-defun)
+    (("," delete-frame)
+     ("d" eval-defun)
      ("m" eval-last-sexp)
      ("x" save-buffers-kill-emacs)
      ("r" eval-expression)))
@@ -148,6 +149,7 @@
      ("d" eshell)
      ("e" toggle-frame-maximized)
      ("f" shell)
+     ("g" make-frame-command)
      ("o" count-words)
      ("n" toggle-debug-on-error)
      ("i" toggle-case-fold-search)))
