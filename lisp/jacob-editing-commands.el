@@ -177,13 +177,11 @@
   (cond ((region-active-p)
          (kill-ring-save nil nil "REGION"))
         ((eq last-command this-command)
-         (forward-line)
-         (kill-append "\n"
-                      nil)
          (kill-append (concat "\n"
                               (buffer-substring (line-beginning-position)
                                                 (line-end-position)))
-                      nil))
+                      nil)
+         (forward-line))
         (t
          (kill-ring-save (line-beginning-position) (line-end-position))
          (forward-line))))
