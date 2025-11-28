@@ -112,8 +112,6 @@ then remove this function from `find-file-hook'."
 
 (use-package emacs
   :config
-  ;; c code
-  (setq-default vertical-scroll-bar 'right)
   ;; enable emoji fonts
   (set-fontset-font t
                     'emoji
