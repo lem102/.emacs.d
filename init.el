@@ -5,6 +5,9 @@
 (add-to-list 'load-path (concat (file-name-directory user-init-file)
                                 "lisp"))
 
+(add-to-list 'custom-theme-load-path (concat (file-name-directory user-init-file)
+                                             "lisp"))
+
 (require 'jacob-init-helpers)
 (require 'jacob-ryo-modal)
 
