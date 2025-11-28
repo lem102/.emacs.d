@@ -1541,33 +1541,30 @@ Disables the eglot backend when inside a `.g8' template."
 ;; personal functions
 
 (defun jacob-rofi ()
-  "Rofi like thing. for linux n that."
+  "Rofi like thing.
+Should work on linux and mac."
   (interactive)
-  (let (frame)
-    (setq frame (make-frame '((minibuffer . only))))
-    (let* ((ids (string-lines (shell-command-to-string "wmctrl -l | awk '{print $1}'")
-                              "OMIT-NULLS"))
-           (titles (string-lines (shell-command-to-string "wmctrl -l | awk '{print substr($0, index($0,$4))}'")
-                                 "OMIT-NULLS"))
-           (id-titles (seq-map (lambda (l)
-                                 (cons (cadr l) (car l)))
-                               (cl-mapcar 'list ids titles))))
-      (shell-command (format "wmctrl -ia %s"
-                             (cdr (assoc (completing-read "xyz: " id-titles)
-                                         id-titles)))))))
-
-(defun jacob-open-application ()
-  "Open an application.
-Warning: Mac only."
-  (let ((frame (make-frame '((minibuffer . only))))
-        (applications (seq-map (lambda (f)
-                                 (string-replace ".app" "" f))
-                               (seq-filter (lambda (f)
-                                             (string-match-p "\.app" f))
-                                           (directory-files "/Applications/"))))
-        (minibuffer (seq-find #'minibufferp (buffer-list))))
-    (shell-command-to-string (format "osascript -e 'tell application \"%s\" to activate'"
-                                     (completing-read "Application: " applications)))
+  (let ((frame (make-frame '((minibuffer . only)))))
+    (if jacob-is-mac
+        ;; mac version
+        (let ((applications (seq-map (lambda (f)
+                                       (string-replace ".app" "" f))
+                                     (seq-filter (lambda (f)
+                                                   (string-match-p "\.app" f))
+                                                 (directory-files "/Applications/")))))
+          (shell-command-to-string (format "osascript -e 'tell application \"%s\" to activate'"
+                                           (completing-read "Application: " applications))))
+      ;; linux version
+      (let* ((ids (string-lines (shell-command-to-string "wmctrl -l | awk '{print $1}'")
+                                "OMIT-NULLS"))
+             (titles (string-lines (shell-command-to-string "wmctrl -l | awk '{print substr($0, index($0,$4))}'")
+                                   "OMIT-NULLS"))
+             (id-titles (seq-map (lambda (l)
+                                   (cons (cadr l) (car l)))
+                                 (cl-mapcar 'list ids titles))))
+        (shell-command (format "wmctrl -ia %s"
+                               (cdr (assoc (completing-read "xyz: " id-titles)
+                                           id-titles))))))
     (delete-frame frame)))
 
 (define-minor-mode jacob-screen-sharing-mode
