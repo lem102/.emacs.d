@@ -1556,7 +1556,7 @@ Should work on linux and mac. On Linux, wmctrl is used."
                (application (completing-read "Application: " applications)))
           ;; HACK: Selecting emacs makes the call to osascript slow.
           ;; To improve performance, don't call osascript as Emacs is already focused.
-          (unless (string-match-p "^Emacs$" application)
+          (unless (string= application "Emacs")
             (shell-command-to-string (format "osascript -e 'tell application \"%s\" to activate'"
                                              application))))
       ;; linux version

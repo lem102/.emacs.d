@@ -35,7 +35,11 @@
         (("u" consult-goto-line)))
        ("j"
         (("g" consult-info)
-         ("c" consult-man)))))))
+         ("c" consult-man))))))
+
+    (ryo-modal-keys
+     ("SPC"
+      (("p" project-prefix-map)))))
 
   (keymap-global-set "C-x b" #'consult-buffer)
   (keymap-global-set "M-y" #'consult-yank-from-kill-ring)
