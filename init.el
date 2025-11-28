@@ -1547,13 +1547,17 @@ Should work on linux and mac."
   (let ((frame (make-frame '((minibuffer . only)))))
     (if jacob-is-mac
         ;; mac version
-        (let ((applications (seq-map (lambda (f)
-                                       (string-replace ".app" "" f))
-                                     (seq-filter (lambda (f)
-                                                   (string-match-p "\.app" f))
-                                                 (directory-files "/Applications/")))))
-          (shell-command-to-string (format "osascript -e 'tell application \"%s\" to activate'"
-                                           (completing-read "Application: " applications))))
+        (let* ((applications (seq-map (lambda (f)
+                                        (string-replace ".app" "" f))
+                                      (seq-filter (lambda (f)
+                                                    (string-match-p "\.app" f))
+                                                  (directory-files "/Applications/"))))
+               (application (completing-read "Application: " applications)))
+          ;; HACK: Selecting emacs makes the call to osascript slow.
+          ;; To improve performance, don't call osascript as Emacs is already focused.
+          (unless (string-match-p "^Emacs$" application)
+            (shell-command-to-string (format "osascript -e 'tell application \"%s\" to activate'"
+                                             application))))
       ;; linux version
       (let* ((ids (string-lines (shell-command-to-string "wmctrl -l | awk '{print $1}'")
                                 "OMIT-NULLS"))
