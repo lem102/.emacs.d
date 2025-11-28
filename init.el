@@ -1542,7 +1542,8 @@ Disables the eglot backend when inside a `.g8' template."
 
 (defun jacob-rofi ()
   "Rofi like thing.
-Should work on linux and mac."
+
+Should work on linux and mac. On Linux, wmctrl is used."
   (interactive)
   (let ((frame (make-frame '((minibuffer . only)))))
     (if jacob-is-mac
