@@ -1554,7 +1554,20 @@ Disables the eglot backend when inside a `.g8' template."
                                (cl-mapcar 'list ids titles))))
       (shell-command (format "wmctrl -ia %s"
                              (cdr (assoc (completing-read "xyz: " id-titles)
-                                         id-titles)))))
+                                         id-titles)))))))
+
+(defun jacob-open-application ()
+  "Open an application.
+Warning: Mac only."
+  (let ((frame (make-frame '((minibuffer . only))))
+        (applications (seq-map (lambda (f)
+                                 (string-replace ".app" "" f))
+                               (seq-filter (lambda (f)
+                                             (string-match-p "\.app" f))
+                                           (directory-files "/Applications/"))))
+        (minibuffer (seq-find #'minibufferp (buffer-list))))
+    (shell-command-to-string (format "osascript -e 'tell application \"%s\" to activate'"
+                                     (completing-read "Application: " applications)))
     (delete-frame frame)))
 
 (define-minor-mode jacob-screen-sharing-mode
