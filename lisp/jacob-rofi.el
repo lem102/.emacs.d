@@ -72,13 +72,15 @@ Return (application-name . f), where f is a function to start each application."
 (defun jacob-rofi--action-source-linux-raise-application ()
   "An action source for raising applications on linux."
   (if jacob-is-linux
-      (let* ((ids (string-lines (shell-command-to-string "wmctrl -l | awk '{print $1}'")
+      (let* ((ids (string-lines (shell-command-to-string "wmctrl -x -l | awk '{print $1}'")
                                 "OMIT-NULLS"))
-             (titles (string-lines (shell-command-to-string "wmctrl -l | awk '{print substr($0, index($0,$4))}'")
+             (classes (string-lines (shell-command-to-string "wmctrl -x -l | awk '{print $3}'")
+                                    "OMIT-NULLS"))
+             (titles (string-lines (shell-command-to-string "wmctrl -x -l | awk '{print substr($0, index($0,$5))}'")
                                    "OMIT-NULLS"))
              (id-titles (seq-map (lambda (l)
-                                   (cons (cadr l) (car l)))
-                                 (cl-mapcar 'list ids titles)))
+                                   (cons (format "%s::%s" (cadr l) (caddr l)) (car l)))
+                                 (cl-mapcar 'list ids classes titles)))
              (actions (seq-map (lambda (pair)
                                  "PAIR is (application-name . desktop-file).
 Return (application-name . f), where f is a function to raise each application."
