@@ -1540,37 +1540,7 @@ Disables the eglot backend when inside a `.g8' template."
 
 ;; personal functions
 
-(defun jacob-rofi ()
-  "Rofi like thing.
-
-Should work on linux and mac. On Linux, wmctrl is used."
-  (interactive)
-  (let ((frame (make-frame '((minibuffer . only)))))
-    (if jacob-is-mac
-        ;; mac version
-        (let* ((applications (seq-map (lambda (f)
-                                        (string-replace ".app" "" f))
-                                      (seq-filter (lambda (f)
-                                                    (string-match-p "\.app" f))
-                                                  (directory-files "/Applications/"))))
-               (application (completing-read "Application: " applications)))
-          ;; HACK: Selecting emacs makes the call to osascript slow.
-          ;; To improve performance, don't call osascript as Emacs is already focused.
-          (unless (string= application "Emacs")
-            (shell-command-to-string (format "osascript -e 'tell application \"%s\" to activate'"
-                                             application))))
-      ;; linux version
-      (let* ((ids (string-lines (shell-command-to-string "wmctrl -l | awk '{print $1}'")
-                                "OMIT-NULLS"))
-             (titles (string-lines (shell-command-to-string "wmctrl -l | awk '{print substr($0, index($0,$4))}'")
-                                   "OMIT-NULLS"))
-             (id-titles (seq-map (lambda (l)
-                                   (cons (cadr l) (car l)))
-                                 (cl-mapcar 'list ids titles))))
-        (shell-command (format "wmctrl -ia %s"
-                               (cdr (assoc (completing-read "xyz: " id-titles)
-                                           id-titles))))))
-    (delete-frame frame)))
+(require 'jacob-rofi)
 
 (define-minor-mode jacob-screen-sharing-mode
   "Minor mode for sharing screens."
