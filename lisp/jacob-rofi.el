@@ -52,31 +52,60 @@ an application, raise an open application, power off the system).
 (defun jacob-rofi--action-source-linux-start-application ()
   "An action source for starting applications on linux."
   (when jacob-is-linux
-    (let* ((desktop-files (append (directory-files "/usr/share/applications/" "FULL" "\\.desktop$")
-                                  (directory-files "~/.local/share/applications" "FULL" "\\.desktop$")))
-           (application-names (seq-map (lambda (f)
-                                         (with-temp-buffer
-                                           (insert-file-contents f)
-                                           (goto-char (point-min))
-                                           (re-search-forward "^Name=")
-                                           (buffer-substring (point) (line-end-position))))
-                                       desktop-files))
-           (application-alist (cl-mapcar #'cons application-names desktop-files))
-           (actions (seq-map (lambda (pair)
-                               "PAIR is (application-name . desktop-file).
-Return (application-name . f), where f is a function to start each application."
-                               (cons (format "Start: %s" (car pair))
-                                     (lambda ()
-                                       "Start an application based on the contents of a .desktop file."
-                                       (start-process-shell-command "jacob-rofi"
-                                                                    nil
-                                                                    (with-temp-buffer
-                                                                      (insert-file-contents (cdr pair))
-                                                                      (goto-char (point-min))
-                                                                      (re-search-forward "^Exec=\\(.*\\)$")
-                                                                      (replace-regexp-in-string "%u" "" (match-string 1)))))))
-                             application-alist)))
-      actions)))
+    (cl-flet ((get-desktop-file-property (file property)
+                (with-temp-buffer
+                  (insert-file-contents file)
+                  (goto-char (point-min))
+                  (re-search-forward (format "^%s=\\(.*\\)$" property))
+                  (match-string 1))))
+      (let* ((desktop-files
+              ;; TODO: filter out desktop files with no wm class
+              (seq-filter (lambda (df)
+                            (with-temp-buffer
+                              (insert-file-contents df)
+                              (goto-char (point-min))
+                              (search-forward "StartupWMClass" nil "NOERROR")))
+                          (append (directory-files "/usr/share/applications/" "FULL" "\\.desktop$")
+                                  (directory-files "~/.local/share/applications" "FULL" "\\.desktop$"))))
+             (application-names (seq-map (lambda (f)
+                                           (get-desktop-file-property f "Name"))
+                                         desktop-files))
+             (application-classes (seq-map (lambda (f)
+                                             (message f)
+                                             (get-desktop-file-property f "StartupWMClass"))
+                                           desktop-files))
+             (application-execs (seq-map (lambda (f)
+                                           (string-replace "%u" "" (get-desktop-file-property f "Exec")))
+                                         desktop-files))
+             (application-data (cl-mapcar #'list desktop-files application-names application-classes application-execs))
+             (actions (seq-map (lambda (data)
+                                 "DATA is (desktop-file application-name application-class application-exec).
+Return (application-name . f), where f is a function to start or raise each application."
+                                 (let ((desktop-file (car data))
+                                       (name (cadr data))
+                                       (class (caddr data))
+                                       (exec (cadddr data)))
+                                   (cons (format "Start: %s" name)
+                                         (lambda ()
+                                           "Start an application based on the contents of a .desktop file."
+                                           (let* ((wmctrl-window-line (with-temp-buffer
+                                                                        (insert (shell-command-to-string "wmctrl -x -l | awk '{print $3}'"))
+                                                                        (goto-char (point-min))
+                                                                        (when (search-forward class nil "NOERROR")
+                                                                          (line-number-at-pos))))
+                                                  (window-id (when wmctrl-window-line
+                                                               (with-temp-buffer
+                                                                 (insert (shell-command-to-string "wmctrl -x -l | awk '{print $1}'"))
+                                                                 (goto-line wmctrl-window-line)
+                                                                 (buffer-substring (line-beginning-position)
+                                                                                   (line-end-position))))))
+                                             (if wmctrl-window-line
+                                                 (shell-command (format "wmctrl -ia %s" window-id))
+                                               (start-process-shell-command "jacob-rofi"
+                                                                            nil
+                                                                            (string-replace "%u" "" (get-desktop-file-property desktop-file "Exec")))))))))
+                               application-data)))
+        actions))))
 
 (defun jacob-rofi--action-source-linux-raise-application ()
   "An action source for raising applications on linux."
