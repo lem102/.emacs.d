@@ -19,7 +19,8 @@ an application, raise an open application, power off the system).
   (raise-frame)
   (let* ((actions (append (jacob-rofi--action-source-linux-start-application)
                           (jacob-rofi--action-source-linux-raise-application)
-                          (jacob-rofi--action-source-mac-start-or-raise-application)))
+                          (jacob-rofi--action-source-mac-start-or-raise-application)
+                          (jacob-rofi--action-source-system-commands)))
          (selected-action (cdr (assoc (completing-read "Select action: "
                                                        actions
                                                        nil
@@ -99,11 +100,22 @@ Return (application-name . f), where f is a function to raise each application."
                              id-titles)))
       actions)))
 
-(defun jacob-system-shutdown ()
-  "Shutdown the system."
-  (interactive)
-  (eshell-command (cond (jacob-is-mac "sudo shutdown -h +1")
-                        (jacob-is-linux "systemctl poweroff --when=auto"))))
+(defun jacob-rofi--action-source-system-commands ()
+  "An action source for controlling the system."
+  (list (cons "System Shutdown"
+              (lambda ()
+                (save-some-buffers t t)
+                (run-hook-with-args-until-failure 'kill-emacs-hook)
+                (run-hook-with-args-until-failure 'kill-emacs-query-functions)
+                (eshell-command (cond (jacob-is-mac "sudo shutdown -h")
+                                      (jacob-is-linux "systemctl poweroff")))))
+        (cons "System Restart"
+              (lambda ()
+                (save-some-buffers t t)
+                (run-hook-with-args-until-failure 'kill-emacs-hook)
+                (run-hook-with-args-until-failure 'kill-emacs-query-functions)
+                (eshell-command (cond (jacob-is-mac "sudo shutdown -r")
+                                      (jacob-is-linux "systemctl reboot")))))))
 
 (provide 'jacob-rofi)
 
