@@ -19,7 +19,7 @@ an application, raise an open application, power off the system).
   (raise-frame)
   (let* ((actions (append (jacob-rofi--action-source-linux-start-application)
                           (jacob-rofi--action-source-linux-raise-application)
-                          (jacob-rofi--action-source-mac-raise-application)))
+                          (jacob-rofi--action-source-mac-start-or-raise-application)))
          (selected-action (cdr (assoc (completing-read "Select action: "
                                                        actions
                                                        nil
@@ -27,8 +27,8 @@ an application, raise an open application, power off the system).
                                       actions))))
     (funcall selected-action)))
 
-(defun jacob-rofi--action-source-mac-raise-application ()
-  "An action source for starting applications on mac."
+(defun jacob-rofi--action-source-mac-start-or-raise-application ()
+  "An action source for starting or raising applications on mac."
   (when jacob-is-mac
     (let* ((applications (seq-map (lambda (f)
                                     (string-replace ".app" "" f))
