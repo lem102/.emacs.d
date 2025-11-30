@@ -107,15 +107,20 @@ Return (application-name . f), where f is a function to raise each application."
                 (save-some-buffers t t)
                 (run-hook-with-args-until-failure 'kill-emacs-hook)
                 (run-hook-with-args-until-failure 'kill-emacs-query-functions)
-                (eshell-command (cond (jacob-is-mac "sudo shutdown -h")
-                                      (jacob-is-linux "systemctl poweroff")))))
+                (when (yes-or-no-p "Shutdown the system?")
+                  (eshell-command (cond (jacob-is-mac "sudo shutdown -h")
+                                        (jacob-is-linux "systemctl poweroff"))))))
         (cons "System Restart"
               (lambda ()
                 (save-some-buffers t t)
                 (run-hook-with-args-until-failure 'kill-emacs-hook)
                 (run-hook-with-args-until-failure 'kill-emacs-query-functions)
-                (eshell-command (cond (jacob-is-mac "sudo shutdown -r")
-                                      (jacob-is-linux "systemctl reboot")))))))
+                (when (yes-or-no-p "Restart the system?")
+                  (eshell-command (cond (jacob-is-mac "sudo shutdown -r")
+                                        (jacob-is-linux "systemctl reboot"))))))
+        (cons "System Lock"
+              (lambda ()
+                ))))
 
 (provide 'jacob-rofi)
 
