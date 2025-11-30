@@ -17,80 +17,85 @@ Should work on linux and mac. On Linux, wmctrl is used.
   (interactive)
   (raise-frame)
   (let* ((actions (append (jacob-rofi--action-source-linux-start-application)
-                          (jacob-rofi--action-source-linux-raise-application)))
+                          (jacob-rofi--action-source-linux-raise-application)
+                          (jacob-rofi--action-source-mac-raise-application)))
          (selected-action (cdr (assoc (completing-read "Select action: "
                                                        actions
                                                        nil
                                                        "REQUIRE-MATCH")
                                       actions))))
-    (funcall selected-action))
-  ;; (if jacob-is-mac
-  ;;     ;; mac version
-  ;;     (let* ((applications (seq-map (lambda (f)
-  ;;                                     (string-replace ".app" "" f))
-  ;;                                   (seq-filter (lambda (f)
-  ;;                                                 (string-match-p "\.app" f))
-  ;;                                               (directory-files "/Applications/"))))
-  ;;            (application (completing-read "Application: " applications)))
-  ;;       ;; HACK: Selecting emacs makes the call to osascript slow.
-  ;;       ;; To improve performance, don't call osascript as Emacs is already focused.
-  ;;       (unless (string= application "Emacs")
-  ;;         (shell-command-to-string (format "osascript -e 'tell application \"%s\" to activate'"
-  ;;                                          application)))))
-  )
+    (funcall selected-action)))
+
+(defun jacob-rofi--action-source-mac-raise-application ()
+  "An action source for starting applications on mac."
+  (when jacob-is-mac
+    (let* ((applications (seq-map (lambda (f)
+                                    (string-replace ".app" "" f))
+                                  (seq-filter (lambda (f)
+                                                (string-match-p "\.app" f))
+                                              (directory-files "/Applications/"))))
+           (actions (seq-map (lambda (name)
+                               "Return a cons pair of the NAME of the running application and a function to raise it."
+                               (cons name
+                                     (lambda ()
+                                       ;; HACK: Selecting emacs makes the call to osascript slow.
+                                       ;; To improve performance, don't call osascript as Emacs is already focused.
+                                       (unless (string= application "Emacs")
+                                         (shell-command-to-string (format "osascript -e 'tell application \"%s\" to activate'"
+                                                                          application))))))
+                             applications)))
+      actions)))
 
 (defun jacob-rofi--action-source-linux-start-application ()
   "An action source for starting applications on linux."
-  (if jacob-is-linux
-      (let* ((desktop-files (append (directory-files "/usr/share/applications/" "FULL" "\\.desktop$")
-                                    (directory-files "~/.local/share/applications" "FULL" "\\.desktop$")))
-             (application-names (seq-map (lambda (f)
-                                           (with-temp-buffer
-                                             (insert-file-contents f)
-                                             (goto-char (point-min))
-                                             (re-search-forward "^Name=")
-                                             (buffer-substring (point) (line-end-position))))
-                                         desktop-files))
-             (application-alist (cl-mapcar #'cons application-names desktop-files))
-             (actions (seq-map (lambda (pair)
-                                 "PAIR is (application-name . desktop-file).
+  (when jacob-is-linux
+    (let* ((desktop-files (append (directory-files "/usr/share/applications/" "FULL" "\\.desktop$")
+                                  (directory-files "~/.local/share/applications" "FULL" "\\.desktop$")))
+           (application-names (seq-map (lambda (f)
+                                         (with-temp-buffer
+                                           (insert-file-contents f)
+                                           (goto-char (point-min))
+                                           (re-search-forward "^Name=")
+                                           (buffer-substring (point) (line-end-position))))
+                                       desktop-files))
+           (application-alist (cl-mapcar #'cons application-names desktop-files))
+           (actions (seq-map (lambda (pair)
+                               "PAIR is (application-name . desktop-file).
 Return (application-name . f), where f is a function to start each application."
-                                 (cons (format "Start: %s" (car pair))
-                                       (lambda ()
-                                         "Start an application based on the contents of a .desktop file."
-                                         (start-process-shell-command "jacob-rofi"
-                                                                      nil
-                                                                      (with-temp-buffer
-                                                                        (insert-file-contents (cdr pair))
-                                                                        (goto-char (point-min))
-                                                                        (re-search-forward "^Exec=\\(.*\\)$")
-                                                                        (replace-regexp-in-string "%u" "" (match-string 1)))))))
-                               application-alist)))
-        actions)
-    '()))
+                               (cons (format "Start: %s" (car pair))
+                                     (lambda ()
+                                       "Start an application based on the contents of a .desktop file."
+                                       (start-process-shell-command "jacob-rofi"
+                                                                    nil
+                                                                    (with-temp-buffer
+                                                                      (insert-file-contents (cdr pair))
+                                                                      (goto-char (point-min))
+                                                                      (re-search-forward "^Exec=\\(.*\\)$")
+                                                                      (replace-regexp-in-string "%u" "" (match-string 1)))))))
+                             application-alist)))
+      actions)))
 
 (defun jacob-rofi--action-source-linux-raise-application ()
   "An action source for raising applications on linux."
-  (if jacob-is-linux
-      (let* ((ids (string-lines (shell-command-to-string "wmctrl -x -l | awk '{print $1}'")
-                                "OMIT-NULLS"))
-             (classes (string-lines (shell-command-to-string "wmctrl -x -l | awk '{print $3}'")
-                                    "OMIT-NULLS"))
-             (titles (string-lines (shell-command-to-string "wmctrl -x -l | awk '{print substr($0, index($0,$5))}'")
-                                   "OMIT-NULLS"))
-             (id-titles (seq-map (lambda (l)
-                                   (cons (format "%s::%s" (cadr l) (caddr l)) (car l)))
-                                 (cl-mapcar 'list ids classes titles)))
-             (actions (seq-map (lambda (pair)
-                                 "PAIR is (application-name . desktop-file).
+  (when jacob-is-linux
+    (let* ((ids (string-lines (shell-command-to-string "wmctrl -x -l | awk '{print $1}'")
+                              "OMIT-NULLS"))
+           (classes (string-lines (shell-command-to-string "wmctrl -x -l | awk '{print $3}'")
+                                  "OMIT-NULLS"))
+           (titles (string-lines (shell-command-to-string "wmctrl -x -l | awk '{print substr($0, index($0,$5))}'")
+                                 "OMIT-NULLS"))
+           (id-titles (seq-map (lambda (l)
+                                 (cons (format "%s::%s" (cadr l) (caddr l)) (car l)))
+                               (cl-mapcar 'list ids classes titles)))
+           (actions (seq-map (lambda (pair)
+                               "PAIR is (application-name . desktop-file).
 Return (application-name . f), where f is a function to raise each application."
-                                 (cons (format "Raise: %s" (car pair))
-                                       (lambda ()
-                                         "Raise an application."
-                                         (shell-command (format "wmctrl -ia %s" (cdr pair))))))
-                               id-titles)))
-        actions)
-    '()))
+                               (cons (format "Raise: %s" (car pair))
+                                     (lambda ()
+                                       "Raise an application."
+                                       (shell-command (format "wmctrl -ia %s" (cdr pair))))))
+                             id-titles)))
+      actions)))
 
 (provide 'jacob-rofi)
 
