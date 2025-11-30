@@ -34,7 +34,8 @@ an application, raise an open application, power off the system).
                                     (string-replace ".app" "" f))
                                   (seq-filter (lambda (f)
                                                 (string-match-p "\.app" f))
-                                              (directory-files "/Applications/"))))
+                                              (append (directory-files "/Applications/")
+                                                      (directory-files "/System/Applications")))))
            (actions (seq-map (lambda (application-name)
                                "Return a cons pair of the APPLICATION-NAME of the running application and a function to raise it."
                                (cons (format "Run or raise: %s" application-name)
