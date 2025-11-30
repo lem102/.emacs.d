@@ -102,7 +102,8 @@ Return (application-name . f), where f is a function to raise each application."
 (defun jacob-system-shutdown ()
   "Shutdown the system."
   (interactive)
-  (eshell-command (cond (jacob-is-mac "sudo shutdown -h +1"))))
+  (eshell-command (cond (jacob-is-mac "sudo shutdown -h +1")
+                        (jacob-is-linux "systemctl poweroff --when=auto"))))
 
 (provide 'jacob-rofi)
 
