@@ -192,7 +192,7 @@
   (if (string-blank-p (buffer-substring (line-beginning-position)
                                         (line-end-position)))
       (delete-blank-lines)
-    (delete-all-space)))
+    (join-line)))
 
 (defun jacob-comment ()
   "Custom comment command."
