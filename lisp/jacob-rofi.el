@@ -99,6 +99,13 @@ Return (application-name . f), where f is a function to raise each application."
                              id-titles)))
       actions)))
 
+(defun jacob-system-shutdown ()
+  "Shutdown the system."
+  (interactive)
+  (start-process-shell-command "jacob-system"
+                               nil
+                               (cond (jacob-is-mac "shutdown -h +1"))))
+
 (provide 'jacob-rofi)
 
 ;;; jacob-rofi.el ends here
