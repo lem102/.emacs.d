@@ -11,7 +11,8 @@
 
 Should work on linux and mac. On Linux, wmctrl is used.
 
-1. Create a list of actions from various action sources (e.g. launch an application, raise an open application, power off the system).
+1. Create a list of actions from various action sources (e.g. launch
+an application, raise an open application, power off the system).
 2. Use `completing-read' to select an action.
 3. Carry out the selected action."
   (interactive)
@@ -34,15 +35,15 @@ Should work on linux and mac. On Linux, wmctrl is used.
                                   (seq-filter (lambda (f)
                                                 (string-match-p "\.app" f))
                                               (directory-files "/Applications/"))))
-           (actions (seq-map (lambda (name)
-                               "Return a cons pair of the NAME of the running application and a function to raise it."
-                               (cons name
+           (actions (seq-map (lambda (application-name)
+                               "Return a cons pair of the APPLICATION-NAME of the running application and a function to raise it."
+                               (cons (format "Run or raise: %s" application-name)
                                      (lambda ()
                                        ;; HACK: Selecting emacs makes the call to osascript slow.
                                        ;; To improve performance, don't call osascript as Emacs is already focused.
-                                       (unless (string= application "Emacs")
+                                       (unless (string= application-name "Emacs")
                                          (shell-command-to-string (format "osascript -e 'tell application \"%s\" to activate'"
-                                                                          application))))))
+                                                                          application-name))))))
                              applications)))
       actions)))
 
