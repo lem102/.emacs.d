@@ -149,7 +149,7 @@ Return (application-name . f), where f is a function to raise each application."
                                         (jacob-is-linux "systemctl reboot"))))))
         (cons "System Lock"
               (lambda ()
-                ))))
+                (eshell-command (cond (jacob-is-mac "pmset displaysleepnow")))))))
 
 (provide 'jacob-rofi)
 
