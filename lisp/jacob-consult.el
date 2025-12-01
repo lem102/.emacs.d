@@ -1,4 +1,4 @@
-;;; jacob-consult.el --- Configuration for consult package
+;;; jacob-consult.el --- Configuration for consult package  -*- lexical-binding: t; -*-
 
 ;;; Commentary:
 ;; 
@@ -8,19 +8,21 @@
 (defun jacob-consult-config ()
   "Apply configuration to the `consult' package."
   (require 'jacob-consult-functions)
+  ;; FIXME: Set up autoload to prevent the need to delay binding this command.
   (keymap-set project-prefix-map "g" #'jacob-project-search)
   
   (setopt completion-in-region-function 'consult-completion-in-region
           xref-show-xrefs-function 'consult-xref
           xref-show-definitions-function 'consult-xref
-          ;; FIXME: broken, see `jacob-consult-buffer-state-no-tramp'
-          ;; consult--source-buffer (plist-put consult--source-buffer
-          ;; :state #'jacob-consult-buffer-state-no-tramp)
-          ))
+          consult--source-buffer (plist-put consult--source-buffer
+                                            :state #'jacob-consult-buffer-state-no-tramp)))
 
 (use-package consult
   :defer t
   :init
+  (keymap-global-set "C-x b" #'consult-buffer)
+  (keymap-global-set "M-y" #'consult-yank-from-kill-ring)
+
   (with-eval-after-load "ryo-modal"
     (ryo-modal-keys
      ("SPC"
@@ -40,9 +42,6 @@
     (ryo-modal-keys
      ("SPC"
       (("p" project-prefix-map)))))
-
-  (keymap-global-set "C-x b" #'consult-buffer)
-  (keymap-global-set "M-y" #'consult-yank-from-kill-ring)
   :config (jacob-consult-config))
 
 (provide 'jacob-consult)

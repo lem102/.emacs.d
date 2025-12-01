@@ -1386,6 +1386,10 @@ Disables the eglot backend when inside a `.g8' template."
 (use-package marginalia
   :hook (jacob-first-minibuffer-activation-hook . marginalia-mode))
 
+;; FIXME: ensure all elisp files have lexical binding enabled, figure
+;; out how to automate adding the lexical binding cookie upon creation
+;; of new files.
+
 (require 'jacob-consult)
 
 (use-package imenu

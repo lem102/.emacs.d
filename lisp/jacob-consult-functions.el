@@ -1,4 +1,4 @@
-;;; jacob-consult-functions.el --- Functions for `jacob-consult'
+;;; jacob-consult-functions.el --- Functions for `jacob-consult'  -*- lexical-binding: t; -*-
 
 
 ;;; Commentary:
@@ -6,9 +6,6 @@
 
 ;;; Code:
 
-;; FIXME: This function is buggered currently.
-;; The function works if you move the defun to the scratch buffer and
-;; evaluate it there.
 (defun jacob-consult-buffer-state-no-tramp ()
   "Buffer state function that doesn't preview Tramp buffers."
   (let ((orig-state (consult--buffer-state))
