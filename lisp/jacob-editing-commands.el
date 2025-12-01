@@ -194,6 +194,59 @@
       (delete-blank-lines)
     (join-line)))
 
+(defun xah-shrink-whitespaces ()
+  "Remove whitespaces around cursor .
+
+Shrink neighboring spaces, then newlines, then spaces again, leaving one space or newline at each step, till no more white space.
+
+URL `http://xahlee.info/emacs/emacs/emacs_shrink_whitespace.html'
+Created: 2014-10-21
+Version: 2023-07-12"
+  (interactive)
+  (let ((xeol-count 0)
+        (xp0 (point))
+        xbeg  ; whitespace begin
+        xend  ; whitespace end
+        (xcharBefore (char-before))
+        (xcharAfter (char-after))
+        xspace-neighbor-p)
+    (setq xspace-neighbor-p (or (eq xcharBefore 32) (eq xcharBefore 9) (eq xcharAfter 32) (eq xcharAfter 9)))
+    (skip-chars-backward " \n\t　")
+    (setq xbeg (point))
+    (goto-char xp0)
+    (skip-chars-forward " \n\t　")
+    (setq xend (point))
+    (goto-char xbeg)
+    (while (search-forward "\n" xend t)
+      (setq xeol-count (1+ xeol-count)))
+    (goto-char xp0)
+    (cond
+     ((eq xeol-count 0)
+      (if (> (- xend xbeg) 1)
+          (progn
+            (delete-horizontal-space) (insert " "))
+        (progn (delete-horizontal-space))))
+     ((eq xeol-count 1)
+      (if xspace-neighbor-p
+          (delete-horizontal-space)
+        (progn (delete-space--internal "\n" nil) (insert " "))))
+     ((eq xeol-count 2)
+      (if xspace-neighbor-p
+          (delete-horizontal-space)
+        (progn
+          (delete-space--internal "\n" nil)
+          (insert "\n"))))
+     ((> xeol-count 2)
+      (if xspace-neighbor-p
+          (delete-horizontal-space)
+        (progn
+          (goto-char xend)
+          (search-backward "\n")
+          (delete-region xbeg (point))
+          (insert "\n"))))
+     (t (progn
+          (message "nothing done. logic error 40873. shouldn't reach here"))))))
+
 (defun jacob-comment ()
   "Custom comment command."
   (interactive)
@@ -202,6 +255,31 @@
     (if is-line-blank
         (comment-dwim nil)
       (comment-line 1))))
+
+(defun xah-comment-dwim ()
+  "Toggle comment in programing language code.
+
+Like `comment-dwim', but toggle comment if cursor is not at end of line.
+If cursor is at end of line, either add comment at the line end or move cursor to start of line end comment. call again to comment out whole line.
+
+URL `http://xahlee.info/emacs/emacs/emacs_toggle_comment_by_line.html'
+Created: 2016-10-25
+Version: 2023-07-10"
+  (interactive)
+  (if (region-active-p)
+      (comment-dwim nil)
+    (let ((xbegin (line-beginning-position))
+          (xend (line-end-position)))
+      (if (eq xbegin xend)
+          (progn
+            (comment-dwim nil))
+        (if (eq (point) xend)
+            (progn
+              (comment-dwim nil))
+          (progn
+            (comment-or-uncomment-region xbegin xend)
+            (forward-line )))))))
+
 
 (defun jacob-forward-sexp ()
   "Move forward one sexp.
@@ -239,6 +317,35 @@ If that fails, attempt to move backward out of the current list."
                       #'downcase-word))
                1))))
 
+(defun xah-toggle-letter-case ()
+  "Toggle the letter case of current word or selection.
+Always cycle in this order: Init Caps, ALL CAPS, all lower.
+
+URL `http://xahlee.info/emacs/emacs/emacs_toggle_letter_case.html'
+Created: 2020-06-26
+Version: 2024-06-17"
+  (interactive)
+  (let ((deactivate-mark nil) xbeg xend)
+    (if (region-active-p)
+        (setq xbeg (region-beginning) xend (region-end))
+      (save-excursion
+        (skip-chars-backward "[:alnum:]")
+        (setq xbeg (point))
+        (skip-chars-forward "[:alnum:]")
+        (setq xend (point))))
+    (when (not (eq last-command this-command))
+      (put this-command 'state 0))
+    (cond
+     ((equal 0 (get this-command 'state))
+      (upcase-initials-region xbeg xend)
+      (put this-command 'state 1))
+     ((equal 1 (get this-command 'state))
+      (upcase-region xbeg xend)
+      (put this-command 'state 2))
+     ((equal 2 (get this-command 'state))
+      (downcase-region xbeg xend)
+      (put this-command 'state 0)))))
+
 (defun jacob-toggle-previous-letter-case ()
   "Toggle the case of the previous letter."
   (interactive)
@@ -247,6 +354,20 @@ If that fails, attempt to move backward out of the current list."
                #'downcase-region
              #'upcase-region)))
     (funcall f (1- (point)) (point))))
+
+(defun xah-toggle-previous-letter-case ()
+  "Toggle the letter case of the letter to the left of cursor.
+
+URL `http://xahlee.info/emacs/emacs/emacs_toggle_letter_case.html'
+Created: 2015-12-22
+Version: 2023-11-14"
+  (interactive)
+  (let ((case-fold-search nil))
+    (left-char 1)
+    (cond
+     ((looking-at "[[:lower:]]") (upcase-region (point) (1+ (point))))
+     ((looking-at "[[:upper:]]") (downcase-region (point) (1+ (point)))))
+    (right-char)))
 
 (provide 'jacob-editing-commands)
 

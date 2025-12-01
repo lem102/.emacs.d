@@ -81,8 +81,7 @@
  ("f" global-ryo-modal-mode-disable)
 
  ("g" expreg-expand)
-
- ("w" jacob-delete-whitespace)
+ ("w" xah-shrink-whitespaces)
  ("e" backward-kill-word)
  ("r" kill-word)
 
@@ -94,8 +93,8 @@
  ("c" jacob-copy-line-or-region)
  ("v" yank)
 
- ("z" jacob-comment)
- ("b" jacob-toggle-word-case)
+ ("z" xah-comment-dwim)
+ ("b" xah-toggle-letter-case)
 
  ("\\" embark-act)
  ("'" delete-other-windows)
@@ -114,7 +113,7 @@
    ("4" split-window-below)
    (";" save-buffer)
    ("." universal-argument)
-   ("b" jacob-toggle-previous-letter-case)
+   ("b" xah-toggle-previous-letter-case)
    ("c" jacob-copy-buffer)
    ("e"
     (("s" consult-line)
