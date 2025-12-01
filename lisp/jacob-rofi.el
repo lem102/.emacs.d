@@ -20,7 +20,8 @@ an application, raise an open application, power off the system).
   (let* ((actions (append (jacob-rofi--action-source-linux-start-application)
                           (jacob-rofi--action-source-linux-raise-application)
                           (jacob-rofi--action-source-mac-start-or-raise-application)
-                          (jacob-rofi--action-source-system-commands)))
+                          (jacob-rofi--action-source-system-commands)
+                          (jacob-rofi--action-source-org-capture)))
          (selected-action (cdr (assoc (completing-read "Select action: "
                                                        actions
                                                        nil
@@ -150,6 +151,12 @@ Return (application-name . f), where f is a function to raise each application."
         (cons "System Lock"
               (lambda ()
                 (eshell-command (cond (jacob-is-mac "pmset displaysleepnow")))))))
+
+(defun jacob-rofi--action-source-org-capture ()
+  "An action source for `org-capture'."
+  (list (cons "Capture to inbox"
+              (lambda ()
+                (ignore-errors (org-capture nil "i"))))))
 
 (provide 'jacob-rofi)
 
