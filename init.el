@@ -85,12 +85,6 @@
   :config
   (tool-bar-mode (if jacob-is-android 1 0))
   (modifier-bar-mode (if jacob-is-android 1 0))
-
-  (setq tool-bar-map (make-sparse-keymap))
-
-  (tool-bar-add-item "cancel" #'keyboard-quit 'keyboard-quit)
-  (tool-bar-add-item "next-node" #'other-window 'other-window)
-  (tool-bar-add-item "index" #'imenu 'imenu)
   :custom
   (tool-bar-button-margin (if jacob-is-android 40 4))
   (tool-bar-position (if jacob-is-android 'bottom 'top))
