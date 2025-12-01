@@ -1215,8 +1215,8 @@ Disables the eglot backend when inside a `.g8' template."
     (setq-local forward-sexp-function nil)
     (setq-local transpose-sexps-function nil)))
 
-(use-package yaml-ts-mode
-  :mode ("\\.ya?ml\\'" . yaml-ts-mode))
+(use-package yaml-pro
+  :mode ("\\.ya?ml\\'" . yaml-pro-ts-mode))
 
 (use-package php-ts-mode
   :mode ("\\.php\\'" . php-ts-mode))

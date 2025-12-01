@@ -66,7 +66,8 @@
                                   visual-replace
                                   dumb-jump
                                   ryo-modal
-                                  yasnippet)
+                                  yasnippet
+                                  yaml-pro)
       package-vc-selected-packages '((eglot-booster :url "https://github.com/jdtsmith/eglot-booster")
                                      (sln-mode :url "https://github.com/sensorflo/sln-mode.git")
                                      (font-lock-ext :url "https://github.com/sensorflo/font-lock-ext.git")))
