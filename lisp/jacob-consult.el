@@ -7,7 +7,8 @@
 
 (defun jacob-consult-config ()
   "Apply configuration to the `consult' package."
-  (require 'jacob-consult-functions)
+  (autoload #'jacob-project-search "jacob-consult-functions")
+  (autoload #'jacob-consult-buffer-state-no-tramp "jacob-consult-functions")
   
   (setopt completion-in-region-function 'consult-completion-in-region
           xref-show-xrefs-function 'consult-xref
