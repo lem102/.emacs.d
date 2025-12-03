@@ -8,8 +8,6 @@
 (defun jacob-consult-config ()
   "Apply configuration to the `consult' package."
   (require 'jacob-consult-functions)
-  ;; FIXME: Set up autoload to prevent the need to delay binding this command.
-  (keymap-set project-prefix-map "g" #'jacob-project-search)
   
   (setopt completion-in-region-function 'consult-completion-in-region
           xref-show-xrefs-function 'consult-xref
@@ -37,12 +35,17 @@
         (("u" consult-goto-line)))
        ("j"
         (("g" consult-info)
-         ("c" consult-man))))))
+         ("c" consult-man)))))))
+  :config
+  (jacob-consult-config)
 
+  ;; FIXME: Set up autoload to prevent the need to delay binding this command.
+  (keymap-set project-prefix-map "g" #'jacob-project-search)
+  ;; due to above binding, we need to reapply the project-prefix-map in ryo-modal-keys
+  (with-eval-after-load "ryo-modal"
     (ryo-modal-keys
      ("SPC"
-      (("p" project-prefix-map)))))
-  :config (jacob-consult-config))
+      (("p" project-prefix-map))))))
 
 (provide 'jacob-consult)
 
