@@ -1516,6 +1516,7 @@ Disables the eglot backend when inside a `.g8' template."
 (use-package exec-path-from-shell
   :if jacob-is-mac
   :config
+  (add-to-list 'exec-path-from-shell-variables "JAVA_HOME")
   (exec-path-from-shell-initialize))
 
 (use-package pdf-tools
