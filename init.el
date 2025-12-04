@@ -891,6 +891,20 @@ Disables the eglot backend when inside a `.g8' template."
   :disabled
   :hook ((emacs-lisp-mode-hook lisp-mode-hook scheme-mode-hook) . lisp-extra-font-lock-mode))
 
+(defun jacob-font-lock-programming-setup ()
+  "Setup faces locally for programming."
+  (dolist (face '(font-lock-type-face
+                  font-lock-keyword-face
+                  font-lock-variable-use-face
+                  font-lock-function-call-face
+                  font-lock-preprocessor-face
+                  font-lock-property-use-face
+                  font-lock-builtin-face))
+    (face-remap-add-relative face :foreground (face-foreground 'default)))
+
+  (face-remap-add-relative 'font-lock-comment-face
+                           :inherit 'font-lock-warning-face))
+
 (use-package elisp-mode
   :defer t
   :hook (emacs-lisp-mode-hook . flymake-mode)
@@ -925,20 +939,6 @@ Disables the eglot backend when inside a `.g8' template."
 
   (font-lock-add-keywords 'emacs-lisp-mode
                           '(("(use-package \\([[:word:]-]+\\)" 1 'font-lock-function-name-face)))
-
-  (defun jacob-font-lock-programming-setup ()
-    "Setup faces locally for programming."
-    (dolist (face '(font-lock-type-face
-                    font-lock-keyword-face
-                    font-lock-variable-use-face
-                    font-lock-function-call-face
-                    font-lock-preprocessor-face
-                    font-lock-property-use-face
-                    font-lock-builtin-face))
-      (face-remap-add-relative face :foreground (face-foreground 'default)))
-
-    (face-remap-add-relative 'font-lock-comment-face
-                             :inherit 'font-lock-warning-face))
 
   (add-hook 'emacs-lisp-mode-hook #'jacob-font-lock-programming-setup))
 
