@@ -6,14 +6,12 @@
 ;;; Code:
 
 (use-package ls-lisp
-  :demand jacob-is-server-running
   :defer t
   :init
   (setq ls-lisp-use-insert-directory-program nil
         ls-lisp-dirs-first t))
 
 (use-package dired
-  :demand jacob-is-server-running
   :defer t
   :init
   (add-hook 'dired-mode-hook #'dired-hide-details-mode)
@@ -39,6 +37,15 @@
                                ("c" dired-do-copy)
                                ("u" dired-up-directory)
                                ("j" dired-goto-file))))
+
+(use-package wdired-mode
+  :defer t
+  :config
+  (with-eval-after-load "ryo-modal"
+    (add-hook 'wdired-mode-hook #'global-ryo-modal-mode-refresh-keys)
+    (advice-add #'wdired-change-to-dired-mode
+                :after
+                #'global-ryo-modal-mode-refresh-keys)))
 
 (use-package dired-aux
   :defer t

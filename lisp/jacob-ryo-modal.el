@@ -24,8 +24,10 @@
   (lambda ()
     (ryo-modal-mode 1)))
 
-(add-hook 'minibuffer-setup-hook #'global-ryo-modal-mode-disable)
-(add-hook 'minibuffer-exit-hook #'global-ryo-modal-mode-enable)
+(defun global-ryo-modal-mode-refresh-keys ()
+  "\"Turn it off and on again\", to ensure keys are correct in current buffer."
+  (global-ryo-modal-mode-disable)
+  (global-ryo-modal-mode-enable))
 
 (defun global-ryo-modal-mode-enable ()
   "Enable `global-ryo-modal-mode'."
@@ -33,13 +35,16 @@
   (unless global-ryo-modal-mode
     (global-ryo-modal-mode 1)))
 
+(keymap-global-set "M-SPC" #'global-ryo-modal-mode-enable)
+(add-hook 'minibuffer-exit-hook #'global-ryo-modal-mode-enable)
+
 (defun global-ryo-modal-mode-disable ()
   "Disable `global-ryo-modal-mode'."
   (interactive)
   (when global-ryo-modal-mode
     (global-ryo-modal-mode 0)))
 
-(keymap-global-set "M-SPC" #'global-ryo-modal-mode-enable)
+(add-hook 'minibuffer-setup-hook #'global-ryo-modal-mode-disable)
 
 (jacob-defhookf global-ryo-modal-mode-hook
   (global-hl-line-mode (if global-ryo-modal-mode 1 0))

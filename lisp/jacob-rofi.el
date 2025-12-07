@@ -72,7 +72,6 @@ an application, raise an open application, power off the system).
                                            (get-desktop-file-property f "Name"))
                                          desktop-files))
              (application-classes (seq-map (lambda (f)
-                                             (message f)
                                              (get-desktop-file-property f "StartupWMClass"))
                                            desktop-files))
              (application-execs (seq-map (lambda (f)
