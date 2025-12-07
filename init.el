@@ -900,7 +900,9 @@ Disables the eglot backend when inside a `.g8' template."
                   font-lock-preprocessor-face
                   font-lock-property-use-face
                   font-lock-builtin-face))
-    (face-remap-add-relative face :foreground (face-foreground 'default)))
+    (face-remap-add-relative face
+                             :foreground (face-foreground 'default)
+                             :weight (face-attribute 'default :weight)))
 
   (face-remap-add-relative 'font-lock-comment-face
                            :inherit 'font-lock-warning-face))
