@@ -1085,10 +1085,6 @@ Disables the eglot backend when inside a `.g8' template."
 (use-package denote
   :defer t)
 
-(use-package howm
-  :blackout
-  :hook (after-init-hook . howm-menu))
-
 (use-package action-lock
   :defer t
   :blackout)
