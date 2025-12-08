@@ -103,19 +103,19 @@
 
  ("\\" embark-act)
  ("'" delete-other-windows)
+ ("-" split-window-below)
+ ("=" split-window-right)
 
  ("1" winner-undo)
  ("2" winner-redo)
- ("3" other-window-prefix)
- ("4" split-window-right)
+ ("4" other-window-prefix)
  ("5" delete-forward-char)
  ("6" jacob-mark-paragraph)
  ("7" jacob-mark-line)
  ("0" pop-to-mark-command)
 
  ("SPC"
-  (("3" delete-window)
-   ("4" split-window-below)
+  (("'" delete-window)
    (";" save-buffer)
    ("." universal-argument)
    ("b" xah-toggle-previous-letter-case)
