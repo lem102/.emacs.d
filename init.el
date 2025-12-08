@@ -745,15 +745,21 @@ Disables the eglot backend when inside a `.g8' template."
     (unless (eq major-mode 'scala-ts-mode)
       (user-error "Not in a `scala-ts-mode' buffer"))
     (insert "$")
-    (let ((string-node (treesit-parent-until (treesit-node-at (point))
-                                             "string"
-                                             "INCLUDE-NODE")))
-      (when string-node
+    (let* ((string-node (treesit-parent-until (treesit-node-at (point))
+                                              "string"
+                                              "INCLUDE-NODE"))
+           (interpolated-string-node (treesit-parent-until string-node
+                                                           "interpolated_string"
+                                                           "INCLUDE-NODE")))
+      (when (and string-node
+                 (not interpolated-string-node))
         (save-excursion
           (goto-char (treesit-node-start string-node))
           (insert "s")))))
 
-  (keymap-set scala-ts-mode-map "$" #'jacob-scala-dollar))
+  (keymap-set scala-ts-mode-map "$" #'jacob-scala-dollar)
+
+  (add-hook 'scala-ts-mode-hook #'jacob-font-lock-scala-setup))
 
 (use-package sbt-mode
   :defer t
@@ -890,6 +896,19 @@ Disables the eglot backend when inside a `.g8' template."
 (use-package lisp-extra-font-lock
   :disabled
   :hook ((emacs-lisp-mode-hook lisp-mode-hook scheme-mode-hook) . lisp-extra-font-lock-mode))
+
+(defun jacob-font-lock-scala-setup ()
+  "Setup faces locally for scala."
+  (dolist (face '(font-lock-keyword-face
+                  font-lock-variable-use-face
+                  font-lock-function-call-face
+                  font-lock-preprocessor-face
+                  font-lock-property-use-face
+                  font-lock-builtin-face))
+    (face-remap-add-relative face :foreground (face-foreground 'default)))
+
+  (face-remap-add-relative 'font-lock-comment-face
+                           :inherit 'font-lock-warning-face))
 
 (defun jacob-font-lock-programming-setup ()
   "Setup faces locally for programming."
