@@ -427,48 +427,49 @@ Intended for running applications."
 (use-package ibuffer
   :defer t
   :config
-  (with-eval-after-load "xah-fly-keys"
-    (jacob-xfk-bind-for-mode ibuffer-mode
-	                         "q" #'quit-window
-                             "g" #'ibuffer-update)))
+  (with-eval-after-load "ryo-modal"
+    (ryo-modal-major-mode-keys 'ibuffer-mode
+                               ("q" quit-window)
+                               ("g" ibuffer-update))))
 
 (use-package replace
   :config
-  (with-eval-after-load "xah-fly-keys"
-    (jacob-xfk-bind-for-mode occur-mode
-                             "q" 'quit-window
-                             "i" 'occur-prev
-                             "k" 'occur-next)))
+  (with-eval-after-load "ryo-modal"
+    (ryo-modal-major-mode-keys 'occur-mode
+                               ("q" quit-window)
+                               ("i" occur-prev)
+                               ("k" occur-next))))
+
 
 (use-package info
   :defer
   :config
-  (with-eval-after-load "xah-fly-keys"
-    (jacob-xfk-bind-for-mode Info-mode
-                             "q" #'quit-window
-                             "r" #'Info-scroll-up
-                             "e" #'Info-scroll-down
-                             "w" #'Info-up
-                             "g" #'Info-menu)))
+  (with-eval-after-load "ryo-modal"
+    (ryo-modal-major-mode-keys 'Info-mode
+                               ("q" quit-window)
+                               ("r" Info-scroll-up)
+                               ("e" Info-scroll-down)
+                               ("w" Info-up)
+                               ("g" Info-menu))))
 
 (use-package man
   :defer
   :custom
   (Man-notify-method 'pushy)
   :config
-  (with-eval-after-load "xah-fly-keys"
-    (jacob-xfk-bind-for-mode Man-mode
-                             "q" #'quit-window)))
+  (with-eval-after-load "ryo-modal"
+    (ryo-modal-major-mode-keys 'Man-mode
+                               ("q" quit-window))))
 
 (use-package diff
   :config
-  (with-eval-after-load "xah-fly-keys"
-    (jacob-xfk-bind-for-mode diff-mode
-                             "q" #'quit-window
-                             "e" #'diff-hunk-prev
-                             "r" #'diff-hunk-next
-                             "x" #'diff-hunk-kill
-                             "g" #'revert-buffer)))
+  (with-eval-after-load "ryo-modal"
+    (ryo-modal-major-mode-keys 'diff-mode
+                               ("q" quit-window)
+                               ("e" diff-hunk-prev)
+                               ("r" diff-hunk-next)
+                               ("x" diff-hunk-kill)
+                               ("g" revert-buffer))))
 
 (use-package help
   :defer t
@@ -492,14 +493,14 @@ Intended for running applications."
 
 (use-package help-mode
   :config
-  (with-eval-after-load "xah-fly-keys"
-    (jacob-xfk-bind-for-mode help-mode
-                             "s" #'help-view-source
-                             "q" #'quit-window
-                             "e" #'help-go-back
-                             "r" #'help-go-forward
-                             "g" #'revert-buffer
-                             "w" #'jacob-help-edit)))
+  (with-eval-after-load "ryo-modal"
+    (ryo-modal-major-mode-keys 'help-mode
+                               ("s" help-view-source)
+                               ("q" quit-window)
+                               ("e" help-go-back)
+                               ("r" help-go-forward)
+                               ("g" revert-buffer)
+                               ("w" jacob-help-edit))))
 
 (use-package helpful
   :defer t
@@ -508,19 +509,19 @@ Intended for running applications."
   (keymap-global-set "C-h f" #'helpful-callable)
   (keymap-global-set "C-h k" #'helpful-key)
 
-  (with-eval-after-load "xah-fly-keys"
+  (with-eval-after-load "ryo-modal"
     (keymap-set xah-fly-leader-key-map "j k" #'helpful-callable)
     (keymap-set xah-fly-leader-key-map "j l" #'helpful-variable)
     (keymap-set xah-fly-leader-key-map "j v" #'helpful-key)
     (keymap-set xah-fly-leader-key-map "j b" #'helpful-command))
   :config
-  (with-eval-after-load "xah-fly-keys"
-    (jacob-xfk-bind-for-mode helpful-mode
-                             "q" #'quit-window
-                             "g" #'helpful-update
-                             "e" #'backward-button
-                             "r" #'forward-button
-                             "s" #'push-button)))
+  (with-eval-after-load "ryo-modal"
+    (ryo-modal-major-mode-keys 'helpful-mode
+                               ("q" quit-window)
+                               ("g" helpful-update)
+                               ("e" backward-button)
+                               ("r" forward-button)
+                               ("s" push-button))))
 
 (use-package warnings
   :custom ((warning-minimum-level :error)))
@@ -560,37 +561,37 @@ Intended for running applications."
 (use-package vc-git
   :defer t
   :config
-  (with-eval-after-load "xah-fly-keys"
-    (jacob-xfk-bind-for-mode vc-git-log-view-mode
-                             "q" #'quit-window)))
+  (with-eval-after-load "ryo-modal"
+    (ryo-modal-major-mode-keys 'vc-git-log-view-mode
+                               ("q" quit-window))))
 
 (use-package vc-dir
   :defer t
   :config
-  (with-eval-after-load "xah-fly-keys"
-    (jacob-xfk-bind-for-mode vc-dir-mode
-                             "q" #'quit-window
-                             "g" #'revert-buffer
-                             "i" #'vc-dir-previous-line
-                             "k" #'vc-dir-next-line
-                             "o" #'vc-dir-next-directory
-                             "u" #'vc-dir-previous-directory
-                             "s" #'vc-dir-find-file
-                             "e" #'vc-dir-mark
-                             "r" #'vc-dir-unmark
-                             "v" #'vc-next-action
-                             "p" #'vc-push
-                             ";" #'jacob-git-push-set-upstream
-                             "=" #'vc-diff
-                             "x" #'vc-dir-hide-up-to-date)))
+  (with-eval-after-load "ryo-modal"
+    (ryo-modal-major-mode-keys 'vc-dir-mode
+                               ("q" quit-window)
+                               ("g" revert-buffer)
+                               ("i" vc-dir-previous-line)
+                               ("k" vc-dir-next-line)
+                               ("o" vc-dir-next-directory)
+                               ("u" vc-dir-previous-directory)
+                               ("s" vc-dir-find-file)
+                               ("e" vc-dir-mark)
+                               ("r" vc-dir-unmark)
+                               ("v" vc-next-action)
+                               ("p" vc-push)
+                               (";" jacob-git-push-set-upstream)
+                               ("=" vc-diff)
+                               ("x" vc-dir-hide-up-to-date))))
 
 (use-package vc-annotate
   :defer t
   :config
-  (with-eval-after-load "xah-fly-keys"
-    (jacob-xfk-bind-for-mode vc-annotate-mode
-                             "q" #'quit-window
-                             "g" #'revert-buffer)))
+  (with-eval-after-load "ryo-modal"
+    (ryo-modal-major-mode-keys 'vc-annotate-mode
+                               ("q" quit-window)
+                               ("g" revert-buffer))))
 
 (use-package magit
   :bind ( :map project-prefix-map
@@ -627,7 +628,7 @@ Intended for running applications."
     "i" #'eglot-find-implementation
     "t" #'eglot-find-typeDefinition)
 
-  (with-eval-after-load "xah-fly-keys"
+  (with-eval-after-load "ryo-modal"
     (keymap-set jacob-xfk-map "c" `("Code" . ,jacob-code-map)))
 
   :config
@@ -863,25 +864,25 @@ Disables the eglot backend when inside a `.g8' template."
 
   (add-hook 'prodigy-mode-hook #'hl-line-mode)
 
-  (with-eval-after-load "xah-fly-keys"
-    (jacob-xfk-bind-for-mode prodigy-mode
-                             "d" #'prodigy-stop
-                             "e" #'prodigy-mark
-                             "g" #'jacob-project-search
-                             "f" #'project-find-file
-                             "i" #'prodigy-prev
-                             "k" #'prodigy-next
-                             "q" #'quit-window
-                             "r" #'prodigy-unmark
-                             "s" #'prodigy-restart
-                             "v" #'prodigy-display-process))
+  (with-eval-after-load "ryo-modal"
+    (ryo-modal-major-mode-keys 'prodigy-mode
+                               ("d" prodigy-stop)
+                               ("e" prodigy-mark)
+                               ("g" jacob-project-search)
+                               ("f" project-find-file)
+                               ("i" prodigy-prev)
+                               ("k" prodigy-next)
+                               ("q" quit-window)
+                               ("r" prodigy-unmark)
+                               ("s" prodigy-restart)
+                               ("v" prodigy-display-process)))
 
   (add-hook 'prodigy-view-mode-hook #'compilation-minor-mode)
 
-  (with-eval-after-load "xah-fly-keys"
-    (jacob-xfk-bind-for-mode prodigy-view-mode
-                             "q" #'quit-window
-                             "g" #'prodigy-restart)))
+  (with-eval-after-load "ryo-modal"
+    (ryo-modal-major-mode-keys 'prodigy-view-mode
+                               ("q" quit-window)
+                               ("g" prodigy-restart))))
 
 (use-package hi-lock
   :blackout)
@@ -975,10 +976,10 @@ Disables the eglot backend when inside a `.g8' template."
 (use-package geiser-mode
   :after (scheme geiser)
   :config
-  (with-eval-after-load "xah-fly-keys"
-    (jacob-xfk-bind-for-mode geiser-mode
-                             "SPC , m" #'geiser-eval-last-sexp
-                             "SPC , d" #'geiser-eval-definition)))
+  (with-eval-after-load "ryo-modal"
+    (ryo-modal-major-mode-keys 'geiser-mode
+                               ("SPC , m" geiser-eval-last-sexp)
+                               ("SPC , d" geiser-eval-definition))))
 
 (use-package geiser-guile
   :after (scheme geiser))
@@ -1023,7 +1024,7 @@ Disables the eglot backend when inside a `.g8' template."
     "a" #'org-agenda
     "c" #'org-capture)
 
-  (with-eval-after-load "xah-fly-keys"
+  (with-eval-after-load "ryo-modal"
     (keymap-set jacob-xfk-map "a" `("Agenda" . ,jacob-org-agenda-map)))
   :config
   (setopt org-agenda-skip-scheduled-if-done t
@@ -1055,10 +1056,10 @@ Disables the eglot backend when inside a `.g8' template."
     (setq-local tool-bar-map org-agenda-tool-bar-map)
     (hl-line-mode 1))
 
-  (with-eval-after-load "xah-fly-keys"
-    (jacob-xfk-bind-for-mode org-agenda-mode
-                             "q" #'quit-window
-                             "g" #'org-agenda-redo-all)))
+  (with-eval-after-load "ryo-modal"
+    (ryo-modal-major-mode-keys 'org-agenda-mode
+                               ("q" quit-window)
+                               ("g" org-agenda-redo-all))))
 
 (use-package org-src
   :after org
@@ -1134,20 +1135,20 @@ Disables the eglot backend when inside a `.g8' template."
 (use-package calendar
   :defer t
   :config
-  (with-eval-after-load "xah-fly-keys"
-    (jacob-xfk-bind-for-mode calendar-mode
-                             "q" #'quit-window
-                             "i" #'calendar-backward-week
-                             "k" #'calendar-forward-week
-                             "j" #'calendar-backward-day
-                             "l" #'calendar-forward-day
-                             "u" #'calendar-backward-month
-                             "o" #'calendar-forward-month
-                             "d" #'diary-view-entries
-                             "s" #'diary-insert-entry
-                             "m" #'diary-mark-entries
-                             "." #'calendar-goto-today
-                             "t" #'calendar-set-mark))
+  (with-eval-after-load "ryo-modal"
+    (ryo-modal-major-mode-keys 'calendar-mode
+                               ("q" quit-window)
+                               ("i" calendar-backward-week)
+                               ("k" calendar-forward-week)
+                               ("j" calendar-backward-day)
+                               ("l" calendar-forward-day)
+                               ("u" calendar-backward-month)
+                               ("o" calendar-forward-month)
+                               ("d" diary-view-entries)
+                               ("s" diary-insert-entry)
+                               ("m" diary-mark-entries)
+                               ("." calendar-goto-today)
+                               ("t" calendar-set-mark)))
 
   (add-hook 'calendar-today-visible-hook 'calendar-mark-today)
 
@@ -1163,7 +1164,7 @@ Disables the eglot backend when inside a `.g8' template."
   :commands (winner-undo winner-redo)
   :hook (on-first-input-hook . winner-mode)
   :init
-  (with-eval-after-load "xah-fly-keys"
+  (with-eval-after-load "ryo-modal"
     (keymap-set xah-fly-command-map "1" #'winner-undo)
     (keymap-set xah-fly-command-map "2" #'winner-redo)))
 
@@ -1172,10 +1173,10 @@ Disables the eglot backend when inside a `.g8' template."
   :init
   (keymap-global-set "<f5>" 'recompile)
   :config
-  (with-eval-after-load "xah-fly-keys"
-    (jacob-xfk-bind-for-mode compilation-mode
-                             "g" #'recompile
-                             "q" #'quit-window))
+  (with-eval-after-load "ryo-modal"
+    (ryo-modal-major-mode-keys 'compilation-mode
+                               ("g" recompile)
+                               ("q" quit-window)))
 
   (add-hook 'compilation-filter-hook #'ansi-color-compilation-filter)
 
@@ -1191,10 +1192,10 @@ Disables the eglot backend when inside a `.g8' template."
 (use-package doc-view
   :defer t
   :config
-  (with-eval-after-load "xah-fly-keys"
-    (jacob-xfk-bind-for-mode doc-view-mode
-                             "l" 'doc-view-next-page
-                             "j" 'doc-view-previous-page)))
+  (with-eval-after-load "ryo-modal"
+    (ryo-modal-major-mode-keys 'doc-view-mode
+                               ("l" doc-view-next-page)
+                               ("j" doc-view-previous-page))))
 
 (use-package treesit
   :defer t
@@ -1413,12 +1414,9 @@ Disables the eglot backend when inside a `.g8' template."
 (use-package embark
   :defer t
   :init
-  (with-eval-after-load "xah-fly-keys"
-    (keymap-set xah-fly-command-map "\\" #'embark-act)
-
-    (with-eval-after-load "xah-fly-keys"
-      (jacob-xfk-bind-for-mode embark-collect
-                               "q" #'quit-window)))
+  (with-eval-after-load "ryo-modal"
+    (ryo-modal-major-mode-keys 'embark-collect
+                               ("q" quit-window)))
   :config
   (setopt embark-cycle-key "\\"
           embark-help-key "h")
@@ -1454,7 +1452,7 @@ Disables the eglot backend when inside a `.g8' template."
 (use-package expreg
   :defer t
   :init
-  (with-eval-after-load "xah-fly-keys"
+  (with-eval-after-load "ryo-modal"
     (keymap-set xah-fly-command-map "g" 'expreg-expand))
   :config
   (setopt expreg-functions (delq 'expreg--subword expreg-functions)))
@@ -1463,9 +1461,9 @@ Disables the eglot backend when inside a `.g8' template."
   :after org
   :hook (org-mode-hook . verb-mode)
   :config
-  (with-eval-after-load "xah-fly-keys"
-    (jacob-xfk-bind-for-mode verb-response-body-mode
-                             "q" #'quit-window))
+  (with-eval-after-load "ryo-modal"
+    (ryo-modal-major-mode-keys 'verb-response-body-mode
+                               ("q" quit-window)))
 
   (defun jacob-verb-id (response-id)
     "Get the id property from the stored verb response pertaining to RESPONSE-ID."
@@ -1478,18 +1476,18 @@ Disables the eglot backend when inside a `.g8' template."
 
   (sly-symbol-completion-mode 0)
 
-  (with-eval-after-load "xah-fly-keys"
-    (jacob-xfk-bind-for-mode sly-mode
-                             "SPC , m" #'sly-eval-last-expression
-                             "SPC , d" #'sly-eval-defun
-                             "SPC , e" #'sly-eval-buffer
-                             "SPC w k" #'sly-edit-definition))
+  (with-eval-after-load "ryo-modal"
+    (ryo-modal-major-mode-keys 'sly-mode
+                               ("SPC , m" sly-eval-last-expression)
+                               ("SPC , d" sly-eval-defun)
+                               ("SPC , e" sly-eval-buffer)
+                               ("SPC w k" sly-edit-definition)))
 
   (setopt sly-auto-start 'always
           inferior-lisp-program "sbcl")
 
-  (jacob-xfk-bind-for-mode sly-db
-                           "q" #'sly-db-quit))
+  (ryo-modal-major-mode-keys 'sly-db
+                             ("q" sly-db-quit)))
 
 (use-package sly-overlay
   :after sly)
@@ -1533,9 +1531,9 @@ Disables the eglot backend when inside a `.g8' template."
   :when jacob-is-linux
   :mode ("\\.[pP][dD][fF]\\'" . pdf-view-mode)
   :config
-  (with-eval-after-load "xah-fly-keys"
-    (jacob-xfk-bind-for-mode pdf-view-mode
-                             "c" #'pdf-view-kill-ring-save)))
+  (with-eval-after-load "ryo-modal"
+    (ryo-modal-major-mode-keys 'pdf-view-mode
+                               ("c" pdf-view-kill-ring-save))))
 
 (use-package grep
   :when jacob-is-windows

@@ -10,6 +10,7 @@
   (require 'expreg)
   (require 'embark)
   (require 'consult)
+  (require 'consult-register)
   (require 'magit-extras)
   (require 'helpful)
   (require 'visual-replace))
