@@ -821,13 +821,13 @@ Disables the eglot backend when inside a `.g8' template."
 
 (use-package project
   :defer t
-  :config
-  (setopt project-switch-commands '((project-find-file "Find file")
-                                    (jacob-project-search "Find regexp")
-                                    (project-find-dir "Find directory")
-                                    (magit-project-status "Version Control")
-                                    (project-eshell "Shell")
-                                    (project-compile "Compile"))))
+  :custom
+  (project-switch-commands '((project-find-file "Find file")
+                             (jacob-project-search "Find regexp")
+                             (project-find-dir "Find directory")
+                             (magit-project-status "Version Control" "v")
+                             (project-eshell "Shell")
+                             (project-compile "Compile"))))
 
 (use-package prodigy
   :defer t
@@ -913,6 +913,7 @@ Disables the eglot backend when inside a `.g8' template."
 (use-package elisp-mode
   :defer t
   :hook (emacs-lisp-mode-hook . flymake-mode)
+  :hook (emacs-lisp-mode-hook . jacob-font-lock-programming-setup)
   :config
   (defun jacob-move-past-close-and-reindent ()
     "Advice for `move-past-close-and-reindent'."
@@ -943,9 +944,7 @@ Disables the eglot backend when inside a `.g8' template."
   (setopt elisp-flymake-byte-compile-load-path load-path)
 
   (font-lock-add-keywords 'emacs-lisp-mode
-                          '(("(use-package \\([[:word:]-]+\\)" 1 'font-lock-function-name-face)))
-
-  (add-hook 'emacs-lisp-mode-hook #'jacob-font-lock-programming-setup))
+                          '(("(use-package \\([[:word:]-]+\\)" 1 'font-lock-function-name-face))))
 
 (use-package scheme
   :mode ("\\.scm\\'" . scheme-mode)
