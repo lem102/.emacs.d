@@ -142,7 +142,8 @@
    ("f" consult-buffer)
    ("s" exchange-point-and-mark)
    ("j"
-    (("c" man)
+    (("b" helpful-command)
+     ("c" man)
      ("k" helpful-callable)
      ("l" helpful-variable)
      ("v" helpful-key)
@@ -204,6 +205,29 @@
 
 (keymap-set isearch-mode-map "<right>" #'isearch-repeat-forward)
 (keymap-set isearch-mode-map "<left>" #'isearch-repeat-backward)
+
+;; TODO: adapt the below code
+
+;; (defvar-keymap jacob-code-map
+;;     "e" #'eglot
+;;     "a" #'eglot-code-actions
+;;     "r" #'eglot-rename
+;;     "i" #'eglot-find-implementation
+;;     "t" #'eglot-find-typeDefinition)
+
+;;   (with-eval-after-load "ryo-modal"
+;;     (keymap-set jacob-xfk-map "c" `("Code" . ,jacob-code-map)))
+
+;; (defvar-keymap jacob-org-agenda-map
+;;   "a" #'org-agenda
+;;   "c" #'org-capture)
+
+;; (with-eval-after-load "ryo-modal"
+;;   (keymap-set jacob-xfk-map "a" `("Agenda" . ,jacob-org-agenda-map)))
+
+;; (jacob-xfk-bind-for-mode sql-interactive-mode
+;;                            "SPC , d" #'sql-send-paragraph)
+
 
 (provide 'jacob-ryo-modal)
 

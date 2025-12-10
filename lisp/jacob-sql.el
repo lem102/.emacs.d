@@ -43,9 +43,6 @@ Intended as before advice for `sql-send-paragraph'."
       (setq sql-prompt-regexp "^[-[:alnum:]_]*[-=]\\*?[#>] ")
       (setq sql-prompt-cont-regexp "^\\(?:\\sw\\|\\s_\\)*[-(]\\*?[#>] ")))
 
-  (jacob-xfk-bind-for-mode sql-interactive-mode
-                           "SPC , d" #'sql-send-paragraph)
-
   (advice-add #'sql-send-paragraph :before #'jacob-sqli-end-of-buffer))
 
 (use-package sql

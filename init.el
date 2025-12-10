@@ -508,12 +508,6 @@ Intended for running applications."
   (keymap-global-set "C-h v" #'helpful-variable)
   (keymap-global-set "C-h f" #'helpful-callable)
   (keymap-global-set "C-h k" #'helpful-key)
-
-  (with-eval-after-load "ryo-modal"
-    (keymap-set xah-fly-leader-key-map "j k" #'helpful-callable)
-    (keymap-set xah-fly-leader-key-map "j l" #'helpful-variable)
-    (keymap-set xah-fly-leader-key-map "j v" #'helpful-key)
-    (keymap-set xah-fly-leader-key-map "j b" #'helpful-command))
   :config
   (with-eval-after-load "ryo-modal"
     (ryo-modal-major-mode-keys 'helpful-mode
@@ -620,17 +614,6 @@ Intended for running applications."
 
 (use-package eglot
   :defer t
-  :init
-  (defvar-keymap jacob-code-map
-    "e" #'eglot
-    "a" #'eglot-code-actions
-    "r" #'eglot-rename
-    "i" #'eglot-find-implementation
-    "t" #'eglot-find-typeDefinition)
-
-  (with-eval-after-load "ryo-modal"
-    (keymap-set jacob-xfk-map "c" `("Code" . ,jacob-code-map)))
-
   :config
   (jacob-defhookf eglot-managed-mode-hook
     (eglot-inlay-hints-mode 0)
@@ -1019,13 +1002,6 @@ Disables the eglot backend when inside a `.g8' template."
 
 (use-package org-agenda
   :commands (org-agenda org-capture)
-  :init
-  (defvar-keymap jacob-org-agenda-map
-    "a" #'org-agenda
-    "c" #'org-capture)
-
-  (with-eval-after-load "ryo-modal"
-    (keymap-set jacob-xfk-map "a" `("Agenda" . ,jacob-org-agenda-map)))
   :config
   (setopt org-agenda-skip-scheduled-if-done t
           org-agenda-skip-deadline-if-done t
@@ -1162,11 +1138,7 @@ Disables the eglot backend when inside a `.g8' template."
 (use-package winner
   :defer t
   :commands (winner-undo winner-redo)
-  :hook (on-first-input-hook . winner-mode)
-  :init
-  (with-eval-after-load "ryo-modal"
-    (keymap-set xah-fly-command-map "1" #'winner-undo)
-    (keymap-set xah-fly-command-map "2" #'winner-redo)))
+  :hook (on-first-input-hook . winner-mode))
 
 (use-package compile
   :defer t
@@ -1451,9 +1423,6 @@ Disables the eglot backend when inside a `.g8' template."
 
 (use-package expreg
   :defer t
-  :init
-  (with-eval-after-load "ryo-modal"
-    (keymap-set xah-fly-command-map "g" 'expreg-expand))
   :config
   (setopt expreg-functions (delq 'expreg--subword expreg-functions)))
 
