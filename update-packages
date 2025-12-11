@@ -4,77 +4,74 @@
 (require 'package)
 (require 'package-vc)
 
-(add-to-list 'package-archives
-             (cons "melpa" "https://melpa.org/packages/")
-             "APPEND")
-
-(setq package-selected-packages '(no-littering
-                                  on
-                                  blackout
-                                  helpful
-                                  magit
-                                  forge
-                                  csproj-mode
-                                  sharper
-                                  dired-rsync
-                                  prodigy
-                                  highlight-defined
-                                  hl-todo
-                                  lisp-extra-font-lock
-                                  geiser
-                                  geiser-guile
-                                  mermaid-mode
-                                  ob-mermaid
-                                  org-edna
-                                  denote
-                                  winnow
-                                  treesit-auto
-                                  avy
-                                  apheleia
-                                  rainbow-mode
-                                  dape
-                                  ace-window
-                                  visual-replace-regexp
-                                  markdown-mode
-                                  feature-mode
-                                  vertico
-                                  mct
-                                  orderless
-                                  marginalia
-                                  consult
-                                  embark
-                                  embark-consult
-                                  cape
-                                  expreg
-                                  verb
-                                  sly
-                                  sly-overlay
-                                  sly-macrostep
-                                  sly-quicklisp
-                                  sql-indent
-                                  gptel
-                                  aider
-                                  gdscript-mode
-                                  eat
-                                  pdf-tools
-                                  just-mode
-                                  auctex
-                                  exec-path-from-shell
-                                  scala-ts-mode
-                                  sbt-mode
-                                  visual-replace
-                                  dumb-jump
-                                  ryo-modal
-                                  yasnippet
-                                  yaml-pro)
-      package-vc-selected-packages '((eglot-booster :url "https://github.com/jdtsmith/eglot-booster")
-                                     (sln-mode :url "https://github.com/sensorflo/sln-mode.git")
-                                     (font-lock-ext :url "https://github.com/sensorflo/font-lock-ext.git")))
-
-(package-refresh-contents)
-
-(package-install-selected-packages)
-(package-vc-install-selected-packages)
-
-(package-upgrade-all)
+(let ((package-install-upgrade-built-in t)
+      (package-archives '(("gnu" . "https://elpa.gnu.org/packages/")
+                          ("nongnu" . "https://elpa.nongnu.org/nongnu/")
+                          ("melpa" . "https://melpa.org/packages/")))
+      (package-selected-packages '(no-littering
+                                   on
+                                   blackout
+                                   helpful
+                                   magit
+                                   forge
+                                   csproj-mode
+                                   sharper
+                                   dired-rsync
+                                   prodigy
+                                   highlight-defined
+                                   hl-todo
+                                   lisp-extra-font-lock
+                                   geiser
+                                   geiser-guile
+                                   mermaid-mode
+                                   ob-mermaid
+                                   org-edna
+                                   denote
+                                   winnow
+                                   treesit-auto
+                                   avy
+                                   apheleia
+                                   rainbow-mode
+                                   dape
+                                   ace-window
+                                   visual-replace-regexp
+                                   markdown-mode
+                                   feature-mode
+                                   vertico
+                                   mct
+                                   orderless
+                                   marginalia
+                                   consult
+                                   embark
+                                   embark-consult
+                                   cape
+                                   expreg
+                                   verb
+                                   sly
+                                   sly-overlay
+                                   sly-macrostep
+                                   sly-quicklisp
+                                   sql-indent
+                                   gptel
+                                   aider
+                                   gdscript-mode
+                                   eat
+                                   pdf-tools
+                                   just-mode
+                                   auctex
+                                   exec-path-from-shell
+                                   scala-ts-mode
+                                   sbt-mode
+                                   visual-replace
+                                   dumb-jump
+                                   ryo-modal
+                                   yasnippet
+                                   yaml-pro))
+      (package-vc-selected-packages '((eglot-booster :url "https://github.com/jdtsmith/eglot-booster")
+                                      (sln-mode :url "https://github.com/sensorflo/sln-mode.git")
+                                      (font-lock-ext :url "https://github.com/sensorflo/font-lock-ext.git"))))
+  (package-refresh-contents)
+  (package-install-selected-packages)
+  (package-vc-install-selected-packages)
+  (package-upgrade-all))
 
