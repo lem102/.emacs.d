@@ -2,5 +2,5 @@
 # name: func
 # key: func
 # --
-func f():
-	$0
+func ${1:f$(jacob-yas-snake-case yas-text)}($2):
+	$0${3:pass}
