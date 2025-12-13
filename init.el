@@ -53,7 +53,7 @@
 
 (use-package menu-bar
   :config
-  (menu-bar-mode (if (or jacob-is-mac jacob-is-android) 1 0))
+  (menu-bar-mode 1)
 
   (keymap-global-unset "<menu-bar> <options>")
 
@@ -79,6 +79,8 @@
                                          "<magit>"
                                          (cons "magit"
                                                #'magit))
+
+                             (keymap-set keymap "<org-agenda>" (cons "org-agenda" #'org-agenda))
                              keymap))))
 
 (use-package tool-bar
