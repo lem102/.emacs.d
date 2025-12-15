@@ -672,7 +672,8 @@ Disables the eglot backend when inside a `.g8' template."
   (eglot--code-action eglot-code-action-add-missing-imports-ts "source.addMissingImports.ts")
 
   (setopt eglot-ignored-server-capabilities '(:documentOnTypeFormattingProvider)
-          eglot-stay-out-of '(imenu)))
+          eglot-stay-out-of '(imenu)
+          eglot-code-action-indications '(eldoc-hint mode-line)))
 
 (require 'jacob-csharp-mode)
 
