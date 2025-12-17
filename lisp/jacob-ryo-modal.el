@@ -182,7 +182,8 @@
     (("c" copy-to-register)
      ("u" consult-goto-line)
      ("k" repeat)
-     ("i" consult-register-load)))
+     ("i" consult-register-load)
+     ("r" visual-replace-regexp)))
    ("r" visual-replace)
    ("u" kill-current-buffer)
    ("w"

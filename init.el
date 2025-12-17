@@ -53,6 +53,7 @@
 
 (use-package menu-bar
   :config
+  ;; (menu-bar-mode (if (or jacob-is-mac jacob-is-android) 1 0))
   (menu-bar-mode 1)
 
   (keymap-global-unset "<menu-bar> <options>")
@@ -1037,7 +1038,9 @@ Disables the eglot backend when inside a `.g8' template."
   (with-eval-after-load "ryo-modal"
     (ryo-modal-major-mode-keys 'org-agenda-mode
                                ("q" quit-window)
-                               ("g" org-agenda-redo-all))))
+                               ("g" org-agenda-redo-all)))
+
+  (advice-add #'org-agenda :before #'jacob-generate-daily-tasks))
 
 (use-package org-src
   :after org
@@ -1674,6 +1677,44 @@ For use with GitLab only."
                                           "\" ")))))
     (with-temp-buffer
       (eshell-command command t))))
+
+(defun jacob-generate-daily-tasks (&rest _args)
+  "Prepare your daily tasks."
+  ;; TODO: make file regenerate after 6 AM
+  (let* ((tasks
+          '("Clean Teeth AM"
+            "Clean Teeth PM"
+            "Take Mesalazine"
+            "Take Vitamin D"
+            "Use Inhaler AM"
+            "Use Inhaler PM"))
+         (file-path (file-name-concat org-directory "daily-tasks.org"))
+         (today (format-time-string "%Y-%m-%d %a"))
+         (last-generated-date (with-temp-buffer
+                                (insert-file-contents file-path)
+                                (goto-char (point-min))
+                                (re-search-forward "#\\+DATE: <\\([a-zA-Z0-9 -]+\\)>")
+                                (match-string 1)))
+         (will-generate-file (> (days-between today last-generated-date)
+                                0)))
+    (when will-generate-file
+      (with-temp-file file-path
+        (delete-region (point-min) (point-max))
+        (insert "#+TITLE: Daily Tasks\n")
+        (insert "#+AUTHOR: Emacs Lisp Script\n")
+        (insert "#+DATE: <" today ">\n\n")
+        (dolist (task tasks)
+          (insert (format "* TODO %s :daily:\n" task))
+          (insert "SCHEDULED: <" today ">\n\n"))))))
+
+(defun jacob-update-config ()
+  "Update your Emacs configuration with git."
+  (interactive)
+  (let ((default-directory "~/.emacs.d/"))
+    (shell-command "git stash")
+    (shell-command "git pull")
+    ;; (shell-command "git push")
+    (shell-command "git stash pop")))
 
 (provide 'init)
 
