@@ -1681,6 +1681,11 @@ For use with GitLab only."
 (defun jacob-generate-daily-tasks (&rest _args)
   "Prepare your daily tasks."
   ;; TODO: make file regenerate after 6 AM
+  ;; (let* ((now (decode-time))
+  ;;      (tomorrow-day (1+ (decoded-time-day now)))
+  ;;      (month (decoded-time-month now))
+  ;;      (year (decoded-time-year now)))
+  ;; (encode-time (list 0 0 6 tomorrow-day month year)))
   (let* ((tasks
           '("Clean Teeth AM"
             "Clean Teeth PM"
