@@ -59,18 +59,24 @@ an application, raise an open application, power off the system).
                   (goto-char (point-min))
                   (re-search-forward (format "^%s=\\(.*\\)$" property) nil "NOERROR")
                   (match-string 1))))
-      (let* ((desktop-files
-              (append (directory-files "/usr/share/applications/" "FULL" "\\.desktop$")
-                      (directory-files "~/.local/share/applications" "FULL" "\\.desktop$")))
-             (applications (seq-map #'jacob-rofi-application-constructor desktop-files))
-             (actions (seq-map (lambda (application)
-                                 (cons (format "Start: %s" (oref application name))
-                                       (lambda ()
-                                         "Start an application based on the contents of a .desktop file."
-                                         (unless (jacob-rofi-application-raise application)
-                                           (jacob-rofi-application-run application)))))
-                               applications)))
-        actions))))
+      (let* ((applications
+              (if jacob-rofi-applications
+                  jacob-rofi-applications
+                (setq jacob-rofi-applications
+                      (seq-map #'jacob-rofi-application-constructor
+                               (append (directory-files "/usr/share/applications/"
+                                                        "FULL"
+                                                        "\\.desktop$")
+                                       (directory-files "~/.local/share/applications"
+                                                        "FULL"
+                                                        "\\.desktop$")))))))
+        (seq-map (lambda (application)
+                   (cons (format "Run or raise: %s" (oref application name))
+                         (lambda ()
+                           "Start an application based on the contents of a .desktop file."
+                           (unless (jacob-rofi-application-raise application)
+                             (jacob-rofi-application-run application)))))
+                 applications)))))
 
 ;; TODO: this can probably be removed
 (defun jacob-rofi--action-source-linux-raise-application ()
@@ -123,6 +129,9 @@ Return (application-name . f), where f is a function to raise each application."
               (lambda ()
                 (ignore-errors (org-capture nil "i"))))))
 
+(defvar jacob-rofi-applications '()
+  "The applications on the the current X11 system.")
+
 (defclass jacob-rofi-application ()
   ((name :initarg :name
          :initform ""
@@ -159,32 +168,17 @@ Return (application-name . f), where f is a function to raise each application."
 (cl-defmethod jacob-rofi-application-raise ((application jacob-rofi-application))
   "Raise an x window corresponding to APPLICATION.
 Return nil if no window is available."
-  (let* ((x (with-temp-buffer
-              (insert (shell-command-to-string "wmctrl -x -l"))
-              (goto-char (point-min))
-              (when (re-search-forward (format "%s\\|%s"
-                                               (oref application startup-wmclass)
-                                               (oref application exec))
-                                       nil
-                                       "NOERROR")
-                (beginning-of-line)
-                (thing-at-point 'word))))
-         (wmctrl-window-line (with-temp-buffer
-                               (insert (shell-command-to-string "wmctrl -x -l | awk '{print $3}'"))
-                               (goto-char (point-min))
-                               (when (re-search-forward (format "%s\\|%s"
-                                                                (oref application startup-wmclass)
-                                                                (oref application exec))
-                                                        nil
-                                                        "NOERROR")
-                                 (line-number-at-pos))))
-         (window-id (when wmctrl-window-line
-                      (with-temp-buffer
-                        (insert (shell-command-to-string "wmctrl -x -l | awk '{print $1}'"))
-                        (goto-line wmctrl-window-line)
-                        (buffer-substring (line-beginning-position)
-                                          (line-end-position))))))
-    (when wmctrl-window-line
+  (let* ((window-id (with-temp-buffer
+                      (insert (shell-command-to-string "wmctrl -x -l"))
+                      (goto-char (point-min))
+                      (when (re-search-forward (format "%s\\|%s"
+                                                       (oref application startup-wmclass)
+                                                       (oref application exec))
+                                               nil
+                                               "NOERROR")
+                        (beginning-of-line)
+                        (thing-at-point 'word)))))
+    (when window-id
       (shell-command (format "wmctrl -ia %s" window-id)))))
 
 (provide 'jacob-rofi)
