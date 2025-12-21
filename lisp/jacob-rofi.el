@@ -18,7 +18,7 @@ an application, raise an open application, power off the system).
   (interactive)
   (raise-frame)
   (let* ((actions (append (jacob-rofi--action-source-linux-start-application)
-                          (jacob-rofi--action-source-linux-raise-application)
+                          ;; (jacob-rofi--action-source-linux-raise-application) ; TODO: to be removed
                           (jacob-rofi--action-source-mac-start-or-raise-application)
                           (jacob-rofi--action-source-system-commands)
                           (jacob-rofi--action-source-org-capture)))
@@ -57,56 +57,22 @@ an application, raise an open application, power off the system).
                 (with-temp-buffer
                   (insert-file-contents file)
                   (goto-char (point-min))
-                  (re-search-forward (format "^%s=\\(.*\\)$" property))
+                  (re-search-forward (format "^%s=\\(.*\\)$" property) nil "NOERROR")
                   (match-string 1))))
       (let* ((desktop-files
-              ;; TODO: filter out desktop files with no wm class
-              (seq-filter (lambda (df)
-                            (with-temp-buffer
-                              (insert-file-contents df)
-                              (goto-char (point-min))
-                              (search-forward "StartupWMClass" nil "NOERROR")))
-                          (append (directory-files "/usr/share/applications/" "FULL" "\\.desktop$")
-                                  (directory-files "~/.local/share/applications" "FULL" "\\.desktop$"))))
-             (application-names (seq-map (lambda (f)
-                                           (get-desktop-file-property f "Name"))
-                                         desktop-files))
-             (application-classes (seq-map (lambda (f)
-                                             (get-desktop-file-property f "StartupWMClass"))
-                                           desktop-files))
-             (application-execs (seq-map (lambda (f)
-                                           (string-replace "%u" "" (get-desktop-file-property f "Exec")))
-                                         desktop-files))
-             (application-data (cl-mapcar #'list desktop-files application-names application-classes application-execs))
-             (actions (seq-map (lambda (data)
-                                 "DATA is (desktop-file application-name application-class application-exec).
-Return (application-name . f), where f is a function to start or raise each application."
-                                 (let ((desktop-file (car data))
-                                       (name (cadr data))
-                                       (class (caddr data))
-                                       (exec (cadddr data)))
-                                   (cons (format "Start: %s" name)
-                                         (lambda ()
-                                           "Start an application based on the contents of a .desktop file."
-                                           (let* ((wmctrl-window-line (with-temp-buffer
-                                                                        (insert (shell-command-to-string "wmctrl -x -l | awk '{print $3}'"))
-                                                                        (goto-char (point-min))
-                                                                        (when (search-forward class nil "NOERROR")
-                                                                          (line-number-at-pos))))
-                                                  (window-id (when wmctrl-window-line
-                                                               (with-temp-buffer
-                                                                 (insert (shell-command-to-string "wmctrl -x -l | awk '{print $1}'"))
-                                                                 (goto-line wmctrl-window-line)
-                                                                 (buffer-substring (line-beginning-position)
-                                                                                   (line-end-position))))))
-                                             (if wmctrl-window-line
-                                                 (shell-command (format "wmctrl -ia %s" window-id))
-                                               (start-process-shell-command "jacob-rofi"
-                                                                            nil
-                                                                            (string-replace "%u" "" (get-desktop-file-property desktop-file "Exec")))))))))
-                               application-data)))
+              (append (directory-files "/usr/share/applications/" "FULL" "\\.desktop$")
+                      (directory-files "~/.local/share/applications" "FULL" "\\.desktop$")))
+             (applications (seq-map #'jacob-rofi-application-constructor desktop-files))
+             (actions (seq-map (lambda (application)
+                                 (cons (format "Start: %s" (oref application name))
+                                       (lambda ()
+                                         "Start an application based on the contents of a .desktop file."
+                                         (unless (jacob-rofi-application-raise application)
+                                           (jacob-rofi-application-run application)))))
+                               applications)))
         actions))))
 
+;; TODO: this can probably be removed
 (defun jacob-rofi--action-source-linux-raise-application ()
   "An action source for raising applications on linux."
   (when jacob-is-linux
@@ -156,6 +122,70 @@ Return (application-name . f), where f is a function to raise each application."
   (list (cons "Capture to inbox"
               (lambda ()
                 (ignore-errors (org-capture nil "i"))))))
+
+(defclass jacob-rofi-application ()
+  ((name :initarg :name
+         :initform ""
+         :type string
+         :documentation "The name of the application.")
+   (startup-wmclass :initarg :startup-wmclass
+                    :initform nil
+                    :type (or null string)
+                    :documentation "The StartupWMClass property of an application.")
+   (exec :initarg :exec
+         :initform ""
+         :type string
+         :documentation "The cli command to start the application."))
+  "Abstration of a desktop application.")
+
+(defun jacob-rofi-application-constructor (file)
+  "Produce a application object from a xdg desktop FILE."
+  (cl-flet ((get-desktop-file-property (file property)
+              (with-temp-buffer
+                (insert-file-contents file)
+                (goto-char (point-min))
+                (re-search-forward (format "^%s=\\(.*\\)$" property) nil "NOERROR")
+                (match-string 1))))
+    (jacob-rofi-application :name (get-desktop-file-property file "Name")
+                            :startup-wmclass (get-desktop-file-property file "StartupWMClass")
+                            :exec (string-replace "%u" "" (get-desktop-file-property file "Exec")))))
+
+(cl-defmethod jacob-rofi-application-run ((application jacob-rofi-application))
+  "Start a new instance of the APPLICATION."
+  (start-process-shell-command "jacob-rofi"
+                               nil
+                               (oref application exec)))
+
+(cl-defmethod jacob-rofi-application-raise ((application jacob-rofi-application))
+  "Raise an x window corresponding to APPLICATION.
+Return nil if no window is available."
+  (let* ((x (with-temp-buffer
+              (insert (shell-command-to-string "wmctrl -x -l"))
+              (goto-char (point-min))
+              (when (re-search-forward (format "%s\\|%s"
+                                               (oref application startup-wmclass)
+                                               (oref application exec))
+                                       nil
+                                       "NOERROR")
+                (beginning-of-line)
+                (thing-at-point 'word))))
+         (wmctrl-window-line (with-temp-buffer
+                               (insert (shell-command-to-string "wmctrl -x -l | awk '{print $3}'"))
+                               (goto-char (point-min))
+                               (when (re-search-forward (format "%s\\|%s"
+                                                                (oref application startup-wmclass)
+                                                                (oref application exec))
+                                                        nil
+                                                        "NOERROR")
+                                 (line-number-at-pos))))
+         (window-id (when wmctrl-window-line
+                      (with-temp-buffer
+                        (insert (shell-command-to-string "wmctrl -x -l | awk '{print $1}'"))
+                        (goto-line wmctrl-window-line)
+                        (buffer-substring (line-beginning-position)
+                                          (line-end-position))))))
+    (when wmctrl-window-line
+      (shell-command (format "wmctrl -ia %s" window-id)))))
 
 (provide 'jacob-rofi)
 
