@@ -235,21 +235,21 @@ then remove this function from `find-file-hook'."
 (use-package window
   :custom
   (switch-to-buffer-obey-display-actions t)
-  ;; (display-buffer-alist '(((major-mode . sql-interactive-mode)
-  ;;                          (display-buffer-reuse-mode-window display-buffer-same-window))
-  ;;                         ((major-mode . prodigy-mode)
-  ;;                          (display-buffer-reuse-mode-window display-buffer-same-window))
-  ;;                         ((major-mode . magit-status-mode)
-  ;;                          (display-buffer-reuse-mode-window display-buffer-same-window))
-  ;;                         ((or (derived-mode . slack-mode)
-  ;;                              (derived-mode . lui-mode))
-  ;;                          (display-buffer-in-side-window)
-  ;;                          (side . right))))
+  (display-buffer-alist '(((major-mode . sql-interactive-mode)
+                           (display-buffer-reuse-mode-window display-buffer-same-window))
+                          ((major-mode . prodigy-mode)
+                           (display-buffer-reuse-mode-window display-buffer-same-window))
+                          ((major-mode . magit-status-mode)
+                           (display-buffer-reuse-mode-window display-buffer-same-window))
+                          ((or (derived-mode . slack-mode)
+                               (derived-mode . lui-mode))
+                           (display-buffer-in-side-window)
+                           (side . right))))
 
   ;; experimental display buffer alist changes
-  (display-buffer-alist '(((major-mode . magit-diff-mode)
-                           nil)
-                          ("\\`.*\\'" . (display-buffer-same-window display-buffer-full-frame))))
+  ;; (display-buffer-alist '(((major-mode . magit-diff-mode)
+  ;;                          nil)
+  ;;                         ("\\`.*\\'" . (display-buffer-same-window display-buffer-full-frame))))
   (split-height-threshold nil))
 
 (defvar-keymap jacob-recenter-repeat-map
