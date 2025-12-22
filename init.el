@@ -786,6 +786,8 @@ Disables the eglot backend when inside a `.g8' template."
                '(jacob-sbt-warning
                  "^\\[warn][[:space:]]--[[:space:]].*Warning: \\([^:]+\\):\\([[:digit:]]+\\):\\([[:digit:]]+\\)" 1 2 3 1 1))
 
+  ;; TODO: re for compilation error within test
+
   (add-to-list 'compilation-error-regexp-alist 'jacob-sbt-warning))
 
 (use-package web-mode
