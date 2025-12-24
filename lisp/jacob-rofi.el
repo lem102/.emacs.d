@@ -38,46 +38,39 @@ an application, raise an open application, power off the system).
                                   (seq-filter (lambda (f)
                                                 (string-match-p "\.app" f))
                                               (append (directory-files "/Applications/")
-                                                      (directory-files "/System/Applications")))))
-           (actions (seq-map (lambda (application-name)
-                               "Return a cons pair of the APPLICATION-NAME of the running application and a function to raise it."
-                               (cons (format "Run or raise: %s" application-name)
-                                     (lambda ()
-                                       ;; HACK: Selecting emacs makes the call to osascript slow.
-                                       ;; To improve performance, don't call osascript as Emacs is already focused.
-                                       (unless (string= application-name "Emacs")
-                                         (shell-command-to-string (format "osascript -e 'tell application \"%s\" to activate'"
-                                                                          application-name))))))
-                             applications)))
-      actions)))
+                                                      (directory-files "/System/Applications"))))))
+      (seq-map (lambda (application-name)
+                 "Return a cons pair of the APPLICATION-NAME of the running application and a function to raise it."
+                 (cons (format "Run or raise: %s" application-name)
+                       (lambda ()
+                         ;; HACK: Selecting emacs makes the call to osascript slow.
+                         ;; To improve performance, don't call osascript as Emacs is already focused.
+                         (unless (string= application-name "Emacs")
+                           (shell-command-to-string (format "osascript -e 'tell application \"%s\" to activate'"
+                                                            application-name))))))
+               applications))))
 
 (defun jacob-rofi--action-source-linux-start-application ()
   "An action source for starting applications on linux."
   (when jacob-is-linux
-    (cl-flet ((get-desktop-file-property (file property)
-                (with-temp-buffer
-                  (insert-file-contents file)
-                  (goto-char (point-min))
-                  (re-search-forward (format "^%s=\\(.*\\)$" property) nil "NOERROR")
-                  (match-string 1))))
-      (let* ((applications
-              (if jacob-rofi-applications
-                  jacob-rofi-applications
-                (setq jacob-rofi-applications
-                      (seq-map #'jacob-rofi-application-constructor
-                               (append (directory-files "/usr/share/applications/"
-                                                        "FULL"
-                                                        "\\.desktop$")
-                                       (directory-files "~/.local/share/applications"
-                                                        "FULL"
-                                                        "\\.desktop$")))))))
-        (seq-map (lambda (application)
-                   (cons (format "Run or raise: %s" (oref application name))
-                         (lambda ()
-                           "Start an application based on the contents of a .desktop file."
-                           (unless (jacob-rofi-application-raise application)
-                             (jacob-rofi-application-run application)))))
-                 applications)))))
+    (let* ((applications
+            (if jacob-rofi-applications
+                jacob-rofi-applications
+              (setq jacob-rofi-applications
+                    (seq-map #'jacob-rofi-application-constructor
+                             (append (directory-files "/usr/share/applications/"
+                                                      "FULL"
+                                                      "\\.desktop$")
+                                     (directory-files "~/.local/share/applications"
+                                                      "FULL"
+                                                      "\\.desktop$")))))))
+      (seq-map (lambda (application)
+                 (cons (format "Run or raise: %s" (oref application name))
+                       (lambda ()
+                         "Run or raise an application."
+                         (unless (jacob-rofi-application-raise application)
+                           (jacob-rofi-application-run application)))))
+               applications))))
 
 ;; TODO: this can probably be removed
 (defun jacob-rofi--action-source-linux-raise-application ()
