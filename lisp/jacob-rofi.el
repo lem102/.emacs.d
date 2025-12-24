@@ -21,7 +21,8 @@ an application, raise an open application, power off the system).
                           ;; (jacob-rofi--action-source-linux-raise-application) ; TODO: to be removed
                           (jacob-rofi--action-source-mac-start-or-raise-application)
                           (jacob-rofi--action-source-system-commands)
-                          (jacob-rofi--action-source-org-capture)))
+                          (jacob-rofi--action-source-org-capture)
+                          (jacob-rofi--action-source-fvwm3-commands)))
          (selected-action (cdr (assoc (completing-read "Select action: "
                                                        actions
                                                        nil
@@ -119,9 +120,28 @@ Return (application-name . f), where f is a function to raise each application."
                 (when (yes-or-no-p "Restart the system?")
                   (eshell-command (cond (jacob-is-mac "sudo shutdown -r")
                                         (jacob-is-linux "systemctl reboot"))))))
+        (cons "System Sleep"
+              (lambda ()
+                (shell-command "systemctl suspend")))
+        (cons "System Logout"
+              (lambda ()
+                (save-some-buffers t t)
+                (run-hook-with-args-until-failure 'kill-emacs-hook)
+                (run-hook-with-args-until-failure 'kill-emacs-query-functions)
+                (when (yes-or-no-p "Logout of the system?")
+                  (shell-command "loginctl kill-user `whoami`"))))
         (cons "System Lock"
               (lambda ()
                 (eshell-command (cond (jacob-is-mac "pmset displaysleepnow")))))))
+
+(defun jacob-rofi--action-source-fvwm3-commands ()
+  "An action source for controlling fvwm."
+  (list (cons "Fvwm3 Restart" #'jacob-fvwm-restart)))
+
+(defun jacob-fvwm-restart ()
+  "Restart Fvwm."
+  (interactive)
+  (shell-command "Fvwm3Command Restart"))
 
 (defun jacob-rofi--action-source-org-capture ()
   "An action source for `org-capture'."
