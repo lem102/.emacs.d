@@ -786,40 +786,7 @@ Disables the eglot backend when inside a `.g8' template."
   (add-hook 'scala-ts-mode-hook #'jacob-font-lock-scala-setup))
 
 (use-package sbt-mode
-  :defer t
-  :config
-  (defun jacob-compilation-project-file ()
-    "Somehow determine the filepath for the compilation error"
-    (save-match-data
-      (let (
-            (filename-from-error (match-string 1)) ;; FIXME: this will break when filename is not in first re group
-            )
-        (seq-find (lambda (f)
-                    (string= (file-name-nondirectory f)
-                             filename-from-error))
-                  (project-files (project-current))))))
-
-  (add-to-list 'compilation-error-regexp-alist-alist
-               '(jacob-sbt-test-fail-re
-                 ".* (\\([a-zA-Z\\.]+\\):\\([0-9]+\\))"
-                 jacob-compilation-project-file
-                 2))
-
-  (add-to-list 'compilation-error-regexp-alist 'jacob-sbt-test-fail-re)
-
-  (add-to-list 'compilation-error-regexp-alist-alist
-               '(jacob-sbt-error
-                 "^\\[error][[:space:]]--[[:space:]].*Error: \\([^:]+\\):\\([[:digit:]]+\\):\\([[:digit:]]+\\)" 1 2 3 nil 1))
-
-  (add-to-list 'compilation-error-regexp-alist 'jacob-sbt-error)
-
-  (add-to-list 'compilation-error-regexp-alist-alist
-               '(jacob-sbt-warning
-                 "^\\[warn][[:space:]]--[[:space:]].*Warning: \\([^:]+\\):\\([[:digit:]]+\\):\\([[:digit:]]+\\)" 1 2 3 1 1))
-
-  ;; TODO: re for compilation error within test
-
-  (add-to-list 'compilation-error-regexp-alist 'jacob-sbt-warning))
+  :defer t)
 
 (use-package web-mode
   :defer t
@@ -1194,6 +1161,39 @@ Disables the eglot backend when inside a `.g8' template."
                                ("q" quit-window)))
 
   (add-hook 'compilation-filter-hook #'ansi-color-compilation-filter)
+
+  (defun jacob-compilation-project-file ()
+    "Somehow determine the filepath for the compilation error"
+    (save-match-data
+      (let (
+            (filename-from-error (match-string 1)) ;; FIXME: this will break when filename is not in first re group
+            )
+        (seq-find (lambda (f)
+                    (string= (file-name-nondirectory f)
+                             filename-from-error))
+                  (project-files (project-current))))))
+
+  (add-to-list 'compilation-error-regexp-alist-alist
+               '(jacob-sbt-test-fail-re
+                 ".* (\\([a-zA-Z\\.]+\\):\\([0-9]+\\))"
+                 jacob-compilation-project-file
+                 2))
+
+  (add-to-list 'compilation-error-regexp-alist 'jacob-sbt-test-fail-re)
+
+  (add-to-list 'compilation-error-regexp-alist-alist
+               '(jacob-sbt-error
+                 "^\\[error][[:space:]]--[[:space:]].*Error: \\([^:]+\\):\\([[:digit:]]+\\):\\([[:digit:]]+\\)" 1 2 3 nil 1))
+
+  (add-to-list 'compilation-error-regexp-alist 'jacob-sbt-error)
+
+  (add-to-list 'compilation-error-regexp-alist-alist
+               '(jacob-sbt-warning
+                 "^\\[warn][[:space:]]--[[:space:]].*Warning: \\([^:]+\\):\\([[:digit:]]+\\):\\([[:digit:]]+\\)" 1 2 3 1 1))
+
+  ;; TODO: re for compilation error within sbt test
+
+  (add-to-list 'compilation-error-regexp-alist 'jacob-sbt-warning)
 
   (setopt compilation-always-kill t
           compilation-scroll-output t
