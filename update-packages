@@ -66,12 +66,13 @@
                                    dumb-jump
                                    ryo-modal
                                    yasnippet
-                                   yaml-pro))
+                                   yaml-pro
+                                   puni))
       (package-vc-selected-packages '((eglot-booster :url "https://github.com/jdtsmith/eglot-booster")
                                       (sln-mode :url "https://github.com/sensorflo/sln-mode.git")
                                       (font-lock-ext :url "https://github.com/sensorflo/font-lock-ext.git"))))
   (package-refresh-contents)
-  (package-install-selected-packages)
+  (package-install-selected-packages "NOCONFIRM")
   (package-vc-install-selected-packages)
   (package-upgrade-all))
 
