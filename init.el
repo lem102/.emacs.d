@@ -483,9 +483,9 @@ Intended for running applications."
 
 (use-package help
   :defer t
-  :config
-  (setopt help-window-select t
-          help-enable-variable-value-editing t))
+  :custom
+  (help-window-select t)
+  (help-enable-variable-value-editing t))
 
 (use-package help-fns
   :defer t
@@ -634,6 +634,7 @@ Intended for running applications."
   )
 
 (use-package dumb-jump
+  :defer t
   :config
   (when jacob-is-mac
     ;; problems on mac mean git grep doesn't work :(
