@@ -87,6 +87,13 @@ For use in yasnippets."
   :blackout "yas"
   :config
   (jacob-yasnippet-config)
+  (with-eval-after-load "ryo-modal"
+    (ryo-modal-keys
+     ("SPC"
+      (("SPC"
+        (("y"
+          (("n" yas-new-snippet)
+           ("v" yas-visit-snippet-file)))))))))
   :custom
   (yas-new-snippet-default "# -*- mode: snippet -*-
 # key: $1

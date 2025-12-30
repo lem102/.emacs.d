@@ -9,14 +9,9 @@
 (eval-when-compile
   (require 'expreg)
   (require 'embark)
-  (require 'consult)
-  (require 'consult-register)
-  (require 'magit-extras)
-  (require 'helpful)
   (require 'visual-replace))
 
 (require 'ryo-modal)
-(require 'eglot)
 (require 'winner)
 (require 'jacob-init-helpers)
 (require 'jacob-editing-commands)
@@ -122,8 +117,7 @@
    ("b" xah-toggle-previous-letter-case)
    ("c" jacob-copy-buffer)
    ("e"
-    (("s" consult-line)
-     ("e" highlight-symbol-at-point)
+    (("e" highlight-symbol-at-point)
      ("u" unhighlight-regexp)))
    ("m" dired-jump)
    ("n" end-of-buffer)
@@ -131,22 +125,16 @@
    ("p" project-prefix-map)
    ("y" isearch-forward-symbol-at-point)
    ("/"
-    (("m" magit-project-status)
-     ("h" vc-annotate)))
+    (("h" vc-annotate)))
    (","
     (("," delete-frame)
      ("d" eval-defun)
      ("m" eval-last-sexp)
      ("x" save-buffers-kill-emacs)
      ("r" eval-expression)))
-   ("f" consult-buffer)
    ("s" exchange-point-and-mark)
    ("j"
-    (("b" helpful-command)
-     ("c" man)
-     ("k" helpful-callable)
-     ("l" helpful-variable)
-     ("v" helpful-key)
+    (("c" man)
      ("y" describe-face)
      ("i" describe-char)
      ("g" info)))
@@ -176,29 +164,17 @@
      ("v" yank-rectangle)
      ("x" kill-rectangle)))
    ("i"
-    (("e" find-file)
-     ("o" consult-bookmark)))
+    (("e" find-file)))
    ("k"
     (("c" copy-to-register)
-     ("u" consult-goto-line)
      ("k" repeat)
-     ("i" consult-register-load)
      ("r" visual-replace-regexp)))
    ("r" visual-replace)
    ("u" kill-current-buffer)
    ("w"
     (("j" xref-find-references)
      ("k" xref-find-definitions)
-     ("l" xref-go-back)))
-   ("v" consult-yank-from-kill-ring)
-   ;; move these out of the SPC SPC area
-   ("SPC"
-    (("c"
-      (("e" eglot)
-       ("r" eglot-rename))))
-    (("y"
-      (("n" yas-new-snippet)
-       ("v" yas-visit-snippet-file))))))))
+     ("l" xref-go-back))))))
 
 (add-hook 'after-init-hook #'global-ryo-modal-mode-enable)
 

@@ -49,7 +49,6 @@
 
 (use-package dired-aux
   :defer t
-  :after dired
   :config
   (setopt dired-vc-rename-file t))
 

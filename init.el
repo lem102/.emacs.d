@@ -87,7 +87,8 @@
 (use-package tool-bar
   :config
   (tool-bar-mode (if jacob-is-android 1 0))
-  (modifier-bar-mode (if jacob-is-android 1 0))
+  (when jacob-is-android
+    (modifier-bar-mode 1))
   :custom
   (tool-bar-button-margin (if jacob-is-android 40 4))
   (tool-bar-position (if jacob-is-android 'bottom 'top))
@@ -450,7 +451,7 @@ Intended for running applications."
 
 
 (use-package info
-  :defer
+  :defer t
   :config
   (with-eval-after-load "ryo-modal"
     (ryo-modal-major-mode-keys 'Info-mode
@@ -469,7 +470,8 @@ Intended for running applications."
     (ryo-modal-major-mode-keys 'Man-mode
                                ("q" quit-window))))
 
-(use-package diff
+(use-package diff-mode
+  :defer t
   :config
   (with-eval-after-load "ryo-modal"
     (ryo-modal-major-mode-keys 'diff-mode
@@ -487,7 +489,7 @@ Intended for running applications."
 
 (use-package help-fns
   :defer t
-  :config
+  :init
   (defun jacob-help-edit ()
     "Edit variable in current help buffer."
     (interactive)
@@ -497,9 +499,14 @@ Intended for running applications."
       (goto-char (point-min))
       (if (search-forward "Its value is " nil "NOERROR")
           (help-fns-edit-variable)
-        (message "cannot find editable variable")))))
+        (message "cannot find editable variable"))))
+  
+  (with-eval-after-load "ryo-modal"
+    (ryo-modal-major-mode-keys 'help-mode 
+                               ("w" jacob-help-edit))))
 
 (use-package help-mode
+  :defer t
   :config
   (with-eval-after-load "ryo-modal"
     (ryo-modal-major-mode-keys 'help-mode
@@ -507,8 +514,7 @@ Intended for running applications."
                                ("q" quit-window)
                                ("e" help-go-back)
                                ("r" help-go-forward)
-                               ("g" revert-buffer)
-                               ("w" jacob-help-edit))))
+                               ("g" revert-buffer))))
 
 (use-package helpful
   :defer t
@@ -516,6 +522,14 @@ Intended for running applications."
   (keymap-global-set "C-h v" #'helpful-variable)
   (keymap-global-set "C-h f" #'helpful-callable)
   (keymap-global-set "C-h k" #'helpful-key)
+
+  (with-eval-after-load "ryo-modal"
+    (ryo-modal-keys ("SPC"
+                     (("j"
+                       (("b" helpful-command)
+                        ("k" helpful-callable)
+                        ("l" helpful-variable)
+                        ("v" helpful-key)))))))
   :config
   (with-eval-after-load "ryo-modal"
     (ryo-modal-major-mode-keys 'helpful-mode
@@ -526,6 +540,7 @@ Intended for running applications."
                                ("s" push-button))))
 
 (use-package warnings
+  :defer t
   :custom ((warning-minimum-level :error)))
 
 (use-package subword
@@ -596,6 +611,10 @@ Intended for running applications."
                                ("g" revert-buffer))))
 
 (use-package magit
+  :defer t
+  :init
+  (with-eval-after-load "ryo-modal"
+    (ryo-modal-keys ("/" (("m" magit-project-status)))))
   :bind ( :map project-prefix-map
           ("v" . magit-project-status)))
 
@@ -622,7 +641,19 @@ Intended for running applications."
 
 (use-package eglot
   :defer t
+  :init
+  (with-eval-after-load "ryo-modal"
+    (ryo-modal-keys ("SPC"
+                     (("SPC"
+                       (("c"
+                         (("e" eglot)))))))))
   :config
+  (with-eval-after-load "ryo-modal"
+    (ryo-modal-keys ("SPC"
+                     (("SPC"
+                       (("c"
+                         (("r" eglot-rename)))))))))
+  
   (jacob-defhookf eglot-managed-mode-hook
     (eglot-inlay-hints-mode 0)
     (setq-local eldoc-documentation-strategy 'eldoc-documentation-compose-eagerly)
@@ -923,7 +954,7 @@ Disables the eglot backend when inside a `.g8' template."
 
 (use-package elisp-mode
   :defer t
-  :hook (emacs-lisp-mode-hook . flymake-mode)
+  ;; :hook (emacs-lisp-mode-hook . flymake-mode)
   :hook (emacs-lisp-mode-hook . jacob-font-lock-programming-setup)
   :config
   (defun jacob-move-past-close-and-reindent ()
@@ -1427,6 +1458,7 @@ Disables the eglot backend when inside a `.g8' template."
   (keymap-set embark-general-map "x" #'kill-region))
 
 (use-package embark-consult
+  :defer t
   :after (:and embark consult))
 
 (use-package cape

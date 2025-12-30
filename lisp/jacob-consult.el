@@ -10,11 +10,11 @@
   (autoload #'jacob-project-search "jacob-consult-functions")
   (autoload #'jacob-consult-buffer-state-no-tramp "jacob-consult-functions")
   
-  (setopt completion-in-region-function 'consult-completion-in-region
-          xref-show-xrefs-function 'consult-xref
-          xref-show-definitions-function 'consult-xref
-          consult--source-buffer (plist-put consult--source-buffer
-                                            :state #'jacob-consult-buffer-state-no-tramp)))
+  (setq completion-in-region-function 'consult-completion-in-region
+        xref-show-xrefs-function 'consult-xref
+        xref-show-definitions-function 'consult-xref
+        consult--source-buffer (plist-put consult--source-buffer
+                                          :state #'jacob-consult-buffer-state-no-tramp)))
 
 (use-package consult
   :defer t
@@ -29,11 +29,12 @@
        ("f" consult-buffer)
        ("i"
         (("j" consult-recent-file)
-         ("i" consult-bookmark)))
+         ("o" consult-bookmark)))
        ("e"
         (("s" consult-line)))
        ("k"
-        (("u" consult-goto-line)))
+        (("i" consult-register-load)
+         ("u" consult-goto-line)))
        ("j"
         (("g" consult-info)
          ("c" consult-man)))))))
