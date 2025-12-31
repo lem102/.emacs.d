@@ -74,24 +74,13 @@ For use in yasnippets."
   (yas-reload-all)
 
   (jacob-defhookf snippet-mode-hook
-    (setq-local auto-save-visited-mode nil))
-
-  ;; TODO: review
-  ;; (keymap-set jacob-xfk-map "y" `("Yasnippet" . ,jacob-yas-map))
-  )
+    (setq-local auto-save-visited-mode nil)))
 
 (use-package yasnippet
   :defer t
   :blackout "yas"
   :config
   (jacob-yasnippet-config)
-  (with-eval-after-load "ryo-modal"
-    (ryo-modal-keys
-     ("SPC"
-      (("SPC"
-        (("y"
-          (("n" yas-new-snippet)
-           ("v" yas-visit-snippet-file)))))))))
   :custom
   (yas-new-snippet-default "# -*- mode: snippet -*-
 # key: $1

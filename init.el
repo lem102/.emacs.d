@@ -925,6 +925,7 @@ Disables the eglot backend when inside a `.g8' template."
   :defer t
   ;; :hook (emacs-lisp-mode-hook . flymake-mode)
   :hook (emacs-lisp-mode-hook . jacob-font-lock-programming-setup)
+  :hook (emacs-lisp-mode-hook . yas-minor-mode)
   :config
   (defun jacob-move-past-close-and-reindent ()
     "Advice for `move-past-close-and-reindent'."
