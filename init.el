@@ -784,7 +784,8 @@ Disables the eglot backend when inside a `.g8' template."
 
   (keymap-set scala-ts-mode-map "$" #'jacob-scala-dollar)
 
-  (add-hook 'scala-ts-mode-hook #'jacob-font-lock-scala-setup))
+  (add-hook 'scala-ts-mode-hook #'jacob-font-lock-scala-setup)
+  (add-hook 'scala-ts-mode-hook #'yas-minor-mode))
 
 (use-package sbt-mode
   :defer t)
