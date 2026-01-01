@@ -6,11 +6,6 @@
 
 ;;; Code:
 
-(eval-when-compile
-  (require 'expreg)
-  (require 'embark)
-  (require 'visual-replace))
-
 (require 'ryo-modal)
 (require 'winner)
 (require 'jacob-init-helpers)
@@ -81,7 +76,6 @@
  ("d" jacob-backspace)
  ("f" global-ryo-modal-mode-disable)
 
- ("g" expreg-expand)
  ("w" xah-shrink-whitespaces)
  ("e" backward-kill-word)
  ("r" kill-word)
@@ -97,7 +91,6 @@
  ("z" xah-comment-dwim)
  ("b" xah-toggle-letter-case)
 
- ("\\" embark-act)
  ("'" delete-other-windows)
  ("-" split-window-below)
  ("=" split-window-right)
@@ -167,9 +160,7 @@
     (("e" find-file)))
    ("k"
     (("c" copy-to-register)
-     ("k" repeat)
-     ("r" visual-replace-regexp)))
-   ("r" visual-replace)
+     ("k" repeat)))
    ("u" kill-current-buffer)
    ("w"
     (("j" xref-find-references)

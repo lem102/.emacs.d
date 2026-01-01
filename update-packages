@@ -67,10 +67,13 @@
                                    ryo-modal
                                    yasnippet
                                    yaml-pro
-                                   puni))
+                                   puni
+
+                                   nerd-icons-dired))
       (package-vc-selected-packages '((eglot-booster :url "https://github.com/jdtsmith/eglot-booster")
                                       (sln-mode :url "https://github.com/sensorflo/sln-mode.git")
-                                      (font-lock-ext :url "https://github.com/sensorflo/font-lock-ext.git"))))
+                                      (font-lock-ext :url "https://github.com/sensorflo/font-lock-ext.git")
+                                      (nerd-icons-mode-line :url "https://github.com/grolongo/nerd-icons-mode-line.git"))))
   (package-refresh-contents)
   (package-install-selected-packages "NOCONFIRM")
   (package-vc-install-selected-packages)

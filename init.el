@@ -37,10 +37,13 @@
 ;; use-package
 (require 'use-package)
 
-(setopt use-package-enable-imenu-support t
-        use-package-verbose t
-        use-package-compute-statistics t
-        use-package-hook-name-suffix nil)
+(setq use-package-enable-imenu-support t
+      use-package-verbose t
+      use-package-compute-statistics nil
+      use-package-hook-name-suffix nil)
+
+(when use-package-compute-statistics
+  (add-hook 'after-init-hook #'use-package-report))
 
 (use-package package
   :custom (package-archives '(("gnu" . "https://elpa.gnu.org/packages/")
@@ -170,6 +173,7 @@ then remove this function from `find-file-hook'."
                       mode-line-end-spaces))
   ;; startup.el
   (inhibit-startup-screen t)
+  (initial-major-mode #'fundamental-mode)
   (initial-scratch-message (format ";; %s\n\n"
                                    (seq-random-elt
                                     '("\"A journey of a thousand miles begins with a single step.\" - 老子"
@@ -298,7 +302,8 @@ then remove this function from `find-file-hook'."
   (when (file-exists-p custom-file)
     (load custom-file)))
 
-(use-package generic-x)          ; support for files like `/etc/fstab'
+(use-package generic-x           ; support for files like `/etc/fstab'
+  :defer t)
 
 (use-package simple
   :config
@@ -442,6 +447,7 @@ Intended for running applications."
                                ("g" ibuffer-update))))
 
 (use-package replace
+  :defer t
   :config
   (with-eval-after-load "ryo-modal"
     (ryo-modal-major-mode-keys 'occur-mode
@@ -796,6 +802,13 @@ Disables the eglot backend when inside a `.g8' template."
   (add-to-list 'auto-mode-alist '("\\.scala\\.html\\'" . web-mode)))
 
 (require 'jacob-dired)
+
+(use-package nerd-icons-dired
+  :blackout
+  :hook (dired-mode-hook . nerd-icons-dired-mode))
+
+(use-package nerd-icons-mode-line
+  :hook (on-first-file-hook . nerd-icons-mode-line-global-mode))
 
 (use-package esh-mode
   :defer t
@@ -1377,9 +1390,16 @@ Disables the eglot backend when inside a `.g8' template."
            (TeX-parse-self t)
            (japanese-TeX-error-messages nil)))
 
-(use-package visual-replace-regexp
-  :hook ((on-first-input-hook . visual-replace-global-mode)
-         (visual-replace-minibuffer-mode-hook . visual-replace-toggle-query)))
+(use-package visual-replace
+  :defer t
+  :init
+  (with-eval-after-load "ryo-modal"
+    (ryo-modal-keys
+     ("SPC"
+      (("r" visual-replace)
+       ("k"
+        (("r" visual-replace-regexp)))))))
+  :hook ((visual-replace-minibuffer-mode-hook . visual-replace-toggle-query)))
 
 (use-package markdown-mode
   :defer t)
@@ -1433,6 +1453,8 @@ Disables the eglot backend when inside a `.g8' template."
   :defer t
   :init
   (with-eval-after-load "ryo-modal"
+    (ryo-modal-keys
+     ("\\" embark-act))
     (ryo-modal-major-mode-keys 'embark-collect
                                ("q" quit-window)))
   :config
@@ -1470,6 +1492,10 @@ Disables the eglot backend when inside a `.g8' template."
 
 (use-package expreg
   :defer t
+  :init
+  (with-eval-after-load "ryo-modal"
+    (ryo-modal-keys
+     ("g" expreg-expand)))
   :config
   (setopt expreg-functions (delq 'expreg--subword expreg-functions)))
 
