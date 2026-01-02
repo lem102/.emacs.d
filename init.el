@@ -742,6 +742,7 @@ Disables the eglot backend when inside a `.g8' template."
 
 (use-package scala-ts-mode
   :defer t
+  :hook (scala-ts-mode-hook . yas-minor-mode)
   :config
   (defun jacob-bloop-compile ()
     "Recompile the project with bloop."
@@ -790,8 +791,7 @@ Disables the eglot backend when inside a `.g8' template."
 
   (keymap-set scala-ts-mode-map "$" #'jacob-scala-dollar)
 
-  (add-hook 'scala-ts-mode-hook #'jacob-font-lock-scala-setup)
-  (add-hook 'scala-ts-mode-hook #'yas-minor-mode))
+  (add-hook 'scala-ts-mode-hook #'jacob-font-lock-scala-setup))
 
 (use-package sbt-mode
   :defer t)
