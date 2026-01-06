@@ -37,11 +37,6 @@
 ;; use-package
 (require 'use-package)
 
-(setq use-package-enable-imenu-support t
-      use-package-verbose t
-      use-package-compute-statistics nil
-      use-package-hook-name-suffix nil)
-
 (when use-package-compute-statistics
   (add-hook 'after-init-hook #'use-package-report))
 
