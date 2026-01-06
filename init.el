@@ -1198,6 +1198,7 @@ Disables the eglot backend when inside a `.g8' template."
 
   (add-to-list 'compilation-error-regexp-alist 'jacob-sbt-test-fail-re)
 
+  ;; TODO: adapt regexp to include compilation error within sbt test
   (add-to-list 'compilation-error-regexp-alist-alist
                '(jacob-sbt-error
                  "^\\[error][[:space:]]--[[:space:]].*Error: \\([^:]+\\):\\([[:digit:]]+\\):\\([[:digit:]]+\\)" 1 2 3 nil 1))
@@ -1207,8 +1208,6 @@ Disables the eglot backend when inside a `.g8' template."
   (add-to-list 'compilation-error-regexp-alist-alist
                '(jacob-sbt-warning
                  "^\\[warn][[:space:]]--[[:space:]].*Warning: \\([^:]+\\):\\([[:digit:]]+\\):\\([[:digit:]]+\\)" 1 2 3 1 1))
-
-  ;; TODO: re for compilation error within sbt test
 
   (add-to-list 'compilation-error-regexp-alist 'jacob-sbt-warning)
 
