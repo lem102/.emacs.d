@@ -798,8 +798,9 @@ Disables the eglot backend when inside a `.g8' template."
 
 (use-package web-mode
   :defer t
-  :config
-  (add-to-list 'auto-mode-alist '("\\.scala\\.html\\'" . web-mode)))
+  :mode ("\\.scala\\.html\\'" . web-mode)
+  :custom (web-mode-engines-alist
+           '(("play" . "\\.scala\\.html\\'"))))
 
 (require 'jacob-dired)
 
