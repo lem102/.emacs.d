@@ -417,7 +417,7 @@ Intended for running applications."
                (backward-sexp)
                (funcall delete-function))
               (t                      ; delete character
-               (delete-char -1)))))))
+               (backward-delete-char-untabify 1)))))))
 
 (require 'jacob-yasnippet)
 
