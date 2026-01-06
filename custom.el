@@ -4,7 +4,8 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(bookmark-fringe-mark nil nil nil "Customized with use-package bookmark")
+ '(bookmark-fringe-mark nil)
+ '(bookmark-watch-bookmark-file 'silent)
  '(custom-safe-themes
    '("ae20535e46a88faea5d65775ca5510c7385cbf334dfa7dde93c0cd22ed663ba0"
      "b41d0a9413fb0034cea34eb8c9f89f6e243bdd76bccecf8292eb1fefa42eaf0a"

@@ -313,9 +313,6 @@ then remove this function from `find-file-hook'."
 
 (use-package bookmark
   :defer t
-  :custom
-  (bookmark-set-fringe-mark nil)
-  (bookmark-watch-bookmark-file 'silent)
   :config
   (defun jacob-bookmark-command (bookmark)
     "Launch the command stored in bookmark.
