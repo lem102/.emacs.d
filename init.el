@@ -34,11 +34,10 @@
 (when (file-exists-p "~/.emacs.d/environment.el")
   (ignore-errors (load-file "~/.emacs.d/environment.el")))
 
-;; use-package
-(require 'use-package)
-
-(when use-package-compute-statistics
-  (add-hook 'after-init-hook #'use-package-report))
+(use-package use-package
+  :config
+  (when use-package-compute-statistics
+    (add-hook 'after-init-hook #'use-package-report)))
 
 (use-package package
   :custom (package-archives '(("gnu" . "https://elpa.gnu.org/packages/")
