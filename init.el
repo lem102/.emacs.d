@@ -561,6 +561,11 @@ Intended for running applications."
 (use-package elec-pair
   :hook (on-first-input-hook . electric-pair-mode))
 
+(use-package electric
+  :defer t
+  :config
+  (electric-indent-mode 0))
+
 (use-package delsel
   :hook (on-first-input-hook . delete-selection-mode))
 
@@ -742,7 +747,8 @@ Disables the eglot backend when inside a `.g8' template."
 
 (use-package scala-ts-mode
   :defer t
-  :hook (scala-ts-mode-hook . yas-minor-mode)
+  :hook ((scala-ts-mode-hook . yas-minor-mode)
+         (scala-ts-mode-hook . electric-indent-local-mode))
   :config
   (defun jacob-bloop-compile ()
     "Recompile the project with bloop."
