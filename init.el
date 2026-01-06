@@ -310,7 +310,7 @@ then remove this function from `find-file-hook'."
   (column-number-mode 1)
   (line-number-mode 1)
   :custom
-  (indent-tabs-mode nil)               ; use spaces to indent
+  (indent-tabs-mode nil)                ; use spaces to indent
   (save-interprogram-paste-before-kill t)
   (read-extended-command-predicate command-completion-default-include-p)
   (kill-do-not-save-duplicates t)
