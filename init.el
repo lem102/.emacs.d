@@ -618,7 +618,7 @@ Intended for running applications."
   :defer t
   :init
   (with-eval-after-load "ryo-modal"
-    (ryo-modal-keys ("/" (("m" magit-project-status)))))
+    (ryo-modal-key "SPC / m" #'magit-project-status))
   :bind ( :map project-prefix-map
           ("v" . magit-project-status)))
 
@@ -648,16 +648,10 @@ Intended for running applications."
   :defer t
   :init
   (with-eval-after-load "ryo-modal"
-    (ryo-modal-keys ("SPC"
-                     (("SPC"
-                       (("c"
-                         (("e" eglot)))))))))
+    (ryo-modal-key "SPC SPC c e" #'eglot))
   :config
   (with-eval-after-load "ryo-modal"
-    (ryo-modal-keys ("SPC"
-                     (("SPC"
-                       (("c"
-                         (("r" eglot-rename)))))))))
+    (ryo-modal-key "SPC SPC c r" #'eglot-rename))
   
   (jacob-defhookf eglot-managed-mode-hook
     (eglot-inlay-hints-mode 0)
@@ -1453,8 +1447,7 @@ Disables the eglot backend when inside a `.g8' template."
   :defer t
   :init
   (with-eval-after-load "ryo-modal"
-    (ryo-modal-keys
-     ("\\" embark-act))
+    (ryo-modal-key "\\" #'embark-act)
     (ryo-modal-major-mode-keys 'embark-collect
                                ("q" quit-window)))
   :config
@@ -1494,8 +1487,7 @@ Disables the eglot backend when inside a `.g8' template."
   :defer t
   :init
   (with-eval-after-load "ryo-modal"
-    (ryo-modal-keys
-     ("g" expreg-expand)))
+    (ryo-modal-key "g" #'expreg-expand))
   :config
   (setopt expreg-functions (delq 'expreg--subword expreg-functions)))
 
