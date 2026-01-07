@@ -1400,12 +1400,6 @@ Disables the eglot backend when inside a `.g8' template."
         (("r" visual-replace-regexp)))))))
   :hook ((visual-replace-minibuffer-mode-hook . visual-replace-toggle-query)))
 
-(use-package markdown-mode
-  :defer t)
-
-(use-package feature-mode
-  :defer t)
-
 (use-package mct
   :if jacob-is-android
   :hook (jacob-first-minibuffer-activation-hook . mct-mode))
@@ -1418,9 +1412,6 @@ Disables the eglot backend when inside a `.g8' template."
 (use-package vertico-mouse
   :if (not jacob-is-android)
   :hook (vertico-mode-hook . vertico-mouse-mode))
-
-(use-package orderless
-  :defer t)
 
 (use-package marginalia
   :hook (jacob-first-minibuffer-activation-hook . marginalia-mode))
