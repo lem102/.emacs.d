@@ -11,6 +11,7 @@
    '("ae20535e46a88faea5d65775ca5510c7385cbf334dfa7dde93c0cd22ed663ba0"
      "b41d0a9413fb0034cea34eb8c9f89f6e243bdd76bccecf8292eb1fefa42eaf0a"
      default))
+ '(imenu-use-popup-menu 'on-mouse)
  '(package-selected-packages
    '(ace-window aider apheleia applescript-mode auctex avy blackout cape
                 consult csproj-mode dape denote dired-rsync dumb-jump

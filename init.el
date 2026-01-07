@@ -1431,16 +1431,8 @@ Disables the eglot backend when inside a `.g8' template."
 
 (require 'jacob-consult)
 
-(use-package imenu
-  :defer t
-  :custom
-  (imenu-use-popup-menu (not jacob-is-android))
-  (imenu-flatten jacob-is-android))
-
 (use-package consult-imenu
-  :defer t
-  :init
-  (keymap-global-set "M-g i" #'consult-imenu))
+  :bind ("M-g i" . consult-imenu))
 
 (use-package embark
   :defer t
