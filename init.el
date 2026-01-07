@@ -50,7 +50,6 @@
 
 (use-package menu-bar
   :config
-  ;; (menu-bar-mode (if (or jacob-is-mac jacob-is-android) 1 0))
   (menu-bar-mode 1)
 
   (keymap-global-set "<menu-bar> <jacob>"
