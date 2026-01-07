@@ -437,6 +437,8 @@ Intended for running applications."
   (with-eval-after-load "ryo-modal"
     (ryo-modal-major-mode-keys 'ibuffer-mode
                                ("q" quit-window)
+                               ("e" ibuffer-mark-forward)
+                               ("r" ibuffer-unmark-forward)
                                ("g" ibuffer-update))))
 
 (use-package replace
