@@ -430,6 +430,9 @@ Intended for running applications."
 
 (use-package ibuffer
   :defer t
+  :init
+  (with-eval-after-load "ryo-modal"
+    (ryo-modal-key "SPC i d" #'ibuffer))
   :config
   (with-eval-after-load "ryo-modal"
     (ryo-modal-major-mode-keys 'ibuffer-mode
