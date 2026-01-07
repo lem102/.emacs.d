@@ -1263,7 +1263,7 @@ Disables the eglot backend when inside a `.g8' template."
   :mode ("\\.php\\'" . php-ts-mode))
 
 (use-package message
-  :after gnus
+  :defer t
   :config
   (jacob-defhookf message-mode-hook
     (setq-local auto-save-visited-mode nil))
