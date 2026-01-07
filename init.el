@@ -1552,10 +1552,10 @@ Disables the eglot backend when inside a `.g8' template."
                                ("c" pdf-view-kill-ring-save))))
 
 (use-package grep
-  :when jacob-is-windows
   :defer t
   :config
-  (setopt find-program "C:/Program Files (x86)/GnuWin32/bin/find.exe"))
+  (when jacob-is-windows
+    (setq find-program "C:/Program Files (x86)/GnuWin32/bin/find.exe")))
 
 
 ;; personal functions
