@@ -1557,9 +1557,6 @@ Disables the eglot backend when inside a `.g8' template."
   :config
   (setopt find-program "C:/Program Files (x86)/GnuWin32/bin/find.exe"))
 
-(use-package just-mode
-  :defer t)
-
 
 ;; personal functions
 
