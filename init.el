@@ -422,10 +422,14 @@ Intended for running applications."
 
 (use-package minibuffer
   :config
-  (define-key minibuffer-local-completion-map "SPC" 'self-insert-command)
+  (keymap-set minibuffer-local-completion-map "SPC" #'self-insert-command)
+  (with-eval-after-load "eglot"
+    (setq completion-category-defaults (seq-filter (lambda (category)
+                                                     "Remove eglot-capf from `completion-category-defaults'."
+                                                     (not (eq 'eglot-capf (car category))))
+                                                   completion-category-defaults)))
   :custom
   (completion-styles '(basic initials))
-  (completion-category-defaults nil)
   (completion-category-overrides '((file (styles basic partial-completion)))))
 
 (use-package ibuffer
