@@ -429,7 +429,6 @@ Intended for running applications."
                                                      (not (eq 'eglot-capf (car category))))
                                                    completion-category-defaults)))
   :custom
-  (completion-styles '(basic initials))
   (completion-category-overrides '((file (styles basic partial-completion)))))
 
 (use-package ibuffer
@@ -1421,13 +1420,7 @@ Disables the eglot backend when inside a `.g8' template."
   :hook (vertico-mode-hook . vertico-mouse-mode))
 
 (use-package orderless
-  :preface
-  (defun jacob-load-orderless ()
-    "Load the `orderless' library."
-    (require 'orderless))
-  :hook (jacob-first-minibuffer-activation-hook . jacob-load-orderless)
-  :config
-  (add-to-list 'completion-styles 'orderless))
+  :defer t)
 
 (use-package marginalia
   :hook (jacob-first-minibuffer-activation-hook . marginalia-mode))
