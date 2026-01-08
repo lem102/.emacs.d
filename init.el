@@ -576,14 +576,6 @@ Intended for running applications."
   (setopt dabbrev-case-fold-search nil
           dabbrev-case-replace nil))
 
-(use-package vc
-  :defer t
-  :config
-  (setopt vc-git-show-stash 0             ; show 0 stashes
-          vc-ignore-dir-regexp (format "\\(%s\\)\\|\\(%s\\)" ; ignore tramp files
-                                       vc-ignore-dir-regexp
-                                       tramp-file-name-regexp)))
-
 (use-package vc-git
   :defer t
   :config

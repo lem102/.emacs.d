@@ -32,7 +32,11 @@
  '(use-package-compute-statistics nil)
  '(use-package-enable-imenu-support t)
  '(use-package-hook-name-suffix nil)
- '(use-package-verbose t))
+ '(use-package-verbose t)
+ '(vc-git-show-stash 0 nil nil "Do not show any stashes in vc-dir buffers.")
+ '(vc-ignore-dir-regexp
+   (format "\\(%s\\)\\|\\(%s\\)" locate-dominating-stop-dir-regexp
+           tramp-file-name-regexp) nil nil "In addition to the usual files, also disable vc functionality in tramp files."))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

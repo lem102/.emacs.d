@@ -117,8 +117,6 @@
    ("h" beginning-of-buffer)
    ("p" project-prefix-map)
    ("y" isearch-forward-symbol-at-point)
-   ("/"
-    (("h" vc-annotate)))
    (","
     (("," delete-frame)
      ("d" eval-defun)
@@ -165,7 +163,10 @@
    ("w"
     (("j" xref-find-references)
      ("k" xref-find-definitions)
-     ("l" xref-go-back))))))
+     ("l" xref-go-back)))
+   ("/"
+    (("j" vc-diff)
+     ("h" vc-annotate))))))
 
 (add-hook 'after-init-hook #'global-ryo-modal-mode-enable)
 
