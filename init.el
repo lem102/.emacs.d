@@ -631,7 +631,7 @@ Intended for running applications."
   :defer t
   :config
   (add-to-list 'tramp-remote-path 'tramp-own-remote-path)
-  (setopt tramp-archive-enabled nil) ; lots of problems. for now, disable it!
+  (setq tramp-archive-enabled nil) ; lots of problems. for now, disable it!
   )
 
 (use-package dumb-jump
