@@ -619,9 +619,6 @@ Intended for running applications."
   :bind ( :map project-prefix-map
           ("v" . magit-project-status)))
 
-(use-package forge
-  :defer t)
-
 (use-package autoinsert
   :hook (on-first-file-hook . auto-insert-mode)
   :config
