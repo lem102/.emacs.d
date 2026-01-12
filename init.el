@@ -570,12 +570,6 @@ Intended for running applications."
 (use-package repeat
   :hook (on-first-input-hook . repeat-mode))
 
-(use-package dabbrev
-  :defer t
-  :config
-  (setopt dabbrev-case-fold-search nil
-          dabbrev-case-replace nil))
-
 (use-package vc-git
   :defer t
   :config
