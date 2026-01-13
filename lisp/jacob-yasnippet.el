@@ -17,7 +17,7 @@
 
 (defun jacob-autoinsert-yas-expand ()
   "Replace text in yasnippet template."
-  (yas-expand-snippet (buffer-string) (point-min) (point-max)))
+  (yas-expand-snippet (buffer-string)))
 
 (defun jacob-yas-camel-case (input)
   "Convert INPUT to camel case e.g. apple banana -> appleBanana.

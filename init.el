@@ -770,6 +770,22 @@ Disables the eglot backend when inside a `.g8' template."
           (goto-char (treesit-node-start string-node))
           (insert "s")))))
 
+  (defun jacob-scala-determine-file-package ()
+    "Return the package of the current scala file."
+    (let* ((project-directory (locate-dominating-file (buffer-file-name)
+                                                      (lambda (directory)
+                                                        (seq-find (lambda (file)
+                                                                    "Return non-nil if the file is a build.sbt file."
+                                                                    (string-match-p "^build\\.sbt$" file))
+                                                                  (directory-files directory)))))
+           (file-relative-path (file-name-concat
+                                (file-name-nondirectory (directory-file-name (file-name-directory project-directory)))
+                                (file-relative-name (buffer-file-name) project-directory)))
+           (file-relative-path-sans-src-dir (apply #'file-name-concat (cddr (file-name-split file-relative-path)))))
+      (string-replace "/" "." (directory-file-name (file-name-directory file-relative-path-sans-src-dir)))))
+
+  (define-auto-insert "\\.scala$" #'jacob-autoinsert-scala) ; FIXME: if `define-auto-insert' is evaluated again, the auto insert action will be duplicated.
+
   (keymap-set scala-ts-mode-map "$" #'jacob-scala-dollar)
 
   (add-hook 'scala-ts-mode-hook #'jacob-font-lock-scala-setup))
