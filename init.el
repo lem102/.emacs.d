@@ -616,7 +616,19 @@ Intended for running applications."
 (use-package autoinsert
   :hook (on-first-file-hook . auto-insert-mode)
   :config
-  (setopt auto-insert-query t))
+  (defun jacob-define-auto-insert (condition action)
+    "Set up an auto insert idempotently.
+
+CONDITION and ACTION are as in `define-auto-insert'."
+    (when (assoc condition auto-insert-alist)
+      (setopt auto-insert-alist (seq-remove (lambda (ai)
+                                              (equal condition (car ai)))
+                                            auto-insert-alist)))
+    (define-auto-insert condition action))
+
+  (jacob-define-auto-insert "\\.scala$" ["template.scala" jacob-autoinsert-yas-expand])
+  (jacob-define-auto-insert "\\.cs$" ["template.cs" jacob-autoinsert-yas-expand])
+  (jacob-define-auto-insert "Controller\\.cs$" ["controllerTemplate.cs" jacob-autoinsert-yas-expand]))
 
 (use-package tramp
   :defer t
@@ -783,8 +795,6 @@ Disables the eglot backend when inside a `.g8' template."
                                 (file-relative-name (buffer-file-name) project-directory)))
            (file-relative-path-sans-src-dir (apply #'file-name-concat (cddr (file-name-split file-relative-path)))))
       (string-replace "/" "." (directory-file-name (file-name-directory file-relative-path-sans-src-dir)))))
-
-  (define-auto-insert "\\.scala$" #'jacob-autoinsert-scala) ; FIXME: if `define-auto-insert' is evaluated again, the auto insert action will be duplicated.
 
   (keymap-set scala-ts-mode-map "$" #'jacob-scala-dollar)
 

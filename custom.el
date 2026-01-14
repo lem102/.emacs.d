@@ -4,6 +4,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(auto-insert-query 'function)
  '(bookmark-fringe-mark nil)
  '(bookmark-watch-bookmark-file 'silent)
  '(completion-styles '(orderless basic initials))

@@ -640,9 +640,6 @@ which performs the deletion."
     (setq jacob-backspace-function #'jacob-backspace-csharp)
     (eglot-ensure))
 
-  (define-auto-insert "\\.cs$" ["template.cs" jacob-autoinsert-yas-expand])
-  (define-auto-insert "Controller\\.cs$" ["controllerTemplate.cs" jacob-autoinsert-yas-expand])
-
   (defun eglot-csharp-ls-metadata (xrefs)
     "Advice for `eglot--lsp-xrefs-for-method'.
 
