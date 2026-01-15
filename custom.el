@@ -14,6 +14,7 @@
      default))
  '(dabbrev-case-fold-search nil)
  '(dabbrev-case-replace nil)
+ '(eshell-scroll-to-bottom-on-output 'this)
  '(imenu-use-popup-menu 'on-mouse)
  '(package-selected-packages
    '(ace-window aider apheleia applescript-mode auctex avy blackout cape

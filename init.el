@@ -832,8 +832,6 @@ Disables the eglot backend when inside a `.g8' template."
 (use-package esh-mode
   :defer t
   :config
-  (setopt eshell-scroll-to-bottom-on-output t)
-
   (defun jacob-async-eshell-command ()
     "Run an async command through eshell."
     (interactive)
