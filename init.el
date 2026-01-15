@@ -593,7 +593,6 @@ Intended for running applications."
                                ("r" vc-dir-unmark)
                                ("v" vc-next-action)
                                ("p" vc-push)
-                               (";" jacob-git-push-set-upstream)
                                ("=" vc-diff)
                                ("x" vc-dir-hide-up-to-date))))
 
