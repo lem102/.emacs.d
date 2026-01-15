@@ -762,7 +762,7 @@ Disables the eglot backend when inside a `.g8' template."
                                           nil
                                           "NODE_ONLY"))))
           (default-directory (project-root (project-current))))
-      (compile (format "sbt \"~testOnly %s.%s\"" package class))))
+      (compile (format "sbt \"testOnly %s.%s\"" package class))))
 
   (defun jacob-scala-dollar ()
     "Insert a dollar. If inside a string, enable string interpolation."
