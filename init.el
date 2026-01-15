@@ -798,13 +798,25 @@ Disables the eglot backend when inside a `.g8' template."
 
   (keymap-set scala-ts-mode-map "$" #'jacob-scala-dollar)
 
-  (add-hook 'scala-ts-mode-hook #'jacob-font-lock-scala-setup))
+  (add-hook 'scala-ts-mode-hook #'jacob-font-lock-scala-setup)
+
+  (defun jacob-format-routes-file ()
+    "Format a routes file."
+    (interactive)
+    (let* ((space-regexp "[[:space:]]+")
+           (non-space-regexp "[^[:space:]]+")
+           (regexp (format "^\\(%s\\)\\(%s\\)\\(%s\\)\\(%s\\)"
+                           non-space-regexp
+                           space-regexp
+                           non-space-regexp
+                           space-regexp)))
+      (align-regexp (point-min) (point-max) regexp 2 8)
+      (align-regexp (point-min) (point-max) regexp 4 8))))
 
 (use-package sbt-mode
   :defer t)
 
 (use-package web-mode
-  :defer t
   :mode ("\\.scala\\.html\\'" . web-mode)
   :custom (web-mode-engines-alist
            '(("play" . "\\.scala\\.html\\'"))))
