@@ -802,9 +802,9 @@ Disables the eglot backend when inside a `.g8' template."
   (defun jacob-format-routes-file ()
     "Format a routes file."
     (interactive)
-    (let* ((space-regexp "[[:space:]]+")
-           (non-space-regexp "[^[:space:]]+")
-           (regexp (format "^\\(%s\\)\\(%s\\)\\(%s\\)\\(%s\\)"
+    (let* ((space-regexp "\\([[:space:]]+\\)")
+           (non-space-regexp "\\([^[:space:]]+\\)")
+           (regexp (concat "^"
                            non-space-regexp
                            space-regexp
                            non-space-regexp
