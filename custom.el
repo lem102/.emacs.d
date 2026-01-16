@@ -16,10 +16,11 @@
  '(dabbrev-case-replace nil)
  '(eshell-scroll-to-bottom-on-output 'this)
  '(imenu-use-popup-menu 'on-mouse)
+ '(package-archives
+   '(("gnu" . "https://elpa.gnu.org/packages/")
+     ("nongnu" . "https://elpa.nongnu.org/nongnu/")
+     ("melpa" . "https://melpa.org/packages/")))
  '(package-install-upgrade-built-in t)
- '(package-archives '(("gnu" . "https://elpa.gnu.org/packages/")
-                      ("nongnu" . "https://elpa.nongnu.org/nongnu/")
-                      ("melpa" . "https://melpa.org/packages/")))
  '(package-selected-packages
    '(ace-window aider apheleia applescript-mode auctex avy blackout cape
                 consult csproj-mode dape denote dired-rsync dumb-jump
@@ -36,13 +37,16 @@
                 sly-overlay sly-quicklisp sql-indent treesit-auto verb
                 vertico visual-replace visual-replace-regexp web-mode
                 wgrep winnow yasnippet))
- '(package-vc-selected-packages '((eglot-booster :url "https://github.com/jdtsmith/eglot-booster")
-                                  (sln-mode :url "https://github.com/sensorflo/sln-mode.git")
-                                  (font-lock-ext :url "https://github.com/sensorflo/font-lock-ext.git")
-                                  (nerd-icons-mode-line :url "https://github.com/grolongo/nerd-icons-mode-line.git")))
  '(safe-local-variable-values
    '((Log . clx.log) (Package . Xlib) (Lowercase . Yes) (Base . 10)
      (Package . XLIB) (Syntax . Common-lisp) (flymake-mode)))
+ '(package-vc-selected-packages
+   '((eglot-booster :url "https://github.com/jdtsmith/eglot-booster")
+     (sln-mode :url "https://github.com/sensorflo/sln-mode.git")
+     (font-lock-ext :url
+                    "https://github.com/sensorflo/font-lock-ext.git")
+     (nerd-icons-mode-line :url
+                           "https://github.com/grolongo/nerd-icons-mode-line.git")))
  '(use-package-compute-statistics nil)
  '(use-package-enable-imenu-support t)
  '(use-package-hook-name-suffix nil)
