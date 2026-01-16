@@ -279,10 +279,6 @@ then remove this function from `find-file-hook'."
   :custom
   (modus-themes-to-toggle '(modus-operandi-tinted modus-vivendi-tinted)))
 
-(use-package custom
-  :config
-  (load-theme jacob-theme "NO-CONFIRM"))
-
 (use-package cus-edit
   :custom
   (custom-file (concat user-emacs-directory "custom.el"))
