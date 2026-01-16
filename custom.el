@@ -10,7 +10,8 @@
  '(completion-styles '(orderless basic initials))
  '(custom-enabled-themes '(ef-bio))
  '(custom-safe-themes
-   '("2896501d2809d956f0b4fa5442f416cb3e62c82da0ef7ccbef538c67872d1967"
+   '("1a721551e5867225da30177ecda385083732873269aa9f1e7188564c01210e1f"
+     "2896501d2809d956f0b4fa5442f416cb3e62c82da0ef7ccbef538c67872d1967"
      "ae20535e46a88faea5d65775ca5510c7385cbf334dfa7dde93c0cd22ed663ba0"
      "b41d0a9413fb0034cea34eb8c9f89f6e243bdd76bccecf8292eb1fefa42eaf0a"
      default))
@@ -39,9 +40,6 @@
                 sly-overlay sly-quicklisp sql-indent treesit-auto verb
                 vertico visual-replace visual-replace-regexp web-mode
                 wgrep winnow yasnippet))
- '(safe-local-variable-values
-   '((Log . clx.log) (Package . Xlib) (Lowercase . Yes) (Base . 10)
-     (Package . XLIB) (Syntax . Common-lisp) (flymake-mode)))
  '(package-vc-selected-packages
    '((eglot-booster :url "https://github.com/jdtsmith/eglot-booster")
      (sln-mode :url "https://github.com/sensorflo/sln-mode.git")
@@ -49,6 +47,9 @@
                     "https://github.com/sensorflo/font-lock-ext.git")
      (nerd-icons-mode-line :url
                            "https://github.com/grolongo/nerd-icons-mode-line.git")))
+ '(safe-local-variable-values
+   '((Log . clx.log) (Package . Xlib) (Lowercase . Yes) (Base . 10)
+     (Package . XLIB) (Syntax . Common-lisp) (flymake-mode)))
  '(use-package-compute-statistics nil)
  '(use-package-enable-imenu-support t)
  '(use-package-hook-name-suffix nil)
