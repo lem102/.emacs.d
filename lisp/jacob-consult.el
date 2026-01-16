@@ -13,8 +13,8 @@
   (setq completion-in-region-function 'consult-completion-in-region
         xref-show-xrefs-function 'consult-xref
         xref-show-definitions-function 'consult-xref
-        consult--source-buffer (plist-put consult--source-buffer
-                                          :state #'jacob-consult-buffer-state-no-tramp)))
+        consult-source-buffer (plist-put consult-source-buffer
+                                         :state #'jacob-consult-buffer-state-no-tramp)))
 
 (use-package consult
   :defer t
