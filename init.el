@@ -39,11 +39,6 @@
   (when use-package-compute-statistics
     (add-hook 'after-init-hook #'use-package-report)))
 
-(use-package package
-  :custom (package-archives '(("gnu" . "https://elpa.gnu.org/packages/")
-                              ("nongnu" . "https://elpa.nongnu.org/nongnu/")
-                              ("melpa" . "https://melpa.org/packages/"))))
-
 (use-package no-littering)
 
 (use-package on)
@@ -292,8 +287,7 @@ then remove this function from `find-file-hook'."
   :custom
   (custom-file (concat user-emacs-directory "custom.el"))
   :config
-  (when (file-exists-p custom-file)
-    (load custom-file)))
+  (load custom-file))
 
 (use-package generic-x           ; support for files like `/etc/fstab'
   :defer t)

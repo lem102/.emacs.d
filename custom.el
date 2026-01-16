@@ -16,6 +16,10 @@
  '(dabbrev-case-replace nil)
  '(eshell-scroll-to-bottom-on-output 'this)
  '(imenu-use-popup-menu 'on-mouse)
+ '(package-install-upgrade-built-in t)
+ '(package-archives '(("gnu" . "https://elpa.gnu.org/packages/")
+                      ("nongnu" . "https://elpa.nongnu.org/nongnu/")
+                      ("melpa" . "https://melpa.org/packages/")))
  '(package-selected-packages
    '(ace-window aider apheleia applescript-mode auctex avy blackout cape
                 consult csproj-mode dape denote dired-rsync dumb-jump
@@ -24,17 +28,21 @@
                 feature-mode flymake font-lock-ext forge gdscript-mode
                 geiser geiser-guile gptel helpful highlight-defined
                 hl-todo just-mode lisp-extra-font-lock magit
-                marginalia markdown-mode mct mermaid-mode no-littering
+                marginalia markdown-mode mct mermaid-mode
+                nerd-icons-dired nerd-icons-modeline no-littering
                 ob-mermaid on orderless org-edna pdf-tools prodigy
-                puni rainbow-mode royal-hemlock-theme ryo-modal
-                sbt-mode scala-repl scala-ts-mode sln-mode sly
-                sly-macrostep sly-overlay sly-quicklisp sql-indent
-                transducers treesit-auto ultra-scroll verb vertico
-                visual-replace visual-replace-regexp
-                visual-replace-regexp web-mode wgrep winnow))
- (safe-local-variable-values
-  '((Log . clx.log) (Package . Xlib) (Lowercase . Yes) (Base . 10)
-    (Package . XLIB) (Syntax . Common-lisp) (flymake-mode)))
+                puni rainbow-mode ryo-modal sbt-mode scala-repl
+                scala-ts-mode sharper sln-mode sly sly-macrostep
+                sly-overlay sly-quicklisp sql-indent treesit-auto verb
+                vertico visual-replace visual-replace-regexp web-mode
+                wgrep winnow yasnippet))
+ '(package-vc-selected-packages '((eglot-booster :url "https://github.com/jdtsmith/eglot-booster")
+                                  (sln-mode :url "https://github.com/sensorflo/sln-mode.git")
+                                  (font-lock-ext :url "https://github.com/sensorflo/font-lock-ext.git")
+                                  (nerd-icons-mode-line :url "https://github.com/grolongo/nerd-icons-mode-line.git")))
+ '(safe-local-variable-values
+   '((Log . clx.log) (Package . Xlib) (Lowercase . Yes) (Base . 10)
+     (Package . XLIB) (Syntax . Common-lisp) (flymake-mode)))
  '(use-package-compute-statistics nil)
  '(use-package-enable-imenu-support t)
  '(use-package-hook-name-suffix nil)
