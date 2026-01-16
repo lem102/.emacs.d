@@ -32,9 +32,9 @@
                 transducers treesit-auto ultra-scroll verb vertico
                 visual-replace visual-replace-regexp
                 visual-replace-regexp web-mode wgrep winnow))
- '(safe-local-variable-values
-   '((Log . clx.log) (Package . Xlib) (Lowercase . Yes) (Base . 10)
-     (Package . XLIB) (Syntax . Common-lisp) (flymake-mode)))
+ (safe-local-variable-values
+  '((Log . clx.log) (Package . Xlib) (Lowercase . Yes) (Base . 10)
+    (Package . XLIB) (Syntax . Common-lisp) (flymake-mode)))
  '(use-package-compute-statistics nil)
  '(use-package-enable-imenu-support t)
  '(use-package-hook-name-suffix nil)
