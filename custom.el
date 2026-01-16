@@ -8,8 +8,10 @@
  '(bookmark-fringe-mark nil)
  '(bookmark-watch-bookmark-file 'silent)
  '(completion-styles '(orderless basic initials))
+ '(custom-enabled-themes '(ef-bio))
  '(custom-safe-themes
-   '("ae20535e46a88faea5d65775ca5510c7385cbf334dfa7dde93c0cd22ed663ba0"
+   '("2896501d2809d956f0b4fa5442f416cb3e62c82da0ef7ccbef538c67872d1967"
+     "ae20535e46a88faea5d65775ca5510c7385cbf334dfa7dde93c0cd22ed663ba0"
      "b41d0a9413fb0034cea34eb8c9f89f6e243bdd76bccecf8292eb1fefa42eaf0a"
      default))
  '(dabbrev-case-fold-search nil)
