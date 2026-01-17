@@ -2,16 +2,10 @@
 ;;; Commentary:
 ;;; Code:
 
-(add-to-list 'load-path (concat (file-name-directory user-init-file)
-                                "lisp"))
+;; constants and variables
 
-(add-to-list 'custom-theme-load-path (concat (file-name-directory user-init-file)
-                                             "lisp"))
-
-(require 'jacob-init-helpers)
-(require 'jacob-ryo-modal)
-
-;; read environment file and variable setup
+(defconst jacob-lisp-directory (file-name-concat (file-name-directory user-init-file)
+                                                 "lisp"))
 
 (defvar jacob-font-size 11
   "Font size to use.")
@@ -30,6 +24,17 @@
 
 (defconst jacob-is-mac (eq system-type 'darwin)
   "Is the current OS a mac?")
+
+(add-to-list 'load-path jacob-lisp-directory)
+(add-to-list 'custom-theme-load-path jacob-lisp-directory)
+
+(require 'jacob-init-helpers)
+(require 'jacob-ryo-modal)
+
+;; read environment file
+
+(setq custom-file (concat user-emacs-directory "custom.el"))
+(load custom-file)
 
 (when (file-exists-p "~/.emacs.d/environment.el")
   (ignore-errors (load-file "~/.emacs.d/environment.el")))
@@ -278,12 +283,6 @@ then remove this function from `find-file-hook'."
   :defer t
   :custom
   (modus-themes-to-toggle '(modus-operandi-tinted modus-vivendi-tinted)))
-
-(use-package cus-edit
-  :custom
-  (custom-file (concat user-emacs-directory "custom.el"))
-  :config
-  (load custom-file))
 
 (use-package generic-x           ; support for files like `/etc/fstab'
   :defer t)
