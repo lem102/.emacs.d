@@ -7,6 +7,9 @@
 (defconst jacob-lisp-directory (file-name-concat (file-name-directory user-init-file)
                                                  "lisp"))
 
+(defconst jacob-environment-file (file-name-concat (file-name-directory user-init-file)
+                                                   "environment.el"))
+
 (defvar jacob-font-size 11
   "Font size to use.")
 
@@ -29,15 +32,18 @@
 (add-to-list 'custom-theme-load-path jacob-lisp-directory)
 
 (require 'jacob-init-helpers)
-(require 'jacob-ryo-modal)
 
-;; read environment file
+;; read custom file and environment file
 
 (setq custom-file (concat user-emacs-directory "custom.el"))
 (load custom-file)
 
-(when (file-exists-p "~/.emacs.d/environment.el")
-  (ignore-errors (load-file "~/.emacs.d/environment.el")))
+(when (file-exists-p jacob-environment-file)
+  (ignore-errors (load-file jacob-environment-file)))
+
+;; configure packages
+
+(require 'jacob-ryo-modal)
 
 (use-package use-package
   :config
