@@ -17,7 +17,6 @@
          ,@body)
        (add-hook ',hook #',function-name))))
 
-
 (provide 'jacob-init-helpers)
 
 ;;; jacob-init-helpers.el ends here
