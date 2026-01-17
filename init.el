@@ -1267,8 +1267,7 @@ Disables the eglot backend when inside a `.g8' template."
   :defer t
   :config
   (jacob-defhookf message-mode-hook
-    (setq-local auto-save-visited-mode nil))
-  (setopt message-send-mail-function 'smtpmail-send-it))
+    (setq-local auto-save-visited-mode nil)))
 
 (use-package nxml-mode
   :defer t
