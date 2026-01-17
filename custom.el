@@ -30,19 +30,21 @@
  '(package-selected-packages
    '(ace-window aider apheleia applescript-mode auctex avy blackout cape
                 color-theme-sanityinc-tomorrow consult csproj-mode
-                dape denote dired-rsync dumb-jump eat ef-themes eglot
-                eglot-booster eldoc embark embark-consult
-                exec-path-from-shell expreg feature-mode flymake
-                font-lock-ext forge gdscript-mode geiser geiser-guile
-                gptel helpful highlight-defined hl-todo just-mode
-                lisp-extra-font-lock magit marginalia markdown-mode
-                mct mermaid-mode nerd-icons-dired nerd-icons-modeline
-                no-littering ob-mermaid on orderless org-edna
-                pdf-tools prodigy puni rainbow-mode ryo-modal sbt-mode
-                scala-repl scala-ts-mode sharper sln-mode sly
+                dape denote dired-rsync dumb-jump eat editorconfig
+                ef-themes eglot eglot-booster eldoc embark
+                embark-consult erc exec-path-from-shell expreg faceup
+                feature-mode flymake font-lock-ext forge gdscript-mode
+                geiser geiser-guile gptel helpful highlight-defined
+                hl-todo idlwave jsonrpc just-mode lisp-extra-font-lock
+                magit marginalia markdown-mode mct mermaid-mode
+                nerd-icons-dired nerd-icons-modeline no-littering
+                ob-mermaid on orderless org org-edna pdf-tools peg
+                prodigy project puni python rainbow-mode ryo-modal
+                sbt-mode scala-repl scala-ts-mode sharper sln-mode sly
                 sly-macrostep sly-overlay sly-quicklisp sql-indent
-                treesit-auto verb vertico visual-replace
-                visual-replace-regexp web-mode wgrep winnow yasnippet))
+                track-changes tramp treesit-auto verb verilog-mode
+                vertico visual-replace visual-replace-regexp web-mode
+                wgrep which-key window-tool-bar winnow yasnippet))
  '(package-vc-selected-packages
    '((eglot-booster :url "https://github.com/jdtsmith/eglot-booster")
      (sln-mode :url "https://github.com/sensorflo/sln-mode.git")
