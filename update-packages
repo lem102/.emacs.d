@@ -8,15 +8,12 @@
 ;; load `package' configuration
 (load (concat user-emacs-directory "custom.el"))
 
-;; refresh elpas
-(package-refresh-contents)
-
-;; install elpa packages
-(package-install-selected-packages "NOCONFIRM")
-
-;; upgrade elpa packages
+;; upgrade installed packages (also does a refresh)
 (package-upgrade-all)
 
-;; install vc packages
+;; install missing packages
+(package-install-selected-packages "NOCONFIRM")
+
+;; install missing vc packages
 (package-vc-install-selected-packages)
 
