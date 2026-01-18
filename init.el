@@ -229,6 +229,16 @@ then remove this function from `find-file-hook'."
            (auto-save-visited-interval 2)   ; save file after two seconds
            (confirm-kill-processes nil)))
 
+(use-package files-x
+  :config
+  (connection-local-set-profile-variables
+   'remote-direct-async-process
+   '((tramp-direct-async-process . t)))
+
+  (connection-local-set-profiles
+   '(:application tramp :protocol "scp")
+   'remote-direct-async-process))
+
 (use-package autorevert
   :blackout
   :hook (on-first-file-hook . global-auto-revert-mode))
@@ -602,6 +612,10 @@ Intended for running applications."
     (ryo-modal-key "SPC / m" #'magit-project-status))
   :bind ( :map project-prefix-map
           ("v" . magit-project-status)))
+
+(use-package magit-process
+  :config
+  (setq magit-tramp-pipe-stty-settings 'pty))
 
 (use-package autoinsert
   :hook (on-first-file-hook . auto-insert-mode)
@@ -1215,7 +1229,10 @@ Disables the eglot backend when inside a `.g8' template."
 
   (setopt compilation-always-kill t
           compilation-scroll-output t
-          compilation-ask-about-save nil))
+          compilation-ask-about-save nil)
+
+  (with-eval-after-load 'tramp
+    (remove-hook 'compilation-mode-hook #'tramp-compile-disable-ssh-controlmaster-options)))
 
 (use-package winnow
   :hook (compilation-mode-hook . winnow-mode))

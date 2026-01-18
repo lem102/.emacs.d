@@ -23,6 +23,7 @@
  '(eshell-scroll-to-bottom-on-output 'this)
  '(imenu-use-popup-menu 'on-mouse)
  '(message-send-mail-function 'smtpmail-send-it)
+ '(org-default-notes-file "~/Documents/notes.org")
  '(package-archives
    '(("gnu" . "https://elpa.gnu.org/packages/")
      ("nongnu" . "https://elpa.nongnu.org/nongnu/")
@@ -55,9 +56,13 @@
      (nerd-icons-mode-line :url
                            "https://github.com/grolongo/nerd-icons-mode-line.git")))
  '(read-extended-command-predicate 'command-completion-default-include-p)
+ '(remote-file-name-inhibit-auto-save-visited t)
+ '(remote-file-name-inhibit-delete-by-moving-to-trash t)
  '(safe-local-variable-values
    '((Log . clx.log) (Package . Xlib) (Lowercase . Yes) (Base . 10)
      (Package . XLIB) (Syntax . Common-lisp) (flymake-mode)))
+ '(tramp-copy-size-limit 1048576)
+ '(tramp-use-scp-direct-remote-copying t)
  '(use-package-compute-statistics nil)
  '(use-package-enable-imenu-support t)
  '(use-package-hook-name-suffix nil)
