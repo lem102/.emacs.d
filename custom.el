@@ -54,6 +54,7 @@
                     "https://github.com/sensorflo/font-lock-ext.git")
      (nerd-icons-mode-line :url
                            "https://github.com/grolongo/nerd-icons-mode-line.git")))
+ '(read-extended-command-predicate 'command-completion-default-include-p)
  '(safe-local-variable-values
    '((Log . clx.log) (Package . Xlib) (Lowercase . Yes) (Base . 10)
      (Package . XLIB) (Syntax . Common-lisp) (flymake-mode)))
