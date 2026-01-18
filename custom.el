@@ -38,14 +38,15 @@
                 geiser geiser-guile gptel helpful highlight-defined
                 hl-todo idlwave jsonrpc just-mode lisp-extra-font-lock
                 magit marginalia markdown-mode mct mermaid-mode
-                nerd-icons-dired nerd-icons-modeline no-littering
-                ob-mermaid on orderless org org-edna pdf-tools peg
-                prodigy project puni python rainbow-mode ryo-modal
-                sbt-mode scala-repl scala-ts-mode sharper sln-mode sly
-                sly-macrostep sly-overlay sly-quicklisp sql-indent
-                track-changes tramp treesit-auto verb verilog-mode
-                vertico visual-replace visual-replace-regexp web-mode
-                wgrep which-key window-tool-bar winnow yasnippet))
+                nerd-icons-dired nerd-icons-mode-line
+                nerd-icons-modeline no-littering ob-mermaid on
+                orderless org org-edna pdf-tools peg prodigy project
+                puni python rainbow-mode ryo-modal sbt-mode scala-repl
+                scala-ts-mode sharper sln-mode sly sly-macrostep
+                sly-overlay sly-quicklisp sql-indent track-changes
+                tramp treesit-auto verb verilog-mode vertico
+                visual-replace visual-replace-regexp web-mode wgrep
+                which-key window-tool-bar winnow yasnippet))
  '(package-vc-selected-packages
    '((eglot-booster :url "https://github.com/jdtsmith/eglot-booster")
      (sln-mode :url "https://github.com/sensorflo/sln-mode.git")
