@@ -13,9 +13,6 @@
 (defvar jacob-font-size 11
   "Font size to use.")
 
-(defvar jacob-theme 'modus-vivendi
-  "Theme to use.")
-
 (defconst jacob-is-windows (eq system-type 'windows-nt)
   "Is the current OS windows?")
 
