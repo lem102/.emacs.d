@@ -130,7 +130,8 @@
      ("i" describe-char)
      ("g" info)))
    ("l"
-    (("a" global-text-scale-adjust)
+    (("6" calendar)
+     ("a" global-text-scale-adjust)
      (";" global-display-line-numbers-mode)
      ("d" eshell)
      ("e" toggle-frame-maximized)
