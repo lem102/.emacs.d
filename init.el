@@ -49,8 +49,6 @@
 
 (use-package no-littering)
 
-(use-package on)
-
 (use-package menu-bar
   :config
   (keymap-global-set "<menu-bar> <jacob>"
