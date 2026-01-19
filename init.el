@@ -128,6 +128,7 @@ then remove this function from `find-file-hook'."
                                                       ("gnu/linux" . "DejaVu Sans Mono")
                                                       ("android" . "Droid Sans Mono"))))
                                  jacob-font-size)))
+  ;; in the case of macos, the following block is unecessary
 
   ;; mule-cmds.el
   (prefer-coding-system 'utf-8)
