@@ -53,8 +53,6 @@
 
 (use-package menu-bar
   :config
-  (menu-bar-mode 1)
-
   (keymap-global-set "<menu-bar> <jacob>"
                      (cons "jacob"
                            (let ((keymap (make-sparse-keymap)))
