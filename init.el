@@ -2,6 +2,9 @@
 ;;; Commentary:
 ;;; Code:
 
+;; `no-littering' needs to be loaded ASAP
+(use-package no-littering)
+
 ;; constants and variables
 
 (defconst jacob-lisp-directory (file-name-concat (file-name-directory user-init-file)
@@ -46,8 +49,6 @@
   :config
   (when use-package-compute-statistics
     (add-hook 'after-init-hook #'use-package-report)))
-
-(use-package no-littering)
 
 (use-package menu-bar
   :config
