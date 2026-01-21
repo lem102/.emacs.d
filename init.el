@@ -198,17 +198,11 @@ then remove this function from `find-file-hook'."
   :bind ( :map mode-line-buffer-identification-keymap
           ("<mode-line> <mouse-2>" . ibuffer)))
 
-(use-package blackout)
-
 (use-package which-key
   :blackout
   :hook (on-first-input-hook . which-key-mode)
   :custom (which-key-idle-delay (cond (jacob-is-android 1)
                                       (t 0.01))))
-
-(use-package mouse
-  :config
-  (context-menu-mode 1))
 
 (use-package mwheel
   :custom ((mouse-wheel-scroll-amount '(10 ((shift) . hscroll)

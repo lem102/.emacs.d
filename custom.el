@@ -9,6 +9,7 @@
  '(bookmark-watch-bookmark-file 'silent)
  '(completion-styles '(orderless basic initials))
  '(custom-enabled-themes '(modus-vivendi-tinted))
+ '(context-menu-mode t)
  '(custom-safe-themes
    '("21c4c4b7d3ab161aaa28b15ca846854d395c33cfb7c6863ab601adfe10d70ce0"
      "76ddb2e196c6ba8f380c23d169cf2c8f561fd2013ad54b987c516d3cabc00216"
