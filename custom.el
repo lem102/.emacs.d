@@ -5,10 +5,14 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(auto-insert-query nil)
+ '(auto-save-default nil)
+ '(auto-save-visited-interval 2 nil nil "Save file after two seconds.")
+ '(backup-by-copying t)
  '(bookmark-fringe-mark nil)
  '(bookmark-watch-bookmark-file 'silent)
  '(completion-styles '(orderless basic initials))
  '(custom-enabled-themes '(modus-vivendi-tinted))
+ '(confirm-kill-processes nil)
  '(context-menu-mode t)
  '(custom-safe-themes
    '("21c4c4b7d3ab161aaa28b15ca846854d395c33cfb7c6863ab601adfe10d70ce0"
@@ -24,6 +28,7 @@
  '(electric-indent-mode nil)
  '(eshell-scroll-to-bottom-on-output 'this)
  '(imenu-use-popup-menu 'on-mouse)
+ '(make-backup-files nil)
  '(message-send-mail-function 'smtpmail-send-it)
  '(org-default-notes-file "~/Documents/notes.org")
  '(package-archives

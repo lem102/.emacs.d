@@ -214,14 +214,8 @@ then remove this function from `find-file-hook'."
                                (t 0.1))))
 
 (use-package files
-  :config
-  (auto-save-visited-mode 1)
-  :bind ("C-x C-c" . nil) ; `save-buffers-kill-terminal'
-  :custom ((auto-save-default nil)
-           (make-backup-files nil)
-           (backup-by-copying t)
-           (auto-save-visited-interval 2)   ; save file after two seconds
-           (confirm-kill-processes nil)))
+  :bind ("C-x C-c" . nil)               ; `save-buffers-kill-terminal'
+  :hook (on-first-file-hook . auto-save-visited-mode))
 
 (use-package files-x
   :config
