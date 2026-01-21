@@ -1,1 +1,1 @@
-package `(jacob-scala-determine-file-package)`
+package `(jacob-scala-package)`
