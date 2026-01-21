@@ -20,6 +20,7 @@
      default))
  '(dabbrev-case-fold-search nil)
  '(dabbrev-case-replace nil)
+ '(electric-indent-mode nil)
  '(eshell-scroll-to-bottom-on-output 'this)
  '(imenu-use-popup-menu 'on-mouse)
  '(message-send-mail-function 'smtpmail-send-it)

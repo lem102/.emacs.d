@@ -558,11 +558,6 @@ Intended for running applications."
 (use-package elec-pair
   :hook (on-first-input-hook . electric-pair-mode))
 
-(use-package electric
-  :defer t
-  :config
-  (electric-indent-mode 0))
-
 (use-package delsel
   :hook (on-first-input-hook . delete-selection-mode))
 
