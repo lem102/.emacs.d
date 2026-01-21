@@ -106,6 +106,7 @@ then remove this function from `find-file-hook'."
 
 (use-package emacs
   :config
+  ;; TODO: do i need this?
   ;; enable emoji fonts
   (set-fontset-font t
                     'emoji
@@ -125,6 +126,7 @@ then remove this function from `find-file-hook'."
                                                       ("gnu/linux" . "DejaVu Sans Mono")
                                                       ("android" . "Droid Sans Mono"))))
                                  jacob-font-size)))
+  ;; TODO: do i need this?
   ;; in the case of macos, the following block is unecessary
 
   ;; mule-cmds.el
