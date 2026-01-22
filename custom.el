@@ -102,7 +102,8 @@
  '(vc-git-show-stash 0 nil nil "Do not show any stashes in vc-dir buffers.")
  '(vc-ignore-dir-regexp
    (format "\\(%s\\)\\|\\(%s\\)" locate-dominating-stop-dir-regexp
-           tramp-file-name-regexp) nil nil "In addition to the usual files, also disable vc functionality in tramp files."))
+           tramp-file-name-regexp) nil nil "In addition to the usual files, also disable vc functionality in tramp files.")
+ '(warning-minimum-level :error))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

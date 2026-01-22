@@ -481,10 +481,6 @@ Intended for running applications."
                                ("r" forward-button)
                                ("s" push-button))))
 
-(use-package warnings
-  :defer t
-  :custom ((warning-minimum-level :error)))
-
 (use-package subword
   :blackout
   :hook (on-first-input-hook . global-subword-mode))
