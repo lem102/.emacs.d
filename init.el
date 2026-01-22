@@ -116,11 +116,6 @@ then remove this function from `find-file-hook'."
   ;; c code
   (truncate-lines (cond (jacob-is-android t)
                         (t nil)))
-  (frame-resize-pixelwise t)
-  (create-lockfiles nil)
-  (history-length 1000)
-  (history-delete-duplicates t)
-  (use-dialog-box nil)
   (use-short-answers t)
   (ring-bell-function 'ignore)
   (truncate-partial-width-windows nil)

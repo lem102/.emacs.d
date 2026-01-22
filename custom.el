@@ -14,6 +14,7 @@
  '(confirm-kill-processes nil)
  '(context-menu-mode t)
  '(custom-enabled-themes '(modus-vivendi-tinted))
+ '(create-lockfiles nil)
  '(custom-safe-themes
    '("21c4c4b7d3ab161aaa28b15ca846854d395c33cfb7c6863ab601adfe10d70ce0"
      "76ddb2e196c6ba8f380c23d169cf2c8f561fd2013ad54b987c516d3cabc00216"
@@ -29,6 +30,9 @@
  '(electric-indent-mode nil)
  '(electric-pair-mode t)
  '(eshell-scroll-to-bottom-on-output 'this)
+ '(frame-resize-pixelwise t)
+ '(history-delete-duplicates t)
+ '(history-length 1000)
  '(imenu-use-popup-menu 'on-mouse)
  '(make-backup-files nil)
  '(message-send-mail-function 'smtpmail-send-it)
@@ -78,6 +82,7 @@
  '(tab-width 4 nil nil "set default tab char's display width to 4 spaces")
  '(tramp-copy-size-limit 1048576)
  '(tramp-use-scp-direct-remote-copying t)
+ '(use-dialog-box t)
  '(use-package-compute-statistics nil)
  '(use-package-enable-imenu-support t)
  '(use-package-hook-name-suffix nil)
