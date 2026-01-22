@@ -68,6 +68,8 @@
  '(safe-local-variable-values
    '((Log . clx.log) (Package . Xlib) (Lowercase . Yes) (Base . 10)
      (Package . XLIB) (Syntax . Common-lisp) (flymake-mode)))
+ '(split-height-threshold nil)
+ '(switch-to-buffer-obey-display-actions t)
  '(tramp-copy-size-limit 1048576)
  '(tramp-use-scp-direct-remote-copying t)
  '(use-package-compute-statistics nil)

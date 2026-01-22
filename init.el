@@ -207,7 +207,6 @@ then remove this function from `find-file-hook'."
 
 (use-package window
   :custom
-  (switch-to-buffer-obey-display-actions t)
   (display-buffer-alist '(((major-mode . sql-interactive-mode)
                            (display-buffer-reuse-mode-window display-buffer-same-window))
                           ((major-mode . prodigy-mode)
@@ -223,7 +222,7 @@ then remove this function from `find-file-hook'."
   ;; (display-buffer-alist '(((major-mode . magit-diff-mode)
   ;;                          nil)
   ;;                         ("\\`.*\\'" . (display-buffer-same-window display-buffer-full-frame))))
-  (split-height-threshold nil))
+  )
 
 (defvar-keymap jacob-recenter-repeat-map
   :repeat t
