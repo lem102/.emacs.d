@@ -251,9 +251,8 @@ then remove this function from `find-file-hook'."
   :defer t)
 
 (use-package simple
-  :config
-  (column-number-mode 1)
-  (line-number-mode 1)
+  :hook (on-init-ui-hook . column-number-mode)
+  :hook (on-init-ui-hook . line-number-mode)
   :custom
   (indent-tabs-mode nil)                ; use spaces to indent
   (save-interprogram-paste-before-kill t)
