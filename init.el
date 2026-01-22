@@ -794,7 +794,7 @@ Disables the eglot backend when inside a `.g8' template."
     (ryo-modal-major-mode-keys 'prodigy-mode
                                ("d" prodigy-stop)
                                ("e" prodigy-mark)
-                               ("g" jacob-project-search)
+                               ("g" jacob-project-search) ; FIXME: command not found sometimes
                                ("f" project-find-file)
                                ("i" prodigy-prev)
                                ("k" prodigy-next)
