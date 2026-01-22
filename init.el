@@ -806,6 +806,7 @@ Disables the eglot backend when inside a `.g8' template."
   (add-hook 'prodigy-view-mode-hook #'compilation-minor-mode))
 
 (use-package hi-lock
+  :defer t
   :blackout)
 
 (use-package hl-todo
