@@ -164,6 +164,9 @@ then remove this function from `find-file-hook'."
   :custom (which-key-idle-delay (cond (jacob-is-android 1)
                                       (t 0.01))))
 
+(use-package mouse
+  :hook (on-first-input-hook . context-menu-mode))
+
 (use-package mwheel
   :custom ((mouse-wheel-scroll-amount '(10 ((shift) . hscroll)
                                            ((meta))

@@ -13,7 +13,6 @@
  '(completion-ignore-case t t)
  '(completion-styles '(orderless basic initials))
  '(confirm-kill-processes nil)
- '(context-menu-mode t)
  '(create-lockfiles nil)
  '(custom-enabled-themes '(modus-vivendi-tinted))
  '(custom-safe-themes
