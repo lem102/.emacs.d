@@ -41,6 +41,7 @@
  '(make-backup-files nil)
  '(message-send-mail-function 'smtpmail-send-it)
  '(mode-line-percent-position nil)
+ '(modus-themes-to-toggle '(modus-operandi-tinted modus-vivendi-tinted))
  '(org-default-notes-file "~/Documents/notes.org")
  '(package-archives
    '(("gnu" . "https://elpa.gnu.org/packages/")

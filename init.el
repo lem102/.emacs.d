@@ -242,11 +242,6 @@ then remove this function from `find-file-hook'."
   :custom
   (save-place-forget-unreadable-files t))
 
-(use-package modus-themes
-  :defer t
-  :custom
-  (modus-themes-to-toggle '(modus-operandi-tinted modus-vivendi-tinted)))
-
 (use-package generic-x           ; support for files like `/etc/fstab'
   :defer t)
 
