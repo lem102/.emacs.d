@@ -70,6 +70,7 @@
      (Package . XLIB) (Syntax . Common-lisp) (flymake-mode)))
  '(split-height-threshold nil)
  '(switch-to-buffer-obey-display-actions t)
+ '(tab-always-indent 'complete)
  '(tramp-copy-size-limit 1048576)
  '(tramp-use-scp-direct-remote-copying t)
  '(use-package-compute-statistics nil)

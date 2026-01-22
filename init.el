@@ -174,9 +174,6 @@ then remove this function from `find-file-hook'."
   (mode-line-percent-position nil)
   ;; paragraphs.el
   (sentence-end-double-space nil)
-  ;; indent.el
-  ;; make tab key call indent command or insert tab character, depending on cursor position
-  (tab-always-indent 'complete)
   :bind ( :map mode-line-buffer-identification-keymap
           ("<mode-line> <mouse-2>" . ibuffer)))
 
