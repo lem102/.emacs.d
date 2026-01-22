@@ -76,6 +76,12 @@
                     "https://github.com/sensorflo/font-lock-ext.git")
      (nerd-icons-mode-line :url
                            "https://github.com/grolongo/nerd-icons-mode-line.git")))
+ '(project-switch-commands
+   '((project-find-file "Find file") (jacob-project-search "Find regexp")
+     (project-find-dir "Find directory")
+     (magit-project-status "Version Control" "v")
+     (project-eshell "Shell") (project-compile "Compile")))
+ '(project-switch-use-entire-map t)
  '(read-extended-command-predicate 'command-completion-default-include-p)
  '(read-process-output-max 1048576 t)
  '(recentf-max-saved-items nil)

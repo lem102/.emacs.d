@@ -774,16 +774,6 @@ Disables the eglot backend when inside a `.g8' template."
   :config
   (setopt eldoc-documentation-strategy 'eldoc-documentation-compose))
 
-(use-package project
-  :defer t
-  :custom
-  (project-switch-commands '((project-find-file "Find file")
-                             (jacob-project-search "Find regexp")
-                             (project-find-dir "Find directory")
-                             (magit-project-status "Version Control" "v")
-                             (project-eshell "Shell")
-                             (project-compile "Compile"))))
-
 (use-package prodigy
   :defer t
   :init
@@ -799,8 +789,6 @@ Disables the eglot backend when inside a `.g8' template."
                        (service (plist-get args :service)))
                    (when (string-match-p "Hosting started *$" output)
                      (prodigy-set-status service 'ready)))))
-
-  (add-hook 'prodigy-mode-hook #'hl-line-mode)
 
   (with-eval-after-load "ryo-modal"
     (ryo-modal-major-mode-keys 'prodigy-mode
