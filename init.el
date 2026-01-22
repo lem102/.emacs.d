@@ -1439,7 +1439,8 @@ Disables the eglot backend when inside a `.g8' template."
 (use-package gdscript-mode
   :mode ("\\.gd\\'" . gdscript-ts-mode)
   :config
-  (add-hook 'gdscript-ts-mode-hook #'indent-tabs-mode))
+  (add-hook 'gdscript-ts-mode-hook #'indent-tabs-mode)
+  (add-hook 'gdscript-ts-mode-hook #'yas-minor-mode))
 
 (use-package eat
   :when jacob-is-linux
