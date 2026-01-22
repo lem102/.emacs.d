@@ -7,6 +7,7 @@
  '(auto-insert-query nil)
  '(auto-save-default nil)
  '(auto-save-visited-interval 2 nil nil "Save file after two seconds.")
+ '(auto-save-visited-mode t)
  '(backup-by-copying t)
  '(bookmark-fringe-mark nil)
  '(bookmark-watch-bookmark-file 'silent)
@@ -81,9 +82,9 @@
  '(safe-local-variable-values
    '((Log . clx.log) (Package . Xlib) (Lowercase . Yes) (Base . 10)
      (Package . XLIB) (Syntax . Common-lisp) (flymake-mode)))
+ '(scroll-conservatively 0)
  '(split-height-threshold nil)
  '(switch-to-buffer-obey-display-actions t)
- '(scroll-conservatively 0)
  '(tab-always-indent 'complete)
  '(tab-width 4 nil nil "set default tab char's display width to 4 spaces")
  '(tramp-copy-size-limit 1048576)
