@@ -41,7 +41,6 @@
    (delq 'process-kill-buffer-query-function kill-buffer-query-functions) t)
  '(make-backup-files nil)
  '(message-send-mail-function 'smtpmail-send-it)
- '(minibuffer-depth-indicate-mode t)
  '(mode-line-percent-position nil)
  '(org-default-notes-file "~/Documents/notes.org")
  '(package-archives

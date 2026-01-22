@@ -379,6 +379,9 @@ Intended for running applications."
   :custom
   (completion-category-overrides '((file (styles basic partial-completion)))))
 
+(use-package mb-depth
+  :hook (jacob-first-minibuffer-activation-hook . minibuffer-depth-indicate-mode))
+
 (use-package ibuffer
   :defer t
   :init
