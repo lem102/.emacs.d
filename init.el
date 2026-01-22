@@ -156,7 +156,7 @@ then remove this function from `find-file-hook'."
   :bind ( :map mode-line-buffer-identification-keymap
           ("<mode-line> <mouse-2>" . ibuffer)))
 
-(use-package on)
+(use-package on)                    ; load `on-first-input-hook', etc.
 
 (use-package which-key
   :blackout
