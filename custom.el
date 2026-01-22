@@ -10,6 +10,7 @@
  '(backup-by-copying t)
  '(bookmark-fringe-mark nil)
  '(bookmark-watch-bookmark-file 'silent)
+ '(completion-ignore-case t t)
  '(completion-styles '(orderless basic initials))
  '(confirm-kill-processes nil)
  '(context-menu-mode t)
@@ -29,13 +30,17 @@
  '(delete-by-moving-to-trash t)
  '(electric-indent-mode nil)
  '(electric-pair-mode t)
+ '(enable-recursive-minibuffers t)
  '(eshell-scroll-to-bottom-on-output 'this)
  '(frame-resize-pixelwise t)
  '(history-delete-duplicates t)
  '(history-length 1000)
  '(imenu-use-popup-menu 'on-mouse)
+ '(kill-buffer-query-functions
+   (delq 'process-kill-buffer-query-function kill-buffer-query-functions) t)
  '(make-backup-files nil)
  '(message-send-mail-function 'smtpmail-send-it)
+ '(minibuffer-depth-indicate-mode t)
  '(mode-line-percent-position nil)
  '(org-default-notes-file "~/Documents/notes.org")
  '(package-archives
@@ -72,6 +77,7 @@
  '(read-extended-command-predicate 'command-completion-default-include-p)
  '(read-process-output-max 1048576 t)
  '(remote-file-name-inhibit-auto-save-visited t)
+ '(ring-bell-function 'ignore)
  '(safe-local-variable-values
    '((Log . clx.log) (Package . Xlib) (Lowercase . Yes) (Base . 10)
      (Package . XLIB) (Syntax . Common-lisp) (flymake-mode)))
@@ -82,11 +88,13 @@
  '(tab-width 4 nil nil "set default tab char's display width to 4 spaces")
  '(tramp-copy-size-limit 1048576)
  '(tramp-use-scp-direct-remote-copying t)
+ '(truncate-partial-width-windows nil)
  '(use-dialog-box t)
  '(use-package-compute-statistics nil)
  '(use-package-enable-imenu-support t)
  '(use-package-hook-name-suffix nil)
  '(use-package-verbose t)
+ '(use-short-answers t)
  '(vc-git-show-stash 0 nil nil "Do not show any stashes in vc-dir buffers.")
  '(vc-ignore-dir-regexp
    (format "\\(%s\\)\\|\\(%s\\)" locate-dominating-stop-dir-regexp
