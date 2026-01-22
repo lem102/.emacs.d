@@ -253,10 +253,6 @@ then remove this function from `find-file-hook'."
 (use-package simple
   :hook (on-init-ui-hook . column-number-mode)
   :hook (on-init-ui-hook . line-number-mode)
-  :custom
-  (indent-tabs-mode nil)                ; use spaces to indent
-  (save-interprogram-paste-before-kill t)
-  (kill-do-not-save-duplicates t)
   :bind ("C-x u" . nil)                 ; `undo'
   )
 

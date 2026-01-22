@@ -34,8 +34,10 @@
  '(history-delete-duplicates t)
  '(history-length 1000)
  '(imenu-use-popup-menu 'on-mouse)
+ '(indent-tabs-mode nil nil nil "Use spaces to indent.")
  '(kill-buffer-query-functions
    (delq 'process-kill-buffer-query-function kill-buffer-query-functions) t)
+ '(kill-do-not-save-duplicates t)
  '(make-backup-files nil)
  '(message-send-mail-function 'smtpmail-send-it)
  '(mode-line-percent-position nil)
@@ -78,6 +80,7 @@
  '(safe-local-variable-values
    '((Log . clx.log) (Package . Xlib) (Lowercase . Yes) (Base . 10)
      (Package . XLIB) (Syntax . Common-lisp) (flymake-mode)))
+ '(save-interprogram-paste-before-kill t)
  '(scroll-conservatively 0)
  '(split-height-threshold nil)
  '(switch-to-buffer-obey-display-actions t)
