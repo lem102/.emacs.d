@@ -803,12 +803,7 @@ Disables the eglot backend when inside a `.g8' template."
                                ("s" prodigy-restart)
                                ("v" prodigy-display-process)))
 
-  (add-hook 'prodigy-view-mode-hook #'compilation-minor-mode)
-
-  (with-eval-after-load "ryo-modal"
-    (ryo-modal-major-mode-keys 'prodigy-view-mode
-                               ("q" quit-window)
-                               ("g" prodigy-restart))))
+  (add-hook 'prodigy-view-mode-hook #'compilation-minor-mode))
 
 (use-package hi-lock
   :blackout)
