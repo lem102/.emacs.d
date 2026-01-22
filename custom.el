@@ -26,6 +26,7 @@
  '(dabbrev-case-fold-search nil)
  '(dabbrev-case-replace nil)
  '(electric-indent-mode nil)
+ '(electric-pair-mode t)
  '(eshell-scroll-to-bottom-on-output 'this)
  '(imenu-use-popup-menu 'on-mouse)
  '(make-backup-files nil)
