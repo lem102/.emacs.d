@@ -25,6 +25,7 @@
      default))
  '(dabbrev-case-fold-search nil)
  '(dabbrev-case-replace nil)
+ '(delete-by-moving-to-trash t)
  '(electric-indent-mode nil)
  '(electric-pair-mode t)
  '(eshell-scroll-to-bottom-on-output 'this)
@@ -65,8 +66,8 @@
      (nerd-icons-mode-line :url
                            "https://github.com/grolongo/nerd-icons-mode-line.git")))
  '(read-extended-command-predicate 'command-completion-default-include-p)
+ '(read-process-output-max 1048576 t)
  '(remote-file-name-inhibit-auto-save-visited t)
- '(remote-file-name-inhibit-delete-by-moving-to-trash t)
  '(safe-local-variable-values
    '((Log . clx.log) (Package . Xlib) (Lowercase . Yes) (Base . 10)
      (Package . XLIB) (Syntax . Common-lisp) (flymake-mode)))
@@ -74,6 +75,7 @@
  '(switch-to-buffer-obey-display-actions t)
  '(scroll-conservatively 0)
  '(tab-always-indent 'complete)
+ '(tab-width 4 nil nil "set default tab char's display width to 4 spaces")
  '(tramp-copy-size-limit 1048576)
  '(tramp-use-scp-direct-remote-copying t)
  '(use-package-compute-statistics nil)
