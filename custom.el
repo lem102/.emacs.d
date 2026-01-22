@@ -27,7 +27,7 @@
  '(dabbrev-case-fold-search nil)
  '(dabbrev-case-replace nil)
  '(delete-by-moving-to-trash t)
- '(electric-indent-mode nil)
+ '(electric-indent-mode nil nil nil "Enabled by default.")
  '(enable-recursive-minibuffers t)
  '(eshell-scroll-to-bottom-on-output 'this)
  '(frame-resize-pixelwise t)
