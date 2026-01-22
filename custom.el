@@ -57,10 +57,9 @@
                 ef-themes eglot eglot-booster eldoc embark
                 embark-consult erc exec-path-from-shell expreg faceup
                 feature-mode flymake font-lock-ext forge gdscript-mode
-                geiser geiser-guile gptel helpful highlight-defined
-                hl-todo idlwave jsonrpc just-mode lisp-extra-font-lock
-                magit marginalia markdown-mode mct mermaid-mode
-                nerd-icons-dired nerd-icons-mode-line
+                geiser geiser-guile gptel helpful hl-todo idlwave
+                jsonrpc just-mode magit marginalia markdown-mode mct
+                mermaid-mode nerd-icons-dired nerd-icons-mode-line
                 nerd-icons-modeline no-littering ob-mermaid on
                 orderless org org-edna pdf-tools peg prodigy project
                 puni python rainbow-mode ryo-modal sbt-mode scala-repl

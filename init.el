@@ -808,16 +808,8 @@ Disables the eglot backend when inside a `.g8' template."
 (use-package hi-lock
   :blackout)
 
-(use-package highlight-defined
-  :disabled
-  :hook (emacs-lisp-mode-hook . highlight-defined-mode))
-
 (use-package hl-todo
   :hook (after-init-hook . global-hl-todo-mode))
-
-(use-package lisp-extra-font-lock
-  :disabled
-  :hook ((emacs-lisp-mode-hook lisp-mode-hook scheme-mode-hook) . lisp-extra-font-lock-mode))
 
 (defun jacob-font-lock-scala-setup ()
   "Setup faces locally for scala."
