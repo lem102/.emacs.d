@@ -162,13 +162,6 @@ then remove this function from `find-file-hook'."
   ;; lisp.el
   (parens-require-spaces nil)
   (delete-pair-blink-delay 0)
-  (insert-pair-alist (append insert-pair-alist
-                             '((?k ?\( ?\))
-                               (?l ?\[ ?\])
-                               (?j ?\{ ?\})
-                               (?u ?\" ?\")
-                               (?i ?\' ?\')
-                               (?h ?\< ?\>))))
   ;; paragraphs.el
   (sentence-end-double-space nil)
   :bind ( :map mode-line-buffer-identification-keymap
