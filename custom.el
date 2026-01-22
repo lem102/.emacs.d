@@ -30,6 +30,7 @@
  '(imenu-use-popup-menu 'on-mouse)
  '(make-backup-files nil)
  '(message-send-mail-function 'smtpmail-send-it)
+ '(mode-line-percent-position nil)
  '(org-default-notes-file "~/Documents/notes.org")
  '(package-archives
    '(("gnu" . "https://elpa.gnu.org/packages/")

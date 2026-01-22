@@ -169,8 +169,6 @@ then remove this function from `find-file-hook'."
                                (?u ?\" ?\")
                                (?i ?\' ?\')
                                (?h ?\< ?\>))))
-  ;; bindings.el
-  (mode-line-percent-position nil)
   ;; paragraphs.el
   (sentence-end-double-space nil)
   :bind ( :map mode-line-buffer-identification-keymap
