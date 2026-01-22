@@ -114,7 +114,6 @@ then remove this function from `find-file-hook'."
 
   :custom
   ;; c code
-  (scroll-conservatively 101)
   (tab-width 4) ; set default tab char's display width to 4 spaces
   (truncate-lines (cond (jacob-is-android t)
                         (t nil)))
