@@ -7,11 +7,15 @@
 
 ;; constants and variables
 
-(defconst jacob-lisp-directory (file-name-concat (file-name-directory user-init-file)
-                                                 "lisp"))
+(defconst jacob-lisp-directory
+  (file-name-concat (file-name-directory user-init-file)
+                    "lisp")
+  "Directory for my lisp packages.")
 
-(defconst jacob-environment-file (file-name-concat (file-name-directory user-init-file)
-                                                   "environment.el"))
+(defconst jacob-environment-file
+  (file-name-concat (file-name-directory user-init-file)
+                    "environment.el")
+  "File that holds additional configuration for that specific computer.")
 
 (defconst jacob-is-windows (eq system-type 'windows-nt)
   "Is the current OS windows?")
@@ -59,21 +63,20 @@
 
                              (keymap-set keymap
                                          "<restart>"
-                                         (cons "restart"
-                                               #'restart-emacs))
+                                         (cons "restart" #'restart-emacs))
 
                              (keymap-set keymap
                                          "<bookmark-jump>"
-                                         (cons "bookmark"
-                                               #'bookmark-jump))
+                                         (cons "bookmark" #'bookmark-jump))
 
                              (keymap-set keymap
                                          "<magit>"
-                                         (cons "magit"
-                                               #'magit))
+                                         (cons "magit" #'magit))
 
 
-                             (keymap-set keymap "<org-agenda>" (cons "org-agenda" #'org-agenda))
+                             (keymap-set keymap
+                                         "<org-agenda>"
+                                         (cons "org-agenda" #'org-agenda))
 
                              keymap))))
 
@@ -97,9 +100,12 @@
 then remove this function from `find-file-hook'."
   (when (member 'init features)
     (run-hooks 'jacob-first-minibuffer-activation-hook)
-    (advice-remove #'completing-read #'jacob-run-first-minibuffer-activation-hook)))
+    (advice-remove #'completing-read
+                   #'jacob-run-first-minibuffer-activation-hook)))
 
-(advice-add #'completing-read :before #'jacob-run-first-minibuffer-activation-hook)
+(advice-add #'completing-read
+            :before
+            #'jacob-run-first-minibuffer-activation-hook)
 
 (use-package emacs
   :config
@@ -144,14 +150,16 @@ then remove this function from `find-file-hook'."
   ;; startup.el
   (inhibit-startup-screen t)
   (initial-major-mode #'fundamental-mode)
-  (initial-scratch-message (format ";; %s\n\n"
-                                   (seq-random-elt
-                                    '("\"A journey of a thousand miles begins with a single step.\" - 老子"
-                                      "\"apex predator of grug is complexity\" - some grug"
-                                      "\"Perfection is achieved, not when there is nothing more to add, but when there is nothing left to take away.\" - Antoine de Saint-Exupéry"
-                                      "\"Always listen to Jiaqi.\" - Jacob Leeming"
-                                      "\"The king wisely had the computer scientist beheaded, and they all lived happily ever after.\" - anon"
-                                      "\"Success is going from failure to failure without losing your enthusiasm.\" - Winston Churchill (maybe)"))))
+  (initial-scratch-message
+   (format
+    ";; %s\n\n"
+    (seq-random-elt
+     '("\"A journey of a thousand miles begins with a single step.\" - 老子"
+       "\"apex predator of grug is complexity\" - some grug"
+       "\"Perfection is achieved, not when there is nothing more to add, but when there is nothing left to take away.\" - Antoine de Saint-Exupéry"
+       "\"Always listen to Jiaqi.\" - Jacob Leeming"
+       "\"The king wisely had the computer scientist beheaded, and they all lived happily ever after.\" - anon"
+       "\"Success is going from failure to failure without losing your enthusiasm.\" - Winston Churchill (maybe)"))))
   ;; lisp.el
   (parens-require-spaces nil)
   (delete-pair-blink-delay 0)
