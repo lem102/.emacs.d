@@ -225,7 +225,9 @@ then remove this function from `find-file-hook'."
   )
 
 (use-package novice
-  :custom (disabled-command-function nil))
+  :defer t
+  :config
+  (setq disabled-command-function nil))
 
 (use-package recentf
   :hook (jacob-first-minibuffer-activation-hook . recentf-mode))
