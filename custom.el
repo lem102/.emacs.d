@@ -31,6 +31,8 @@
  '(enable-recursive-minibuffers t)
  '(eshell-scroll-to-bottom-on-output 'this)
  '(frame-resize-pixelwise t)
+ '(help-enable-variable-value-editing t)
+ '(help-window-select t)
  '(history-delete-duplicates t)
  '(history-length 1000)
  '(imenu-use-popup-menu 'on-mouse)

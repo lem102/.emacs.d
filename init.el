@@ -429,12 +429,6 @@ Intended for running applications."
                                ("x" diff-hunk-kill)
                                ("g" revert-buffer))))
 
-(use-package help
-  :defer t
-  :custom
-  (help-window-select t)
-  (help-enable-variable-value-editing t))
-
 (use-package help-fns
   :defer t
   :init
