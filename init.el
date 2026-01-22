@@ -13,9 +13,6 @@
 (defconst jacob-environment-file (file-name-concat (file-name-directory user-init-file)
                                                    "environment.el"))
 
-(defvar jacob-font-size 11
-  "Font size to use.")
-
 (defconst jacob-is-windows (eq system-type 'windows-nt)
   "Is the current OS windows?")
 
@@ -106,29 +103,6 @@ then remove this function from `find-file-hook'."
 
 (use-package emacs
   :config
-  ;; TODO: do i need this?
-  ;; enable emoji fonts
-  (set-fontset-font t
-                    'emoji
-                    (seq-find (lambda (font)
-                                (member font (font-family-list)))
-                              '("Symbola"
-                                "Segoe UI Emoji"
-                                "Noto Emoji"
-                                "Noto Color Emoji"
-                                "Apple Color Emoji")))
-
-  (add-to-list 'default-frame-alist
-               `(font . ,(format "%s-%s"
-                                 (cdr (assoc-string system-type
-                                                    '(("windows-nt" . "Consolas")
-                                                      ("darwin" . "Menlo")
-                                                      ("gnu/linux" . "DejaVu Sans Mono")
-                                                      ("android" . "Droid Sans Mono"))))
-                                 jacob-font-size)))
-  ;; TODO: do i need this?
-  ;; in the case of macos, the following block is unecessary
-
   ;; mule-cmds.el
   (prefer-coding-system 'utf-8)
 
