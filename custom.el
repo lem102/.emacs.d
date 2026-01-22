@@ -75,6 +75,7 @@
                            "https://github.com/grolongo/nerd-icons-mode-line.git")))
  '(read-extended-command-predicate 'command-completion-default-include-p)
  '(read-process-output-max 1048576 t)
+ '(recentf-max-saved-items nil)
  '(remote-file-name-inhibit-auto-save-visited t)
  '(ring-bell-function 'ignore)
  '(safe-local-variable-values

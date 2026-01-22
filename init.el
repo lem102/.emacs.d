@@ -228,9 +228,7 @@ then remove this function from `find-file-hook'."
   :custom (disabled-command-function nil))
 
 (use-package recentf
-  :hook (after-init-hook . recentf-mode)
-  :custom
-  (recentf-max-saved-items 300))
+  :hook (jacob-first-minibuffer-activation-hook . recentf-mode))
 
 (use-package savehist
   :hook (jacob-first-minibuffer-activation-hook . savehist-mode)
