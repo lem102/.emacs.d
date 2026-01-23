@@ -486,9 +486,7 @@ Intended for running applications."
   :hook (on-first-input-hook . global-subword-mode))
 
 (use-package paren
-  :hook (on-first-input-hook . show-paren-mode)
-  :config
-  (setopt show-paren-when-point-inside-paren t))
+  :hook (on-first-input-hook . show-paren-mode))
 
 (use-package elec-pair
   :hook (on-first-input-hook . electric-pair-mode))

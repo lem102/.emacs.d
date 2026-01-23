@@ -90,6 +90,7 @@
      (Package . XLIB) (Syntax . Common-lisp) (flymake-mode)))
  '(save-interprogram-paste-before-kill t)
  '(scroll-conservatively 0)
+ '(show-paren-when-point-inside-paren t)
  '(split-height-threshold nil)
  '(switch-to-buffer-obey-display-actions t)
  '(tab-always-indent 'complete)
