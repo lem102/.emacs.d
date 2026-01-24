@@ -1450,7 +1450,7 @@ Disables the eglot backend when inside a `.g8' template."
   (add-hook 'eshell-mode-hook #'eat-eshell-mode))
 
 (use-package exec-path-from-shell
-  :if jacob-is-mac
+  :if (or jacob-is-mac jacob-is-linux)
   :config
   (add-to-list 'exec-path-from-shell-variables "JAVA_HOME")
   (exec-path-from-shell-initialize))
