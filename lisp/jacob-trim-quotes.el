@@ -10,8 +10,10 @@
 
 (defun jacob-trim-quotes--trim (text)
   "If TEXT is a string, remove the leading and ending quotes."
-  (if (string-match-p "^\".*\"$" text)
-      (string-trim text "\"" "\"")
+  (if (string-match "^\\([[:space:]]*\\)\"\\(.*\\)\"\\([[:space:]]*\\)$" text)
+      (concat (match-string 1 text)
+              (match-string 2 text)
+              (match-string 3 text))
     text))
 
 (defun jacob-trim-quotes--point-in-string-p ()
@@ -26,7 +28,7 @@
 
 (define-minor-mode jacob-trim-quotes-mode
   "Minor mode to prevent the yanking of strings from messing up existing strings at point."
-  :lighter " jacob"
+  nil
   (if jacob-trim-quotes-mode
       (add-hook 'yank-transform-functions #'jacob-trim-quotes--yank-transform nil "LOCAL")
     (remove-hook 'yank-transform-functions #'jacob-trim-quotes--yank-transform "LOCAL")))
