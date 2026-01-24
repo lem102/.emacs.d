@@ -665,7 +665,10 @@ Disables the eglot backend when inside a `.g8' template."
 (use-package scala-ts-mode
   :defer t
   :hook ((scala-ts-mode-hook . yas-minor-mode)
-         (scala-ts-mode-hook . electric-indent-local-mode))
+         (scala-ts-mode-hook . electric-indent-local-mode)
+         (scala-ts-mode-hook . jacob-trim-quotes-mode))
+  :init
+  (autoload #'jacob-trim-quotes-mode "jacob-trim-quotes")  
   :config
   (autoload #'jacob-scala-package "jacob-scala-package")
   (defun jacob-bloop-compile ()
