@@ -5,9 +5,12 @@
 ;;; Code:
 
 (use-package gptel
-  :demand jacob-is-server-running
   :defer t
   :custom
+  (gptel-backend (gptel-make-ollama "Ollama"
+                   :host "localhost:11434"
+                   :stream t
+                   :models '(qwen2.5-coder:7b)))
   (gptel-default-mode #'org-mode)
   (gptel-confirm-tool-calls t))
 
