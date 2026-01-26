@@ -1432,6 +1432,13 @@ Disables the eglot backend when inside a `.g8' template."
 
 (require 'jacob-gptel)
 
+(use-package mcp
+  :after gptel)
+
+(use-package elisp-dev-mcp
+  :after gptel)
+
+;; TODO: on the chopping block... 🪓
 (use-package aider
   :defer t
   ;; (setenv "GEMINI_API_KEY" "")

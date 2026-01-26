@@ -41,6 +41,11 @@
    (delq 'process-kill-buffer-query-function kill-buffer-query-functions) t)
  '(kill-do-not-save-duplicates t)
  '(make-backup-files nil)
+ '(mcp-hub-servers
+   '(("elisp-dev" :command "~/.emacs.d/emacs-mcp-stdio.sh" :args
+      ("--init-function=elisp-dev-mcp-enable"
+       "--stop-function=elisp-dev-mcp-disable"
+       "--server-id=elisp-dev-mcp"))))
  '(message-send-mail-function 'smtpmail-send-it)
  '(mode-line-percent-position nil)
  '(modus-themes-to-toggle '(modus-operandi-tinted modus-vivendi-tinted))
@@ -54,20 +59,20 @@
    '(ace-window aider apheleia applescript-mode auctex avy blackout cape
                 color-theme-sanityinc-tomorrow consult csproj-mode
                 dape denote dired-rsync dumb-jump eat editorconfig
-                ef-themes eglot eglot-booster eldoc embark
-                embark-consult erc exec-path-from-shell expreg faceup
-                feature-mode flymake font-lock-ext forge gdscript-mode
-                geiser geiser-guile gptel helpful hl-todo idlwave
-                jsonrpc just-mode magit marginalia markdown-mode mct
-                mermaid-mode nerd-icons-dired nerd-icons-mode-line
-                nerd-icons-modeline no-littering ob-mermaid on
-                orderless org org-edna pdf-tools peg prodigy project
-                puni python rainbow-mode ryo-modal sbt-mode scala-repl
-                scala-ts-mode sharper sln-mode sly sly-macrostep
-                sly-overlay sly-quicklisp sql-indent track-changes
-                tramp treesit-auto verb verilog-mode vertico
-                visual-replace visual-replace-regexp web-mode wgrep
-                which-key window-tool-bar winnow yasnippet))
+                ef-themes eglot eglot-booster eldoc elisp-dev-mcp
+                embark embark-consult erc exec-path-from-shell expreg
+                faceup feature-mode flymake font-lock-ext forge
+                gdscript-mode geiser geiser-guile gptel helpful
+                hl-todo idlwave jsonrpc just-mode magit marginalia
+                markdown-mode mcp mct mermaid-mode nerd-icons-dired
+                nerd-icons-mode-line nerd-icons-modeline no-littering
+                ob-mermaid on orderless org org-edna pdf-tools peg
+                prodigy project puni python rainbow-mode ryo-modal
+                sbt-mode scala-repl scala-ts-mode sharper sln-mode sly
+                sly-macrostep sly-overlay sly-quicklisp sql-indent
+                track-changes tramp treesit-auto verb verilog-mode
+                vertico visual-replace visual-replace-regexp web-mode
+                wgrep which-key window-tool-bar winnow yasnippet))
  '(package-vc-selected-packages
    '((eglot-booster :url "https://github.com/jdtsmith/eglot-booster")
      (sln-mode :url "https://github.com/sensorflo/sln-mode.git")
