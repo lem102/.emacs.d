@@ -118,7 +118,7 @@ then remove this function from `find-file-hook'."
                         (t nil)))
   ;; TODO: remove if having this lisp expression does not cause issues in
   ;; custom.el
-  ;; (kill-buffer-query-functions (delq 'process-kill-buffer-query-function
+  ;; (kill-buffer-query-functions (remq 'process-kill-buffer-query-function
   ;;                                    kill-buffer-query-functions))
   (echo-keystrokes (cond (jacob-is-android 1)
                          (t 0.01)))

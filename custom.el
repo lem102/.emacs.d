@@ -38,7 +38,7 @@
  '(imenu-use-popup-menu 'on-mouse)
  '(indent-tabs-mode nil nil nil "Use spaces to indent.")
  '(kill-buffer-query-functions
-   (delq 'process-kill-buffer-query-function kill-buffer-query-functions) t)
+   (remq 'process-kill-buffer-query-function kill-buffer-query-functions) t)
  '(kill-do-not-save-duplicates t)
  '(make-backup-files nil)
  '(mcp-hub-servers
