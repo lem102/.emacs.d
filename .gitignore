@@ -51,3 +51,4 @@ emojis/
 elpa/slack
 elpa/
 /tree-sitter/
+/emacs-mcp-stdio.sh
