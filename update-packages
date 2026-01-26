@@ -8,6 +8,9 @@
 ;; load `package' configuration
 (load (concat user-emacs-directory "custom.el"))
 
+;; remove uneeded packages
+(package-autoremove)
+
 ;; upgrade installed packages (also does a refresh)
 (package-upgrade-all)
 
