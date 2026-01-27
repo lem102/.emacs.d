@@ -1,4 +1,4 @@
-;;; init.el --- Jacob's main init file. -*-lexical-binding: t; apheleia-inhibit: nil; -*-
+;;; init.el --- Jacob's main init file. -*-lexical-binding: t; -*-
 ;;; Commentary:
 ;;; Code:
 
@@ -664,7 +664,8 @@ Disables the eglot backend when inside a `.g8' template."
 
 (use-package scala-ts-mode
   :defer t
-  :hook ((scala-ts-mode-hook . yas-minor-mode)
+  :hook ((scala-ts-mode-hook . apheleia-mode)
+         (scala-ts-mode-hook . yas-minor-mode)
          (scala-ts-mode-hook . electric-indent-local-mode)
          (scala-ts-mode-hook . jacob-trim-quotes-mode))
   :init
@@ -845,7 +846,8 @@ Disables the eglot backend when inside a `.g8' template."
 (use-package elisp-mode
   :defer t
   ;; :hook (emacs-lisp-mode-hook . flymake-mode)
-  :hook ((emacs-lisp-mode-hook . jacob-font-lock-programming-setup)
+  :hook ((emacs-lisp-mode-hook . apheleia-mode)
+         (emacs-lisp-mode-hook . jacob-font-lock-programming-setup)
          (emacs-lisp-mode-hook . yas-minor-mode)
          (emacs-lisp-mode-hook . electric-indent-local-mode))
   :config

@@ -27,7 +27,6 @@
 
 (use-package apheleia
   :blackout " ⚘"
-  :hook (emacs-lisp-mode-hook scala-ts-mode-hook)
   :config (jacob-apheleia-config))
 
 (provide 'jacob-apheleia)
