@@ -40,6 +40,7 @@
  '(kill-buffer-query-functions
    (remq 'process-kill-buffer-query-function kill-buffer-query-functions) t)
  '(kill-do-not-save-duplicates t)
+ '(magit-section-initial-visibility-alist '((untracked . show) (stashes . show)))
  '(make-backup-files nil)
  '(mcp-hub-servers
    '(("elisp-dev" :command "~/.emacs.d/emacs-mcp-stdio.sh" :args
