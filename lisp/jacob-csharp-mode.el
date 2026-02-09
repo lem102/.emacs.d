@@ -671,10 +671,13 @@ point there."
 
   (advice-add #'eglot--lsp-xrefs-for-method :filter-return #'eglot-csharp-ls-metadata)
 
-  (add-to-list 'auto-mode-alist '("\\.csx\\'". csharp-ts-mode)))
+  (add-to-list 'major-mode-remap-alist '(csharp-mode . csharp-ts-mode)))
 
 (use-package csharp-mode
-  :mode ("//.csx?//'" . csharp-ts-mode)
+  :hook ((csharp-ts-mode-hook . apheleia-mode)
+         (csharp-ts-mode-hook . yas-minor-mode)
+         (csharp-ts-mode-hook . electric-indent-local-mode)
+         (csharp-ts-mode-hook . jacob-trim-quotes-mode))
   :config
   (jacob-csharp-mode-config))
 

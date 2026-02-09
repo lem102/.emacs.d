@@ -663,7 +663,7 @@ Disables the eglot backend when inside a `.g8' template."
   (setopt compilation-error-regexp-alist (remq 'fsharp compilation-error-regexp-alist)))
 
 (use-package scala-ts-mode
-  :defer t
+  :mode ("\\.scala\\'" . scala-ts-mode)
   :hook ((scala-ts-mode-hook . apheleia-mode)
          (scala-ts-mode-hook . yas-minor-mode)
          (scala-ts-mode-hook . electric-indent-local-mode)
