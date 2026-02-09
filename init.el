@@ -1146,8 +1146,6 @@ Disables the eglot backend when inside a `.g8' template."
   :custom
   (treesit-font-lock-level 4))
 
-;; TODO: is this package needed nowadays?
-
 (use-package treesit-auto
   :hook (on-first-file-hook . global-treesit-auto-mode)
   :config
@@ -1449,10 +1447,11 @@ Disables the eglot backend when inside a `.g8' template."
   :custom ((aider-args '("--model" "gemini/gemini-2.0-flash-exp" "--edit-format" "whole"))))
 
 (use-package gdscript-mode
-  :mode ("\\.gd\\'" . gdscript-ts-mode)
-  :config
-  (add-hook 'gdscript-ts-mode-hook #'indent-tabs-mode)
-  (add-hook 'gdscript-ts-mode-hook #'yas-minor-mode))
+  :hook ((gdscript-ts-mode-hook . apheleia-mode)
+         (gdscript-ts-mode-hook . yas-minor-mode)
+         (gdscript-ts-mode-hook . electric-indent-local-mode)
+         (gdscript-ts-mode-hook . jacob-trim-quotes-mode)
+         (gdscript-ts-mode-hook . indent-tabs-mode)))
 
 (use-package eat
   :when jacob-is-linux

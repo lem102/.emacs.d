@@ -669,9 +669,7 @@ point there."
               target-path)))
     xrefs)
 
-  (advice-add #'eglot--lsp-xrefs-for-method :filter-return #'eglot-csharp-ls-metadata)
-
-  (add-to-list 'major-mode-remap-alist '(csharp-mode . csharp-ts-mode)))
+  (advice-add #'eglot--lsp-xrefs-for-method :filter-return #'eglot-csharp-ls-metadata))
 
 (use-package csharp-mode
   :hook ((csharp-ts-mode-hook . apheleia-mode)
