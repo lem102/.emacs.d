@@ -107,6 +107,7 @@
   (("'" delete-window)
    (";" save-buffer)
    ("." universal-argument)
+   ("a" mark-whole-buffer)
    ("b" xah-toggle-previous-letter-case)
    ("c" jacob-copy-buffer)
    ("e"
