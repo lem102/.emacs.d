@@ -92,6 +92,7 @@
  ("b" xah-toggle-letter-case)
 
  ("'" delete-other-windows)
+ ("@" delete-window)
  ("-" split-window-below)
  ("=" split-window-right)
 
