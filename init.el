@@ -1146,8 +1146,10 @@ Disables the eglot backend when inside a `.g8' template."
   :custom
   (treesit-font-lock-level 4))
 
+;; TODO: is this package needed nowadays?
+
 (use-package treesit-auto
-  :hook (prog-mode-hook . global-treesit-auto-mode)
+  :hook (on-first-file-hook . global-treesit-auto-mode)
   :config
   (add-to-list 'treesit-auto-recipe-list (make-treesit-auto-recipe
                                           :lang 'gdscript
