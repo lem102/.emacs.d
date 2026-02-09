@@ -1157,7 +1157,7 @@ Disables the eglot backend when inside a `.g8' template."
                                           :ext "\\.gd\\'"))
 
   (add-to-list 'treesit-auto-langs 'gdscript)
-  
+
   (treesit-auto-add-to-auto-mode-alist 'all))
 
 (use-package typescript-ts-mode
