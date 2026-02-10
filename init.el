@@ -938,9 +938,7 @@ Disables the eglot backend when inside a `.g8' template."
 (use-package org-agenda
   :commands (org-agenda org-capture)
   :config
-  (setopt org-agenda-skip-scheduled-if-done t
-          org-agenda-skip-deadline-if-done t
-          org-agenda-custom-commands '(("r" "Routine" agenda "" ((org-agenda-tag-filter-preset '("+tickler"))
+  (setopt org-agenda-custom-commands '(("r" "Routine" agenda "" ((org-agenda-tag-filter-preset '("+tickler"))
                                                                  (org-agenda-span 'day)))
                                        ("w" "Work" todo "" ((org-agenda-tag-filter-preset '("+work"))))
                                        ("j" "Jobs"
