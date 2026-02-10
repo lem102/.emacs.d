@@ -532,7 +532,6 @@ Intended for running applications."
                                ("g" revert-buffer))))
 
 (use-package magit
-  :defer t
   :init
   (with-eval-after-load "ryo-modal"
     (ryo-modal-key "SPC / m" #'magit-project-status))
