@@ -28,7 +28,6 @@
 
 (define-minor-mode jacob-trim-quotes-mode
   "Minor mode to prevent the yanking of strings from messing up existing strings at point."
-  nil
   (if jacob-trim-quotes-mode
       (add-hook 'yank-transform-functions #'jacob-trim-quotes--yank-transform nil "LOCAL")
     (remove-hook 'yank-transform-functions #'jacob-trim-quotes--yank-transform "LOCAL")))
