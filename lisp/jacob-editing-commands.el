@@ -51,27 +51,6 @@
          ,@hook-function-body)
        (add-hook ',hook #',hook-function))))
 
-(defvar-local jacob-forward-paragraph-function nil
-  "Function to use for forward paragraph in `jacob-end-of-line'.")
-
-(defun jacob-end-of-line ()
-  "Go to content end, line end, forward paragraph."
-  (interactive)
-  (if (eolp)
-      (if jacob-forward-paragraph-function
-          (funcall jacob-forward-paragraph-function)
-        (forward-paragraph))
-    (let ((content-end (save-excursion
-                         (when (comment-search-forward (line-end-position) "NOERROR")
-                           (goto-char (match-beginning 0))
-                           (skip-syntax-backward " <" (line-beginning-position))
-                           (unless (= (point) (line-beginning-position))
-                             (point))))))
-      (if (or (null content-end)
-              (= content-end (point)))
-          (move-end-of-line 1)
-        (goto-char content-end)))))
-
 (defvar-local jacob-backward-paragraph-function nil
   "Function to use for backward paragraph in `jacob-beginning-of-line'.")
 
