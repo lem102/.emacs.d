@@ -289,7 +289,9 @@ Intended for running applications."
   (if (eolp)
       (forward-paragraph)
     (let ((content-end (save-excursion
-                         (when (comment-search-forward (line-end-position) "NOERROR")
+                         (when (condition-case error
+                                   (comment-search-forward (line-end-position) "NOERROR")
+                                 (beginning-of-buffer nil))
                            (goto-char (match-beginning 0))
                            (skip-syntax-backward " <" (line-beginning-position))
                            (unless (= (point) (line-beginning-position))
