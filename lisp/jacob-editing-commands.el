@@ -174,9 +174,10 @@
     (join-line)))
 
 (defun xah-shrink-whitespaces ()
-  "Remove whitespaces around cursor .
+  "Remove whitespaces around cursor.
 
-Shrink neighboring spaces, then newlines, then spaces again, leaving one space or newline at each step, till no more white space.
+Shrink neighboring spaces, then newlines, then spaces again, leaving
+one space or newline at each step, till no more white space.
 
 URL `http://xahlee.info/emacs/emacs/emacs_shrink_whitespace.html'
 Created: 2014-10-21
@@ -238,8 +239,12 @@ Version: 2023-07-12"
 (defun xah-comment-dwim ()
   "Toggle comment in programing language code.
 
-Like `comment-dwim', but toggle comment if cursor is not at end of line.
-If cursor is at end of line, either add comment at the line end or move cursor to start of line end comment. call again to comment out whole line.
+Like `comment-dwim', but toggle comment if cursor is not at end of
+line.
+
+If cursor is at end of line, either add comment at the line end or
+move cursor to start of line end comment. call again to comment out
+whole line.
 
 URL `http://xahlee.info/emacs/emacs/emacs_toggle_comment_by_line.html'
 Created: 2016-10-25
