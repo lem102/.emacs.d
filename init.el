@@ -278,10 +278,9 @@ Intended for running applications."
                                    command))))
 
 (use-package flymake
-  :defer t
-  :init
-  (keymap-global-set "M-n" #'flymake-goto-next-error)
-  (keymap-global-set "M-p" #'flymake-goto-prev-error))
+  :bind
+  ("M-n" . flymake-goto-next-error)
+  ("M-p" . flymake-goto-prev-error))
 
 (defun jacob-end-of-line ()
   "Go to content end, line end, forward paragraph."
