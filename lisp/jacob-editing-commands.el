@@ -253,24 +253,25 @@ Version: 2023-07-10"
               (comment-dwim nil))
           (progn
             (comment-or-uncomment-region xbegin xend)
-            (forward-line )))))))
+            (forward-line)))))))
 
-
-(defun jacob-forward-sexp ()
-  "Move forward one sexp.
-If that fails, attempt to move forward out of the current list."
+(defun jacob-end-of-line ()
+  "Go to content end, line end, forward paragraph."
   (interactive)
-  (condition-case nil
-      (forward-sexp)
-    (scan-error (up-list))))
-
-(defun jacob-backward-sexp ()
-  "Move backward one sexp.
-If that fails, attempt to move backward out of the current list."
-  (interactive)
-  (condition-case nil
-      (backward-sexp)
-    (scan-error (backward-up-list))))
+  (if (eolp)
+      (forward-paragraph)
+    (let ((content-end (save-excursion
+                         (when (condition-case error
+                                   (comment-search-forward (line-end-position) "NOERROR")
+                                 (beginning-of-buffer nil))
+                           (goto-char (match-beginning 0))
+                           (skip-syntax-backward " <" (line-beginning-position))
+                           (unless (= (point) (line-beginning-position))
+                             (point))))))
+      (if (or (null content-end)
+              (= content-end (point)))
+          (move-end-of-line 1)
+        (goto-char content-end)))))
 
 (defun jacob-copy-buffer ()
   "Copy the text of the current buffer."

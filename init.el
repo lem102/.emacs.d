@@ -282,24 +282,6 @@ Intended for running applications."
   ("M-n" . flymake-goto-next-error)
   ("M-p" . flymake-goto-prev-error))
 
-(defun jacob-end-of-line ()
-  "Go to content end, line end, forward paragraph."
-  (interactive)
-  (if (eolp)
-      (forward-paragraph)
-    (let ((content-end (save-excursion
-                         (when (condition-case error
-                                   (comment-search-forward (line-end-position) "NOERROR")
-                                 (beginning-of-buffer nil))
-                           (goto-char (match-beginning 0))
-                           (skip-syntax-backward " <" (line-beginning-position))
-                           (unless (= (point) (line-beginning-position))
-                             (point))))))
-      (if (or (null content-end)
-              (= content-end (point)))
-          (move-end-of-line 1)
-        (goto-char content-end)))))
-
 (defun jacob-beginning-of-line ()
   "Go to indentation, line start, backward paragraph."
   (interactive)
@@ -491,6 +473,14 @@ Intended for running applications."
 
 (use-package elec-pair
   :hook (on-first-input-hook . electric-pair-mode))
+
+(use-package puni
+  :defer t
+  :init
+  (with-eval-after-load "ryo-modal"
+    (ryo-modal-keys
+     ("m" puni-backward-sexp-or-up-list)
+     ("." puni-forward-sexp-or-up-list))))
 
 (use-package delsel
   :hook (on-first-input-hook . delete-selection-mode))

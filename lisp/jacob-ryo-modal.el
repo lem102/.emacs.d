@@ -68,9 +68,6 @@
  ("n" isearch-forward)
  ("," other-window)
 
- ("m" jacob-backward-sexp)
- ("." jacob-forward-sexp)
-
  ("a" execute-extended-command)
  ("s" jacob-return-macro)
  ("d" jacob-backspace)
