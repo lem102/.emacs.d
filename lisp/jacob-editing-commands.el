@@ -227,15 +227,6 @@ Version: 2023-07-12"
      (t (progn
           (message "nothing done. logic error 40873. shouldn't reach here"))))))
 
-(defun jacob-comment ()
-  "Custom comment command."
-  (interactive)
-  (let ((is-line-blank (string-blank-p (buffer-substring (line-beginning-position)
-                                                         (line-end-position)))))
-    (if is-line-blank
-        (comment-dwim nil)
-      (comment-line 1))))
-
 (defun xah-comment-dwim ()
   "Toggle comment in programing language code.
 
