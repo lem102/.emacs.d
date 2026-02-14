@@ -86,27 +86,35 @@
   (undo-boundary)
   (if (region-active-p)
       (delete-active-region)
+    (push-mark)
     (when (= 1 (point))
       (user-error "Beginning of buffer"))
     (let ((char-class (char-syntax (char-before)))
-          (f (if current-prefix-arg
-                 #'delete-pair
-               #'kill-sexp)))
+          (delete-function (if current-prefix-arg
+                               #'delete-pair
+                             #'kill-sexp)))
       (unless (ignore-errors
-                (funcall jacob-backspace-function f))
+                (funcall jacob-backspace-function delete-function))
         (cond ((= ?\" char-class)     ; string
                (if (nth 3 (syntax-ppss))
-                   (backward-char)
+                   (progn
+                     (backward-char)
+                     (save-excursion
+                       (forward-sexp)
+                       (push-mark)))
                  (backward-sexp))
-               (funcall f))
+               (funcall delete-function))
               ((= ?\( char-class)     ; delete from start of pair
                (backward-char)
-               (funcall f))
+               (save-excursion
+                 (forward-sexp)
+                 (push-mark))
+               (funcall delete-function))
               ((= ?\) char-class)     ; delete from end of pair
                (backward-sexp)
-               (funcall f))
+               (funcall delete-function))
               (t                      ; delete character
-               (backward-delete-char 1)))))))
+               (backward-delete-char-untabify 1)))))))
 
 (defun jacob-kill-line ()
   "If region is active, kill it.  Otherwise:
