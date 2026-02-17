@@ -103,7 +103,7 @@ Return (application-name . f), where f is a function to raise each application."
                 (run-hook-with-args-until-failure 'kill-emacs-hook)
                 (run-hook-with-args-until-failure 'kill-emacs-query-functions)
                 (when (yes-or-no-p "Shutdown the system?")
-                  (eshell-command (cond (jacob-is-mac "sudo shutdown -h")
+                  (eshell-command (cond (jacob-is-mac "sudo shutdown -h now")
                                         (jacob-is-linux "systemctl poweroff"))))))
         (cons "System Restart"
               (lambda ()
