@@ -392,7 +392,8 @@
 
 (add-hook 'jacob-modal-editing-mode-hook #'jacob-modal-editing-mode-hook-function)
 
-
+(jacob-modal-editing-mode 1)
+(jacob-modal-editing-enable)
 ;; TODO: adapt the below code
 
 ;; (defvar-keymap jacob-code-map
