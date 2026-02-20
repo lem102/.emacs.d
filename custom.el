@@ -70,7 +70,7 @@
                 mermaid-mode nerd-icons-dired nerd-icons-mode-line
                 nerd-icons-modeline no-littering ob-mermaid on
                 orderless org org-edna pdf-tools peg prodigy project
-                puni python rainbow-mode ryo-modal sbt-mode scala-repl
+                puni python rainbow-mode sbt-mode scala-repl
                 scala-ts-mode sharper sln-mode sly sly-macrostep
                 sly-overlay sly-quicklisp sql-indent track-changes
                 tramp treesit-auto verb verilog-mode vertico
