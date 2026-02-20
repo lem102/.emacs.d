@@ -74,7 +74,7 @@
                 sly-overlay sly-quicklisp sql-indent track-changes
                 tramp treesit-auto verb verilog-mode vertico
                 visual-replace visual-replace-regexp web-mode wgrep
-                which-key window-tool-bar winnow yasnippet))
+                which-key window-tool-bar winnow yaml-pro yasnippet))
  '(package-vc-selected-packages
    '((eglot-booster :url "https://github.com/jdtsmith/eglot-booster")
      (sln-mode :url "https://github.com/sensorflo/sln-mode.git")
