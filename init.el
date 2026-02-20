@@ -904,7 +904,6 @@ Disables the eglot backend when inside a `.g8' template."
   (treesit-font-lock-level 4))
 
 (use-package treesit-auto
-  :hook (on-first-file-hook . global-treesit-auto-mode)
   :config
   (add-to-list 'treesit-auto-recipe-list (make-treesit-auto-recipe
                                           :lang 'gdscript
@@ -913,9 +912,9 @@ Disables the eglot backend when inside a `.g8' template."
                                           :url "https://github.com/PrestonKnopp/tree-sitter-gdscript.git"
                                           :ext "\\.gd\\'"))
 
-  (add-to-list 'treesit-auto-langs 'gdscript)
-
-  (treesit-auto-add-to-auto-mode-alist 'all))
+  (setq treesit-auto-langs '(csharp scala yaml gdscript json))
+  (treesit-auto-add-to-auto-mode-alist)
+  (global-treesit-auto-mode 1))
 
 (use-package typescript-ts-mode
   :mode ("\\.ts" . typescript-ts-mode)
