@@ -16,7 +16,8 @@
  '(create-lockfiles nil)
  '(custom-enabled-themes '(modus-vivendi-tinted))
  '(custom-safe-themes
-   '("21c4c4b7d3ab161aaa28b15ca846854d395c33cfb7c6863ab601adfe10d70ce0"
+   '("7c461d294a169dbb83ba621be52fd83f4cf59cc48a88e9407c0d6a741cb4d950"
+     "21c4c4b7d3ab161aaa28b15ca846854d395c33cfb7c6863ab601adfe10d70ce0"
      "76ddb2e196c6ba8f380c23d169cf2c8f561fd2013ad54b987c516d3cabc00216"
      "d2c76098def8b2b10b45d2092c86ca9c8b95d58fabbc8850d28899181d8f6581"
      "1a721551e5867225da30177ecda385083732873269aa9f1e7188564c01210e1f"
