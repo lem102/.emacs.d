@@ -44,7 +44,11 @@
 
 ;; configure packages
 
-(require 'jacob-ryo-modal)
+(require 'jacob-modal-editing)
+(require 'jacob-modal-editing-config)
+
+(require 'jacob-init-helpers)
+(require 'jacob-editing-commands)
 
 (use-package use-package
   :config
@@ -230,7 +234,8 @@ then remove this function from `find-file-hook'."
   (setq disabled-command-function nil))
 
 (use-package recentf
-  :hook (jacob-first-minibuffer-activation-hook . recentf-mode))
+  :hook (jacob-first-minibuffer-activation-hook . recentf-mode) ; TODO: change to first input
+  )
 
 (use-package savehist
   :hook (jacob-first-minibuffer-activation-hook . savehist-mode)
@@ -250,6 +255,12 @@ then remove this function from `find-file-hook'."
   :hook (on-init-ui-hook . line-number-mode)
   :bind ("C-x u" . nil)                 ; `undo'
   )
+
+(use-package isearch
+  :defer t
+  :config
+  (keymap-set isearch-mode-map "<right>" #'isearch-repeat-forward)
+  (keymap-set isearch-mode-map "<left>" #'isearch-repeat-backward))
 
 (use-package bookmark
   :defer t
@@ -298,59 +309,10 @@ Intended for running applications."
 (use-package mb-depth
   :hook (jacob-first-minibuffer-activation-hook . minibuffer-depth-indicate-mode))
 
-(use-package ibuffer
-  :defer t
-  :init
-  (with-eval-after-load "ryo-modal"
-    (ryo-modal-key "SPC i d" #'ibuffer))
-  :config
-  (with-eval-after-load "ryo-modal"
-    (ryo-modal-major-mode-keys 'ibuffer-mode
-                               ("q" quit-window)
-                               ("e" ibuffer-mark-forward)
-                               ("r" ibuffer-unmark-forward)
-                               ("g" ibuffer-update))))
-
-(use-package replace
-  :defer t
-  :config
-  (with-eval-after-load "ryo-modal"
-    (ryo-modal-major-mode-keys 'occur-mode
-                               ("q" quit-window)
-                               ("i" occur-prev)
-                               ("k" occur-next))))
-
-
-(use-package info
-  :defer t
-  :config
-  (with-eval-after-load "ryo-modal"
-    (ryo-modal-major-mode-keys 'Info-mode
-                               ("q" quit-window)
-                               ("r" Info-scroll-up)
-                               ("e" Info-scroll-down)
-                               ("w" Info-up)
-                               ("g" Info-menu))))
-
 (use-package man
   :defer
   :custom
-  (Man-notify-method 'pushy)
-  :config
-  (with-eval-after-load "ryo-modal"
-    (ryo-modal-major-mode-keys 'Man-mode
-                               ("q" quit-window))))
-
-(use-package diff-mode
-  :defer t
-  :config
-  (with-eval-after-load "ryo-modal"
-    (ryo-modal-major-mode-keys 'diff-mode
-                               ("q" quit-window)
-                               ("e" diff-hunk-prev)
-                               ("r" diff-hunk-next)
-                               ("x" diff-hunk-kill)
-                               ("g" revert-buffer))))
+  (Man-notify-method 'pushy))
 
 (use-package help-fns
   :defer t
@@ -364,45 +326,14 @@ Intended for running applications."
       (goto-char (point-min))
       (if (search-forward "Its value is " nil "NOERROR")
           (help-fns-edit-variable)
-        (message "cannot find editable variable"))))
-  
-  (with-eval-after-load "ryo-modal"
-    (ryo-modal-major-mode-keys 'help-mode 
-                               ("w" jacob-help-edit))))
-
-(use-package help-mode
-  :defer t
-  :config
-  (with-eval-after-load "ryo-modal"
-    (ryo-modal-major-mode-keys 'help-mode
-                               ("s" help-view-source)
-                               ("q" quit-window)
-                               ("e" help-go-back)
-                               ("r" help-go-forward)
-                               ("g" revert-buffer))))
+        (message "cannot find editable variable")))))
 
 (use-package helpful
   :defer t
   :init
   (keymap-global-set "C-h v" #'helpful-variable)
   (keymap-global-set "C-h f" #'helpful-callable)
-  (keymap-global-set "C-h k" #'helpful-key)
-
-  (with-eval-after-load "ryo-modal"
-    (ryo-modal-keys ("SPC"
-                     (("j"
-                       (("b" helpful-command)
-                        ("k" helpful-callable)
-                        ("l" helpful-variable)
-                        ("v" helpful-key)))))))
-  :config
-  (with-eval-after-load "ryo-modal"
-    (ryo-modal-major-mode-keys 'helpful-mode
-                               ("q" quit-window)
-                               ("g" helpful-update)
-                               ("e" backward-button)
-                               ("r" forward-button)
-                               ("s" push-button))))
+  (keymap-global-set "C-h k" #'helpful-key))
 
 (use-package subword
   :blackout
@@ -415,12 +346,7 @@ Intended for running applications."
   :hook (on-first-input-hook . electric-pair-mode))
 
 (use-package puni
-  :defer t
-  :init
-  (with-eval-after-load "ryo-modal"
-    (ryo-modal-keys
-     ("m" puni-backward-sexp-or-up-list)
-     ("." puni-forward-sexp-or-up-list))))
+  :defer t)
 
 (use-package delsel
   :hook (on-first-input-hook . delete-selection-mode))
@@ -428,44 +354,7 @@ Intended for running applications."
 (use-package repeat
   :hook (on-first-input-hook . repeat-mode))
 
-(use-package vc-git
-  :defer t
-  :config
-  (with-eval-after-load "ryo-modal"
-    (ryo-modal-major-mode-keys 'vc-git-log-view-mode
-                               ("q" quit-window))))
-
-(use-package vc-dir
-  :defer t
-  :config
-  (with-eval-after-load "ryo-modal"
-    (ryo-modal-major-mode-keys 'vc-dir-mode
-                               ("q" quit-window)
-                               ("g" revert-buffer)
-                               ("i" vc-dir-previous-line)
-                               ("k" vc-dir-next-line)
-                               ("o" vc-dir-next-directory)
-                               ("u" vc-dir-previous-directory)
-                               ("s" vc-dir-find-file)
-                               ("e" vc-dir-mark)
-                               ("r" vc-dir-unmark)
-                               ("v" vc-next-action)
-                               ("p" vc-push)
-                               ("=" vc-diff)
-                               ("x" vc-dir-hide-up-to-date))))
-
-(use-package vc-annotate
-  :defer t
-  :config
-  (with-eval-after-load "ryo-modal"
-    (ryo-modal-major-mode-keys 'vc-annotate-mode
-                               ("q" quit-window)
-                               ("g" revert-buffer))))
-
 (use-package magit
-  :init
-  (with-eval-after-load "ryo-modal"
-    (ryo-modal-key "SPC / m" #'magit-project-status))
   :bind ( :map project-prefix-map
           ("v" . magit-project-status)))
 
@@ -506,13 +395,7 @@ CONDITION and ACTION are as in `define-auto-insert'."
 
 (use-package eglot
   :defer t
-  :init
-  (with-eval-after-load "ryo-modal"
-    (ryo-modal-key "SPC SPC c e" #'eglot))
   :config
-  (with-eval-after-load "ryo-modal"
-    (ryo-modal-key "SPC SPC c r" #'eglot-rename))
-  
   (jacob-defhookf eglot-managed-mode-hook
     (eglot-inlay-hints-mode 0)
     (setq-local eldoc-documentation-strategy 'eldoc-documentation-compose-eagerly)
@@ -722,19 +605,6 @@ Disables the eglot backend when inside a `.g8' template."
                    (when (string-match-p "Hosting started *$" output)
                      (prodigy-set-status service 'ready)))))
 
-  (with-eval-after-load "ryo-modal"
-    (ryo-modal-major-mode-keys 'prodigy-mode
-                               ("d" prodigy-stop)
-                               ("e" prodigy-mark)
-                               ("g" jacob-project-search) ; FIXME: command not found sometimes
-                               ("f" project-find-file)
-                               ("i" prodigy-prev)
-                               ("k" prodigy-next)
-                               ("q" quit-window)
-                               ("r" prodigy-unmark)
-                               ("s" prodigy-restart)
-                               ("v" prodigy-display-process)))
-
   (add-hook 'prodigy-view-mode-hook #'compilation-minor-mode))
 
 (use-package hi-lock
@@ -821,14 +691,6 @@ Disables the eglot backend when inside a `.g8' template."
 (use-package geiser
   :after scheme)
 
-(use-package geiser-mode
-  :after (scheme geiser)
-  :config
-  (with-eval-after-load "ryo-modal"
-    (ryo-modal-major-mode-keys 'geiser-mode
-                               ("SPC , m" geiser-eval-last-sexp)
-                               ("SPC , d" geiser-eval-definition))))
-
 (use-package geiser-guile
   :after (scheme geiser))
 
@@ -894,11 +756,6 @@ Disables the eglot backend when inside a `.g8' template."
   (jacob-defhookf org-agenda-mode-hook
     (setq-local tool-bar-map org-agenda-tool-bar-map)
     (hl-line-mode 1))
-
-  (with-eval-after-load "ryo-modal"
-    (ryo-modal-major-mode-keys 'org-agenda-mode
-                               ("q" quit-window)
-                               ("g" org-agenda-redo-all)))
 
   (advice-add #'org-agenda :before #'jacob-generate-daily-tasks))
 
@@ -976,21 +833,6 @@ Disables the eglot backend when inside a `.g8' template."
 (use-package calendar
   :defer t
   :config
-  (with-eval-after-load "ryo-modal"
-    (ryo-modal-major-mode-keys 'calendar-mode
-                               ("q" quit-window)
-                               ("i" calendar-backward-week)
-                               ("k" calendar-forward-week)
-                               ("j" calendar-backward-day)
-                               ("l" calendar-forward-day)
-                               ("u" calendar-backward-month)
-                               ("o" calendar-forward-month)
-                               ("d" diary-view-entries)
-                               ("s" diary-insert-entry)
-                               ("m" diary-mark-entries)
-                               ("." calendar-goto-today)
-                               ("t" calendar-set-mark)))
-
   (add-hook 'calendar-today-visible-hook 'calendar-mark-today)
 
   (setopt calendar-date-style 'european
@@ -1010,11 +852,6 @@ Disables the eglot backend when inside a `.g8' template."
   :init
   (keymap-global-set "<f5>" 'recompile)
   :config
-  (with-eval-after-load "ryo-modal"
-    (ryo-modal-major-mode-keys 'compilation-mode
-                               ("g" recompile)
-                               ("q" quit-window)))
-
   (add-hook 'compilation-filter-hook #'ansi-color-compilation-filter)
 
   (defun jacob-compilation-project-file ()
@@ -1060,14 +897,6 @@ Disables the eglot backend when inside a `.g8' template."
   :hook (compilation-mode-hook . winnow-mode))
 
 (require 'jacob-sql)
-
-(use-package doc-view
-  :defer t
-  :config
-  (with-eval-after-load "ryo-modal"
-    (ryo-modal-major-mode-keys 'doc-view-mode
-                               ("l" doc-view-next-page)
-                               ("j" doc-view-previous-page))))
 
 (use-package treesit
   :defer t
@@ -1232,13 +1061,6 @@ Disables the eglot backend when inside a `.g8' template."
 
 (use-package visual-replace
   :defer t
-  :init
-  (with-eval-after-load "ryo-modal"
-    (ryo-modal-keys
-     ("SPC"
-      (("r" visual-replace)
-       ("k"
-        (("r" visual-replace-regexp)))))))
   :hook ((visual-replace-minibuffer-mode-hook . visual-replace-toggle-query)))
 
 (use-package mct
@@ -1268,11 +1090,6 @@ Disables the eglot backend when inside a `.g8' template."
 
 (use-package embark
   :defer t
-  :init
-  (with-eval-after-load "ryo-modal"
-    (ryo-modal-key "\\" #'embark-act)
-    (ryo-modal-major-mode-keys 'embark-collect
-                               ("q" quit-window)))
   :config
   (setopt embark-cycle-key "\\"
           embark-help-key "h")
@@ -1308,9 +1125,6 @@ Disables the eglot backend when inside a `.g8' template."
 
 (use-package expreg
   :defer t
-  :init
-  (with-eval-after-load "ryo-modal"
-    (ryo-modal-key "g" #'expreg-expand))
   :config
   (setopt expreg-functions (delq 'expreg--subword expreg-functions)))
 
@@ -1318,10 +1132,6 @@ Disables the eglot backend when inside a `.g8' template."
   :after org
   :hook (org-mode-hook . verb-mode)
   :config
-  (with-eval-after-load "ryo-modal"
-    (ryo-modal-major-mode-keys 'verb-response-body-mode
-                               ("q" quit-window)))
-
   (defun jacob-verb-id (response-id)
     "Get the id property from the stored verb response pertaining to RESPONSE-ID."
     (verb-json-get (oref (verb-stored-response response-id) body) "id")))
@@ -1333,18 +1143,8 @@ Disables the eglot backend when inside a `.g8' template."
 
   (sly-symbol-completion-mode 0)
 
-  (with-eval-after-load "ryo-modal"
-    (ryo-modal-major-mode-keys 'sly-mode
-                               ("SPC , m" sly-eval-last-expression)
-                               ("SPC , d" sly-eval-defun)
-                               ("SPC , e" sly-eval-buffer)
-                               ("SPC w k" sly-edit-definition)))
-
   (setopt sly-auto-start 'always
-          inferior-lisp-program "sbcl")
-
-  (ryo-modal-major-mode-keys 'sly-db
-                             ("q" sly-db-quit)))
+          inferior-lisp-program "sbcl"))
 
 (use-package sly-overlay
   :after sly)
@@ -1395,11 +1195,7 @@ Disables the eglot backend when inside a `.g8' template."
 
 (use-package pdf-tools
   :when jacob-is-linux
-  :mode ("\\.[pP][dD][fF]\\'" . pdf-view-mode)
-  :config
-  (with-eval-after-load "ryo-modal"
-    (ryo-modal-major-mode-keys 'pdf-view-mode
-                               ("c" pdf-view-kill-ring-save))))
+  :mode ("\\.[pP][dD][fF]\\'" . pdf-view-mode))
 
 (use-package grep
   :defer t

@@ -22,32 +22,15 @@
   (keymap-global-set "C-x b" #'consult-buffer)
   (keymap-global-set "M-y" #'consult-yank-from-kill-ring)
 
-  (with-eval-after-load "ryo-modal"
-    (ryo-modal-keys
-     ("SPC"
-      (("v" consult-yank-from-kill-ring)
-       ("f" consult-buffer)
-       ("i"
-        (("j" consult-recent-file)
-         ("o" consult-bookmark)))
-       ("e"
-        (("s" consult-line)))
-       ("k"
-        (("i" consult-register-load)
-         ("u" consult-goto-line)))
-       ("j"
-        (("g" consult-info)
-         ("c" consult-man)))))))
   :config
   (jacob-consult-config)
 
   ;; FIXME: Set up autoload to prevent the need to delay binding this command.
   (keymap-set project-prefix-map "g" #'jacob-project-search)
   ;; due to above binding, we need to reapply the project-prefix-map in ryo-modal-keys
-  (with-eval-after-load "ryo-modal"
-    (ryo-modal-keys
-     ("SPC"
-      (("p" project-prefix-map))))))
+
+  ;; i wonder does this still happen with jacob-modal-editing?
+  )
 
 (provide 'jacob-consult)
 
