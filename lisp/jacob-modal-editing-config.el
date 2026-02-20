@@ -373,14 +373,24 @@
 
 (defun jacob-modal-editing-hook-f (command-state-p)
   "Make visual change depending on value of COMMAND-STATE-P."
-  (global-hl-line-mode (if command-state-p 1 0))
+  (unless (equal command-state-p global-hl-line-mode)
+    (global-hl-line-mode (if command-state-p 1 0)))
   (modify-all-frames-parameters `((cursor-type . ,(if command-state-p 'box 'bar)))))
 
 (add-hook 'jacob-modal-editing-hook #'jacob-modal-editing-hook-f)
 
 (keymap-set jacob-modal-editing-mode-keymap "M-SPC" #'jacob-modal-editing-enable)
 
-(add-hook 'minibuffer-setup-hook #'jacob-modal-editing-disable)
+(defun jacob-modal-editing-mode-hook-function ()
+  "Hook function for `jacob-modal-editing-mode'."
+  (if jacob-modal-editing-mode
+      (progn
+        (add-hook 'minibuffer-setup-hook #'jacob-modal-editing-disable)
+        (add-hook 'minibuffer-exit-hook #'jacob-modal-editing-enable))
+    (remove-hook 'minibuffer-setup-hook #'jacob-modal-editing-disable)
+    (remove-hook 'minibuffer-exit-hook #'jacob-modal-editing-enable)))
+
+(add-hook 'jacob-modal-editing-mode-hook #'jacob-modal-editing-mode-hook-function)
 
 
 ;; TODO: adapt the below code

@@ -1,7 +1,9 @@
 ;;; jacob-modal-editing.el --- Modal editing
 
 ;;; Commentary:
-;; 
+;;
+
+;; TODO: handle minor mode maps
 
 ;;; Code:
 
@@ -16,38 +18,56 @@
 (defvar jacob-modal-editing-hook nil)
 
 (defun jacob-modal-editing-enable ()
-  "Enable modal editing."
+  "Use keybinds from relevant `jacob-modal-editing' keymaps."
   (interactive)
-  (when (equal (current-buffer) (window-buffer (selected-window)))
-    (jacob-modal-editing t)))
+  (jacob-modal-editing--core t))
 
 (defun jacob-modal-editing-disable ()
-  "Disable modal editing."
+  "Use regular keybinds."
   (interactive)
-  (jacob-modal-editing nil))
+  (jacob-modal-editing--core nil))
 
-(defun jacob-modal-editing-map-active-p ()
-  "Return non-nil if the modal editing map is active."
+(defun jacob-modal-editing-command-state-active-p ()
+  "Return non-nil if the command state is active."
   (not (null jacob-modal-editing--deactivate-function)))
 
-(defun jacob-modal-editing (enable)
-  "Enable or disable command mode.
+(defun jacob-modal-editing--update-command-state (&rest _args)
+  "Refresh the command state."
+  (when (jacob-modal-editing-command-state-active-p)
+    (jacob-modal-editing--activate-command-state)))
 
-If ENABLE is non-nil command mode will be activated, otherwise it will
-be deactivated."
+(defun jacob-modal-editing--deactivate-command-state ()
+  "Deactivate command state."
+  (when jacob-modal-editing--deactivate-function
+    (funcall jacob-modal-editing--deactivate-function)
+    (setq jacob-modal-editing--deactivate-function nil)))
+
+(defun jacob-modal-editing--build-keymap ()
+  "Construct the keymap for command state."
+  (make-composed-keymap
+   (list (alist-get (with-current-buffer (window-buffer (selected-window))
+                      major-mode)
+                    jacob-modal-editing-major-mode-keymap-alist)
+         jacob-modal-editing-keymap)))
+
+(defun jacob-modal-editing--activate-command-state ()
+  "Activate command state."
+  (jacob-modal-editing--deactivate-command-state)
+  (setq jacob-modal-editing--deactivate-function
+        (set-transient-map (jacob-modal-editing--build-keymap)
+                           (lambda () t))))
+
+(defun jacob-modal-editing--core (enable)
+  "Enable or disable the command state.
+
+If ENABLE is non-nil the command state will be activated, otherwise it
+will be deactivated."
   (interactive)
-  (cond (enable
-	     (let ((map (make-composed-keymap (alist-get major-mode
-						                             jacob-modal-editing-major-mode-keymap-alist)
-					                      jacob-modal-editing-keymap)))
-           (when jacob-modal-editing--deactivate-function
-             (funcall jacob-modal-editing--deactivate-function))
-	       (setq jacob-modal-editing--deactivate-function
-		         (set-transient-map map (lambda () t)))))
-	    (t
-	     (when jacob-modal-editing--deactivate-function
-	       (funcall jacob-modal-editing--deactivate-function))))
-  (run-hook-with-args 'jacob-modal-editing-hook enable))
+  (when jacob-modal-editing-mode
+    (if enable
+        (jacob-modal-editing--activate-command-state)
+      (jacob-modal-editing--deactivate-command-state))
+    (run-hook-with-args 'jacob-modal-editing-hook enable)))
 
 (define-minor-mode jacob-modal-editing-mode
   "Simple modal editing mode that allows for major mode specific commands
@@ -58,15 +78,13 @@ without too much nonsense."
   :keymap jacob-modal-editing-mode-keymap
   (if jacob-modal-editing-mode
       (progn
-        (add-hook 'change-major-mode-after-body-hook #'jacob-modal-editing-enable)
-        (add-hook 'window-selection-change-functions #'jacob-modal-editing-enable)
-        (add-hook 'isearch-mode-end-hook #'jacob-modal-editing-enable)
-        (jacob-modal-editing-enable))
-    (when jacob-modal-editing--deactivate-function
-      (funcall jacob-modal-editing--deactivate-function))
-    (remove-hook 'change-major-mode-after-body-hook #'jacob-modal-editing-enable)
-    (remove-hook 'window-selection-change-functions #'jacob-modal-editing-enable)
-    (remove-hook 'isearch-mode-end-hook #'jacob-modal-editing-enable)))
+        (add-hook 'after-change-major-mode-hook #'jacob-modal-editing--update-command-state)
+        (add-hook 'window-buffer-change-functions #'jacob-modal-editing--update-command-state)
+        (add-hook 'isearch-mode-end-hook #'jacob-modal-editing--update-command-state))
+    (remove-hook 'after-change-major-mode-hook #'jacob-modal-editing--update-command-state)
+    (remove-hook 'window-buffer-change-functions #'jacob-modal-editing--update-command-state)
+    (remove-hook 'isearch-mode-end-hook #'jacob-modal-editing--update-command-state)
+    (jacob-modal-editing--deactivate-command-state)))
 
 (provide 'jacob-modal-editing)
 
