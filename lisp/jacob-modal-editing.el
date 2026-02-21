@@ -3,8 +3,6 @@
 ;;; Commentary:
 ;;
 
-;; TODO: handle minor mode maps
-
 ;;; Code:
 
 (defvar-keymap jacob-modal-editing-keymap)
@@ -44,11 +42,12 @@
 
 (defun jacob-modal-editing--build-keymap ()
   "Construct the keymap for command state."
-  (make-composed-keymap
-   (list (alist-get (with-current-buffer (window-buffer (selected-window))
-                      major-mode)
-                    jacob-modal-editing-major-mode-keymap-alist)
-         jacob-modal-editing-keymap)))
+  (let* ((modes (with-current-buffer (window-buffer (selected-window))
+                  (append local-minor-modes global-minor-modes (list major-mode))))
+         (mode-keymaps (seq-keep (lambda (m)
+                                   (alist-get m jacob-modal-editing-major-mode-keymap-alist))
+                                 modes)))
+    (make-composed-keymap mode-keymaps jacob-modal-editing-keymap)))
 
 (defun jacob-modal-editing--activate-command-state ()
   "Activate command state."
