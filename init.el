@@ -10,7 +10,7 @@
 (defconst jacob-lisp-directory
   (file-name-concat (file-name-directory user-init-file)
                     "lisp")
-  "Directory for my lisp packages.")
+  "Directory for my Lisp packages.")
 
 (defconst jacob-environment-file
   (file-name-concat (file-name-directory user-init-file)
@@ -57,32 +57,12 @@
 
 (use-package menu-bar
   :config
-  (keymap-global-set "<menu-bar> <jacob>"
-                     (cons "jacob"
-                           (let ((keymap (make-sparse-keymap)))
-                             (keymap-set keymap
-                                         "<mx>"
-                                         (cons "M-x"
-                                               #'execute-extended-command))
-
-                             (keymap-set keymap
-                                         "<restart>"
-                                         (cons "restart" #'restart-emacs))
-
-                             (keymap-set keymap
-                                         "<bookmark-jump>"
-                                         (cons "bookmark" #'bookmark-jump))
-
-                             (keymap-set keymap
-                                         "<magit>"
-                                         (cons "magit" #'magit))
-
-
-                             (keymap-set keymap
-                                         "<org-agenda>"
-                                         (cons "org-agenda" #'org-agenda))
-
-                             keymap))))
+  (keymap-global-set "<menu-bar> <jacob>" (cons "Jacob" (make-sparse-keymap)))
+  (keymap-global-set "<menu-bar> <jacob> <execute-extended-command>" (cons "M-x" #'execute-extended-command))
+  (keymap-global-set "<menu-bar> <jacob> <restart>" (cons "Restart" #'restart-emacs))
+  (keymap-global-set "<menu-bar> <jacob> <bookmark-jump>" (cons "Bookmark" #'bookmark-jump))
+  (keymap-global-set "<menu-bar> <jacob> <magit>" (cons "Magit" #'magit))
+  (keymap-global-set "<menu-bar> <jacob> <org-agenda>" (cons "Agenda" #'org-agenda)))
 
 (use-package tool-bar
   :config
@@ -257,31 +237,7 @@ then remove this function from `find-file-hook'."
   (keymap-set isearch-mode-map "<right>" #'isearch-repeat-forward)
   (keymap-set isearch-mode-map "<left>" #'isearch-repeat-backward))
 
-(use-package bookmark
-  :defer t
-  :config
-  (defun jacob-bookmark-command (bookmark)
-    "Launch the command stored in bookmark.
-
-Intended for running applications."
-    (let ((command (bookmark-get-filename bookmark)))
-      (start-process-shell-command command nil command)))
-
-  (defun jacob-bookmark-firefox (bookmark)
-    "Open BOOKMARK in firefox."
-    (let ((command (concat "firefox-esr "
-                           (bookmark-get-filename bookmark))))
-      (start-process-shell-command command
-                                   nil
-                                   command)))
-
-  (defun jacob-bookmark-chrome (bookmark)
-    "Open BOOKMARK in chrome."
-    (let ((command (concat "google-chrome "
-                           (bookmark-get-filename bookmark))))
-      (start-process-shell-command command
-                                   nil
-                                   command))))
+(require 'jacob-bookmark-autoloads)
 
 (use-package flymake
   :bind
@@ -463,16 +419,16 @@ Disables the eglot backend when inside a `.g8' template."
   (remove-hook 'project-find-functions #'fsharp-mode-project-root)
   (setopt compilation-error-regexp-alist (remq 'fsharp compilation-error-regexp-alist)))
 
+(require 'jacob-trim-quotes-autoloads)
+
 (use-package scala-ts-mode
   :mode ("\\.scala\\'" . scala-ts-mode)
   :hook ((scala-ts-mode-hook . apheleia-mode)
          (scala-ts-mode-hook . yas-minor-mode)
          (scala-ts-mode-hook . electric-indent-local-mode)
          (scala-ts-mode-hook . jacob-trim-quotes-mode))
-  :init
-  (autoload #'jacob-trim-quotes-mode "jacob-trim-quotes")  
   :config
-  (autoload #'jacob-scala-package "jacob-scala-package")
+  (autoload 'jacob-scala-package "jacob-scala-package")
   (defun jacob-bloop-compile ()
     "Recompile the project with bloop."
     (interactive)
@@ -633,11 +589,11 @@ Disables the eglot backend when inside a `.g8' template."
 
 (use-package elisp-mode
   :defer t
-  ;; :hook (emacs-lisp-mode-hook . flymake-mode)
   :hook ((emacs-lisp-mode-hook . apheleia-mode)
          (emacs-lisp-mode-hook . jacob-font-lock-programming-setup)
          (emacs-lisp-mode-hook . yas-minor-mode)
-         (emacs-lisp-mode-hook . electric-indent-local-mode))
+         (emacs-lisp-mode-hook . electric-indent-local-mode)
+         (emacs-lisp-mode-hook . flymake-mode))
   :config
   (defun jacob-move-past-close-and-reindent ()
     "Advice for `move-past-close-and-reindent'."
@@ -1047,6 +1003,8 @@ Disables the eglot backend when inside a `.g8' template."
            (japanese-TeX-error-messages nil)))
 
 (use-package visual-replace
+  ;; FIXME: pressing v in command state does some kind of yanking
+  ;; thing instead of paste
   :defer t
   :hook ((visual-replace-minibuffer-mode-hook . visual-replace-toggle-query)))
 
@@ -1392,3 +1350,4 @@ For use with GitLab only."
 (provide 'init)
 
 ;;; init.el ends here
+(put 'set-goal-column 'disabled nil)

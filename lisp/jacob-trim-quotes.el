@@ -26,6 +26,7 @@
       (jacob-trim-quotes--trim text)
     text))
 
+;;;###autoload
 (define-minor-mode jacob-trim-quotes-mode
   "Minor mode to prevent the yanking of strings from messing up existing strings at point."
   :init-value nil
