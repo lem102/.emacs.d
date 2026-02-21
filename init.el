@@ -120,10 +120,6 @@ then remove this function from `find-file-hook'."
   ;; c code
   (truncate-lines (cond (jacob-is-android t)
                         (t nil)))
-  ;; TODO: remove if having this lisp expression does not cause issues in
-  ;; custom.el
-  ;; (kill-buffer-query-functions (remq 'process-kill-buffer-query-function
-  ;;                                    kill-buffer-query-functions))
   (echo-keystrokes (cond (jacob-is-android 1)
                          (t 0.01)))
   (mode-line-format '("%e"
