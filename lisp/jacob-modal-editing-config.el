@@ -374,6 +374,12 @@
 (add-to-list 'jacob-modal-editing-major-mode-keymap-alist
              `(ibuffer-mode . ,jacob-modal-editing-ibuffer-map))
 
+(defvar-keymap jacob-modal-editing-sql-interactive-map
+  "SPC , d" #'sql-send-paragraph)
+
+(add-to-list 'jacob-modal-editing-major-mode-keymap-alist
+             `(sql-interactive-mode . ,jacob-modal-editing-sql-interactive-map))
+
 (defun jacob-modal-editing-hook-f (command-state-p)
   "Make visual change depending on value of COMMAND-STATE-P."
   (unless (equal command-state-p global-hl-line-mode)
@@ -400,9 +406,6 @@
 
 ;; TODO: adapt the below code
 
-;;   (with-eval-after-load "ryo-modal"
-;;     (keymap-set jacob-xfk-map "c" `("Code" . ,jacob-code-map)))
-
 ;; (defvar-keymap jacob-org-agenda-map
 ;;   "a" #'org-agenda
 ;;   "c" #'org-capture)
@@ -410,8 +413,6 @@
 ;; (with-eval-after-load "ryo-modal"
 ;;   (keymap-set jacob-xfk-map "a" `("Agenda" . ,jacob-org-agenda-map)))
 
-;; (jacob-xfk-bind-for-mode sql-interactive-mode
-;;                            "SPC , d" #'sql-send-paragraph)
 
 (provide 'jacob-modal-editing-config)
 
