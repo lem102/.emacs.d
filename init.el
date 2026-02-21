@@ -360,17 +360,10 @@ Intended for running applications."
 
 (use-package autoinsert
   :hook (on-first-file-hook . auto-insert-mode)
+  :preface
+  (autoload 'jacob-define-auto-insert "jacob-autoinsert")
   :config
-  (defun jacob-define-auto-insert (condition action)
-    "Set up an auto insert idempotently.
-
-CONDITION and ACTION are as in `define-auto-insert'."
-    (when (assoc condition auto-insert-alist)
-      (setopt auto-insert-alist (seq-remove (lambda (ai)
-                                              (equal condition (car ai)))
-                                            auto-insert-alist)))
-    (define-auto-insert condition action))
-
+  (jacob-define-auto-insert "\\.el$" ["template.el" checkdoc elisp-enable-lexical-binding])
   (jacob-define-auto-insert "\\.scala$" ["template.scala" jacob-autoinsert-yas-expand])
   (jacob-define-auto-insert "\\.cs$" ["template.cs" jacob-autoinsert-yas-expand])
   (jacob-define-auto-insert "Controller\\.cs$" ["controllerTemplate.cs" jacob-autoinsert-yas-expand]))
@@ -1073,10 +1066,6 @@ Disables the eglot backend when inside a `.g8' template."
 
 (use-package marginalia
   :hook (jacob-first-minibuffer-activation-hook . marginalia-mode))
-
-;; FIXME: ensure all elisp files have lexical binding enabled, figure
-;; out how to automate adding the lexical binding cookie upon creation
-;; of new files.
 
 (require 'jacob-consult)
 
