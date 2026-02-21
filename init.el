@@ -1003,10 +1003,11 @@ Disables the eglot backend when inside a `.g8' template."
            (japanese-TeX-error-messages nil)))
 
 (use-package visual-replace
-  ;; FIXME: pressing v in command state does some kind of yanking
-  ;; thing instead of paste
   :defer t
-  :hook ((visual-replace-minibuffer-mode-hook . visual-replace-toggle-query)))
+  :hook ((visual-replace-minibuffer-mode-hook . visual-replace-toggle-query))
+  :bind ( :map visual-replace-mode-map
+          ("<remap> <yank>" . nil)
+          ("<remap> <yank-pop>" . nil)))
 
 (use-package mct
   :if jacob-is-android
