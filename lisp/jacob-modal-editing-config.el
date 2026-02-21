@@ -162,11 +162,23 @@
 (keymap-set jacob-modal-editing-keymap "SPC j v" #'helpful-key)
 
 ;; eglot
-(keymap-set jacob-modal-editing-keymap "SPC SPC c e" #'eglot)
-(keymap-set jacob-modal-editing-keymap "SPC SPC c a" #'eglot-code-actions)
-(keymap-set jacob-modal-editing-keymap "SPC SPC c i" #'eglot-find-implementation)
-(keymap-set jacob-modal-editing-keymap "SPC SPC c r" #'eglot-rename)
-(keymap-set jacob-modal-editing-keymap "SPC SPC c t" #'eglot-find-typeDefinition)
+
+(defvar-keymap jacob-modal-editing-eglot-map
+  "e" #'eglot
+  "a" #'eglot-code-actions
+  "i" #'eglot-find-implementation
+  "r" #'eglot-rename
+  "t" #'eglot-find-typeDefinition)
+
+(keymap-set jacob-modal-editing-keymap "SPC SPC c" (cons "Code" jacob-modal-editing-eglot-map))
+
+;; org agenda
+
+(defvar-keymap jacob-modal-editing-org-agenda-map
+  "a" #'org-agenda
+  "c" #'org-capture)
+
+(keymap-set jacob-modal-editing-keymap "SPC SPC a" (cons "Agenda" jacob-modal-editing-org-agenda-map))
 
 (defvar-keymap jacob-modal-editing-dired-map
   "s" #'dired-find-file
@@ -403,16 +415,6 @@
 
 (jacob-modal-editing-mode 1)
 (jacob-modal-editing-enable)
-
-;; TODO: adapt the below code
-
-;; (defvar-keymap jacob-org-agenda-map
-;;   "a" #'org-agenda
-;;   "c" #'org-capture)
-
-;; (with-eval-after-load "ryo-modal"
-;;   (keymap-set jacob-xfk-map "a" `("Agenda" . ,jacob-org-agenda-map)))
-
 
 (provide 'jacob-modal-editing-config)
 
