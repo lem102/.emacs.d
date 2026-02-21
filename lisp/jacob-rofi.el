@@ -18,7 +18,6 @@ an application, raise an open application, power off the system).
   (interactive)
   (raise-frame)
   (let* ((actions (append (jacob-rofi--action-source-linux-start-application)
-                          ;; (jacob-rofi--action-source-linux-raise-application) ; TODO: to be removed
                           (jacob-rofi--action-source-mac-start-or-raise-application)
                           (jacob-rofi--action-source-system-commands)
                           (jacob-rofi--action-source-org-capture)
@@ -71,29 +70,6 @@ an application, raise an open application, power off the system).
                          (unless (jacob-rofi-application-raise application)
                            (jacob-rofi-application-run application)))))
                applications))))
-
-;; TODO: this can probably be removed
-(defun jacob-rofi--action-source-linux-raise-application ()
-  "An action source for raising applications on linux."
-  (when jacob-is-linux
-    (let* ((ids (string-lines (shell-command-to-string "wmctrl -x -l | awk '{print $1}'")
-                              "OMIT-NULLS"))
-           (classes (string-lines (shell-command-to-string "wmctrl -x -l | awk '{print $3}'")
-                                  "OMIT-NULLS"))
-           (titles (string-lines (shell-command-to-string "wmctrl -x -l | awk '{print substr($0, index($0,$5))}'")
-                                 "OMIT-NULLS"))
-           (id-titles (seq-map (lambda (l)
-                                 (cons (format "%s::%s" (cadr l) (caddr l)) (car l)))
-                               (cl-mapcar 'list ids classes titles)))
-           (actions (seq-map (lambda (pair)
-                               "PAIR is (application-name . desktop-file).
-Return (application-name . f), where f is a function to raise each application."
-                               (cons (format "Raise: %s" (car pair))
-                                     (lambda ()
-                                       "Raise an application."
-                                       (shell-command (format "wmctrl -ia %s" (cdr pair))))))
-                             id-titles)))
-      actions)))
 
 (defun jacob-rofi--action-source-system-commands ()
   "An action source for controlling the system."
