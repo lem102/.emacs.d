@@ -41,6 +41,7 @@
  '(kill-buffer-query-functions
    (remq 'process-kill-buffer-query-function kill-buffer-query-functions) t)
  '(kill-do-not-save-duplicates t)
+ '(magit-buffer-name-format "*%x%M%v: %t%x*")
  '(magit-section-initial-visibility-alist '((untracked . show) (stashes . show)))
  '(make-backup-files nil)
  '(mcp-hub-servers
