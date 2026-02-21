@@ -4,9 +4,7 @@
 (when (eq system-type 'android)
   (setenv "PATH" (format "%s:%s" "/data/data/com.termux/files/usr/bin"
 		                 (getenv "PATH")))
-  (push "/data/data/com.termux/files/usr/bin" exec-path)
-
-  (setopt touch-screen-display-keyboard t))
+  (push "/data/data/com.termux/files/usr/bin" exec-path))
 
 ;; Local Variables:
 ;; flymake-mode: nil
