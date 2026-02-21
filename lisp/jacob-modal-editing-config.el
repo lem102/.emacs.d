@@ -163,7 +163,10 @@
 
 ;; eglot
 (keymap-set jacob-modal-editing-keymap "SPC SPC c e" #'eglot)
+(keymap-set jacob-modal-editing-keymap "SPC SPC c a" #'eglot-code-actions)
+(keymap-set jacob-modal-editing-keymap "SPC SPC c i" #'eglot-find-implementation)
 (keymap-set jacob-modal-editing-keymap "SPC SPC c r" #'eglot-rename)
+(keymap-set jacob-modal-editing-keymap "SPC SPC c t" #'eglot-find-typeDefinition)
 
 (defvar-keymap jacob-modal-editing-dired-map
   "s" #'dired-find-file
@@ -394,14 +397,8 @@
 
 (jacob-modal-editing-mode 1)
 (jacob-modal-editing-enable)
-;; TODO: adapt the below code
 
-;; (defvar-keymap jacob-code-map
-;;     "e" #'eglot
-;;     "a" #'eglot-code-actions
-;;     "r" #'eglot-rename
-;;     "i" #'eglot-find-implementation
-;;     "t" #'eglot-find-typeDefinition)
+;; TODO: adapt the below code
 
 ;;   (with-eval-after-load "ryo-modal"
 ;;     (keymap-set jacob-xfk-map "c" `("Code" . ,jacob-code-map)))
