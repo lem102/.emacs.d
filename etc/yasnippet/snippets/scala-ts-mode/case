@@ -1,0 +1,4 @@
+# -*- mode: snippet -*-
+# key: case
+# --
+case ${1:_} => ${0:???}

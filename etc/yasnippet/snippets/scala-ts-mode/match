@@ -1,5 +1,6 @@
 # -*- mode: snippet -*-
 # key: match
 # --
-match
-  case _ => $0
+match {
+  $0
+}
