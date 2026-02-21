@@ -230,8 +230,7 @@ then remove this function from `find-file-hook'."
   (setq disabled-command-function nil))
 
 (use-package recentf
-  :hook (jacob-first-minibuffer-activation-hook . recentf-mode) ; TODO: change to first input
-  )
+  :hook (on-first-input-hook . recentf-mode))
 
 (use-package savehist
   :hook (jacob-first-minibuffer-activation-hook . savehist-mode)
