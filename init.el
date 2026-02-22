@@ -229,7 +229,8 @@ then remove this function from `find-file-hook'."
   :hook (on-init-ui-hook . column-number-mode)
   :hook (on-init-ui-hook . line-number-mode)
   :bind ("C-x u" . nil)                 ; `undo'
-  )
+  :config
+  (put 'set-goal-column 'disabled nil))
 
 (use-package isearch
   :defer t
@@ -1351,4 +1352,4 @@ For use with GitLab only."
 (provide 'init)
 
 ;;; init.el ends here
-(put 'set-goal-column 'disabled nil)
+
