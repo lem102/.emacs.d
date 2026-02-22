@@ -128,10 +128,11 @@
 (keymap-set jacob-modal-editing-keymap "SPC i j" #'consult-recent-file)
 (keymap-set jacob-modal-editing-keymap "SPC i o" #'consult-bookmark)
 
-;; Nested: SPC k
 (keymap-set jacob-modal-editing-keymap "SPC k c" #'copy-to-register)
+(keymap-set jacob-modal-editing-keymap "SPC k i" #'consult-register-load)
 (keymap-set jacob-modal-editing-keymap "SPC k k" #'repeat)
 (keymap-set jacob-modal-editing-keymap "SPC k r" #'visual-replace-regexp)
+(keymap-set jacob-modal-editing-keymap "SPC k u" #'consult-goto-line)
 
 ;; Nested: SPC w (Xref)
 (keymap-set jacob-modal-editing-keymap "SPC w j" #'xref-find-references)
@@ -146,10 +147,6 @@
 ;; SPC Consult / Search Commands
 (keymap-set jacob-modal-editing-keymap "SPC v" #'consult-yank-from-kill-ring)
 (keymap-set jacob-modal-editing-keymap "SPC f" #'consult-buffer)
-
-;; Nested: SPC k (Registers & Navigation)
-(keymap-set jacob-modal-editing-keymap "SPC k i" #'consult-register-load)
-(keymap-set jacob-modal-editing-keymap "SPC k u" #'consult-goto-line)
 
 ;; Nested: SPC j
 (keymap-set jacob-modal-editing-keymap "SPC j b" #'helpful-command)
