@@ -98,7 +98,7 @@
    '((Log . clx.log) (Package . Xlib) (Lowercase . Yes) (Base . 10)
      (Package . XLIB) (Syntax . Common-lisp) (flymake-mode)))
  '(save-interprogram-paste-before-kill t)
- '(scroll-conservatively 0)
+ '(scroll-conservatively 101 nil nil "Always scroll just enough text to bring point into view.")
  '(show-paren-when-point-inside-paren t)
  '(split-height-threshold nil)
  '(switch-to-buffer-obey-display-actions t)
