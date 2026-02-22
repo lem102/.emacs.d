@@ -3,8 +3,6 @@
 ;;; Commentary:
 ;;
 
-;; FIXME: leaving embark can cause issues
-
 ;;; Code:
 
 (defvar-keymap jacob-modal-editing-keymap)
