@@ -154,23 +154,15 @@
 (keymap-set jacob-modal-editing-keymap "SPC j v" #'helpful-key)
 
 ;; eglot
-
-(defvar-keymap jacob-modal-editing-eglot-map
-  "e" #'eglot
-  "a" #'eglot-code-actions
-  "i" #'eglot-find-implementation
-  "r" #'eglot-rename
-  "t" #'eglot-find-typeDefinition)
-
-(keymap-set jacob-modal-editing-keymap "SPC SPC c" (cons "Code" jacob-modal-editing-eglot-map))
+(keymap-set jacob-modal-editing-keymap "SPC SPC c e" #'eglot)
+(keymap-set jacob-modal-editing-keymap "SPC SPC c a" #'eglot-code-actions)
+(keymap-set jacob-modal-editing-keymap "SPC SPC c i" #'eglot-find-implementation)
+(keymap-set jacob-modal-editing-keymap "SPC SPC c r" #'eglot-rename)
+(keymap-set jacob-modal-editing-keymap "SPC SPC c t" #'eglot-find-typeDefinition)
 
 ;; org agenda
-
-(defvar-keymap jacob-modal-editing-org-agenda-map
-  "a" #'org-agenda
-  "c" #'org-capture)
-
-(keymap-set jacob-modal-editing-keymap "SPC SPC a" (cons "Agenda" jacob-modal-editing-org-agenda-map))
+(keymap-set jacob-modal-editing-keymap "SPC SPC a a" #'org-agenda)
+(keymap-set jacob-modal-editing-keymap "SPC SPC a c" #'org-capture)
 
 (defvar-keymap jacob-modal-editing-dired-map
   "s" #'dired-find-file
