@@ -101,6 +101,9 @@
 (keymap-set jacob-modal-editing-keymap "SPC l g" #'make-frame-command)
 (keymap-set jacob-modal-editing-keymap "SPC l i" #'toggle-case-fold-search)
 (keymap-set jacob-modal-editing-keymap "SPC l i" #'toggle-case-fold-search)
+(keymap-set jacob-modal-editing-keymap "SPC l j" #'widen)
+(keymap-set jacob-modal-editing-keymap "SPC l k" #'narrow-to-defun)
+(keymap-set jacob-modal-editing-keymap "SPC l l" #'narrow-to-region)
 (keymap-set jacob-modal-editing-keymap "SPC l n" #'toggle-debug-on-error)
 (keymap-set jacob-modal-editing-keymap "SPC l o" #'count-words)
 
