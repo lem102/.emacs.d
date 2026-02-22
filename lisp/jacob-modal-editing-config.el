@@ -55,21 +55,22 @@
 (keymap-set jacob-modal-editing-keymap "7" #'jacob-mark-line)
 (keymap-set jacob-modal-editing-keymap "0" #'pop-to-mark-command)
 
-;; Top-level SPC commands
 (keymap-set jacob-modal-editing-keymap "SPC '" #'delete-window)
-(keymap-set jacob-modal-editing-keymap "SPC ;" #'save-buffer)
 (keymap-set jacob-modal-editing-keymap "SPC ." #'universal-argument)
+(keymap-set jacob-modal-editing-keymap "SPC ;" #'save-buffer)
 (keymap-set jacob-modal-editing-keymap "SPC a" #'mark-whole-buffer)
 (keymap-set jacob-modal-editing-keymap "SPC b" #'xah-toggle-previous-letter-case)
 (keymap-set jacob-modal-editing-keymap "SPC c" #'jacob-copy-buffer)
+(keymap-set jacob-modal-editing-keymap "SPC f" #'consult-buffer)
+(keymap-set jacob-modal-editing-keymap "SPC h" #'beginning-of-buffer)
 (keymap-set jacob-modal-editing-keymap "SPC m" #'dired-jump)
 (keymap-set jacob-modal-editing-keymap "SPC n" #'end-of-buffer)
-(keymap-set jacob-modal-editing-keymap "SPC h" #'beginning-of-buffer)
 (keymap-set jacob-modal-editing-keymap "SPC p" project-prefix-map)
-(keymap-set jacob-modal-editing-keymap "SPC y" #'isearch-forward-symbol-at-point)
+(keymap-set jacob-modal-editing-keymap "SPC r" #'visual-replace)
 (keymap-set jacob-modal-editing-keymap "SPC s" #'exchange-point-and-mark)
 (keymap-set jacob-modal-editing-keymap "SPC u" #'kill-current-buffer)
-(keymap-set jacob-modal-editing-keymap "SPC r" #'visual-replace)
+(keymap-set jacob-modal-editing-keymap "SPC v" #'consult-yank-from-kill-ring)
+(keymap-set jacob-modal-editing-keymap "SPC y" #'isearch-forward-symbol-at-point)
 
 (keymap-set jacob-modal-editing-keymap "SPC e ." #'isearch-forward-word)
 (keymap-set jacob-modal-editing-keymap "SPC e d" #'highlight-regexp)
@@ -143,10 +144,6 @@
 (keymap-set jacob-modal-editing-keymap "SPC / j" #'vc-diff)
 (keymap-set jacob-modal-editing-keymap "SPC / h" #'vc-annotate)
 (keymap-set jacob-modal-editing-keymap "SPC / m" #'magit-project-status)
-
-;; SPC Consult / Search Commands
-(keymap-set jacob-modal-editing-keymap "SPC v" #'consult-yank-from-kill-ring)
-(keymap-set jacob-modal-editing-keymap "SPC f" #'consult-buffer)
 
 ;; Nested: SPC j
 (keymap-set jacob-modal-editing-keymap "SPC j b" #'helpful-command)
