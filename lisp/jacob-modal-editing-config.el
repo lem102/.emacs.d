@@ -398,7 +398,6 @@
 (add-hook 'jacob-modal-editing-mode-hook #'jacob-modal-editing-mode-hook-function)
 
 (jacob-modal-editing-mode 1)
-(jacob-modal-editing-enable)
 
 (provide 'jacob-modal-editing-config)
 
