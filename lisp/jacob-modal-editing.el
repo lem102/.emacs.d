@@ -5,11 +5,18 @@
 
 ;; FIXME: leaving embark can cause issues
 
+;; theory: `embark' temporarily binds `overriding-terminal-local-map'.
+;; is it possible that a call we make to alter the
+;; `overriding-terminal-local-map' is mixing with embark in an
+;; unexpected way?
+
 ;;; Code:
 
 (defvar-keymap jacob-modal-editing-keymap)
 
 (defvar-keymap jacob-modal-editing-mode-keymap)
+
+(defvar-keymap jacob-modal-editing--internal-command-state)
 
 (defvar jacob-modal-editing--deactivate-function nil)
 
@@ -33,12 +40,50 @@
 
 (defun jacob-modal-editing--update-command-state (&rest _args)
   "Refresh the command state."
-  (when (jacob-modal-editing-command-state-active-p)
-    (jacob-modal-editing--activate-command-state)))
+  ;; its a wild world out there. we need to watch for other packages
+  ;; touching `overriding-terminal-local-map'.
+
+  ;; one approach is to try to leave `overriding-terminal-local-map'
+  ;; alone when those packages are doing their thing.
+
+  ;; another is to try to repair `overriding-terminal-local-map'. This
+  ;; could be adding keys when we should be in command state, or
+  ;; removing duplicate keys, or removing all keys if we should be in
+  ;; insert state.
+
+  ;; going to try the former. we need this function to not proceed
+  ;; when the `overriding-terminal-local-map' is not in a state that we expect.
+
+  ;; what are states that we expect?
+  ;; - nil (for when we aren't in the command state)
+  ;; - command state keymap (for when we are in the command state). this shouldn't be exclusive
+
+
+
+  
+  ;; lets try a hack. if an embark key (embark-cycle) is bound in
+  ;; `overriding-terminal-local-map', stop here.
+
+
+  (let ((in-embark (seq-find (lambda (e)
+                               (equal 'embark-cycle e))
+                             (flatten-tree overriding-terminal-local-map))))
+
+    ;; the hack works. what can i do to make it more robust?
+
+    
+
+    
+
+    (when (and (jacob-modal-editing-command-state-active-p)
+               ;; (not in-embark)
+               )
+      (jacob-modal-editing--activate-command-state))))
 
 (defun jacob-modal-editing--deactivate-command-state ()
   "Deactivate command state."
   (when jacob-modal-editing--deactivate-function
+    (setq jacob-modal-editing--internal-command-state nil)
     (funcall jacob-modal-editing--deactivate-function)
     (setq jacob-modal-editing--deactivate-function nil)))
 
@@ -54,9 +99,11 @@
 (defun jacob-modal-editing--activate-command-state ()
   "Activate command state."
   (jacob-modal-editing--deactivate-command-state)
-  (setq jacob-modal-editing--deactivate-function
-        (set-transient-map (jacob-modal-editing--build-keymap)
-                           (lambda () t))))
+  (let ((map (jacob-modal-editing--build-keymap)))
+    (setq jacob-modal-editing--internal-command-state map)
+    (setq jacob-modal-editing--deactivate-function
+          (set-transient-map map
+                             (lambda () t)))))
 
 (defun jacob-modal-editing--core (enable)
   "Enable or disable the command state.
