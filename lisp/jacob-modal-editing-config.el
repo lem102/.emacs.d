@@ -71,11 +71,14 @@
 (keymap-set jacob-modal-editing-keymap "SPC u" #'kill-current-buffer)
 (keymap-set jacob-modal-editing-keymap "SPC r" #'visual-replace)
 
-;; Nested: SPC e (Highlighting)
 (keymap-set jacob-modal-editing-keymap "SPC e e" #'highlight-symbol-at-point)
 (keymap-set jacob-modal-editing-keymap "SPC e u" #'unhighlight-regexp)
+(keymap-set jacob-modal-editing-keymap "SPC e j" #'highlight-lines-matching-regexp)
+(keymap-set jacob-modal-editing-keymap "SPC e d" #'highlight-regexp)
+(keymap-set jacob-modal-editing-keymap "SPC e y" #'highlight-phrase)
+(keymap-set jacob-modal-editing-keymap "SPC e g" #'isearch-forward-symbol)
+(keymap-set jacob-modal-editing-keymap "SPC e ." #'isearch-forward-word)
 
-;; Nested: SPC , (Evaluation/System)
 (keymap-set jacob-modal-editing-keymap "SPC , ," #'delete-frame)
 (keymap-set jacob-modal-editing-keymap "SPC , d" #'eval-defun)
 (keymap-set jacob-modal-editing-keymap "SPC , e" #'eval-buffer)
@@ -84,13 +87,11 @@
 (keymap-set jacob-modal-editing-keymap "SPC , r" #'eval-expression)
 (keymap-set jacob-modal-editing-keymap "SPC , x" #'save-buffers-kill-emacs)
 
-;; Nested: SPC j (Help/Info)
 (keymap-set jacob-modal-editing-keymap "SPC j c" #'man)
 (keymap-set jacob-modal-editing-keymap "SPC j y" #'describe-face)
 (keymap-set jacob-modal-editing-keymap "SPC j i" #'describe-char)
 (keymap-set jacob-modal-editing-keymap "SPC j g" #'info)
 
-;; Nested: SPC l (Utilities/UI)
 (keymap-set jacob-modal-editing-keymap "SPC l 6" #'calendar)
 (keymap-set jacob-modal-editing-keymap "SPC l a" #'global-text-scale-adjust)
 (keymap-set jacob-modal-editing-keymap "SPC l ;" #'global-display-line-numbers-mode)
@@ -102,11 +103,9 @@
 (keymap-set jacob-modal-editing-keymap "SPC l n" #'toggle-debug-on-error)
 (keymap-set jacob-modal-editing-keymap "SPC l i" #'toggle-case-fold-search)
 
-;; Nested: SPC g (Paragraphs)
 (keymap-set jacob-modal-editing-keymap "SPC g h" #'kill-paragraph)
 (keymap-set jacob-modal-editing-keymap "SPC g j" #'mark-paragraph)
 
-;; Nested: SPC o (Rectangles & Macros)
 (keymap-set jacob-modal-editing-keymap "SPC o d" #'kmacro-call-macro)
 (keymap-set jacob-modal-editing-keymap "SPC o e" #'kmacro-start-macro)
 (keymap-set jacob-modal-editing-keymap "SPC o h" #'delete-rectangle)
