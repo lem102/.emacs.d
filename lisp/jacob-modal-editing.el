@@ -1,4 +1,4 @@
-;;; jacob-modal-editing.el --- Modal editing
+;;; jacob-modal-editing.el --- Modal editing  -*- lexical-binding: t; -*-
 
 ;;; Commentary:
 ;;
