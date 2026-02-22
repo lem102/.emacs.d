@@ -16,8 +16,6 @@
 
 (defvar-keymap jacob-modal-editing-mode-keymap)
 
-(defvar-keymap jacob-modal-editing--internal-command-state)
-
 (defvar jacob-modal-editing--deactivate-function nil)
 
 (defvar jacob-modal-editing-major-mode-keymap-alist nil)
@@ -71,19 +69,18 @@
 
     ;; the hack works. what can i do to make it more robust?
 
-    
 
-    
 
-    (when (and (jacob-modal-editing-command-state-active-p)
-               ;; (not in-embark)
-               )
+    (when (and
+           (jacob-modal-editing-command-state-active-p)
+           (not in-embark)
+           (not (transient-active-prefix))
+           )
       (jacob-modal-editing--activate-command-state))))
 
 (defun jacob-modal-editing--deactivate-command-state ()
   "Deactivate command state."
   (when jacob-modal-editing--deactivate-function
-    (setq jacob-modal-editing--internal-command-state nil)
     (funcall jacob-modal-editing--deactivate-function)
     (setq jacob-modal-editing--deactivate-function nil)))
 
@@ -100,7 +97,6 @@
   "Activate command state."
   (jacob-modal-editing--deactivate-command-state)
   (let ((map (jacob-modal-editing--build-keymap)))
-    (setq jacob-modal-editing--internal-command-state map)
     (setq jacob-modal-editing--deactivate-function
           (set-transient-map map
                              (lambda () t)))))
@@ -118,8 +114,9 @@ will be deactivated."
     (run-hook-with-args 'jacob-modal-editing-hook enable)))
 
 (define-minor-mode jacob-modal-editing-mode
-  "Simple modal editing mode that allows for major mode specific commands
-without too much nonsense."
+  "Simple modal editing mode.
+
+Allows for major mode specific commands without too much nonsense."
   :global t
   :init-value nil
   :lighter " jme"
