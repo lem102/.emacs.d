@@ -80,10 +80,10 @@ without too much nonsense."
   (if jacob-modal-editing-mode
       (progn
         (add-hook 'after-change-major-mode-hook #'jacob-modal-editing--update-command-state)
-        (add-hook 'window-buffer-change-functions #'jacob-modal-editing--update-command-state)
+        (add-hook 'window-state-change-functions #'jacob-modal-editing--update-command-state)
         (add-hook 'isearch-mode-end-hook #'jacob-modal-editing--update-command-state))
     (remove-hook 'after-change-major-mode-hook #'jacob-modal-editing--update-command-state)
-    (remove-hook 'window-buffer-change-functions #'jacob-modal-editing--update-command-state)
+    (remove-hook 'window-state-change-functions #'jacob-modal-editing--update-command-state)
     (remove-hook 'isearch-mode-end-hook #'jacob-modal-editing--update-command-state)
     (jacob-modal-editing--deactivate-command-state)))
 
