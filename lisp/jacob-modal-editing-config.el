@@ -401,8 +401,8 @@
 
 ;; patching embark...
 
-(defmacro jacob-with-overriding-map (map &rest body)
-  "TODO: write documentation."
+(defmacro jacob-with-transient-map (map &rest body)
+  "Transiently use MAP, execute BODY, then deactivate MAP."
   `(let ((f (set-transient-map ,map (lambda ()
                                       t)))
          (result (progn
@@ -417,10 +417,10 @@ Let the user choose an action using the bindings in KEYMAP.
 Besides the bindings in KEYMAP, the user is free to use all their
 key bindings and even \\[execute-extended-command] to select a command.
 UPDATE is the indicator update function."
-  (let* ((keys (jacob-with-overriding-map keymap
-                                          (embark--read-key-sequence update)))
-         (cmd (jacob-with-overriding-map keymap
-                                         (key-binding keys 'accept-default))))
+  (let* ((keys (jacob-with-transient-map keymap
+                                         (embark--read-key-sequence update)))
+         (cmd (jacob-with-transient-map keymap
+                                        (key-binding keys 'accept-default))))
     ;; Set last-command-event as it would be from the command loop.
     ;; Previously we only set it locally for digit-argument and for
     ;; the mouse scroll commands handled in this function. But other
@@ -440,9 +440,9 @@ UPDATE is the indicator update function."
              (prefix-map
               (if (eq cmd 'embark-keymap-help)
                   keymap
-                (jacob-with-overriding-map keymap
-                                           (key-binding (seq-take keys (1- (length keys)))
-                                                        'accept-default))))
+                (jacob-with-transient-map keymap
+                                          (key-binding (seq-take keys (1- (length keys)))
+                                                       'accept-default))))
              (prefix-arg prefix-arg)) ; preserve prefix arg
          (when-let ((win (get-buffer-window embark--verbose-indicator-buffer
                                             'visible)))
@@ -451,8 +451,8 @@ UPDATE is the indicator update function."
       ((or 'universal-argument 'universal-argument-more
            'negative-argument 'digit-argument 'embark-toggle-quit)
        ;; prevent `digit-argument' from modifying the overriding map
-       (jacob-with-overriding-map overriding-terminal-local-map
-                                  (command-execute cmd))
+       (jacob-with-transient-map overriding-terminal-local-map
+                                 (command-execute cmd))
        (embark-keymap-prompter
         (make-composed-keymap universal-argument-map keymap)
         update))
@@ -519,8 +519,8 @@ the variable `embark-verbose-indicator-display-action'."
       (embark--verbose-indicator-update
        (if (and prefix embark-verbose-indicator-nested)
            ;; Lookup prefix keymap globally if not found in action keymap
-           (jacob-with-overriding-map keymap
-                                      (key-binding prefix 'accept-default))
+           (jacob-with-transient-map keymap
+                                     (key-binding prefix 'accept-default))
          keymap)
        targets)
       (let ((display-buffer-alist
