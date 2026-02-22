@@ -410,8 +410,10 @@
      (funcall f)
      result))
 
-(defun embark-keymap-prompter (keymap update)
-  "Let the user choose an action using the bindings in KEYMAP.
+(defun jacob-embark-keymap-prompter (keymap update)
+  "Patched version of `embark-keymap-prompter'.
+
+Let the user choose an action using the bindings in KEYMAP.
 Besides the bindings in KEYMAP, the user is free to use all their
 key bindings and even \\[execute-extended-command] to select a command.
 UPDATE is the indicator update function."
@@ -482,8 +484,12 @@ UPDATE is the indicator update function."
        nil)
       (_ cmd))))
 
-(defun embark-verbose-indicator ()
-  "Indicator that displays a table of key bindings in a buffer.
+(advice-add #'embark-keymap-prompter :override #'jacob-embark-keymap-prompter)
+
+(defun jacob-embark-verbose-indicator ()
+  "Patched version of `embark-verbose-indicator'.
+
+Indicator that displays a table of key bindings in a buffer.
 The default display includes the type and value of the current
 target, the list of other target types, and a table of key
 bindings, actions and the first line of their docstrings.
@@ -522,6 +528,8 @@ the variable `embark-verbose-indicator-display-action'."
                (,(regexp-quote embark--verbose-indicator-buffer)
                 ,@embark-verbose-indicator-display-action))))
         (display-buffer embark--verbose-indicator-buffer)))))
+
+(advice-add #'embark-verbose-indicator :override #'jacob-embark-verbose-indicator)
 
 (provide 'jacob-modal-editing-config)
 
