@@ -73,7 +73,7 @@
 
     (when (and
            (jacob-modal-editing-command-state-active-p)
-           (not in-embark)
+           ;; (not in-embark)
            (not (transient-active-prefix))
            )
       (jacob-modal-editing--activate-command-state))))

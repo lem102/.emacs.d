@@ -399,6 +399,130 @@
 
 (jacob-modal-editing-mode 1)
 
+;; patching embark...
+
+(defmacro jacob-with-overriding-map (map &rest body)
+  "TODO: write documentation."
+  `(let ((f (set-transient-map ,map (lambda ()
+                                      t)))
+         (result (progn
+                   ,@body)))
+     (funcall f)
+     result))
+
+(defun embark-keymap-prompter (keymap update)
+  "Let the user choose an action using the bindings in KEYMAP.
+Besides the bindings in KEYMAP, the user is free to use all their
+key bindings and even \\[execute-extended-command] to select a command.
+UPDATE is the indicator update function."
+  (let* ((keys (jacob-with-overriding-map keymap
+                                          (embark--read-key-sequence update)))
+         (cmd (jacob-with-overriding-map keymap
+                                         (key-binding keys 'accept-default))))
+    ;; Set last-command-event as it would be from the command loop.
+    ;; Previously we only set it locally for digit-argument and for
+    ;; the mouse scroll commands handled in this function. But other
+    ;; commands can need it too! For example, electric-pair-mode users
+    ;; may wish to bind ( to self-insert-command in embark-region-map.
+    ;; Also, as described in issue #402, there are circumstances where
+    ;; you might run consult-narrow through the embark-keymap-prompter.
+    (setq last-command-event (aref keys (1- (length keys))))
+    (pcase cmd
+      ((or 'embark-keymap-help
+           (and 'nil            ; cmd is nil but last key is help-char
+                (guard (eq help-char (aref keys (1- (length keys)))))))
+       (let ((embark-indicators
+              (cl-set-difference embark-indicators
+                                 '(embark-verbose-indicator
+                                   embark-mixed-indicator)))
+             (prefix-map
+              (if (eq cmd 'embark-keymap-help)
+                  keymap
+                (jacob-with-overriding-map keymap
+                                           (key-binding (seq-take keys (1- (length keys)))
+                                                        'accept-default))))
+             (prefix-arg prefix-arg)) ; preserve prefix arg
+         (when-let ((win (get-buffer-window embark--verbose-indicator-buffer
+                                            'visible)))
+           (quit-window 'kill-buffer win))
+         (embark-completing-read-prompter prefix-map update)))
+      ((or 'universal-argument 'universal-argument-more
+           'negative-argument 'digit-argument 'embark-toggle-quit)
+       ;; prevent `digit-argument' from modifying the overriding map
+       (jacob-with-overriding-map overriding-terminal-local-map
+                                  (command-execute cmd))
+       (embark-keymap-prompter
+        (make-composed-keymap universal-argument-map keymap)
+        update))
+      ((or 'minibuffer-keyboard-quit 'abort-recursive-edit 'abort-minibuffers)
+       nil)
+      ((guard (let ((def (lookup-key keymap keys))) ; if directly
+                                        ; bound, then obey
+                (and def (not (numberp def))))) ; number means "invalid prefix"
+       cmd)
+      ((and (pred symbolp)
+            (guard (string-suffix-p "self-insert-command" (symbol-name cmd))))
+       (minibuffer-message "Not an action")
+       (embark-keymap-prompter keymap update))
+      ((or 'scroll-other-window 'scroll-other-window-down)
+       (let ((minibuffer-scroll-window
+              ;; NOTE: Here we special case the verbose indicator!
+              (or (get-buffer-window embark--verbose-indicator-buffer 'visible)
+                  minibuffer-scroll-window)))
+         (ignore-errors (command-execute cmd)))
+       (embark-keymap-prompter keymap update))
+      ((or 'scroll-bar-toolkit-scroll 'mwheel-scroll
+           'mac-mwheel-scroll 'pixel-scroll-precision)
+       (funcall cmd last-command-event)
+       (embark-keymap-prompter keymap update))
+      ('execute-extended-command
+       (let ((prefix-arg prefix-arg)) ; preserve prefix arg
+         (intern-soft (read-extended-command))))
+      ((or 'keyboard-quit 'keyboard-escape-quit)
+       nil)
+      (_ cmd))))
+
+(defun embark-verbose-indicator ()
+  "Indicator that displays a table of key bindings in a buffer.
+The default display includes the type and value of the current
+target, the list of other target types, and a table of key
+bindings, actions and the first line of their docstrings.
+
+The order and formatting of these items is completely
+configurable through the variable
+`embark-verbose-indicator-buffer-sections'.
+
+If the keymap being shown contains prefix keys, the table of key
+bindings can either show just the prefixes and update once the
+prefix is pressed, or it can contain a flat list of all full key
+sequences bound in the keymap.  This is controlled by the
+variable `embark-verbose-indicator-nested'.
+
+To reduce clutter in the key binding table, one can set the
+variable `embark-verbose-indicator-excluded-actions' to a list
+of symbols and regexps matching commands to exclude from the
+table.
+
+To configure how a window is chosen to display this buffer, see
+the variable `embark-verbose-indicator-display-action'."
+  (lambda (&optional keymap targets prefix)
+    (if (not keymap)
+        (when-let ((win (get-buffer-window embark--verbose-indicator-buffer
+                                           'visible)))
+          (quit-window 'kill-buffer win))
+      (embark--verbose-indicator-update
+       (if (and prefix embark-verbose-indicator-nested)
+           ;; Lookup prefix keymap globally if not found in action keymap
+           (jacob-with-overriding-map keymap
+                                      (key-binding prefix 'accept-default))
+         keymap)
+       targets)
+      (let ((display-buffer-alist
+             `(,@display-buffer-alist
+               (,(regexp-quote embark--verbose-indicator-buffer)
+                ,@embark-verbose-indicator-display-action))))
+        (display-buffer embark--verbose-indicator-buffer)))))
+
 (provide 'jacob-modal-editing-config)
 
 ;;; jacob-modal-editing-config.el ends here
