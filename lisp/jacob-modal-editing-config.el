@@ -71,13 +71,14 @@
 (keymap-set jacob-modal-editing-keymap "SPC u" #'kill-current-buffer)
 (keymap-set jacob-modal-editing-keymap "SPC r" #'visual-replace)
 
-(keymap-set jacob-modal-editing-keymap "SPC e e" #'highlight-symbol-at-point)
-(keymap-set jacob-modal-editing-keymap "SPC e u" #'unhighlight-regexp)
-(keymap-set jacob-modal-editing-keymap "SPC e j" #'highlight-lines-matching-regexp)
-(keymap-set jacob-modal-editing-keymap "SPC e d" #'highlight-regexp)
-(keymap-set jacob-modal-editing-keymap "SPC e y" #'highlight-phrase)
-(keymap-set jacob-modal-editing-keymap "SPC e g" #'isearch-forward-symbol)
 (keymap-set jacob-modal-editing-keymap "SPC e ." #'isearch-forward-word)
+(keymap-set jacob-modal-editing-keymap "SPC e d" #'highlight-regexp)
+(keymap-set jacob-modal-editing-keymap "SPC e e" #'highlight-symbol-at-point)
+(keymap-set jacob-modal-editing-keymap "SPC e g" #'isearch-forward-symbol)
+(keymap-set jacob-modal-editing-keymap "SPC e j" #'highlight-lines-matching-regexp)
+(keymap-set jacob-modal-editing-keymap "SPC e s" #'consult-line)
+(keymap-set jacob-modal-editing-keymap "SPC e u" #'unhighlight-regexp)
+(keymap-set jacob-modal-editing-keymap "SPC e y" #'highlight-phrase)
 
 (keymap-set jacob-modal-editing-keymap "SPC , ," #'delete-frame)
 (keymap-set jacob-modal-editing-keymap "SPC , d" #'eval-defun)
@@ -149,8 +150,6 @@
 (keymap-set jacob-modal-editing-keymap "SPC i j" #'consult-recent-file)
 (keymap-set jacob-modal-editing-keymap "SPC i o" #'consult-bookmark)
 
-;; Nested: SPC e (Search)
-(keymap-set jacob-modal-editing-keymap "SPC e s" #'consult-line)
 
 ;; Nested: SPC k (Registers & Navigation)
 (keymap-set jacob-modal-editing-keymap "SPC k i" #'consult-register-load)
