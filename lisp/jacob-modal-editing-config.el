@@ -102,6 +102,7 @@
 (keymap-set jacob-modal-editing-keymap "SPC l o" #'count-words)
 (keymap-set jacob-modal-editing-keymap "SPC l n" #'toggle-debug-on-error)
 (keymap-set jacob-modal-editing-keymap "SPC l i" #'toggle-case-fold-search)
+(keymap-set jacob-modal-editing-keymap "SPC l i" #'toggle-case-fold-search)
 
 (keymap-set jacob-modal-editing-keymap "SPC g h" #'kill-paragraph)
 (keymap-set jacob-modal-editing-keymap "SPC g j" #'mark-paragraph)
