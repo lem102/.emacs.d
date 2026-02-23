@@ -22,6 +22,10 @@
 
 (defvar jacob-modal-editing-hook nil)
 
+(defvar jacob-modal-editing-inhibit-function nil
+  "A function of no arguments that prevents command state from being
+updated if it returns non-nil.")
+
 (defun jacob-modal-editing-enable ()
   "Use keybinds from relevant `jacob-modal-editing' keymaps."
   (interactive)
@@ -38,45 +42,10 @@
 
 (defun jacob-modal-editing--update-command-state (&rest _args)
   "Refresh the command state."
-  ;; its a wild world out there. we need to watch for other packages
-  ;; touching `overriding-terminal-local-map'.
-
-  ;; one approach is to try to leave `overriding-terminal-local-map'
-  ;; alone when those packages are doing their thing.
-
-  ;; another is to try to repair `overriding-terminal-local-map'. This
-  ;; could be adding keys when we should be in command state, or
-  ;; removing duplicate keys, or removing all keys if we should be in
-  ;; insert state.
-
-  ;; going to try the former. we need this function to not proceed
-  ;; when the `overriding-terminal-local-map' is not in a state that we expect.
-
-  ;; what are states that we expect?
-  ;; - nil (for when we aren't in the command state)
-  ;; - command state keymap (for when we are in the command state). this shouldn't be exclusive
-
-
-
-  
-  ;; lets try a hack. if an embark key (embark-cycle) is bound in
-  ;; `overriding-terminal-local-map', stop here.
-
-
-  (let ((in-embark (seq-find (lambda (e)
-                               (equal 'embark-cycle e))
-                             (flatten-tree overriding-terminal-local-map))))
-
-    ;; the hack works. what can i do to make it more robust?
-
-
-
-    (when (and
-           (jacob-modal-editing-command-state-active-p)
-           ;; (not in-embark)
-           (not (transient-active-prefix))
-           )
-      (jacob-modal-editing--activate-command-state))))
+  (when (and (jacob-modal-editing-command-state-active-p)
+             (or (null jacob-modal-editing-inhibit-function)
+                 (funcall jacob-modal-editing-inhibit-function)))
+    (jacob-modal-editing--activate-command-state)))
 
 (defun jacob-modal-editing--deactivate-command-state ()
   "Deactivate command state."

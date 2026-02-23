@@ -397,6 +397,19 @@
 
 (add-hook 'jacob-modal-editing-mode-hook #'jacob-modal-editing-mode-hook-function)
 
+(defun jacob-modal-editing-inhibit-function ()
+  "Stop `jacob-modal-editing' from changing `overriding-terminal-local-map' when:
+
+- `embark' is active.
+- `transient' is active."
+  (let ((in-embark (seq-find (lambda (e)
+                               (equal 'embark-cycle e))
+                             (flatten-tree overriding-terminal-local-map))))
+    (or in-embark
+        (transient-active-prefix))))
+
+(setq jacob-modal-editing-inhibit-function #'jacob-modal-editing-inhibit-function)
+
 (jacob-modal-editing-mode 1)
 
 ;; patching embark...
@@ -484,7 +497,7 @@ UPDATE is the indicator update function."
        nil)
       (_ cmd))))
 
-(advice-add #'embark-keymap-prompter :override #'jacob-embark-keymap-prompter)
+;; (advice-add #'embark-keymap-prompter :override #'jacob-embark-keymap-prompter)
 
 (defun jacob-embark-verbose-indicator ()
   "Patched version of `embark-verbose-indicator'.
@@ -529,7 +542,7 @@ the variable `embark-verbose-indicator-display-action'."
                 ,@embark-verbose-indicator-display-action))))
         (display-buffer embark--verbose-indicator-buffer)))))
 
-(advice-add #'embark-verbose-indicator :override #'jacob-embark-verbose-indicator)
+;; (advice-add #'embark-verbose-indicator :override #'jacob-embark-verbose-indicator)
 
 (provide 'jacob-modal-editing-config)
 
