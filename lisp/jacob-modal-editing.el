@@ -39,7 +39,7 @@ updated if it returns non-nil.")
   "Refresh the command state."
   (when (and (jacob-modal-editing-command-state-active-p)
              (or (null jacob-modal-editing-inhibit-function)
-                 (funcall jacob-modal-editing-inhibit-function)))
+                 (not (funcall jacob-modal-editing-inhibit-function))))
     (jacob-modal-editing--activate-command-state)))
 
 (defun jacob-modal-editing--deactivate-command-state ()
