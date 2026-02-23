@@ -1026,7 +1026,20 @@ Disables the eglot backend when inside a `.g8' template."
 (use-package marginalia
   :hook (jacob-first-minibuffer-activation-hook . marginalia-mode))
 
-(require 'jacob-consult)
+(use-package consult
+  :defer t
+  :preface
+  (require 'jacob-consult-autoloads)
+  :init
+  (keymap-global-set "C-x b" #'consult-buffer)
+  (keymap-global-set "M-y" #'consult-yank-from-kill-ring)
+  (keymap-set project-prefix-map "g" #'jacob-project-search)
+  :config
+  (setq completion-in-region-function 'consult-completion-in-region
+        xref-show-xrefs-function 'consult-xref
+        xref-show-definitions-function 'consult-xref
+        consult-source-buffer (plist-put consult-source-buffer
+                                         :state #'jacob-consult-buffer-state-no-tramp)))
 
 (use-package consult-imenu
   :bind ("M-g i" . consult-imenu))

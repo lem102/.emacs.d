@@ -1,37 +1,37 @@
-;;; jacob-consult.el --- Configuration for consult package  -*- lexical-binding: t; -*-
+;;; jacob-consult.el --- Functions for `consult'  -*- lexical-binding: t; -*-
+
 
 ;;; Commentary:
 ;; 
 
 ;;; Code:
 
-(defun jacob-consult-config ()
-  "Apply configuration to the `consult' package."
-  (autoload #'jacob-project-search "jacob-consult-functions")
-  (autoload #'jacob-consult-buffer-state-no-tramp "jacob-consult-functions")
-  
-  (setq completion-in-region-function 'consult-completion-in-region
-        xref-show-xrefs-function 'consult-xref
-        xref-show-definitions-function 'consult-xref
-        consult-source-buffer (plist-put consult-source-buffer
-                                         :state #'jacob-consult-buffer-state-no-tramp)))
+;;;###autoload
+(defun jacob-consult-buffer-state-no-tramp ()
+  "Buffer state function that doesn't preview Tramp buffers."
+  (let ((orig-state (consult--buffer-state))
+        (filter (lambda (action candidate)
+                  (if (and candidate
+                           (or (eq action 'return)
+                               (let ((buffer (get-buffer candidate)))
+                                 (and buffer
+                                      (not (file-remote-p (buffer-local-value 'default-directory buffer)))))))
+                      candidate
+                    nil))))
+    (lambda (action candidate)
+      (funcall orig-state action (funcall filter action candidate)))))
 
-(use-package consult
-  :defer t
-  :init
-  (keymap-global-set "C-x b" #'consult-buffer)
-  (keymap-global-set "M-y" #'consult-yank-from-kill-ring)
-
-  :config
-  (jacob-consult-config)
-
-  ;; FIXME: Set up autoload to prevent the need to delay binding this command.
-  (keymap-set project-prefix-map "g" #'jacob-project-search)
-  ;; due to above binding, we need to reapply the project-prefix-map in ryo-modal-keys
-
-  ;; i wonder does this still happen with jacob-modal-editing?
-  )
+;;;###autoload
+(defun jacob-project-search ()
+  "Wrapper for grep commands."
+  ;; FIXME: should cd to the project directory first
+  ;; TODO: do i need this?
+  (interactive)
+  (if (vc-find-root default-directory ".git")
+      (consult-git-grep)
+    (consult-grep)))
 
 (provide 'jacob-consult)
 
 ;;; jacob-consult.el ends here
+
