@@ -3,13 +3,6 @@
 ;;; Commentary:
 ;;
 
-;; FIXME: leaving embark can cause issues
-
-;; theory: `embark' temporarily binds `overriding-terminal-local-map'.
-;; is it possible that a call we make to alter the
-;; `overriding-terminal-local-map' is mixing with embark in an
-;; unexpected way?
-
 ;;; Code:
 
 (defvar-keymap jacob-modal-editing-keymap)
@@ -23,7 +16,9 @@
 (defvar jacob-modal-editing-hook nil)
 
 (defvar jacob-modal-editing-inhibit-function nil
-  "A function of no arguments that prevents command state from being
+  "Function to inhibit changes to keys.
+
+A function of no arguments that prevents command state from being
 updated if it returns non-nil.")
 
 (defun jacob-modal-editing-enable ()
