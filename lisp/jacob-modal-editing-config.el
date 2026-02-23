@@ -420,12 +420,12 @@
                                (equal 'embark-cycle e))
                              (flatten-tree overriding-terminal-local-map))))
     (or
-     in-embark
+     ;; in-embark
      (transient-active-prefix))))
 
 (setq jacob-modal-editing-inhibit-function #'jacob-modal-editing-inhibit-function)
 
-(jacob-modal-editing-mode 1)
+;; (jacob-modal-editing-mode 1)
 
 ;; patching embark...
 
