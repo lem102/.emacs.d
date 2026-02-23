@@ -124,10 +124,23 @@
 (keymap-set jacob-modal-editing-keymap "SPC o v" #'yank-rectangle)
 (keymap-set jacob-modal-editing-keymap "SPC o x" #'kill-rectangle)
 
+(keymap-set jacob-modal-editing-keymap "SPC i ;" #'write-file)
 (keymap-set jacob-modal-editing-keymap "SPC i d" #'ibuffer)
 (keymap-set jacob-modal-editing-keymap "SPC i e" #'find-file)
+(keymap-set jacob-modal-editing-keymap "SPC i f" #'ffap)
 (keymap-set jacob-modal-editing-keymap "SPC i j" #'consult-recent-file)
 (keymap-set jacob-modal-editing-keymap "SPC i o" #'consult-bookmark)
+
+;; ("c ," . xah-open-in-external-app)
+;; ("c f" . xah-open-recently-closed)
+;; ("c g" . xah-open-in-terminal)
+;; ("c j" . xah-copy-file-path)
+;; ("c n" . xah-new-empty-buffer)
+;; ("c o" . xah-show-in-desktop)
+;; ("c p" . xah-open-last-closed)
+;; ("c x" . set-buffer-file-coding-system)
+;; ("c y" . xah-list-recently-closed)
+;; ("c z" . revert-buffer-with-coding-system)
 
 (keymap-set jacob-modal-editing-keymap "SPC k c" #'copy-to-register)
 (keymap-set jacob-modal-editing-keymap "SPC k i" #'consult-register-load)
@@ -402,11 +415,13 @@
 
 - `embark' is active.
 - `transient' is active."
+  ;; TODO: compilation mode buttons cause issues
   (let ((in-embark (seq-find (lambda (e)
                                (equal 'embark-cycle e))
                              (flatten-tree overriding-terminal-local-map))))
-    (or in-embark
-        (transient-active-prefix))))
+    (or
+     in-embark
+     (transient-active-prefix))))
 
 (setq jacob-modal-editing-inhibit-function #'jacob-modal-editing-inhibit-function)
 
@@ -497,7 +512,7 @@ UPDATE is the indicator update function."
        nil)
       (_ cmd))))
 
-;; (advice-add #'embark-keymap-prompter :override #'jacob-embark-keymap-prompter)
+(advice-add #'embark-keymap-prompter :override #'jacob-embark-keymap-prompter)
 
 (defun jacob-embark-verbose-indicator ()
   "Patched version of `embark-verbose-indicator'.
@@ -542,7 +557,7 @@ the variable `embark-verbose-indicator-display-action'."
                 ,@embark-verbose-indicator-display-action))))
         (display-buffer embark--verbose-indicator-buffer)))))
 
-;; (advice-add #'embark-verbose-indicator :override #'jacob-embark-verbose-indicator)
+(advice-add #'embark-verbose-indicator :override #'jacob-embark-verbose-indicator)
 
 (provide 'jacob-modal-editing-config)
 
