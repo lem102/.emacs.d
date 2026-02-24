@@ -413,10 +413,7 @@ Disables the eglot backend when inside a `.g8' template."
 (use-package csproj-mode
   :mode ("\\.csproj\\'" . csproj-mode))
 
-(use-package font-lock-ext ; dependency of `sln-mode'
-  :defer t)
-
-;; TODO: package `sln-mode' for elpa/melpa?
+;; TODO: package my version of `sln-mode' for elpa/melpa
 (use-package sln-mode
   :mode ("\\.sln\\'" . sln-mode))
 

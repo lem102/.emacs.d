@@ -65,23 +65,20 @@
                 eat editorconfig ef-themes eglot eglot-booster eldoc
                 elisp-dev-mcp embark embark-consult erc
                 exec-path-from-shell expreg faceup feature-mode
-                flymake font-lock-ext forge gdscript-mode geiser
-                geiser-guile gptel helpful hl-todo idlwave jsonrpc
-                just-mode magit marginalia markdown-mode mcp mct
-                mermaid-mode nerd-icons-dired nerd-icons-mode-line
+                flymake forge gdscript-mode geiser geiser-guile gptel
+                helpful hl-todo idlwave jsonrpc just-mode magit
+                marginalia markdown-mode mcp mct mermaid-mode
+                nerd-icons-dired nerd-icons-mode-line
                 nerd-icons-modeline no-littering ob-mermaid on
                 orderless org org-edna pdf-tools peg prodigy project
                 puni python rainbow-mode sbt-mode scala-repl
-                scala-ts-mode sharper sln-mode sly sly-macrostep
-                sly-overlay sly-quicklisp sql-indent track-changes
-                tramp treesit-auto verb verilog-mode vertico
-                visual-replace visual-replace-regexp web-mode wgrep
-                which-key window-tool-bar winnow yaml-pro yasnippet))
+                scala-ts-mode sharper sly sly-macrostep sly-overlay
+                sly-quicklisp sql-indent track-changes tramp
+                treesit-auto verb verilog-mode vertico visual-replace
+                visual-replace-regexp web-mode wgrep which-key
+                window-tool-bar winnow yaml-pro yasnippet))
  '(package-vc-selected-packages
    '((eglot-booster :url "https://github.com/jdtsmith/eglot-booster")
-     (sln-mode :url "https://github.com/sensorflo/sln-mode.git")
-     (font-lock-ext :url
-                    "https://github.com/sensorflo/font-lock-ext.git")
      (nerd-icons-mode-line :url
                            "https://github.com/grolongo/nerd-icons-mode-line.git")))
  '(project-switch-commands
