@@ -12,9 +12,6 @@
 (autoload 'jacob-consult-buffer-state-no-tramp "jacob-consult" "\
 Buffer state function that doesn't preview Tramp buffers.")
 
-(autoload 'jacob-project-search "jacob-consult" "\
-Wrapper for grep commands." t)
-
 ;;;***
 
 ;;; End of scraped data

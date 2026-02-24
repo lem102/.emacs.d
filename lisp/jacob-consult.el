@@ -21,16 +21,6 @@
     (lambda (action candidate)
       (funcall orig-state action (funcall filter action candidate)))))
 
-;;;###autoload
-(defun jacob-project-search ()
-  "Wrapper for grep commands."
-  ;; FIXME: should cd to the project directory first
-  ;; TODO: do i need this?
-  (interactive)
-  (if (vc-find-root default-directory ".git")
-      (consult-git-grep)
-    (consult-grep)))
-
 (provide 'jacob-consult)
 
 ;;; jacob-consult.el ends here

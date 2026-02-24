@@ -291,7 +291,7 @@
 (defvar-keymap jacob-modal-editing-prodigy-map
   "d" #'prodigy-stop
   "e" #'prodigy-mark
-  "g" #'jacob-project-search ; FIXME: command not found sometimes
+  "g" #'consult-git-grep
   "f" #'project-find-file
   "i" #'prodigy-prev
   "k" #'prodigy-next

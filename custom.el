@@ -82,7 +82,7 @@
      (nerd-icons-mode-line :url
                            "https://github.com/grolongo/nerd-icons-mode-line.git")))
  '(project-switch-commands
-   '((project-find-file "Find file") (jacob-project-search "Find regexp")
+   '((project-find-file "Find file") (consult-git-grep "Find regexp")
      (project-find-dir "Find directory")
      (magit-project-status "Version Control" "v")
      (project-eshell "EShell") (project-compile "Compile")))

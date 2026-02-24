@@ -1030,7 +1030,7 @@ Disables the eglot backend when inside a `.g8' template."
          ("M-y" . consult-yank-pop)
          ("M-g M-g" . consult-goto-line)
          :map project-prefix-map
-         ("g" . jacob-project-search)
+         ("g" . consult-git-grep)
          :map minibuffer-local-map
          ("M-s" . consult-history)
          ("M-r" . consult-history))
