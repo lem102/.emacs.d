@@ -130,7 +130,7 @@ then remove this function from `find-file-hook'."
   (delete-pair-blink-delay 0)
   ;; paragraphs.el
   (sentence-end-double-space nil)
-  :bind (("C-M-k" . jacob-kill-sexp)
+  :bind (("C-M-k" . jacob-kill-sexp)    ; `kill-sexp'
          :map mode-line-buffer-identification-keymap
          ("<mode-line> <mouse-2>" . ibuffer)))
 
@@ -225,7 +225,8 @@ then remove this function from `find-file-hook'."
 (use-package simple
   :hook (on-init-ui-hook . column-number-mode)
   :hook (on-init-ui-hook . line-number-mode)
-  :bind ("C-x u" . nil)                 ; `undo'
+  :bind (("C-x u" . nil)                ; `undo'
+         ("C-k" . jacob-kill-line))     ; `kill-line'
   :config
   (put 'set-goal-column 'disabled nil))
 
