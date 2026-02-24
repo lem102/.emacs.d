@@ -44,9 +44,6 @@
 
 ;; configure packages
 
-(require 'jacob-modal-editing)
-(require 'jacob-modal-editing-config)
-
 (require 'jacob-init-helpers)
 (require 'jacob-editing-commands)
 
