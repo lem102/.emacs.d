@@ -116,6 +116,16 @@
               (t                      ; delete character
                (backward-delete-char-untabify 1)))))))
 
+(defun jacob-kill-sexp ()
+  "Do `kill-sexp' or `delete-pair'."
+  (interactive)
+  (if current-prefix-arg
+      (save-excursion
+        (forward-sexp)
+        (backward-sexp)
+        (delete-pair))
+    (kill-sexp)))
+
 (defun jacob-kill-line ()
   "If region is active, kill it.  Otherwise:
 

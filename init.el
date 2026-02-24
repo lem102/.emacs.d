@@ -133,8 +133,9 @@ then remove this function from `find-file-hook'."
   (delete-pair-blink-delay 0)
   ;; paragraphs.el
   (sentence-end-double-space nil)
-  :bind ( :map mode-line-buffer-identification-keymap
-          ("<mode-line> <mouse-2>" . ibuffer)))
+  :bind (("C-M-k" . jacob-kill-sexp)
+         :map mode-line-buffer-identification-keymap
+         ("<mode-line> <mouse-2>" . ibuffer)))
 
 (use-package on)                    ; load `on-first-input-hook', etc.
 
@@ -157,7 +158,6 @@ then remove this function from `find-file-hook'."
                                (t 0.1))))
 
 (use-package files
-  :bind ("C-x C-c" . nil)               ; `save-buffers-kill-terminal'
   :hook (on-first-file-hook . auto-save-visited-mode))
 
 (use-package files-x
