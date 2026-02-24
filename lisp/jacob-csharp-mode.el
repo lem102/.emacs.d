@@ -513,8 +513,8 @@ new location and/or name of the file."
       (call-interactively 'jacob-csharp-forward-statement)
     (end-of-line)))
 
-(defun jacob-backspace-csharp (f)
-  "Function for `jacob-backspace' to help with csharp.
+(defun jacob-delete-backwards-csharp (f)
+  "Function for `jacob-delete-backwards' to help with csharp.
 
 Figure out if the `<' or `>' before point is part of a
 `type_argument_list', and delete accordingly.  F is a function
@@ -637,7 +637,7 @@ which performs the deletion."
 
   (jacob-defhookf csharp-ts-mode-hook
     (setq treesit-defun-type-regexp "\\(method\\|constructor\\|field\\)_declaration")
-    (setq jacob-backspace-function #'jacob-backspace-csharp)
+    (setq jacob-delete-backwards-function #'jacob-delete-backwards-csharp)
     (eglot-ensure))
 
   (defun eglot-csharp-ls-metadata (xrefs)

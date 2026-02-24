@@ -33,7 +33,7 @@
 ;;   (keymap-set xah-fly-command-map "@" #'delete-window)
 
 ;;   (keymap-set xah-fly-command-map ";" #'jacob-end-of-line)
-;;   (keymap-set xah-fly-command-map "d" #'jacob-backspace)
+;;   (keymap-set xah-fly-command-map "d" #'jacob-delete-backwards)
 ;;   (keymap-set xah-fly-command-map "h" #'jacob-beginning-of-line)
 ;;   (keymap-set xah-fly-command-map "s" #'jacob-return-macro)
 ;;   (keymap-set xah-fly-command-map "x" #'jacob-kill-line)

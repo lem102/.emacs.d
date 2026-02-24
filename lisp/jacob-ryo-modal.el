@@ -69,7 +69,7 @@
 
 ;;  ("a" execute-extended-command)
 ;;  ("s" jacob-return-macro)
-;;  ("d" jacob-backspace)
+;;  ("d" jacob-delete-backwards)
 ;;  ("f" global-ryo-modal-mode-disable)
 
 ;;  ("w" xah-shrink-whitespaces)

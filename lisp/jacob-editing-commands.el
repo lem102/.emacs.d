@@ -69,10 +69,10 @@
         (t
          (back-to-indentation))))
 
-(defvar-local jacob-backspace-function nil
-  "Called by `jacob-backspace' if non-nil.")
+(defvar-local jacob-delete-backwards-function nil
+  "Called by `jacob-delete-backwards' if non-nil.")
 
-(defun jacob-backspace ()
+(defun jacob-delete-backwards ()
   "DWIM backspace command.
 
   If character to the left is a pair character as determined by
@@ -94,7 +94,7 @@
                                #'delete-pair
                              #'kill-sexp)))
       (unless (ignore-errors
-                (funcall jacob-backspace-function delete-function))
+                (funcall jacob-delete-backwards-function delete-function))
         (cond ((= ?\" char-class)     ; string
                (if (nth 3 (syntax-ppss))
                    (progn
