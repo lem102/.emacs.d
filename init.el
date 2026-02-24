@@ -373,9 +373,6 @@ Disables the eglot backend when inside a `.g8' template."
   (advice-add 'eglot-code-actions :after #'jacob-remove-ret-character-from-buffer)
   (advice-add 'eglot-rename :after #'jacob-remove-ret-character-from-buffer)
 
-  ;; TODO: this causes problems for scala metals
-  ;; (advice-add 'eglot-code-actions :after #'revert-buffer)
-
   (add-to-list 'eglot-server-programs '((csharp-mode csharp-ts-mode) . (lambda (_interactive _project)
                                                                          "Don't activate eglot when in a C# script."
                                                                          (unless (string= (file-name-extension (buffer-name (current-buffer)))
