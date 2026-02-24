@@ -145,9 +145,9 @@
               (= ?\) (char-syntax (char-after))))
          (kill-line))
         ((= ?\) (char-syntax (char-after)))
-         (puni-backward-kill-line))
+         (backward-kill-line))
         (t
-         (puni-kill-line))))
+         (kill-line))))
 
 (defalias 'jacob-return-macro
   (kmacro "<return>"))
