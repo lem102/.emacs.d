@@ -339,7 +339,13 @@ then remove this function from `find-file-hook'."
     (setq-default dumb-jump-force-searcher 'grep)))
 
 (use-package eglot
-  :defer t
+  :bind
+  ( :map eglot-mode-map
+    ("C-c e e" . eglot)
+    ("C-c c a" . eglot-code-actions)
+    ("C-c c i" . eglot-find-implementation)
+    ("C-c c r" . eglot-rename)
+    ("C-c c t" . eglot-find-typeDefinition))
   :config
   (jacob-defhookf eglot-managed-mode-hook
     (eglot-inlay-hints-mode 0)
@@ -616,11 +622,6 @@ Disables the eglot backend when inside a `.g8' template."
       (indent-pp-sexp t)))
 
   (keymap-set lisp-interaction-mode-map "C-j" #'jacob-eval-print-last-sexp)
-  (keymap-set lisp-interaction-mode-map "(" #'insert-parentheses)
-  (keymap-set lisp-interaction-mode-map ")" #'move-past-close-and-reindent)
-
-  (keymap-set emacs-lisp-mode-map "(" #'insert-parentheses)
-  (keymap-set emacs-lisp-mode-map ")" #'move-past-close-and-reindent)
 
   (setopt elisp-flymake-byte-compile-load-path load-path)
 
@@ -1027,13 +1028,19 @@ Disables the eglot backend when inside a `.g8' template."
   :hook (jacob-first-minibuffer-activation-hook . marginalia-mode))
 
 (use-package consult
-  :defer t
   :preface
   (require 'jacob-consult-autoloads)
-  :init
-  (keymap-global-set "C-x b" #'consult-buffer)
-  (keymap-global-set "M-y" #'consult-yank-from-kill-ring)
-  (keymap-set project-prefix-map "g" #'jacob-project-search)
+  :bind (("C-x b" . consult-buffer)
+         ("M-g g" . consult-goto-line)
+         ("M-g i" . consult-imenu)
+         ("M-s o" . consult-line)
+         ("M-y" . consult-yank-pop)
+         ("M-g M-g" . consult-goto-line)
+         :map project-prefix-map
+         ("g" . jacob-project-search)
+         :map minibuffer-local-map
+         ("M-s" . consult-history)
+         ("M-r" . consult-history))
   :config
   (setq completion-in-region-function 'consult-completion-in-region
         xref-show-xrefs-function 'consult-xref
@@ -1041,14 +1048,13 @@ Disables the eglot backend when inside a `.g8' template."
         consult-source-buffer (plist-put consult-source-buffer
                                          :state #'jacob-consult-buffer-state-no-tramp)))
 
-(use-package consult-imenu
-  :bind ("M-g i" . consult-imenu))
-
 (use-package embark
   :defer t
+  :bind
+  (("C-." . embark-act)
+   ("C-;" . embark-dwim))
   :config
-  (setopt embark-cycle-key "\\"
-          embark-help-key "h")
+  (setopt embark-help-key "h")
 
   (keymap-set embark-flymake-map "a" #'eglot-code-actions)
   (push 'embark--ignore-target (alist-get 'eglot-code-actions embark-target-injection-hooks))
