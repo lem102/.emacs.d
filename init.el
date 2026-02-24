@@ -696,9 +696,7 @@ Disables the eglot backend when inside a `.g8' template."
 
   (jacob-defhookf org-agenda-mode-hook
     (setq-local tool-bar-map org-agenda-tool-bar-map)
-    (hl-line-mode 1))
-
-  (advice-add #'org-agenda :before #'jacob-generate-daily-tasks))
+    (hl-line-mode 1)))
 
 (use-package org-src
   :after org
@@ -1319,40 +1317,6 @@ For use with GitLab only."
                                           "\" ")))))
     (with-temp-buffer
       (eshell-command command t))))
-
-(defun jacob-generate-daily-tasks (&rest _args)
-  "Prepare your daily tasks."
-  ;; TODO: make file regenerate after 6 AM
-  ;; (let* ((now (decode-time))
-  ;;      (tomorrow-day (1+ (decoded-time-day now)))
-  ;;      (month (decoded-time-month now))
-  ;;      (year (decoded-time-year now)))
-  ;; (encode-time (list 0 0 6 tomorrow-day month year)))
-  (let* ((tasks
-          '("Clean Teeth AM"
-            "Clean Teeth PM"
-            "Take Mesalazine"
-            "Take Vitamin D"
-            "Use Inhaler AM"
-            "Use Inhaler PM"))
-         (file-path (file-name-concat org-directory "daily-tasks.org"))
-         (today (format-time-string "%Y-%m-%d %a"))
-         (last-generated-date (with-temp-buffer
-                                (insert-file-contents file-path)
-                                (goto-char (point-min))
-                                (re-search-forward "#\\+DATE: <\\([a-zA-Z0-9 -]+\\)>")
-                                (match-string 1)))
-         (will-generate-file (> (days-between today last-generated-date)
-                                0)))
-    (when will-generate-file
-      (with-temp-file file-path
-        (delete-region (point-min) (point-max))
-        (insert "#+TITLE: Daily Tasks\n")
-        (insert "#+AUTHOR: Emacs Lisp Script\n")
-        (insert "#+DATE: <" today ">\n\n")
-        (dolist (task tasks)
-          (insert (format "* TODO %s :daily:\n" task))
-          (insert "SCHEDULED: <" today ">\n\n"))))))
 
 (defun jacob-update-config ()
   "Update your Emacs configuration with git."
