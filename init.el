@@ -230,6 +230,9 @@ then remove this function from `find-file-hook'."
   :config
   (put 'set-goal-column 'disabled nil))
 
+(use-package misc
+  :bind ("M-z" . zap-up-to-char))       ; `zap-to-char'
+
 (use-package isearch
   :defer t
   :config
