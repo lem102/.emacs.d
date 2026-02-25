@@ -345,10 +345,10 @@ then remove this function from `find-file-hook'."
   :bind
   ( :map eglot-mode-map
     ("C-c e e" . eglot)
-    ("C-c c a" . eglot-code-actions)
-    ("C-c c i" . eglot-find-implementation)
-    ("C-c c r" . eglot-rename)
-    ("C-c c t" . eglot-find-typeDefinition))
+    ("C-c e a" . eglot-code-actions)
+    ("C-c e i" . eglot-find-implementation)
+    ("C-c e r" . eglot-rename)
+    ("C-c e t" . eglot-find-typeDefinition))
   :config
   (jacob-defhookf eglot-managed-mode-hook
     (eglot-inlay-hints-mode 0)
