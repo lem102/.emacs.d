@@ -434,6 +434,19 @@ Disables the eglot backend when inside a `.g8' template."
          (scala-ts-mode-hook . eglot-ensure))
   :config
   (autoload 'jacob-scala-package "jacob-scala-package")
+
+  (defun jacob-scala-indentation-to-brace ()
+    "Convert the indentation based syntax at point to brace based syntax."
+
+    ;; TODO: function that converts silent syntax (using ":") into curly
+    ;; brace syntax
+
+    ;; "colon-argument" is the node type of the indentation based
+    ;; syntax. "block" is the node type of the curly brace based syntax.
+
+    (interactive)
+    )
+
   (defun jacob-bloop-compile ()
     "Recompile the project with bloop."
     (interactive)
