@@ -696,7 +696,9 @@ Disables the eglot backend when inside a `.g8' template."
 
   (jacob-defhookf org-agenda-mode-hook
     (setq-local tool-bar-map org-agenda-tool-bar-map)
-    (hl-line-mode 1)))
+    (hl-line-mode 1))
+  :bind (("C-c o a" . org-agenda)
+         ("C-c o c" . org-capture)))
 
 (use-package org-src
   :after org
