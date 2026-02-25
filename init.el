@@ -435,27 +435,19 @@ Disables the eglot backend when inside a `.g8' template."
   :config
   (autoload 'jacob-scala-package "jacob-scala-package")
 
-  (defun jacob-scala-indentation-to-brace ()
-    "Convert the indentation based syntax at point to brace based syntax."
-
-    ;; TODO: function that converts silent syntax (using ":") into curly
-    ;; brace syntax
-
-    ;; "colon-argument" is the node type of the indentation based
-    ;; syntax. "block" is the node type of the curly brace based syntax.
-
-    ;; You need to find the colon. Remove the colon. Be aware that the
-    ;; colon is outside of the "colon-argument".
-
-    ;; You need to find the beginning and end of the "body". Then you
-    ;; know where you need to place the start and end braces.
-
-    ;; Trouble is there is a block and a case block. Could there be
-    ;; other blocks? Could I instead match on the brace in my treesit
-    ;; query?
-
+  (defun jacob-scala-indentation-to-block ()
+    "Convert the indentation based syntax at point to block based syntax."
     (interactive)
-    )
+    (let ((colon-node (treesit-parent-until (treesit-node-at (point)) "colon_argument")))
+      (unless colon-node
+        (user-error "Not inside indentation based block"))
+      (save-excursion
+        (goto-char (treesit-node-end colon-node))
+        (insert "}")
+        (goto-char (treesit-node-start colon-node))
+        (search-backward ":")
+        (delete-char 1)
+        (insert "{"))))
 
   (defun jacob-bloop-compile ()
     "Recompile the project with bloop."
