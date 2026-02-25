@@ -161,7 +161,11 @@
     (end-of-line)))
 
 (defun jacob-mark-paragraph ()
-  "TODO: write documentation."
+  "Mark paragraph at point.
+
+The main difference between this and `mark-paragraph' is that this
+function results in point being at the end of the paragraph instead of
+the front."
   (interactive)
   (unless (region-active-p)
     (backward-paragraph)
