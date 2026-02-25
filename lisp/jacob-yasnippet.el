@@ -64,11 +64,6 @@ For use in yasnippets."
 For use in yasnippets."
   (string-replace " " "-" input))
 
-(defvar-keymap jacob-yas-map
-  "n" #'yas-new-snippet
-  "v" #'yas-visit-snippet-file
-  "i" #'yas-insert-snippet)
-
 (defun jacob-yasnippet-config ()
   "Configuration for `yasnippet'."
   (yas-reload-all)
@@ -79,6 +74,10 @@ For use in yasnippets."
 (use-package yasnippet
   :defer t
   :blackout "yas"
+  :bind ( :map yas-minor-mode-map
+          ("C-c y n" . yas-new-snippet)
+          ("C-c y v" . yas-visit-snippet-file)
+          ("C-c y i" . yas-insert-snippet))
   :config
   (jacob-yasnippet-config)
   :custom
