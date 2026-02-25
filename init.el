@@ -299,7 +299,9 @@ then remove this function from `find-file-hook'."
   :hook (on-first-input-hook . electric-pair-mode))
 
 (use-package puni
-  :defer t)
+  :defer t
+  :bind (("C-M-f" . puni-forward-sexp-or-up-list)
+         ("C-M-b" . puni-backward-sexp-or-up-list)))
 
 (use-package delsel
   :hook (on-first-input-hook . delete-selection-mode))
