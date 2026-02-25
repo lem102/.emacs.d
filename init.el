@@ -444,6 +444,16 @@ Disables the eglot backend when inside a `.g8' template."
     ;; "colon-argument" is the node type of the indentation based
     ;; syntax. "block" is the node type of the curly brace based syntax.
 
+    ;; You need to find the colon. Remove the colon. Be aware that the
+    ;; colon is outside of the "colon-argument".
+
+    ;; You need to find the beginning and end of the "body". Then you
+    ;; know where you need to place the start and end braces.
+
+    ;; Trouble is there is a block and a case block. Could there be
+    ;; other blocks? Could I instead match on the brace in my treesit
+    ;; query?
+
     (interactive)
     )
 
