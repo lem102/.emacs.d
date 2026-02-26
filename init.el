@@ -438,16 +438,21 @@ Disables the eglot backend when inside a `.g8' template."
   (defun jacob-scala-indentation-to-block ()
     "Convert the indentation based syntax at point to block based syntax."
     (interactive)
-    (let ((colon-node (treesit-parent-until (treesit-node-at (point)) "colon_argument")))
-      (unless colon-node
-        (user-error "Not inside indentation based block"))
-      (save-excursion
-        (goto-char (treesit-node-end colon-node))
-        (insert "}")
-        (goto-char (treesit-node-start colon-node))
-        (search-backward ":")
-        (delete-char 1)
-        (insert "{"))))
+    (save-excursion
+      (cond-let ([colon-node (treesit-parent-until (treesit-node-at (point)) "colon_argument")]
+                 (unless colon-node
+                   (user-error "Cannot find colon"))
+                 (goto-char (treesit-node-end colon-node))
+                 (insert "}")
+                 (goto-char (treesit-node-start colon-node))
+                 (search-backward ":")
+                 (delete-char 1)
+                 (insert "{"))
+                ([indented-cases-node (treesit-parent-until (treesit-node-at (point)) "indented_\\(cases\\|block\\)")]
+                 (goto-char (treesit-node-end indented-cases-node))
+                 (insert "}")
+                 (goto-char (treesit-node-start indented-cases-node))
+                 (insert "{")))))
 
   (defun jacob-bloop-compile ()
     "Recompile the project with bloop."
