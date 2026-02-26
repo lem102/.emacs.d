@@ -6,7 +6,7 @@
 ;;; Code:
 
 
-;;;### (autoloads nil "jacob-scala" "jacob-scala.el" "d00200457e9b6d5de56422063206a839")
+;;;### (autoloads nil "jacob-scala" "jacob-scala.el" "5860a9afd0f50c97372b4509680d2c45")
 ;;; Generated autoloads from jacob-scala.el
 
 (autoload 'jacob-scala-indentation-to-block "jacob-scala" "\
@@ -20,9 +20,16 @@ Insert a dollar. If inside a string, enable string interpolation." t)
 
 (autoload 'jacob-scala-package "jacob-scala" "\
 Return the package of the current scala file.")
+
+(autoload 'jacob-scala-toggle-raw-string "jacob-scala" "\
+Convert strings to raw strings and vice versa.
+
+Leave escaped characters alone." t)
+
+;;;***
 
 ;;;### (autoloads "actual autoloads are elsewhere" "jacob-scala"
-;;;;;;  "jacob-scala.el" (27040 39479 843913 655000))
+;;;;;;  "jacob-scala.el" (27040 42577 913130 481000))
 ;;; Generated autoloads from jacob-scala.el
 
 (register-definition-prefixes "jacob-scala" '("jacob-scala--"))

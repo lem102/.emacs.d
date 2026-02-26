@@ -91,6 +91,33 @@
       (jacob-scala--get-file-package nearest-file)
     (directory-file-name (file-name-directory file))))
 
+;;;###autoload
+(defun jacob-scala-toggle-raw-string ()
+  "Convert strings to raw strings and vice versa.
+
+Leave escaped characters alone."
+  (interactive)
+  (save-excursion
+    (let* ((string-node (treesit-parent-until (treesit-node-at (point))
+                                              "string"
+                                              "INCLUDE-NODE"))
+           (is-raw-string (string-match-p "^\"\"\".+\"\"\"" (treesit-node-text string-node))))
+      (if is-raw-string
+          (progn
+            (goto-char (treesit-node-end string-node))
+            (search-backward "\"\"\"")
+            (delete-forward-char 2)
+            (goto-char (treesit-node-start string-node))
+            (search-forward "\"\"\"")
+            (backward-delete-char 2))
+        (goto-char (treesit-node-end string-node))
+        (search-backward "\"")
+        (insert "\"\"")
+        (goto-char (treesit-node-start string-node))
+        (search-forward "\"")
+        (insert "\"\""))
+      )))
+
 (provide 'jacob-scala)
 
 ;;; jacob-scala.el ends here
