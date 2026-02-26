@@ -431,84 +431,20 @@ Disables the eglot backend when inside a `.g8' template."
          (scala-ts-mode-hook . yas-minor-mode)
          (scala-ts-mode-hook . electric-indent-local-mode)
          (scala-ts-mode-hook . jacob-trim-quotes-mode)
-         (scala-ts-mode-hook . eglot-ensure))
-  :config
-  (autoload 'jacob-scala-package "jacob-scala-package")
+         (scala-ts-mode-hook . eglot-ensure)
+         (scala-ts-mode-hook . jacob-font-lock-scala-setup))
+  :preface
+  (require 'jacob-scala-autoloads)
+  :bind ( :map scala-ts-mode-map
+          ("$" . jacob-scala-dollar)))
 
-  (defun jacob-scala-indentation-to-block ()
-    "Convert the indentation based syntax at point to block based syntax."
-    (interactive)
-    (save-excursion
-      (cond-let ([colon-node (treesit-parent-until (treesit-node-at (point)) "colon_argument")]
-                 (unless colon-node
-                   (user-error "Cannot find colon"))
-                 (goto-char (treesit-node-end colon-node))
-                 (insert "}")
-                 (goto-char (treesit-node-start colon-node))
-                 (search-backward ":")
-                 (delete-char 1)
-                 (insert "{"))
-                ([indented-cases-node (treesit-parent-until (treesit-node-at (point)) "indented_\\(cases\\|block\\)")]
-                 (goto-char (treesit-node-end indented-cases-node))
-                 (insert "}")
-                 (goto-char (treesit-node-start indented-cases-node))
-                 (insert "{")))))
-
-  (defun jacob-bloop-compile ()
-    "Recompile the project with bloop."
-    (interactive)
-    (let ((default-directory (project-root (project-current))))
-      (shell-command "bloop clean")
-      (async-shell-command "bloop compile")))
-
-  (defun jacob-scala-test-file ()
-    "Test the current file."
-    (interactive)
-    (let ((package (treesit-node-text
-                    (car
-                     (treesit-query-capture (treesit-buffer-root-node)
-                                            '((package_clause name: (package_identifier (identifier) @x)))
-                                            nil
-                                            nil
-                                            "NODE_ONLY"))))
-          (class (treesit-node-text
-                  (car
-                   (treesit-query-capture (treesit-buffer-root-node)
-                                          '((class_definition name: (identifier) @x))
-                                          nil
-                                          nil
-                                          "NODE_ONLY"))))
-          (default-directory (project-root (project-current))))
-      (compile (format "sbt \"testOnly %s.%s\"" package class))))
-
-  (defun jacob-scala-dollar ()
-    "Insert a dollar. If inside a string, enable string interpolation."
-    (interactive)
-    (unless (eq major-mode 'scala-ts-mode)
-      (user-error "Not in a `scala-ts-mode' buffer"))
-    (insert "$")
-    (let* ((string-node (treesit-parent-until (treesit-node-at (point))
-                                              "string"
-                                              "INCLUDE-NODE"))
-           (interpolated-string-node (treesit-parent-until string-node
-                                                           "interpolated_string"
-                                                           "INCLUDE-NODE")))
-      (when (and string-node
-                 (not interpolated-string-node))
-        (save-excursion
-          (goto-char (treesit-node-start string-node))
-          (insert "s")))))
-
-  (keymap-set scala-ts-mode-map "$" #'jacob-scala-dollar)
-
-  (add-hook 'scala-ts-mode-hook #'jacob-font-lock-scala-setup)
-
-  (defun jacob-format-routes-file ()
-    "Format a routes file."
-    (interactive)
-    (let ((regexp "^[^#+]\\([^[:space:]]+\\)\\([[:space:]]+\\)\\([^[:space:]]+\\)\\([[:space:]]+\\)"))
-      (align-regexp (point-min) (point-max) regexp 2 8)
-      (align-regexp (point-min) (point-max) regexp 4 8))))
+(defun jacob-format-routes-file ()
+  "Format a routes file."
+  ;; TODO: figure out where this should live
+  (interactive)
+  (let ((regexp "^[^#+]\\([^[:space:]]+\\)\\([[:space:]]+\\)\\([^[:space:]]+\\)\\([[:space:]]+\\)"))
+    (align-regexp (point-min) (point-max) regexp 2 8)
+    (align-regexp (point-min) (point-max) regexp 4 8)))
 
 (use-package sbt-mode
   :defer t)
