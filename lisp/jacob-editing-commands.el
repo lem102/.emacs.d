@@ -145,7 +145,7 @@
               (= ?\) (char-syntax (char-after))))
          (kill-line))
         ((= ?\) (char-syntax (char-after)))
-         (backward-kill-line))
+         (kill-line -1))
         (t
          (kill-line))))
 
