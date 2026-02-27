@@ -285,11 +285,9 @@ then remove this function from `find-file-hook'."
         (message "cannot find editable variable")))))
 
 (use-package helpful
-  :defer t
-  :init
-  (keymap-global-set "C-h v" #'helpful-variable)
-  (keymap-global-set "C-h f" #'helpful-callable)
-  (keymap-global-set "C-h k" #'helpful-key))
+  :bind (("C-h v" . helpful-variable)
+         ("C-h f" . helpful-callable)
+         ("C-h k" . helpful-key)))
 
 (use-package subword
   :blackout
