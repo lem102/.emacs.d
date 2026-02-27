@@ -226,7 +226,10 @@ then remove this function from `find-file-hook'."
   :hook (on-init-ui-hook . column-number-mode)
   :hook (on-init-ui-hook . line-number-mode)
   :bind (("C-x u" . nil)                ; `undo'
-         ("C-k" . jacob-kill-line))     ; `kill-line'
+         ("C-k" . jacob-kill-line)      ; `kill-line'
+         ("C-a" . jacob-beginning-of-line) ; `beginning-of-line'
+         ("C-e" . jacob-end-of-line)       ; `end-of-line'
+         )
   :config
   (put 'set-goal-column 'disabled nil))
 
@@ -299,9 +302,11 @@ then remove this function from `find-file-hook'."
   :hook (on-first-input-hook . electric-pair-mode))
 
 (use-package puni
-  :defer t
-  :bind (("C-M-f" . puni-forward-sexp-or-up-list)
-         ("C-M-b" . puni-backward-sexp-or-up-list)))
+  :bind (("M-d" . puni-forward-kill-word) ; `kill-word'
+         ("M-DEL" . puni-backward-kill-word) ; `backward-kill-word'
+         ("C-M-f" . puni-forward-sexp-or-up-list) ; `forward-sexp'
+         ("C-M-b" . puni-backward-sexp-or-up-list) ; `backward-sexp'
+         ))
 
 (use-package delsel
   :hook (on-first-input-hook . delete-selection-mode))
@@ -1040,9 +1045,11 @@ Disables the eglot backend when inside a `.g8' template."
   (add-to-list 'completion-at-point-functions #'cape-dabbrev))
 
 (use-package expreg
-  :defer t
+  :bind (("C-c SPC" . expreg-expand)
+         :repeat-map jacob-expreg-repeat-map
+         ("SPC" . expreg-expand))
   :config
-  (setopt expreg-functions (delq 'expreg--subword expreg-functions)))
+  (setq expreg-functions (remq 'expreg--subword expreg-functions)))
 
 (use-package verb
   :after org
