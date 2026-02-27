@@ -351,12 +351,17 @@ then remove this function from `find-file-hook'."
     ("C-c e a" . eglot-code-actions)
     ("C-c e i" . eglot-find-implementation)
     ("C-c e r" . eglot-rename)
-    ("C-c e t" . eglot-find-typeDefinition))
+    ("C-c e t" . eglot-find-typeDefinition)
+    ("C-c e h" . eglot-inlay-hints-mode))
   :config
   (jacob-defhookf eglot-managed-mode-hook
     (eglot-inlay-hints-mode 0)
     (setq-local eldoc-documentation-strategy 'eldoc-documentation-compose-eagerly)
     (setq-local xref-backend-functions '(eglot-xref-backend dumb-jump-xref-activate t)))
+
+  (setq-default eglot-workspace-configuration '(:metals (:inlayHints ( :implicitArguments (:enable t)
+                                                                       :implicitConversions (:enable t)))
+                                                        (:autoImportBuilds "all")))
 
   (defun jacob-remove-ret-character-from-buffer (&rest _)
     "Remove all occurances of ^M from the buffer.
