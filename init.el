@@ -229,6 +229,7 @@ then remove this function from `find-file-hook'."
          ("C-k" . jacob-kill-line)      ; `kill-line'
          ("C-a" . jacob-beginning-of-line) ; `beginning-of-line'
          ("C-e" . jacob-end-of-line)       ; `end-of-line'
+         ("DEL" . jacob-backspace)
          )
   :config
   (put 'set-goal-column 'disabled nil))
@@ -555,6 +556,11 @@ Disables the eglot backend when inside a `.g8' template."
 
   (face-remap-add-relative 'font-lock-comment-face
                            :inherit 'font-lock-warning-face))
+
+(use-package lisp-mode
+  :bind ( :map lisp-mode-shared-map
+          ("DEL" . nil)              ; `backward-delete-char-untabify'
+          ))
 
 (use-package elisp-mode
   :defer t
