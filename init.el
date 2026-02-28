@@ -47,6 +47,9 @@
 (require 'jacob-init-helpers)
 (require 'jacob-editing-commands)
 
+(use-package jacob-editing-commands
+  :bind (("DEL" . jacob-delete-backwards)))
+
 (use-package use-package
   :config
   (when use-package-compute-statistics
@@ -229,7 +232,6 @@ then remove this function from `find-file-hook'."
          ("C-k" . jacob-kill-line)      ; `kill-line'
          ("C-a" . jacob-beginning-of-line) ; `beginning-of-line'
          ("C-e" . jacob-end-of-line)       ; `end-of-line'
-         ("DEL" . jacob-backspace)
          )
   :config
   (put 'set-goal-column 'disabled nil))
