@@ -318,6 +318,7 @@ then remove this function from `find-file-hook'."
           ("v" . magit-project-status)))
 
 (use-package magit-process
+  :defer t
   :config
   (setq magit-tramp-pipe-stty-settings 'pty))
 
