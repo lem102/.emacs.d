@@ -451,14 +451,6 @@ Disables the eglot backend when inside a `.g8' template."
   :bind ( :map scala-ts-mode-map
           ("$" . jacob-scala-dollar)))
 
-(defun jacob-format-routes-file ()
-  "Format a routes file."
-  ;; TODO: figure out where this should live
-  (interactive)
-  (let ((regexp "^[^#+]\\([^[:space:]]+\\)\\([[:space:]]+\\)\\([^[:space:]]+\\)\\([[:space:]]+\\)"))
-    (align-regexp (point-min) (point-max) regexp 2 8)
-    (align-regexp (point-min) (point-max) regexp 4 8)))
-
 (use-package sbt-mode
   :defer t)
 
@@ -928,7 +920,10 @@ Disables the eglot backend when inside a `.g8' template."
   (setf (alist-get 'gdscript-ts-mode apheleia-mode-alist)
         'gdscript-formatter)
 
-  (add-to-list 'apheleia-skip-functions #'jacob-apheleia-skip-function))
+  (add-to-list 'apheleia-skip-functions #'jacob-apheleia-skip-function)
+
+  (add-to-list 'apheleia-mode-alist '("\\.routes\\'" . play-routes))
+  (add-to-list 'apheleia-formatters (cons 'play-routes #'jacob-apheleia-format-play-routes-file)))
 
 (use-package rainbow-mode
   :blackout
