@@ -445,9 +445,9 @@ Disables the eglot backend when inside a `.g8' template."
          (scala-ts-mode-hook . electric-indent-local-mode)
          (scala-ts-mode-hook . jacob-trim-quotes-mode)
          (scala-ts-mode-hook . eglot-ensure)
-         (scala-ts-mode-hook . jacob-font-lock-scala-setup))
-  :preface
-  (require 'jacob-scala-autoloads)
+         (scala-ts-mode-hook . jacob-scala-font-lock-setup))
+  :config
+  (require 'jacob-scala)
   :bind ( :map scala-ts-mode-map
           ("$" . jacob-scala-dollar)))
 
@@ -531,19 +531,6 @@ Disables the eglot backend when inside a `.g8' template."
 
 (use-package hl-todo
   :hook (after-init-hook . global-hl-todo-mode))
-
-(defun jacob-font-lock-scala-setup ()
-  "Setup faces locally for scala."
-  (dolist (face '(font-lock-keyword-face
-                  font-lock-variable-use-face
-                  font-lock-function-call-face
-                  font-lock-preprocessor-face
-                  font-lock-property-use-face
-                  font-lock-builtin-face))
-    (face-remap-add-relative face :foreground (face-foreground 'default)))
-
-  (face-remap-add-relative 'font-lock-comment-face
-                           :inherit 'font-lock-warning-face))
 
 (defun jacob-font-lock-programming-setup ()
   "Setup faces locally for programming."

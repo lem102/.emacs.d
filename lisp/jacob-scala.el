@@ -5,7 +5,6 @@
 
 ;;; Code:
 
-;;;###autoload
 (defun jacob-scala-indentation-to-block ()
   "Convert the indentation based syntax at point to block based syntax."
   (interactive)
@@ -25,7 +24,6 @@
                (goto-char (treesit-node-start indented-cases-node))
                (insert "{")))))
 
-;;;###autoload
 (defun jacob-scala-test-file ()
   "Test the current file."
   (interactive)
@@ -46,7 +44,6 @@
         (default-directory (project-root (project-current))))
     (compile (format "sbt \"testOnly %s.%s\"" package class))))
 
-;;;###autoload
 (defun jacob-scala-dollar ()
   "Insert a dollar. If inside a string, enable string interpolation."
   (interactive)
@@ -83,7 +80,6 @@
               (string-match-p "\\.scala" f))
             (directory-files (file-name-directory file))))
 
-;;;###autoload
 (defun jacob-scala-package ()
   "Return the package of the current scala file."
   (if-let* ((file (buffer-file-name (current-buffer)))
@@ -91,7 +87,6 @@
       (jacob-scala--get-file-package nearest-file)
     (directory-file-name (file-name-directory file))))
 
-;;;###autoload
 (defun jacob-scala-toggle-raw-string ()
   "Convert strings to raw strings and vice versa.
 
@@ -117,6 +112,20 @@ Leave escaped characters alone."
         (search-forward "\"")
         (insert "\"\""))
       )))
+
+(defun jacob-scala-font-lock-setup ()
+  "Setup faces locally for scala."
+  (dolist (face '(font-lock-keyword-face
+                  font-lock-variable-use-face
+                  font-lock-function-call-face
+                  font-lock-preprocessor-face
+                  font-lock-property-use-face
+                  font-lock-builtin-face))
+    (face-remap-add-relative face :foreground (face-foreground 'default)))
+
+  (face-remap-add-relative 'font-lock-comment-face
+                           :inherit 'font-lock-warning-face))
+
 
 (provide 'jacob-scala)
 
