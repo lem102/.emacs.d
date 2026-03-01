@@ -909,7 +909,26 @@ Disables the eglot backend when inside a `.g8' template."
                                (?. . jacob-avy-xref)
                                (?r . jacob-avy-eglot-rename))))
 
-(require 'jacob-apheleia)
+(use-package apheleia
+  :blackout " ⚘"
+  :config
+  (require 'jacob-apheleia)
+  (add-to-list 'apheleia-formatters '(csharpier "dotnet" "csharpier" "--write-stdout"))
+  (add-to-list 'apheleia-mode-alist '(csharp-ts-mode . csharpier))
+
+  (add-to-list 'apheleia-formatters '(scalafmt "scalafmt" "--stdin" "--non-interactive" "--quiet" "--stdout"))
+
+  (add-to-list 'apheleia-mode-alist '(scala-ts-mode . scalafmt))
+
+  (add-to-list 'apheleia-formatters '(gdscript-formatter "gdscript-formatter"))
+
+  (setf (alist-get 'gdscript-mode apheleia-mode-alist)
+        'gdscript-formatter)
+
+  (setf (alist-get 'gdscript-ts-mode apheleia-mode-alist)
+        'gdscript-formatter)
+
+  (add-to-list 'apheleia-skip-functions #'jacob-apheleia-skip-function))
 
 (use-package rainbow-mode
   :blackout
