@@ -48,7 +48,11 @@
 (require 'jacob-editing-commands)
 
 (use-package jacob-editing-commands
-  :bind (("DEL" . jacob-delete-backwards)))
+  :bind (("DEL" . jacob-delete-backwards)  ; `delete-backward-char'
+         ("C-k" . jacob-kill-line)      ; `kill-line'
+         ("C-a" . jacob-beginning-of-line) ; `beginning-of-line'
+         ("C-e" . jacob-end-of-line)       ; `end-of-line'
+         ))
 
 (use-package use-package
   :config
@@ -229,9 +233,6 @@ then remove this function from `find-file-hook'."
   :hook (on-init-ui-hook . column-number-mode)
   :hook (on-init-ui-hook . line-number-mode)
   :bind (("C-x u" . nil)                ; `undo'
-         ("C-k" . jacob-kill-line)      ; `kill-line'
-         ("C-a" . jacob-beginning-of-line) ; `beginning-of-line'
-         ("C-e" . jacob-end-of-line)       ; `end-of-line'
          )
   :config
   (put 'set-goal-column 'disabled nil))
