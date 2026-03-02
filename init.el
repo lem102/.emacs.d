@@ -357,7 +357,8 @@ then remove this function from `find-file-hook'."
    ("C-c e i" . eglot-find-implementation)
    ("C-c e r" . eglot-rename)
    ("C-c e t" . eglot-find-typeDefinition)
-   ("C-c e h" . eglot-inlay-hints-mode))
+   ("C-c e h" . eglot-inlay-hints-mode)
+   ("C-c e o" . eglot-code-action-organize-imports))
   :config
   (jacob-defhookf eglot-managed-mode-hook
     (eglot-inlay-hints-mode 0)
