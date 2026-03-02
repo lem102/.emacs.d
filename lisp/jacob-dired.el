@@ -17,6 +17,7 @@
   (add-hook 'dired-mode-hook #'dired-hide-details-mode)
   (add-hook 'dired-mode-hook #'auto-revert-mode)
   :config
+  (require 'dired-x)
   (setopt dired-recursive-copies 'always
           dired-dwim-target t
           dired-listing-switches "-hal" ; the h option needs to come first 🙃
