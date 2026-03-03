@@ -363,7 +363,8 @@ then remove this function from `find-file-hook'."
    ("C-c e r" . eglot-rename)
    ("C-c e t" . eglot-find-typeDefinition)
    ("C-c e h" . eglot-inlay-hints-mode)
-   ("C-c e o" . eglot-code-action-organize-imports))
+   ("C-c e o" . eglot-code-action-organize-imports)
+   ("C-c e y" . jacob-eglot-yank))
   :config
   (require 'jacob-eglot)
 
