@@ -994,7 +994,7 @@ then remove this function from `find-file-hook'."
          ("M-g g" . consult-goto-line)
          ("M-g i" . consult-imenu)
          ("M-s o" . consult-line)
-         ("M-y" . consult-yank-pop)
+         ("M-y" . consult-yank-from-kill-ring)
          ("M-g M-g" . consult-goto-line)
          :map project-prefix-map
          ("g" . consult-git-grep)
