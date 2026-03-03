@@ -237,6 +237,11 @@ then remove this function from `find-file-hook'."
   :config
   (put 'set-goal-column 'disabled nil))
 
+(use-package timer-list
+  :defer t
+  :config
+  (put 'list-timers 'disabled nil))
+
 (use-package misc
   :bind ("M-z" . zap-up-to-char))       ; `zap-to-char'
 
