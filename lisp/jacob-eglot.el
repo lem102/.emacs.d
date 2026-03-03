@@ -18,6 +18,22 @@
       (save-buffer)
       (add-hook 'jsonrpc-event-hook #'handle-code-actions))))
 
+(defun jacob-remove-ret-character-from-buffer (&rest _)
+  "Remove all occurances of ^M from the buffer.
+
+    Useful for deleting ^M after `eglot-code-actions'."
+  ;; TODO: Review if needed.
+  (save-excursion
+    (goto-char (point-min))
+    (while (search-forward (char-to-string 13) nil t)
+      (replace-match ""))))
+
+(defun jacob-eglot-xref-backend ()
+  "Custom eglot xref backend.
+Disables the eglot backend when inside a `.g8' template."
+  (unless (string-match-p ".g8" default-directory)
+    'eglot))
+
 (provide 'jacob-eglot)
 
 ;;; jacob-eglot.el ends here

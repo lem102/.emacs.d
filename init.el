@@ -377,21 +377,6 @@ then remove this function from `find-file-hook'."
                                                                         :implicitConversions (:enable t))
                                                           :autoImportBuilds "all")))
 
-  (defun jacob-remove-ret-character-from-buffer (&rest _)
-    "Remove all occurances of ^M from the buffer.
-
-    Useful for deleting ^M after `eglot-code-actions'."
-    (save-excursion
-      (goto-char (point-min))
-      (while (search-forward (char-to-string 13) nil t)
-        (replace-match ""))))
-
-  (defun jacob-eglot-xref-backend ()
-    "Custom eglot xref backend.
-Disables the eglot backend when inside a `.g8' template."
-    (unless (string-match-p ".g8" default-directory)
-      'eglot))
-
   (advice-add 'eglot-xref-backend :override #'jacob-eglot-xref-backend)
 
   (advice-add 'eglot-code-actions :after #'jacob-remove-ret-character-from-buffer)
