@@ -232,6 +232,11 @@ then remove this function from `find-file-hook'."
 (use-package generic-x           ; support for files like `/etc/fstab'
   :defer t)
 
+(use-package conf-mode
+  :defer t
+  :bind ( :map conf-mode-map
+          ("C-c SPC" . nil)))
+
 (use-package simple
   :hook (on-init-ui-hook . column-number-mode)
   :hook (on-init-ui-hook . line-number-mode)
