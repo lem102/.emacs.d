@@ -360,6 +360,8 @@ then remove this function from `find-file-hook'."
    ("C-c e h" . eglot-inlay-hints-mode)
    ("C-c e o" . eglot-code-action-organize-imports))
   :config
+  (require 'jacob-eglot)
+
   (jacob-defhookf eglot-managed-mode-hook
     (eglot-inlay-hints-mode 0)
     (setq-local eldoc-documentation-strategy 'eldoc-documentation-compose-eagerly)
