@@ -179,6 +179,9 @@ then remove this function from `find-file-hook'."
   :hook (on-first-file-hook . global-auto-revert-mode))
 
 (use-package window
+  :bind ( :repeat-map jacob-window-repeat-map
+          ("b" . consult-buffer)
+          ("o" . other-window))
   :custom
   (display-buffer-alist '(((major-mode . sql-interactive-mode)
                            (display-buffer-reuse-mode-window display-buffer-same-window))
