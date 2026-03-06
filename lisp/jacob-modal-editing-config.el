@@ -25,11 +25,11 @@
 (keymap-set jacob-modal-editing-keymap "n" #'isearch-forward)
 (keymap-set jacob-modal-editing-keymap "," #'other-window)
 (keymap-set jacob-modal-editing-keymap "a" #'execute-extended-command)
-(keymap-set jacob-modal-editing-keymap "s" #'jacob-return-macro)
+(keymap-set jacob-modal-editing-keymap "s" #'open-line)
 (keymap-set jacob-modal-editing-keymap "d" #'jacob-delete-backwards)
 (keymap-set jacob-modal-editing-keymap "w" #'xah-shrink-whitespaces)
-(keymap-set jacob-modal-editing-keymap "e" #'backward-kill-word)
-(keymap-set jacob-modal-editing-keymap "r" #'kill-word)
+(keymap-set jacob-modal-editing-keymap "e" #'puni-backward-kill-word)
+(keymap-set jacob-modal-editing-keymap "r" #'puni-forward-kill-word)
 (keymap-set jacob-modal-editing-keymap "t" #'set-mark-command)
 (keymap-set jacob-modal-editing-keymap "p" #'recenter-top-bottom)
 (keymap-set jacob-modal-editing-keymap "x" #'jacob-kill-line)
@@ -389,13 +389,13 @@
 (add-to-list 'jacob-modal-editing-major-mode-keymap-alist
              `(sql-interactive-mode . ,jacob-modal-editing-sql-interactive-map))
 
-(defun jacob-modal-editing-hook-f (command-state-p)
-  "Make visual change depending on value of COMMAND-STATE-P."
-  (unless (equal command-state-p global-hl-line-mode)
-    (global-hl-line-mode (if command-state-p 1 0)))
-  (modify-all-frames-parameters `((cursor-type . ,(if command-state-p 'box 'bar)))))
+(defun jacob-modal-editing-command-mode-hook-f ()
+  "Make visual change depending on value of `jacob-modal-editing-command-mode'."
+  (unless (equal jacob-modal-editing-command-mode global-hl-line-mode)
+    (global-hl-line-mode (if jacob-modal-editing-command-mode 1 0)))
+  (modify-all-frames-parameters `((cursor-type . ,(if jacob-modal-editing-command-mode 'box 'bar)))))
 
-(add-hook 'jacob-modal-editing-hook #'jacob-modal-editing-hook-f)
+(add-hook 'jacob-modal-editing-command-mode-hook #'jacob-modal-editing-command-mode-hook-f)
 
 (keymap-set jacob-modal-editing-mode-keymap "M-SPC" #'jacob-modal-editing-enable)
 
@@ -409,155 +409,6 @@
     (remove-hook 'minibuffer-exit-hook #'jacob-modal-editing-enable)))
 
 (add-hook 'jacob-modal-editing-mode-hook #'jacob-modal-editing-mode-hook-function)
-
-(defun jacob-modal-editing-inhibit-function ()
-  "Stop `jacob-modal-editing' from changing `overriding-terminal-local-map' when:
-
-- `embark' is active.
-- `transient' is active."
-  ;; TODO: compilation mode buttons cause issues
-  (let ((in-embark (seq-find (lambda (e)
-                               (equal 'embark-cycle e))
-                             (flatten-tree overriding-terminal-local-map))))
-    (or
-     ;; in-embark
-     (transient-active-prefix))))
-
-(setq jacob-modal-editing-inhibit-function #'jacob-modal-editing-inhibit-function)
-
-;; (jacob-modal-editing-mode 1)
-
-;; patching embark...
-
-(defmacro jacob-with-transient-map (map &rest body)
-  "Transiently use MAP, execute BODY, then deactivate MAP."
-  `(let ((f (set-transient-map ,map (lambda ()
-                                      t)))
-         (result (progn
-                   ,@body)))
-     (funcall f)
-     result))
-
-(defun jacob-embark-keymap-prompter (keymap update)
-  "Patched version of `embark-keymap-prompter'.
-
-Let the user choose an action using the bindings in KEYMAP.
-Besides the bindings in KEYMAP, the user is free to use all their
-key bindings and even \\[execute-extended-command] to select a command.
-UPDATE is the indicator update function."
-  (let* ((keys (jacob-with-transient-map keymap
-                                         (embark--read-key-sequence update)))
-         (cmd (jacob-with-transient-map keymap
-                                        (key-binding keys 'accept-default))))
-    ;; Set last-command-event as it would be from the command loop.
-    ;; Previously we only set it locally for digit-argument and for
-    ;; the mouse scroll commands handled in this function. But other
-    ;; commands can need it too! For example, electric-pair-mode users
-    ;; may wish to bind ( to self-insert-command in embark-region-map.
-    ;; Also, as described in issue #402, there are circumstances where
-    ;; you might run consult-narrow through the embark-keymap-prompter.
-    (setq last-command-event (aref keys (1- (length keys))))
-    (pcase cmd
-      ((or 'embark-keymap-help
-           (and 'nil            ; cmd is nil but last key is help-char
-                (guard (eq help-char (aref keys (1- (length keys)))))))
-       (let ((embark-indicators
-              (cl-set-difference embark-indicators
-                                 '(embark-verbose-indicator
-                                   embark-mixed-indicator)))
-             (prefix-map
-              (if (eq cmd 'embark-keymap-help)
-                  keymap
-                (jacob-with-transient-map keymap
-                                          (key-binding (seq-take keys (1- (length keys)))
-                                                       'accept-default))))
-             (prefix-arg prefix-arg)) ; preserve prefix arg
-         (when-let ((win (get-buffer-window embark--verbose-indicator-buffer
-                                            'visible)))
-           (quit-window 'kill-buffer win))
-         (embark-completing-read-prompter prefix-map update)))
-      ((or 'universal-argument 'universal-argument-more
-           'negative-argument 'digit-argument 'embark-toggle-quit)
-       ;; prevent `digit-argument' from modifying the overriding map
-       (jacob-with-transient-map overriding-terminal-local-map
-                                 (command-execute cmd))
-       (embark-keymap-prompter
-        (make-composed-keymap universal-argument-map keymap)
-        update))
-      ((or 'minibuffer-keyboard-quit 'abort-recursive-edit 'abort-minibuffers)
-       nil)
-      ((guard (let ((def (lookup-key keymap keys))) ; if directly
-                                        ; bound, then obey
-                (and def (not (numberp def))))) ; number means "invalid prefix"
-       cmd)
-      ((and (pred symbolp)
-            (guard (string-suffix-p "self-insert-command" (symbol-name cmd))))
-       (minibuffer-message "Not an action")
-       (embark-keymap-prompter keymap update))
-      ((or 'scroll-other-window 'scroll-other-window-down)
-       (let ((minibuffer-scroll-window
-              ;; NOTE: Here we special case the verbose indicator!
-              (or (get-buffer-window embark--verbose-indicator-buffer 'visible)
-                  minibuffer-scroll-window)))
-         (ignore-errors (command-execute cmd)))
-       (embark-keymap-prompter keymap update))
-      ((or 'scroll-bar-toolkit-scroll 'mwheel-scroll
-           'mac-mwheel-scroll 'pixel-scroll-precision)
-       (funcall cmd last-command-event)
-       (embark-keymap-prompter keymap update))
-      ('execute-extended-command
-       (let ((prefix-arg prefix-arg)) ; preserve prefix arg
-         (intern-soft (read-extended-command))))
-      ((or 'keyboard-quit 'keyboard-escape-quit)
-       nil)
-      (_ cmd))))
-
-(advice-add #'embark-keymap-prompter :override #'jacob-embark-keymap-prompter)
-
-(defun jacob-embark-verbose-indicator ()
-  "Patched version of `embark-verbose-indicator'.
-
-Indicator that displays a table of key bindings in a buffer.
-The default display includes the type and value of the current
-target, the list of other target types, and a table of key
-bindings, actions and the first line of their docstrings.
-
-The order and formatting of these items is completely
-configurable through the variable
-`embark-verbose-indicator-buffer-sections'.
-
-If the keymap being shown contains prefix keys, the table of key
-bindings can either show just the prefixes and update once the
-prefix is pressed, or it can contain a flat list of all full key
-sequences bound in the keymap.  This is controlled by the
-variable `embark-verbose-indicator-nested'.
-
-To reduce clutter in the key binding table, one can set the
-variable `embark-verbose-indicator-excluded-actions' to a list
-of symbols and regexps matching commands to exclude from the
-table.
-
-To configure how a window is chosen to display this buffer, see
-the variable `embark-verbose-indicator-display-action'."
-  (lambda (&optional keymap targets prefix)
-    (if (not keymap)
-        (when-let ((win (get-buffer-window embark--verbose-indicator-buffer
-                                           'visible)))
-          (quit-window 'kill-buffer win))
-      (embark--verbose-indicator-update
-       (if (and prefix embark-verbose-indicator-nested)
-           ;; Lookup prefix keymap globally if not found in action keymap
-           (jacob-with-transient-map keymap
-                                     (key-binding prefix 'accept-default))
-         keymap)
-       targets)
-      (let ((display-buffer-alist
-             `(,@display-buffer-alist
-               (,(regexp-quote embark--verbose-indicator-buffer)
-                ,@embark-verbose-indicator-display-action))))
-        (display-buffer embark--verbose-indicator-buffer)))))
-
-(advice-add #'embark-verbose-indicator :override #'jacob-embark-verbose-indicator)
 
 (provide 'jacob-modal-editing-config)
 

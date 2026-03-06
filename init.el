@@ -1304,6 +1304,10 @@ For use with GitLab only."
     ;; (shell-command "git push")
     (shell-command "git stash pop")))
 
+;; TODO: WIP should not be here
+(require 'jacob-modal-editing)
+(require 'jacob-modal-editing-config)
+
 (provide 'init)
 
 ;;; init.el ends here
