@@ -276,36 +276,51 @@ Version: 2023-07-12"
 Shrink neighboring spaces, then newlines, then spaces again, leaving
 one space or newline at each step, till no more white space."
   (interactive)
-  (let* ((cursor-start (point))
-         (char-before (char-before))
-         (char-after (char-after))
-         (space-neighbor-p (or (= char-before 32)
-                               (= char-before 9)
-                               (= char-after 32)
-                               (= char-after 9)))
-         (whitespace-begin (progn
-                             (skip-chars-backward " \n\t　")
-                             (point)))
-         (whitespace-end (progn
-                           (goto-char cursor-start)
-                           (skip-chars-forward " \n\t　")
-                           (point)))
-         (newlines (how-many "\n" whitespace-begin whitespace-end)))
-    (goto-char cursor-start)
+  (let ((xeol-count 0)
+        (xp0 (point))
+        xbeg  ; whitespace begin
+        xend  ; whitespace end
+        (xcharBefore (char-before))
+        (xcharAfter (char-after))
+        xspace-neighbor-p)
+    (setq xspace-neighbor-p (or (eq xcharBefore 32) (eq xcharBefore 9) (eq xcharAfter 32) (eq xcharAfter 9)))
+    (skip-chars-backward " \n\t　")
+    (setq xbeg (point))
+    (goto-char xp0)
+    (skip-chars-forward " \n\t　")
+    (setq xend (point))
+    (goto-char xbeg)
+    (while (search-forward "\n" xend t)
+      (setq xeol-count (1+ xeol-count)))
+    (goto-char xp0)
     (cond
-     ((= newlines 0)
-      (delete-horizontal-space)
-      (when (> (- whitespace-end whitespace-begin) 1)
-        (insert " ")))
-     ((> newlines 1)
-      (if space-neighbor-p
+     ((and (eq xeol-count 0)
+           (not xspace-neighbor-p))
+      (join-line -1))
+     ((eq xeol-count 0)
+      (if (> (- xend xbeg) 1)
+          (progn
+            (delete-horizontal-space) (insert " "))
+        (progn (delete-horizontal-space))))
+     ((eq xeol-count 1)
+      (if xspace-neighbor-p
           (delete-horizontal-space)
-        (delete-blank-lines)
-        (when (= newlines 1)
-          (backward-delete-char 1)
-          (insert " "))))
-     (t
-      (message "nothing done. logic error 40873. shouldn't reach here")))))
+        (progn (delete-space--internal "\n" nil) (insert " "))))
+     ((eq xeol-count 2)
+      (if xspace-neighbor-p
+          (delete-horizontal-space)
+        (progn
+          (delete-space--internal "\n" nil)
+          (insert "\n"))))
+     ((> xeol-count 2)
+      (if xspace-neighbor-p
+          (delete-horizontal-space)
+        (progn
+          (goto-char xend)
+          (search-backward "\n")
+          (delete-region xbeg (point))
+          (insert "\n"))))
+     (t (progn(message "nothing done. logic error 40873. shouldn't reach here"))))))
 
 (defun xah-comment-dwim ()
   "Toggle comment in programing language code.
