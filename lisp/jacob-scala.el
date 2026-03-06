@@ -80,12 +80,16 @@
               (string-match-p "\\.scala" f))
             (directory-files (file-name-directory file))))
 
+;; TODO: improve this.
 (defun jacob-scala-package ()
   "Return the package of the current scala file."
   (if-let* ((file (buffer-file-name (current-buffer)))
             (nearest-file (jacob-scala--find-nearest-scala-file file)))
       (jacob-scala--get-file-package nearest-file)
-    (directory-file-name (file-name-directory file))))
+    (string-replace "/"
+                    "."
+                    (file-relative-name (directory-file-name (file-name-directory file))
+                                        (project-root (project-current))))))
 
 (defun jacob-scala-toggle-raw-string ()
   "Convert strings to raw strings and vice versa.
