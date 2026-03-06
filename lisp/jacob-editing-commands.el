@@ -116,8 +116,6 @@
               (t                      ; delete character
                (backward-delete-char-untabify 1)))))))
 
-;; TODO: expand to prefix arg functionality
-
 (defun jacob-delete-forwards ()
   "Delete forwards."
   (interactive)
