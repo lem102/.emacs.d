@@ -8,7 +8,7 @@
  '(auto-save-default nil)
  '(auto-save-visited-interval 2 nil nil "Save file after two seconds.")
  '(avy-dispatch-alist
-   '((107 . avy-action-kill-stay) (75 . jacob-avy-kill-line)
+   '((120 . avy-action-kill-stay) (88 . jacob-avy-kill-line)
      (116 . avy-action-teleport) (116 . avy-action-mark)
      (99 . avy-action-copy) (118 . avy-action-yank)
      (86 . avy-action-yank-line) (105 . avy-action-ispell)
