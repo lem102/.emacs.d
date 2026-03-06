@@ -842,9 +842,7 @@ then remove this function from `find-file-hook'."
     (setq-local auto-save-visited-mode nil)))
 
 (use-package nxml-mode
-  :defer t
-  :init
-  (add-to-list 'auto-mode-alist '("Directory.Packages.props" . nxml-mode)))
+  :mode ("Directory.Packages.props" . nxml-mode))
 
 (use-package avy
   :bind (("M-j" . avy-goto-char-timer)
