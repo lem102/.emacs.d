@@ -116,6 +116,24 @@
               (t                      ; delete character
                (backward-delete-char-untabify 1)))))))
 
+;; TODO: expand to prefix arg functionality
+
+(defun jacob-delete-forwards ()
+  "Delete forwards."
+  (interactive)
+  (let ((char-class (char-syntax (char-after))))
+    (cond ((= ?\" char-class)           ; string
+           (when (nth 3 (syntax-ppss))
+             (backward-up-list))
+           (kill-sexp))
+          ((= ?\( char-class)           ; delete from start of pair
+           (kill-sexp))
+          ((= ?\) char-class)
+           (backward-sexp)
+           (kill-sexp))
+          (t
+           (delete-forward-char 1)))))
+
 (defun jacob-kill-sexp ()
   "Do `kill-sexp' or `delete-pair'."
   (interactive)
@@ -195,6 +213,7 @@ the front."
       (delete-blank-lines)
     (join-line)))
 
+;; TODO: make a version of this that has some behaviour when not in whitespace e.g. join lines.
 (defun xah-shrink-whitespaces ()
   "Remove whitespaces around cursor.
 
