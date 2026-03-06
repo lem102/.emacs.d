@@ -101,6 +101,9 @@ then remove this function from `find-file-hook'."
 
 (use-package emacs
   :config
+  ;; c code
+  (put 'narrow-to-region 'disabled nil)
+
   ;; mule-cmds.el
   (prefer-coding-system 'utf-8)
 
