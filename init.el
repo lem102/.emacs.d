@@ -45,14 +45,18 @@
 ;; configure packages
 
 (require 'jacob-init-helpers)
-(require 'jacob-editing-commands)
 
 (use-package jacob-editing-commands
   :bind (("DEL" . jacob-delete-backwards)  ; `delete-backward-char'
-         ("C-k" . jacob-kill-line)      ; `kill-line'
+         ("C-k" . jacob-kill-line)         ; `kill-line'
          ("C-a" . jacob-beginning-of-line) ; `beginning-of-line'
          ("C-e" . jacob-end-of-line)       ; `end-of-line'
          ))
+
+(use-package jacob-modal-editing
+  :config
+  (require 'jacob-modal-editing-config)
+  (jacob-modal-editing-mode 1))
 
 (use-package use-package
   :config
@@ -1303,10 +1307,6 @@ For use with GitLab only."
     (shell-command "git pull")
     ;; (shell-command "git push")
     (shell-command "git stash pop")))
-
-;; TODO: WIP should not be here
-(require 'jacob-modal-editing)
-(require 'jacob-modal-editing-config)
 
 (provide 'init)
 
