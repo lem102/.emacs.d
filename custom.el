@@ -7,6 +7,13 @@
  '(auto-insert-query nil)
  '(auto-save-default nil)
  '(auto-save-visited-interval 2 nil nil "Save file after two seconds.")
+ '(avy-dispatch-alist
+   '((107 . avy-action-kill-stay) (75 . jacob-avy-kill-line)
+     (116 . avy-action-teleport) (116 . avy-action-mark)
+     (99 . avy-action-copy) (118 . avy-action-yank)
+     (86 . avy-action-yank-line) (105 . avy-action-ispell)
+     (122 . avy-action-zap-to-char) (92 . jacob-avy-embark)))
+ '(avy-keys '(97 115 100 102 103 104 106 108 59))
  '(backup-by-copying t)
  '(bookmark-fringe-mark nil)
  '(bookmark-watch-bookmark-file 'silent)

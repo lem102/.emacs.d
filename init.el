@@ -862,9 +862,7 @@ then remove this function from `find-file-hook'."
     "Kill line at POINT."
     (save-excursion
       (goto-char point)
-      (beginning-of-line)
-      (kill-line)
-      (delete-char 1))
+      (puni-kill-line))
     (jacob-avy-go-home))
 
   (defun jacob-avy-copy-line (point)
@@ -894,18 +892,18 @@ then remove this function from `find-file-hook'."
       (call-interactively #'eglot-rename))
     (jacob-avy-go-home))
 
-  (setopt avy-keys '(?a ?s ?d ?f ?g ?h ?j ?l ?\;)
-          avy-dispatch-alist '((?v . avy-action-yank)
-                               (?V . jacob-avy-yank-line)
-                               (?x . avy-action-kill-stay)
-                               (?X . jacob-avy-kill-line)
-                               (?t . avy-action-mark)
-                               (?c . avy-action-copy)
-                               (?C . jacob-avy-copy-line)
-                               (?i . avy-action-ispell)
-                               (?z . avy-action-zap-to-char)
-                               (?. . jacob-avy-xref)
-                               (?r . jacob-avy-eglot-rename))))
+  (defun jacob-avy-embark (pt)
+    "Call embark at PT."
+    (unwind-protect
+        (save-excursion
+          (goto-char pt)
+          (embark-act))
+      (jacob-avy-go-home)))
+
+  (defun jacob-avy-mark-to-char (pt)
+    "Set mark at PT."
+    (activate-mark)
+    (goto-char pt)))
 
 (use-package apheleia
   :blackout " ⚘"
