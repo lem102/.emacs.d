@@ -51,7 +51,7 @@
          ("C-k" . jacob-kill-line)         ; `kill-line'
          ("C-a" . jacob-beginning-of-line) ; `beginning-of-line'
          ("C-e" . jacob-end-of-line)       ; `end-of-line'
-         ))
+         ("C-d" . jacob-delete-forwards))) ; `delete-char'
 
 (use-package jacob-modal-editing
   :config

@@ -121,16 +121,19 @@
 (defun jacob-delete-forwards ()
   "Delete forwards."
   (interactive)
-  (let ((char-class (char-syntax (char-after))))
+  (let ((char-class (char-syntax (char-after)))
+        (delete-function (if current-prefix-arg
+                             #'delete-pair
+                           #'kill-sexp)))
     (cond ((= ?\" char-class)           ; string
            (when (nth 3 (syntax-ppss))
              (backward-up-list))
-           (kill-sexp))
+           (funcall delete-function))
           ((= ?\( char-class)           ; delete from start of pair
-           (kill-sexp))
+           (funcall delete-function))
           ((= ?\) char-class)
            (backward-sexp)
-           (kill-sexp))
+           (funcall delete-function))
           (t
            (delete-forward-char 1)))))
 
