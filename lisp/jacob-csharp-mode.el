@@ -5,7 +5,7 @@
 
 ;;; Code:
 
-;; JACOBTODO: follow-mode causes strange behaviour
+;; TODO follow-mode causes strange behaviour
 (defun csharp-toolbox-format-statement ()
   "Format the csharp statement at point."
   (interactive)
@@ -46,8 +46,8 @@
         (goto-char node-end)
         (delete-char 1)))))
 
-;; JACOBTODO: follow-mode causes strange behaviour
-;; JACOBTODO: reduce duplication
+;; TODO follow-mode causes strange behaviour
+;; TODO reduce duplication
 (defun csharp-toolbox-format-method ()
   "Format the csharp method at point."
   (interactive)
@@ -335,7 +335,7 @@ Useful for getting the name node of classes or methods."
                             (string-match "identifier"
                                           (treesit-node-type node)))))))
 
-;; JACOBTODO: try make a function for creating fields and adding them to the constructor
+;; TODO try make a function for creating fields and adding them to the constructor
 
 (defun csharp-toolbox-rename-file ()
   "Rename the current file and class/whatever."
