@@ -5,8 +5,6 @@
 
 ;;; Code:
 
-;; (require 'jacob-xah-fly-keys)
-
 (defun jacob-sql-connect ()
   "Wrapper for `sql-connect' to set postgres password.
 CONNECTION is the connection settings. If there is only one connection,
@@ -30,12 +28,6 @@ Intended as before advice for `sql-send-paragraph'."
   (with-current-buffer sql-buffer
     (goto-char (point-max))))
 
-(defun jacob-sql-init ()
-  "Initialize symbol `sql'."
-  ;; TODO: revisit
-  ;; (keymap-set jacob-xfk-map "s" #'jacob-sql-connect)
-  )
-
 (defun jacob-sql-config ()
   "Configure symbol `sql'."
   (jacob-defhookf sql-interactive-mode-hook
@@ -47,8 +39,6 @@ Intended as before advice for `sql-send-paragraph'."
 
 (use-package sql
   :commands (sql-read-connection)
-  :init
-  (jacob-sql-init)
   :config
   (jacob-sql-config))
 
