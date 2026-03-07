@@ -385,6 +385,7 @@ then remove this function from `find-file-hook'."
 
   (jacob-defhookf eglot-managed-mode-hook
     (eglot-inlay-hints-mode 0)
+    (eglot-semantic-tokens-mode 0)
     (setq-local eldoc-documentation-strategy 'eldoc-documentation-compose-eagerly)
     (setq-local xref-backend-functions '(eglot-xref-backend dumb-jump-xref-activate t)))
 
