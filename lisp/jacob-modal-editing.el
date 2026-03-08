@@ -9,6 +9,8 @@
 
 (defvar-keymap jacob-modal-editing-mode-keymap)
 
+(defvar-keymap jacob-modal-editing--internal-keymap)
+
 (defvar jacob-modal-editing-major-mode-keymap-alist nil)
 
 (defun jacob-modal-editing-enable ()
@@ -23,7 +25,6 @@
 
 (defun jacob-modal-editing--build-keymap ()
   "Construct the keymap for command state."
-  ;; TODO: revisit this. how can i get it to work?
   (let* ((modes (with-current-buffer (window-buffer (selected-window))
                   (append local-minor-modes global-minor-modes (list major-mode))))
          (mode-keymaps (seq-keep (lambda (m)
@@ -46,7 +47,11 @@ Allows for major mode specific commands without too much nonsense."
   :global t
   :init-value nil
   :lighter " jmec"
-  :keymap jacob-modal-editing-keymap)
+  :keymap jacob-modal-editing--internal-keymap
+  ;; TODO: the below works, but i need to manually toggle the mode to
+  ;; update bindings. How can this be done automatically?
+  (set-keymap-parent jacob-modal-editing--internal-keymap
+                     (jacob-modal-editing--build-keymap)))
 
 (provide 'jacob-modal-editing)
 
