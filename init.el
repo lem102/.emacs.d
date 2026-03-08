@@ -328,7 +328,9 @@ then remove this function from `find-file-hook'."
          ("M-DEL" . puni-backward-kill-word) ; `backward-kill-word'
          ("C-M-f" . puni-forward-sexp-or-up-list) ; `forward-sexp'
          ("C-M-b" . puni-backward-sexp-or-up-list) ; `backward-sexp'
-         ))
+         )
+  :config
+  (require 'jacob-puni))
 
 (use-package delsel
   :hook (on-first-input-hook . delete-selection-mode))

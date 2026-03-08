@@ -22,7 +22,7 @@
   "Copy line at POINT."
   (save-excursion
     (goto-char point)
-    (copy-region-as-kill (line-beginning-position) (line-end-position)))
+    (jacob-puni-copy-line))
   (jacob-avy-go-home))
 
 (defun jacob-avy-yank-line (pt)
@@ -33,8 +33,7 @@
 (defun jacob-avy-go-home ()
   "Return to the avy origin."
   (let ((dat (ring-ref avy-ring 0)))
-    (select-frame-set-input-focus
-     (window-frame (cdr dat)))
+    (select-frame-set-input-focus (window-frame (cdr dat)))
     (select-window (cdr dat))
     (goto-char (car dat))))
 

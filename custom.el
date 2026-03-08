@@ -10,9 +10,10 @@
  '(avy-dispatch-alist
    '((120 . avy-action-kill-stay) (88 . jacob-avy-kill-line)
      (116 . avy-action-teleport) (103 . avy-action-mark)
-     (99 . avy-action-copy) (118 . avy-action-yank)
-     (86 . avy-action-yank-line) (105 . avy-action-ispell)
-     (122 . avy-action-zap-to-char) (92 . jacob-avy-embark)))
+     (99 . avy-action-copy) (67 . jacob-avy-copy-line)
+     (118 . avy-action-yank) (86 . jacob-avy-yank-line)
+     (105 . avy-action-ispell) (122 . avy-action-zap-to-char)
+     (92 . jacob-avy-embark)))
  '(avy-keys '(97 115 100 102 104 106 108 59))
  '(backup-by-copying t)
  '(bookmark-fringe-mark nil)
