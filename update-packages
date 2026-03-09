@@ -5,6 +5,8 @@
 (require 'package)
 (require 'package-vc)
 
+;; TODO: this doesn't upgrade builtin packages
+
 ;; load `package' configuration
 (load (concat user-emacs-directory "custom.el"))
 

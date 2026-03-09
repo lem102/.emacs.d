@@ -154,6 +154,7 @@
   If point is at the end of the line, kill until the beginning of the line.
 
   Otherwise, kill from point to the end of the line."
+  ;; TODO: Review behaviour when killing from beginning of line.
   (interactive)
   (cond ((region-active-p)
          (call-interactively #'kill-region))

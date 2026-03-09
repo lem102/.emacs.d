@@ -383,6 +383,7 @@ then remove this function from `find-file-hook'."
    ("C-c e o" . eglot-code-action-organize-imports)
    ("C-c e y" . jacob-eglot-yank))
   :config
+  ;; TODO: how can i prevent pop ups from scala metals?
   (require 'jacob-eglot)
 
   (jacob-defhookf eglot-managed-mode-hook
