@@ -32,6 +32,13 @@
                                  modes)))
     (make-composed-keymap mode-keymaps jacob-modal-editing-keymap)))
 
+(defun jacob-modal-editing--update-keymap (&rest _parameters)
+  "Update the internal keymap.
+
+Intended to be called by hooks, so takes any number of arguments and does nothing with them."
+  (set-keymap-parent jacob-modal-editing--internal-keymap
+                     (jacob-modal-editing--build-keymap)))
+
 (define-minor-mode jacob-modal-editing-mode
   "Simple modal editing mode.
 
@@ -48,10 +55,13 @@ Allows for major mode specific commands without too much nonsense."
   :init-value nil
   :lighter " jmec"
   :keymap jacob-modal-editing--internal-keymap
-  ;; TODO: the below works, but i need to manually toggle the mode to
-  ;; update bindings. How can this be done automatically?
-  (set-keymap-parent jacob-modal-editing--internal-keymap
-                     (jacob-modal-editing--build-keymap)))
+  (if jacob-modal-editing-command-mode
+      (progn
+        (jacob-modal-editing--update-keymap)
+        (add-hook 'window-state-change-functions #'jacob-modal-editing--update-keymap)
+        (add-hook 'change-major-mode-hook #'jacob-modal-editing--update-keymap))
+    (remove-hook 'window-state-change-functions #'jacob-modal-editing--update-keymap)
+    (remove-hook 'change-major-mode-hook #'jacob-modal-editing--update-keymap)))
 
 (provide 'jacob-modal-editing)
 
