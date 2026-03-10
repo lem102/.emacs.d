@@ -455,6 +455,72 @@ Version: 2023-11-14"
           ((= class ?\ )
            (kill-region (car puni-line) (cdr puni-line))))))
 
+(defun xah-show-in-desktop ()
+  "Show current file in desktop.
+
+\(Mac Finder, Microsoft Windows File Explorer, Linux file manager)
+This command can be called when in a file buffer or in `dired'.
+
+URL `http://xahlee.info/emacs/emacs/emacs_show_in_desktop.html'
+Created: 2020-11-20
+Version: 2023-09-09"
+  (interactive)
+  (let ((xpath (if (eq major-mode 'dired-mode)
+                   (if (eq nil (dired-get-marked-files))
+                       default-directory
+                     (car (dired-get-marked-files)))
+                 (if buffer-file-name buffer-file-name default-directory))))
+    (cond
+     ((eq system-type 'windows-nt)
+      (shell-command (format "PowerShell -Command invoke-item '%s'" (expand-file-name default-directory))))
+     ((eq system-type 'darwin)
+      (shell-command
+       (concat "open -R " (shell-quote-argument xpath))))
+     ((eq system-type 'gnu/linux)
+      (call-process shell-file-name nil 0 nil
+                    shell-command-switch
+                    (format "%s %s"
+                            "xdg-open"
+                            (file-name-directory xpath)))))))
+
+(defun xah-open-in-external-app (&optional Fname)
+  "Open the current file or Dired marked files in external app.
+When called in elisp, if FNAME is given, open that.
+
+URL `http://xahlee.info/emacs/emacs/emacs_dired_open_file_in_ext_apps.html'
+Created: 2019-11-04
+Version: 2025-04-18"
+  (interactive)
+  (let (xfileList xdoIt)
+    (setq xfileList
+          (if Fname
+              (list Fname)
+            (if (eq major-mode 'dired-mode)
+                (dired-get-marked-files)
+              (list buffer-file-name))))
+    (setq xdoIt (if (<= (length xfileList) 10) t (y-or-n-p "Open more than 10 files? ")))
+    (when xdoIt
+      (cond
+       ((eq system-type 'windows-nt)
+        (let ((xoutBuf (get-buffer-create "*xah open in external app*"))
+              (xcmdlist (list "PowerShell" "-Command" "Invoke-Item" "-LiteralPath")))
+          (mapc
+           (lambda (x)
+             (apply 'start-process (append (list "xah open in external app" xoutBuf) xcmdlist (list (format "'%s'" (string-replace "'" "`'" x))) nil)))
+           xfileList)))
+       ((eq system-type 'darwin)
+        (mapc (lambda (xfpath) (shell-command (concat "open " (shell-quote-argument xfpath)))) xfileList))
+       ((eq system-type 'gnu/linux)
+        (mapc (lambda (xfpath)
+                (call-process shell-file-name nil 0 nil
+                              shell-command-switch
+                              (format "%s %s"
+                                      "xdg-open"
+                                      (shell-quote-argument xfpath))))
+              xfileList))
+       ((eq system-type 'berkeley-unix)
+        (mapc (lambda (xfpath) (let ((process-connection-type nil)) (start-process "" nil "xdg-open" xfpath))) xfileList))))))
+
 (provide 'jacob-editing-commands)
 
 ;;; jacob-editing-commands.el ends here
