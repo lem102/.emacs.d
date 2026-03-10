@@ -822,7 +822,7 @@ then remove this function from `find-file-hook'."
                                           :url "https://github.com/PrestonKnopp/tree-sitter-gdscript.git"
                                           :ext "\\.gd\\'"))
 
-  (setq treesit-auto-langs '(csharp scala yaml gdscript json))
+  (setq treesit-auto-langs '(c-sharp scala yaml gdscript json))
   (treesit-auto-add-to-auto-mode-alist)
   (global-treesit-auto-mode 1))
 
