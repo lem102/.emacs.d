@@ -119,17 +119,7 @@ Leave escaped characters alone."
 
 (defun jacob-scala-font-lock-setup ()
   "Setup faces locally for scala."
-  (dolist (face '(font-lock-keyword-face
-                  font-lock-variable-use-face
-                  font-lock-function-call-face
-                  font-lock-preprocessor-face
-                  font-lock-property-use-face
-                  font-lock-builtin-face))
-    (face-remap-add-relative face :foreground (face-foreground 'default)))
-
-  (face-remap-add-relative 'font-lock-comment-face
-                           :inherit 'font-lock-warning-face))
-
+  (treesit-font-lock-recompute-features nil '(keyword variable)))
 
 (provide 'jacob-scala)
 
