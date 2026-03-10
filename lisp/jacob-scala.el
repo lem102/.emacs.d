@@ -119,7 +119,9 @@ Leave escaped characters alone."
 
 (defun jacob-scala-font-lock-setup ()
   "Setup faces locally for scala."
-  (treesit-font-lock-recompute-features nil '(keyword variable)))
+  (treesit-font-lock-recompute-features nil '(keyword variable))
+  (face-remap-add-relative 'font-lock-comment-face
+                           :inherit 'font-lock-warning-face))
 
 (provide 'jacob-scala)
 
