@@ -422,7 +422,7 @@ then remove this function from `find-file-hook'."
 
   (push '((gdscript-mode gdscript-ts-mode) "localhost" 6008) eglot-server-programs)
 
-  (add-to-list 'eglot-server-programs '(scala-ts-mode . ("metals" "-Dmetals.http=on")))
+  (add-to-list 'eglot-server-programs '(scala-ts-mode . ("metals" :initializationOptions (:isHttpEnabled t))))
 
   (eglot--code-action eglot-code-action-organize-imports-ts "source.organizeImports.ts")
   (eglot--code-action eglot-code-action-add-missing-imports-ts "source.addMissingImports.ts")
