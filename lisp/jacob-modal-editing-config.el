@@ -168,11 +168,13 @@
 (keymap-set jacob-modal-editing-keymap "SPC j v" #'helpful-key)
 
 ;; eglot
-(keymap-set jacob-modal-editing-keymap "SPC SPC c e" #'eglot)
-(keymap-set jacob-modal-editing-keymap "SPC SPC c a" #'eglot-code-actions)
-(keymap-set jacob-modal-editing-keymap "SPC SPC c i" #'eglot-find-implementation)
-(keymap-set jacob-modal-editing-keymap "SPC SPC c r" #'eglot-rename)
-(keymap-set jacob-modal-editing-keymap "SPC SPC c t" #'eglot-find-typeDefinition)
+(keymap-set jacob-modal-editing-keymap "SPC SPC e e" #'eglot)
+(keymap-set jacob-modal-editing-keymap "SPC SPC e a" #'eglot-code-actions)
+(keymap-set jacob-modal-editing-keymap "SPC SPC e i" #'eglot-find-implementation)
+(keymap-set jacob-modal-editing-keymap "SPC SPC e r" #'eglot-rename)
+(keymap-set jacob-modal-editing-keymap "SPC SPC e t" #'eglot-find-typeDefinition)
+(keymap-set jacob-modal-editing-keymap "SPC SPC e h" #'eglot-inlay-hints-mode)
+(keymap-set jacob-modal-editing-keymap "SPC SPC e o" #'eglot-code-action-organize-imports)
 
 ;; org agenda
 (keymap-set jacob-modal-editing-keymap "SPC SPC a a" #'org-agenda)
