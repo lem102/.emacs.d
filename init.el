@@ -252,6 +252,24 @@ then remove this function from `find-file-hook'."
   :config
   (put 'set-goal-column 'disabled nil))
 
+(use-package thingatpt
+  :config
+  (defun jacob-puni-line-at-point ()
+    "Get the puni line at point."
+    (let ((bounds (puni-soft-delete (line-beginning-position)
+                                    (save-excursion
+                                      (forward-line)
+                                      (point))
+                                    "STRICT-SEXP"
+                                    'beyond
+                                    nil
+                                    nil
+                                    "RETURN-REGION")))
+      (buffer-substring-no-properties (car bounds)
+                                      (cdr bounds))))
+
+  (add-to-list 'thing-at-point-provider-alist '((puni-line . jacob-puni-line-at-point))))
+
 (use-package timer-list
   :defer t
   :config
