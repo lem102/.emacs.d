@@ -1125,9 +1125,10 @@ then remove this function from `find-file-hook'."
   "Minor mode for sharing screens."
   :global t
   :group 'jacob
-  (let ((on (if jacob-screen-sharing-mode 1 0)))
-    (global-hl-line-mode on)
-    (global-display-line-numbers-mode on)))
+  (if jacob-screen-sharing-mode
+      (progn
+        (global-display-line-numbers-mode 1))
+    (global-display-line-numbers-mode 0)))
 
 (defun jacob-ip-to-kill-ring ()
   "Copy v4 ip address to kill ring."

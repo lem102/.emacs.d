@@ -96,7 +96,7 @@
 (keymap-set jacob-modal-editing-keymap "SPC j g" #'info)
 
 (keymap-set jacob-modal-editing-keymap "SPC l 6" #'calendar)
-(keymap-set jacob-modal-editing-keymap "SPC l ;" #'global-display-line-numbers-mode)
+(keymap-set jacob-modal-editing-keymap "SPC l ;" #'jacob-screen-sharing-mode)
 (keymap-set jacob-modal-editing-keymap "SPC l a" #'global-text-scale-adjust)
 (keymap-set jacob-modal-editing-keymap "SPC l d" #'eshell)
 (keymap-set jacob-modal-editing-keymap "SPC l e" #'toggle-frame-maximized)
