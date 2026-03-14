@@ -412,7 +412,10 @@ then remove this function from `find-file-hook'."
 
   (setq-default eglot-workspace-configuration '(:metals ( :inlayHints ( :implicitArguments (:enable t)
                                                                         :implicitConversions (:enable t))
-                                                          :autoImportBuilds "all")))
+                                                          :autoImportBuilds "all"
+                                                          :targetBuildTool "sbt"
+                                                          :defaultBspToBuildTool t
+                                                          :enableBestEffort t)))
 
   (advice-add 'eglot-xref-backend :override #'jacob-eglot-xref-backend)
 
