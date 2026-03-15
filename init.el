@@ -404,6 +404,11 @@ then remove this function from `find-file-hook'."
   ;; TODO: how can i prevent pop ups from scala metals?
   (require 'jacob-eglot)
 
+  (add-to-list 'eglot--lsp-interface-alist
+               '(RenameFile (:kind :oldUri :newUri)) ())
+
+  (advice-add #'eglot--apply-workspace-edit :override #'jacob-eglot--apply-workspace-edit)
+
   (jacob-defhookf eglot-managed-mode-hook
     (eglot-inlay-hints-mode 0)
     (eglot-semantic-tokens-mode 0)
