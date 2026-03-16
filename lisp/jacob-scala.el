@@ -123,6 +123,32 @@ Leave escaped characters alone."
   (face-remap-add-relative 'font-lock-comment-face
                            :inherit 'font-lock-warning-face))
 
+(defun jacob-scala-steal-import ()
+  "Try to import the symbol at point using grep.
+Finds existing import statements for the symbol in the current project,
+lets you select one via completion, and inserts it at the top of the file."
+  (interactive)
+  (let* ((symbol (thing-at-point 'symbol t))
+         (project (project-current))
+         (root (project-root project))
+         (search-regexp (concat "^import .*" (regexp-quote symbol)))
+         (matches (when symbol
+                    (split-string (shell-command-to-string
+                                   (format "grep -rh --include=*.scala -m 1 %s %s"
+                                           (shell-quote-argument search-regexp)
+                                           root))
+                                  "\n"
+                                  "OMIT-NULLS")))
+         (import (car-safe matches)))
+    (if (null import)
+        (message "Import failed.")
+      (save-excursion
+        (goto-char (point-min))
+        (when (re-search-forward "^package .*" nil t)
+          (forward-line 1))
+        (insert import "\n")
+        (message "Nicked import: %s" import)))))
+
 (provide 'jacob-scala)
 
 ;;; jacob-scala.el ends here
