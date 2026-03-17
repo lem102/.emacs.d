@@ -1002,6 +1002,8 @@ then remove this function from `find-file-hook'."
   :bind
   (("C-." . embark-act)
    ("C-;" . embark-dwim)
+   :map minibuffer-local-map
+   ("C-e" . embark-export)
    :map embark-general-map
    ("w" . nil)
    ("c" . embark-copy-as-kill)
