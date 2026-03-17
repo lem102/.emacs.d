@@ -47,6 +47,7 @@
  '(history-length 1000)
  '(imenu-use-popup-menu 'on-mouse)
  '(indent-tabs-mode nil nil nil "Use spaces to indent.")
+ '(isearch-lazy-count t)
  '(kill-buffer-query-functions
    (remq 'process-kill-buffer-query-function kill-buffer-query-functions) t)
  '(kill-do-not-save-duplicates t)
