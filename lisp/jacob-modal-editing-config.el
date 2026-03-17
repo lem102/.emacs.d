@@ -87,6 +87,7 @@
 (keymap-set jacob-modal-editing-keymap "SPC , e" #'eval-buffer)
 (keymap-set jacob-modal-editing-keymap "SPC , f" #'eval-region)
 (keymap-set jacob-modal-editing-keymap "SPC , m" #'eval-last-sexp)
+(keymap-set jacob-modal-editing-keymap "SPC , n" #'jacob-eval-and-replace)
 (keymap-set jacob-modal-editing-keymap "SPC , r" #'eval-expression)
 (keymap-set jacob-modal-editing-keymap "SPC , x" #'save-buffers-kill-emacs)
 

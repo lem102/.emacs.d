@@ -38,7 +38,6 @@
 ;;   (keymap-set xah-fly-command-map "s" #'jacob-return-macro)
 ;;   (keymap-set xah-fly-command-map "x" #'jacob-kill-line)
 
-;;   (keymap-set xah-fly-leader-key-map ", n" #'jacob-eval-and-replace)
 ;;   (keymap-set xah-fly-leader-key-map "/ b" #'vc-switch-branch)
 ;;   (keymap-set xah-fly-leader-key-map "/ c" #'vc-create-branch)
 ;;   (keymap-unset xah-fly-leader-key-map "i o") ; `bookmark-jump'
