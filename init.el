@@ -199,13 +199,9 @@ then remove this function from `find-file-hook'."
                           ((or (derived-mode . slack-mode)
                                (derived-mode . lui-mode))
                            (display-buffer-in-side-window)
-                           (side . right))))
-
-  ;; experimental display buffer alist changes
-  ;; (display-buffer-alist '(((major-mode . magit-diff-mode)
-  ;;                          nil)
-  ;;                         ("\\`.*\\'" . (display-buffer-same-window display-buffer-full-frame))))
-  )
+                           (side . right))
+                          ((major-mode . helpful-mode)
+                           (display-buffer-reuse-mode-window display-buffer-same-window)))))
 
 (defvar-keymap jacob-recenter-repeat-map
   :repeat t
