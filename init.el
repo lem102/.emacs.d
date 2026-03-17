@@ -279,10 +279,9 @@ then remove this function from `find-file-hook'."
   :bind ("M-z" . zap-up-to-char))       ; `zap-to-char'
 
 (use-package isearch
-  :defer t
-  :config
-  (keymap-set isearch-mode-map "<right>" #'isearch-repeat-forward)
-  (keymap-set isearch-mode-map "<left>" #'isearch-repeat-backward))
+  :bind ( :map isearch-mode-map
+          ("<right>" . isearch-repeat-forward)
+          ("<left>" . isearch-repeat-backward)))
 
 (require 'jacob-bookmark-autoloads)
 
