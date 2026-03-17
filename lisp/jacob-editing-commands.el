@@ -521,33 +521,6 @@ Version: 2025-04-18"
        ((eq system-type 'berkeley-unix)
         (mapc (lambda (xfpath) (let ((process-connection-type nil)) (start-process "" nil "xdg-open" xfpath))) xfileList))))))
 
-(defun jacob-killer ()
-  "Kill stuff."
-  (interactive)
-  ;; TODO: in a identifier? kill the identifier.
-  ;; TODO: at the start of a pair? kill the pair.
-  ;; TODO: base case, kill the puni line?
-  (let* ((syntax-after (char-syntax (char-after))))
-    (cond ((or (= syntax-after ?w)
-               (= syntax-after ?\()
-               (= syntax-after ?_))
-           (jacob-killer-sexp))
-          (t
-           (jacob-killer-puni-line)))))
-
-(defun jacob-killer-sexp ()
-  "Kill sexp."
-  (let ((bounds (bounds-of-thing-at-point 'sexp)))
-    (kill-region (car bounds) (cdr bounds))))
-
-(defun jacob-killer-puni-line ()
-  "Kill a puni line."
-  (let ((bounds (bounds-of-thing-at-point 'puni-line)))
-    (kill-region (car bounds) (cdr bounds))))
-
-;; TODO: experimental
-(keymap-set jacob-modal-editing-keymap "x" #'jacob-killer)
-
 (provide 'jacob-editing-commands)
 
 ;;; jacob-editing-commands.el ends here
