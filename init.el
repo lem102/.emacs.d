@@ -223,6 +223,10 @@ then remove this function from `find-file-hook'."
   :config
   (setq disabled-command-function nil))
 
+(use-package hippie-exp
+  :bind (("M-/" . hippie-expand))       ; `dabbrev-expand'
+  )
+
 (use-package recentf
   :hook (on-first-input-hook . recentf-mode))
 
