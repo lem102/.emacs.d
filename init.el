@@ -1001,30 +1001,17 @@ then remove this function from `find-file-hook'."
   :defer t
   :bind
   (("C-." . embark-act)
-   ("C-;" . embark-dwim))
+   ("C-;" . embark-dwim)
+   :map embark-general-map
+   ("w" . nil)
+   ("c" . embark-copy-as-kill)
+   ("x" . kill-region)
+   :map embark-flymake-map
+   ("a" . eglot-code-actions)
+   ("r" . eglot-rename))
   :config
-  (setopt embark-help-key "h")
-
-  (keymap-set embark-flymake-map "a" #'eglot-code-actions)
-  (push 'embark--ignore-target (alist-get 'eglot-code-actions embark-target-injection-hooks))
-
-  (keymap-set embark-identifier-map "r" #'eglot-rename)
-  (push 'embark--ignore-target (alist-get 'eglot-rename embark-target-injection-hooks))
-
-  (keymap-unset embark-general-map "w")
-  (keymap-set embark-general-map "c" #'embark-copy-as-kill)
-
-  (defvar-keymap embark-variable-map
-    :doc "Keymap for Embark variable actions."
-    :parent embark-symbol-map
-    "=" #'set-variable
-    "s" #'customize-set-variable        ; modified
-    "u" #'customize-variable
-    "v" #'embark-save-variable-value
-    "<" #'embark-insert-variable-value
-    "t" #'embark-toggle-variable)
-
-  (keymap-set embark-general-map "x" #'kill-region))
+  (setf (alist-get 'eglot-code-actions embark-target-injection-hooks) 'embark--ignore-target
+        (alist-get 'eglot-rename embark-target-injection-hooks) 'embark--ignore-target))
 
 (use-package embark-consult
   :defer t
