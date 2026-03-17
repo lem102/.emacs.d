@@ -1103,6 +1103,10 @@ then remove this function from `find-file-hook'."
   (when jacob-is-windows
     (setq find-program "C:/Program Files (x86)/GnuWin32/bin/find.exe")))
 
+(use-package wgrep
+  :bind ( :map grep-mode-map
+          ("e" . wgrep-change-to-wgrep-mode)))
+
 
 ;; personal functions
 
