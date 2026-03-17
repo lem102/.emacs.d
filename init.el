@@ -323,7 +323,9 @@ then remove this function from `find-file-hook'."
       (goto-char (point-min))
       (if (search-forward "Its value is " nil "NOERROR")
           (help-fns-edit-variable)
-        (message "cannot find editable variable")))))
+        (message "cannot find editable variable"))))
+  :config
+  (put 'help-fns-edit-variable 'disabled nil))
 
 (use-package helpful
   :bind (("C-h v" . helpful-variable)
