@@ -443,18 +443,6 @@ Version: 2023-11-14"
      ((looking-at "[[:upper:]]") (downcase-region (point) (1+ (point)))))
     (right-char)))
 
-(defun jacob-ultimate-kill ()
-  "It's late and you are sick."
-  (interactive)
-  (let ((class (char-syntax (char-after)))
-        (word (bounds-of-thing-at-point 'sexp))
-        ;; TODO: continue when puni line "thing" is merged in
-        (puni-line (bounds-of-thing-at-point 'puni-line)))
-    (cond ((= class ?w)
-           (kill-region (car word) (cdr word)))
-          ((= class ?\ )
-           (kill-region (car puni-line) (cdr puni-line))))))
-
 (defun xah-show-in-desktop ()
   "Show current file in desktop.
 
