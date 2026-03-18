@@ -283,7 +283,10 @@ then remove this function from `find-file-hook'."
           ("<right>" . isearch-repeat-forward)
           ("<left>" . isearch-repeat-backward)))
 
-(require 'jacob-bookmark-autoloads)
+(use-package bookmark
+  :defer t
+  :config
+  (require 'jacob-bookmark))
 
 (use-package flymake
   :bind
