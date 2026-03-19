@@ -161,12 +161,12 @@
 (keymap-set jacob-modal-editing-keymap "SPC / m" #'magit-project-status)
 
 ;; Nested: SPC j
-(keymap-set jacob-modal-editing-keymap "SPC j b" #'helpful-command)
+(keymap-set jacob-modal-editing-keymap "SPC j b" #'describe-command)
 (keymap-set jacob-modal-editing-keymap "SPC j c" #'consult-man)
 (keymap-set jacob-modal-editing-keymap "SPC j g" #'consult-info)
-(keymap-set jacob-modal-editing-keymap "SPC j k" #'helpful-callable)
-(keymap-set jacob-modal-editing-keymap "SPC j l" #'helpful-variable)
-(keymap-set jacob-modal-editing-keymap "SPC j v" #'helpful-key)
+(keymap-set jacob-modal-editing-keymap "SPC j k" #'describe-function)
+(keymap-set jacob-modal-editing-keymap "SPC j l" #'describe-variable)
+(keymap-set jacob-modal-editing-keymap "SPC j v" #'describe-key)
 
 ;; eglot
 (keymap-set jacob-modal-editing-keymap "SPC SPC e e" #'eglot)
@@ -216,16 +216,6 @@
 
 (add-to-list 'jacob-modal-editing-major-mode-keymap-alist
              `(help-mode . ,jacob-modal-editing-help-map))
-
-(defvar-keymap jacob-modal-editing-helpful-map
-  "q" #'quit-window
-  "g" #'helpful-update
-  "e" #'backward-button
-  "r" #'forward-button
-  "s" #'push-button)
-
-(add-to-list 'jacob-modal-editing-major-mode-keymap-alist
-             `(helpful-mode . ,jacob-modal-editing-helpful-map))
 
 (defvar-keymap jacob-modal-editing-info-map
   "q" #'quit-window

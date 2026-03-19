@@ -199,9 +199,7 @@ then remove this function from `find-file-hook'."
                           ((or (derived-mode . slack-mode)
                                (derived-mode . lui-mode))
                            (display-buffer-in-side-window)
-                           (side . right))
-                          ((major-mode . helpful-mode)
-                           (display-buffer-reuse-mode-window display-buffer-same-window)))))
+                           (side . right)))))
 
 (defvar-keymap jacob-recenter-repeat-map
   :repeat t
@@ -327,11 +325,6 @@ then remove this function from `find-file-hook'."
         (message "cannot find editable variable"))))
   :config
   (put 'help-fns-edit-variable 'disabled nil))
-
-(use-package helpful
-  :bind (("C-h v" . helpful-variable)
-         ("C-h f" . helpful-callable)
-         ("C-h k" . helpful-key)))
 
 (use-package subword
   :blackout
