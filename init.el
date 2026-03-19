@@ -51,7 +51,7 @@
          ("C-k" . jacob-kill-line)         ; `kill-line'
          ("C-a" . jacob-beginning-of-line) ; `beginning-of-line'
          ("C-e" . jacob-end-of-line)       ; `end-of-line'
-         ("C-d" . jacob-delete-forwards))) ; `delete-char'
+         ))
 
 (use-package jacob-modal-editing
   :config
@@ -266,9 +266,7 @@ then remove this function from `find-file-hook'."
                       nil
                       "RETURN-REGION"))
 
-  (put 'puni-line 'bounds-of-thing-at-point 'jacob-bounds-of-puni-line-at-point)
-
-  )
+  (put 'puni-line 'bounds-of-thing-at-point 'jacob-bounds-of-puni-line-at-point))
 
 (use-package timer-list
   :defer t
