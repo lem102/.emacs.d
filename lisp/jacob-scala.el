@@ -27,13 +27,7 @@
 (defun jacob-scala-test-file ()
   "Test the current file."
   (interactive)
-  (let ((package (treesit-node-text
-                  (car
-                   (treesit-query-capture (treesit-buffer-root-node)
-                                          '((package_clause name: (package_identifier (identifier) @x)))
-                                          nil
-                                          nil
-                                          "NODE_ONLY"))))
+  (let ((package (jacob-scala--package (buffer-file-name (current-buffer))))
         (class (treesit-node-text
                 (car
                  (treesit-query-capture (treesit-buffer-root-node)
@@ -62,17 +56,30 @@
         (goto-char (treesit-node-start string-node))
         (insert "s")))))
 
-(defun jacob-scala--get-file-package (file)
-  "Get FILE's package."
-  (with-temp-buffer
-    (insert-file-contents file)
-    (treesit-node-text
-     (seq-first
-      (treesit-query-capture (treesit-buffer-root-node 'scala)
-                             '((package_clause (package_identifier) @package))
-                             nil
-                             nil
-                             "NODE-ONLY")))))
+(defun jacob-scala--package (&optional buffer-or-file)
+  "Get the package of BUFFER-OR-FILE.
+
+When BUFFER-OR-FILE is nil, query the current buffer.
+When BUFFER-OR-FILE is a buffer, query the buffer.
+When BUFFER-OR-FILE is a file, query the file."
+  (let ((f (lambda ()
+             (treesit-node-text
+              (seq-first
+               (treesit-query-capture (treesit-buffer-root-node 'scala)
+                                      '((package_clause (package_identifier) @package))
+                                      nil
+                                      nil
+                                      "NODE-ONLY"))
+              "NO_PROPERTY"))))
+    (cond ((null buffer-or-file)
+           (funcall f))
+          ((bufferp buffer-or-file)
+           (with-current-buffer buffer-or-file
+             (funcall f)))
+          ((file-readable-p buffer-or-file)
+           (with-temp-buffer
+             (insert-file-contents buffer-or-file)
+             (funcall f))))))
 
 (defun jacob-scala--find-nearest-scala-file (file)
   "Find the nearest scala file to FILE."
@@ -85,7 +92,7 @@
   "Return the package of the current scala file."
   (if-let* ((file (buffer-file-name (current-buffer)))
             (nearest-file (jacob-scala--find-nearest-scala-file file)))
-      (jacob-scala--get-file-package nearest-file)
+      (jacob-scala--package nearest-file)
     (string-replace "/"
                     "."
                     (file-relative-name (directory-file-name (file-name-directory file))
