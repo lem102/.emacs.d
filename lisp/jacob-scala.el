@@ -36,7 +36,7 @@
                                         nil
                                         "NODE_ONLY"))))
         (default-directory (project-root (project-current))))
-    (compile (format "sbt \"testOnly %s.%s\"" package class))))
+    (sbt-command (format "testOnly %s.%s" package class))))
 
 (defun jacob-scala-dollar ()
   "Insert a dollar. If inside a string, enable string interpolation."

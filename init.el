@@ -380,6 +380,7 @@ then remove this function from `find-file-hook'."
 (use-package dumb-jump
   :defer t
   :config
+  (add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
   (when jacob-is-mac
     ;; problems on mac mean git grep doesn't work :(
     (setq-default dumb-jump-force-searcher 'grep)))
@@ -407,7 +408,6 @@ then remove this function from `find-file-hook'."
   (jacob-defhookf eglot-managed-mode-hook
     (eglot-inlay-hints-mode 0)
     (eglot-semantic-tokens-mode 0)
-    (setq-local eldoc-documentation-strategy 'eldoc-documentation-compose-eagerly)
     (setq-local xref-backend-functions '(eglot-xref-backend dumb-jump-xref-activate t)))
 
   (setq-default eglot-workspace-configuration '(:metals ( :inlayHints ( :implicitArguments (:enable t)
@@ -883,6 +883,8 @@ then remove this function from `find-file-hook'."
   :blackout " ⚘"
   :config
   (require 'jacob-apheleia)
+
+  (keymap-set global-map "<menu-bar> <tools> <apheleia>" '("Format Buffer" . apheleia-format-buffer))
 
   (add-to-list 'apheleia-formatters '(csharpier "dotnet" "csharpier" "--write-stdout"))
   (add-to-list 'apheleia-formatters '(gdscript-formatter "gdscript-formatter"))
