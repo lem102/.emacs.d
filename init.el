@@ -951,8 +951,7 @@ then remove this function from `find-file-hook'."
            (japanese-TeX-error-messages nil)))
 
 (use-package visual-replace
-  :defer t
-  :hook ((visual-replace-minibuffer-mode-hook . visual-replace-toggle-query))
+  :hook (visual-replace-minibuffer-mode-hook . visual-replace-toggle-query)
   :bind ( :map visual-replace-mode-map
           ("<remap> <yank>" . nil)
           ("<remap> <yank-pop>" . nil)))
