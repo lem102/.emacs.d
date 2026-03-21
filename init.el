@@ -950,12 +950,6 @@ then remove this function from `find-file-hook'."
            (TeX-parse-self t)
            (japanese-TeX-error-messages nil)))
 
-(use-package visual-replace
-  :hook (visual-replace-minibuffer-mode-hook . visual-replace-toggle-query)
-  :bind ( :map visual-replace-mode-map
-          ("<remap> <yank>" . nil)
-          ("<remap> <yank-pop>" . nil)))
-
 (use-package mct
   :if jacob-is-android
   :hook (jacob-first-minibuffer-activation-hook . mct-mode))

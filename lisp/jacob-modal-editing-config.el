@@ -67,7 +67,7 @@
 (keymap-set jacob-modal-editing-keymap "SPC m" #'dired-jump)
 (keymap-set jacob-modal-editing-keymap "SPC n" #'end-of-buffer)
 (keymap-set jacob-modal-editing-keymap "SPC p" project-prefix-map)
-(keymap-set jacob-modal-editing-keymap "SPC r" #'visual-replace)
+(keymap-set jacob-modal-editing-keymap "SPC r" #'query-replace)
 (keymap-set jacob-modal-editing-keymap "SPC s" #'exchange-point-and-mark)
 (keymap-set jacob-modal-editing-keymap "SPC u" #'kill-current-buffer)
 (keymap-set jacob-modal-editing-keymap "SPC v" #'consult-yank-from-kill-ring)
@@ -147,7 +147,7 @@
 (keymap-set jacob-modal-editing-keymap "SPC k c" #'copy-to-register)
 (keymap-set jacob-modal-editing-keymap "SPC k i" #'consult-register-load)
 (keymap-set jacob-modal-editing-keymap "SPC k k" #'repeat)
-(keymap-set jacob-modal-editing-keymap "SPC k r" #'visual-replace-regexp)
+(keymap-set jacob-modal-editing-keymap "SPC k r" #'query-replace-regexp)
 (keymap-set jacob-modal-editing-keymap "SPC k u" #'consult-goto-line)
 
 ;; Nested: SPC w (Xref)
