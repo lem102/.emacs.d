@@ -65,6 +65,21 @@
 
 (use-package menu-bar
   :config
+  (keymap-global-unset "<menu-bar> <file> <make-frame-on-display>")
+  (keymap-global-unset "<menu-bar> <file> <open-file>")
+  (keymap-global-unset "<menu-bar> <file> <recover-session>")
+  (keymap-global-unset "<menu-bar> <file> <insert-file>")
+  (keymap-global-unset "<menu-bar> <file> <make-frame-on-monitor>")
+  (keymap-global-unset "<menu-bar> <file> <write-file>")
+  
+  (keymap-global-set "<menu-bar> <jmove>" (cons "JMove" (make-sparse-keymap)))
+  (keymap-global-set "<menu-bar> <jmove> <project-find-file>" (cons "Project File" #'project-find-file))
+  (keymap-global-set "<menu-bar> <jmove> <project-switch-project>" (cons "Project" #'project-switch-project))
+  (keymap-global-set "<menu-bar> <jmove> <find-file>" (cons "File" #'find-file))
+  (keymap-global-set "<menu-bar> <jmove> <consult-imenu>" (cons "Imenu" #'consult-imenu))
+  (keymap-global-set "<menu-bar> <jmove> <dired-jump>" (cons "Dired" #'dired-jump))
+  (keymap-global-set "<menu-bar> <jmove> <consult-buffer>" (cons "Buffer" #'consult-buffer))
+
   (keymap-global-set "<menu-bar> <jacob>" (cons "Jacob" (make-sparse-keymap)))
   (keymap-global-set "<menu-bar> <jacob> <execute-extended-command>" (cons "M-x" #'execute-extended-command))
   (keymap-global-set "<menu-bar> <jacob> <restart>" (cons "Restart" #'restart-emacs))
