@@ -199,6 +199,15 @@
 
 (add-to-list 'jacob-modal-editing-major-mode-keymap-alist `(dired-mode . ,jacob-modal-editing-dired-map))
 
+(defvar-keymap jacob-modal-editing-package-menu-map
+  "d" #'package-menu-mark-delete
+  "e" #'package-menu-mark-install
+  "r" #'package-menu-mark-unmark
+  "s" #'package-menu-describe-package
+  "x" #'package-menu-execute)
+
+(add-to-list 'jacob-modal-editing-major-mode-keymap-alist `(package-menu-mode . ,jacob-modal-editing-package-menu-map))
+
 (defvar-keymap jacob-modal-editing-org-agenda-map
   "q" #'quit-window
   "g" #'org-agenda-redo-all)
