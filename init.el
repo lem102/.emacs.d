@@ -548,10 +548,15 @@ then remove this function from `find-file-hook'."
   :config
   (setopt eldoc-documentation-strategy 'eldoc-documentation-compose))
 
+(use-package consult-git-log-grep
+  :defer t
+  :init
+  (keymap-set project-prefix-map "l" #'consult-git-log-grep))
+
 (use-package prodigy
   :defer t
   :init
-  (keymap-set project-prefix-map "l" #'prodigy)
+  (keymap-set project-prefix-map "L" #'prodigy)
   :config
   (setopt prodigy-kill-process-buffer-on-stop t)
   
