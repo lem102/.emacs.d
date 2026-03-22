@@ -1100,9 +1100,15 @@ then remove this function from `find-file-hook'."
   (add-to-list 'exec-path-from-shell-variables "JAVA_HOME")
   (exec-path-from-shell-initialize))
 
-(use-package pdf-tools
+(use-package pdf-view
+  ;; from `pdf-tools' package
   :when jacob-is-linux
+  :hook ((pdf-view-mode-hook . pdf-view-fit-page-to-window)
+         (pdf-view-mode-hook . pdf-view-themed-minor-mode))
   :mode ("\\.[pP][dD][fF]\\'" . pdf-view-mode))
+
+(use-package nov
+  :mode ("\\.epub\\'" . nov-mode))
 
 (use-package grep
   :defer t

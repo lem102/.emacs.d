@@ -81,14 +81,14 @@
                 geiser-guile gptel helpful hl-todo idlwave jsonrpc
                 just-mode magit marginalia markdown-mode mcp mct
                 mermaid-mode nerd-icons-dired nerd-icons-mode-line
-                nerd-icons-modeline no-littering ob-mermaid on
+                nerd-icons-modeline no-littering nov ob-mermaid on
                 orderless org org-edna pdf-tools peg prodigy project
                 puni python rainbow-mode sbt-mode scala-repl
                 scala-ts-mode sharper sln-mode sly sly-macrostep
                 sly-overlay sly-quicklisp sql-indent track-changes
-                tramp treesit-auto verb verilog-mode vertico
-                 web-mode wgrep which-key
-                window-tool-bar winnow yaml-pro yasnippet))
+                tramp treesit-auto verb verilog-mode vertico web-mode
+                wgrep which-key window-tool-bar winnow yaml-pro
+                yasnippet))
  '(package-vc-selected-packages
    '((eglot-booster :url "https://github.com/jdtsmith/eglot-booster")
      (nerd-icons-mode-line :url
