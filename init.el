@@ -74,7 +74,7 @@
   
   (keymap-global-set "<menu-bar> <jmove>" (cons "JMove" (make-sparse-keymap)))
   (keymap-global-set "<menu-bar> <jmove> <project-find-file>" (cons "Project File" #'project-find-file))
-  (keymap-global-set "<menu-bar> <jmove> <project-switch-project>" (cons "Project" #'project-switch-project))
+  (keymap-global-set "<menu-bar> <jmove> <jacob-dired-in-other-project>" (cons "Switch Project" #'jacob-dired-in-other-project))
   (keymap-global-set "<menu-bar> <jmove> <find-file>" (cons "File" #'find-file))
   (keymap-global-set "<menu-bar> <jmove> <consult-imenu>" (cons "Imenu" #'consult-imenu))
   (keymap-global-set "<menu-bar> <jmove> <dired-jump>" (cons "Dired" #'dired-jump))
@@ -843,6 +843,8 @@ then remove this function from `find-file-hook'."
 
   (with-eval-after-load 'tramp
     (remove-hook 'compilation-mode-hook #'tramp-compile-disable-ssh-controlmaster-options)))
+
+(autoload 'jacob-dired-in-other-project "jacob-project" nil "INTERACTIVE")
 
 (use-package winnow
   :hook (compilation-mode-hook . winnow-mode))
