@@ -1,6 +1,5 @@
 ;;; jacob-modal-editing-config.el --- configuration for `jacob-modal-editing'
 
-
 ;;; Commentary:
 ;; 
 
@@ -95,6 +94,7 @@
 (keymap-set jacob-modal-editing-keymap "SPC j y" #'describe-face)
 (keymap-set jacob-modal-editing-keymap "SPC j i" #'describe-char)
 (keymap-set jacob-modal-editing-keymap "SPC j g" #'info)
+(keymap-set jacob-modal-editing-keymap "SPC j m" #'describe-mode)
 
 (keymap-set jacob-modal-editing-keymap "SPC l 6" #'calendar)
 (keymap-set jacob-modal-editing-keymap "SPC l ;" #'jacob-screen-sharing-mode)
