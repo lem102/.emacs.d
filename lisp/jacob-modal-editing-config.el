@@ -164,6 +164,7 @@
 (keymap-set jacob-modal-editing-keymap "SPC j b" #'describe-command)
 (keymap-set jacob-modal-editing-keymap "SPC j c" #'consult-man)
 (keymap-set jacob-modal-editing-keymap "SPC j g" #'consult-info)
+(keymap-set jacob-modal-editing-keymap "SPC j j" #'consult-symbol)
 (keymap-set jacob-modal-editing-keymap "SPC j k" #'describe-function)
 (keymap-set jacob-modal-editing-keymap "SPC j l" #'describe-variable)
 (keymap-set jacob-modal-editing-keymap "SPC j v" #'describe-key)

@@ -74,7 +74,7 @@
  '(package-selected-packages
    '(ace-window aider apheleia applescript-mode auctex avy blackout
                 caddyfile-mode cape color-theme-sanityinc-tomorrow
-                consult consult-git-log-grep csproj-mode dape denote
+                consult consult-git-log-grep consult-symbol csproj-mode dape denote
                 dired-rsync dumb-jump eat editorconfig ef-themes eglot
                 eglot-booster eldoc elisp-dev-mcp embark
                 embark-consult erc exec-path-from-shell expreg faceup
