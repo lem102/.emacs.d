@@ -80,9 +80,9 @@
                 elisp-dev-mcp embark embark-consult erc
                 exec-path-from-shell expreg faceup feature-mode
                 flymake font-lock-ext forge gdscript-mode geiser
-                geiser-guile gptel helpful hl-todo idlwave jsonrpc
-                just-mode magit marginalia markdown-mode mcp mct
-                mermaid-mode nerd-icons-dired nerd-icons-mode-line
+                geiser-guile gptel hl-todo idlwave jsonrpc just-mode
+                magit marginalia markdown-mode mcp mct mermaid-mode
+                nerd-icons-dired nerd-icons-mode-line
                 nerd-icons-modeline no-littering nov ob-mermaid on
                 orderless org org-edna pdf-tools peg prodigy project
                 puni python rainbow-mode sbt-mode scala-repl
