@@ -133,6 +133,7 @@
  '(vc-ignore-dir-regexp
    (format "\\(%s\\)\\|\\(%s\\)" locate-dominating-stop-dir-regexp
            tramp-file-name-regexp) nil nil "In addition to the usual files, also disable vc functionality in tramp files.")
+ '(vertico-count 20)
  '(warning-minimum-level :error))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.

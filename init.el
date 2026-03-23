@@ -985,10 +985,6 @@ then remove this function from `find-file-hook'."
   :if (not jacob-is-android)
   :hook (vertico-mode-hook . vertico-mouse-mode))
 
-(use-package vertico-buffer
-  :if (not jacob-is-android)
-  :hook (vertico-mode-hook . vertico-buffer-mode))
-
 (use-package marginalia
   :hook (jacob-first-minibuffer-activation-hook . marginalia-mode))
 
