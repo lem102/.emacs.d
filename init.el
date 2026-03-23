@@ -517,6 +517,12 @@ then remove this function from `find-file-hook'."
 (use-package nerd-icons-mode-line
   :hook (on-first-file-hook . nerd-icons-mode-line-global-mode))
 
+(use-package nerd-icons-completion
+  :hook (prog-mode-hook . nerd-icons-completion-mode))
+
+(use-package nerd-icons-grep
+  :hook (grep-mode-hook . nerd-icons-grep-mode))
+
 (use-package esh-mode
   :defer t
   :config

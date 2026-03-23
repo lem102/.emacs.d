@@ -42,6 +42,7 @@
  '(enable-recursive-minibuffers t)
  '(eshell-scroll-to-bottom-on-output 'this)
  '(frame-resize-pixelwise t)
+ '(grep-use-headings t)
  '(help-enable-variable-value-editing t)
  '(help-window-select t)
  '(history-delete-duplicates t)
@@ -81,16 +82,16 @@
                 exec-path-from-shell expreg faceup feature-mode
                 flymake font-lock-ext forge gdscript-mode geiser
                 geiser-guile gptel hl-todo idlwave jsonrpc just-mode
-                magit marginalia markdown-mode mcp mct mermaid-mode
-                nerd-icons-dired nerd-icons-mode-line
-                nerd-icons-modeline no-littering nov ob-mermaid on
-                orderless org org-edna pdf-tools peg prodigy project
-                puni python rainbow-mode sbt-mode scala-repl
-                scala-ts-mode sharper sln-mode sly sly-macrostep
-                sly-overlay sly-quicklisp sql-indent track-changes
-                tramp treesit-auto verb verilog-mode vertico web-mode
-                wgrep which-key window-tool-bar winnow yaml-pro
-                yasnippet))
+                magit marginalia markdown-ts-mode mcp mct mermaid-mode
+                nerd-icons-completion nerd-icons-dired nerd-icons-grep
+                nerd-icons-mode-line nerd-icons-modeline no-littering
+                nov ob-mermaid on orderless org org-edna pdf-tools peg
+                prodigy project puni python rainbow-mode sbt-mode
+                scala-repl scala-ts-mode sharper sln-mode sly
+                sly-macrostep sly-overlay sly-quicklisp sql-indent
+                track-changes tramp treesit-auto verb verilog-mode
+                vertico web-mode wgrep which-key window-tool-bar
+                winnow yaml-pro yasnippet))
  '(package-vc-selected-packages
    '((eglot-booster :url "https://github.com/jdtsmith/eglot-booster")
      (nerd-icons-mode-line :url
