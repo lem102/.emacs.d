@@ -1069,7 +1069,7 @@ Patched so that `describe-keymap' is used when symbol is a keymap."
          :repeat-map jacob-expreg-repeat-map
          ("SPC" . expreg-expand))
   :config
-  (setq expreg-functions (remq 'expreg--subword expreg-functions)))
+  (setq-default expreg-functions (remq 'expreg--subword expreg-functions)))
 
 (use-package verb
   :after org
