@@ -393,6 +393,12 @@
 (add-to-list 'jacob-modal-editing-major-mode-keymap-alist
              `(sql-interactive-mode . ,jacob-modal-editing-sql-interactive-map))
 
+(defvar-keymap jacob-modal-editing-grep-interactive-map
+  "w" #'wgrep-change-to-wgrep-mode)
+
+(add-to-list 'jacob-modal-editing-major-mode-keymap-alist
+             `(grep-mode . ,jacob-modal-editing-grep-interactive-map))
+
 (defun jacob-modal-editing-command-mode-hook-f ()
   "Make visual change depending on value of `jacob-modal-editing-command-mode'."
   (unless (equal jacob-modal-editing-command-mode global-hl-line-mode)
