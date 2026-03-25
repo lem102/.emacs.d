@@ -144,7 +144,7 @@
 ;; ("c y" . xah-list-recently-closed)
 ;; ("c z" . revert-buffer-with-coding-system)
 
-(keymap-set jacob-modal-editing-keymap "SPC k c" #'copy-to-register)
+(keymap-set jacob-modal-editing-keymap "SPC k c" #'consult-register-store)
 (keymap-set jacob-modal-editing-keymap "SPC k i" #'consult-register-load)
 (keymap-set jacob-modal-editing-keymap "SPC k k" #'repeat)
 (keymap-set jacob-modal-editing-keymap "SPC k r" #'query-replace-regexp)
