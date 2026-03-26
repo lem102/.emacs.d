@@ -523,6 +523,9 @@ then remove this function from `find-file-hook'."
 (use-package nerd-icons-grep
   :hook (grep-mode-hook . nerd-icons-grep-mode))
 
+(use-package nerd-icons-xref
+  :hook (xref--xref-buffer-mode-hook . nerd-icons-xref-mode))
+
 (use-package esh-mode
   :defer t
   :config
