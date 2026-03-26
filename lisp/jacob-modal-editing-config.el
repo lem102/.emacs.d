@@ -104,7 +104,6 @@
 (keymap-set jacob-modal-editing-keymap "SPC l f" #'shell)
 (keymap-set jacob-modal-editing-keymap "SPC l g" #'make-frame-command)
 (keymap-set jacob-modal-editing-keymap "SPC l i" #'toggle-case-fold-search)
-(keymap-set jacob-modal-editing-keymap "SPC l i" #'toggle-case-fold-search)
 (keymap-set jacob-modal-editing-keymap "SPC l j" #'widen)
 (keymap-set jacob-modal-editing-keymap "SPC l k" #'narrow-to-defun)
 (keymap-set jacob-modal-editing-keymap "SPC l l" #'narrow-to-region)
@@ -394,7 +393,9 @@
              `(sql-interactive-mode . ,jacob-modal-editing-sql-interactive-map))
 
 (defvar-keymap jacob-modal-editing-grep-interactive-map
-  "w" #'wgrep-change-to-wgrep-mode)
+  "w" #'wgrep-change-to-wgrep-mode
+  "e" #'previous-error-no-select
+  "r" #'next-error-no-select)
 
 (add-to-list 'jacob-modal-editing-major-mode-keymap-alist
              `(grep-mode . ,jacob-modal-editing-grep-interactive-map))
