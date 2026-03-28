@@ -84,7 +84,7 @@
                 geiser-guile gptel hl-todo idlwave jsonrpc just-mode
                 magit marginalia markdown-ts-mode mcp mct mermaid-mode
                 nerd-icons-completion nerd-icons-dired nerd-icons-grep
-                nerd-icons-mode-line nerd-icons-xref no-littering nov
+                nerd-icons-ibuffer nerd-icons-mode-line nerd-icons-xref no-littering nov
                 ob-mermaid on orderless org org-edna pdf-tools peg
                 prodigy project puni python rainbow-mode sbt-mode
                 scala-repl scala-ts-mode sharper sln-mode sly

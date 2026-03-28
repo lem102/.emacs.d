@@ -526,6 +526,9 @@ then remove this function from `find-file-hook'."
 (use-package nerd-icons-xref
   :hook (xref--xref-buffer-mode-hook . nerd-icons-xref-mode))
 
+(use-package nerd-icons-ibuffer
+  :hook (ibuffer-mode-hook . nerd-icons-ibuffer-mode))
+
 (use-package esh-mode
   :defer t
   :config
