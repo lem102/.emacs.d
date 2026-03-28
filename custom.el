@@ -84,19 +84,18 @@
                 geiser-guile gptel hl-todo idlwave jsonrpc just-mode
                 magit marginalia markdown-ts-mode mcp mct mermaid-mode
                 nerd-icons-completion nerd-icons-dired nerd-icons-grep
-                nerd-icons-mode-line nerd-icons-modeline
-                nerd-icons-xref no-littering nov ob-mermaid on
-                orderless org org-edna pdf-tools peg prodigy project
-                puni python rainbow-mode sbt-mode scala-repl
-                scala-ts-mode sharper sln-mode sly sly-macrostep
-                sly-overlay sly-quicklisp sql-indent track-changes
-                tramp treesit-auto verb verilog-mode vertico web-mode
-                wgrep which-key window-tool-bar winnow yaml-pro
-                yasnippet))
+                nerd-icons-mode-line nerd-icons-xref no-littering nov
+                ob-mermaid on orderless org org-edna pdf-tools peg
+                prodigy project puni python rainbow-mode sbt-mode
+                scala-repl scala-ts-mode sharper sln-mode sly
+                sly-macrostep sly-overlay sly-quicklisp sql-indent
+                track-changes tramp treesit-auto verb verilog-mode
+                vertico web-mode wgrep which-key window-tool-bar
+                winnow yaml-pro yasnippet))
  '(package-vc-selected-packages
-   '((eglot-booster :url "https://github.com/jdtsmith/eglot-booster")
-     (nerd-icons-mode-line :url
-                           "https://github.com/grolongo/nerd-icons-mode-line.git")))
+   '((nerd-icons-mode-line :url
+                           "https://github.com/grolongo/nerd-icons-mode-line.git")
+     (eglot-booster :url "https://github.com/jdtsmith/eglot-booster")))
  '(project-switch-commands
    '((project-find-file "Find file") (consult-git-grep "Find regexp")
      (project-find-dir "Find directory")
