@@ -94,7 +94,7 @@
                 sly-overlay sly-quicklisp sql-indent track-changes
                 tramp treesit-auto verb verilog-mode vertico web-mode
                 wgrep which-key window-tool-bar winnow yaml-pro
-                yasnippet))
+                yasnippet yeetube))
  '(package-vc-selected-packages
    '((nerd-icons-mode-line :url
                            "https://github.com/grolongo/nerd-icons-mode-line.git")
