@@ -66,6 +66,7 @@
 (keymap-set jacob-modal-editing-keymap "SPC m" #'dired-jump)
 (keymap-set jacob-modal-editing-keymap "SPC n" #'end-of-buffer)
 (keymap-set jacob-modal-editing-keymap "SPC p" project-prefix-map)
+(keymap-set jacob-modal-editing-keymap "SPC p f" #'consult-project-extra-find) ; TODO: look into can i get this behaviour into default consult-buffer command?
 (keymap-set jacob-modal-editing-keymap "SPC r" #'query-replace)
 (keymap-set jacob-modal-editing-keymap "SPC s" #'exchange-point-and-mark)
 (keymap-set jacob-modal-editing-keymap "SPC u" #'kill-current-buffer)
