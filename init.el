@@ -1117,12 +1117,6 @@ Patched so that `describe-keymap' is used when symbol is a keymap."
 (use-package elisp-dev-mcp
   :after gptel)
 
-;; TODO: on the chopping block... 🪓
-(use-package aider
-  :defer t
-  ;; (setenv "GEMINI_API_KEY" "")
-  :custom ((aider-args '("--model" "gemini/gemini-2.0-flash-exp" "--edit-format" "whole"))))
-
 (use-package gdscript-mode
   :hook ((gdscript-ts-mode-hook . apheleia-mode)
          (gdscript-ts-mode-hook . yas-minor-mode)

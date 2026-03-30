@@ -75,7 +75,7 @@
      ("melpa" . "https://melpa.org/packages/")))
  '(package-install-upgrade-built-in t)
  '(package-selected-packages
-   '(ace-window aider apheleia applescript-mode auctex avy blackout
+   '(ace-window apheleia applescript-mode auctex avy blackout
                 caddyfile-mode cape color-theme-sanityinc-tomorrow
                 consult consult-git-log-grep consult-symbol
                 csproj-mode dape denote dired-rsync dumb-jump eat
