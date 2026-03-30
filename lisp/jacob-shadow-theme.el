@@ -30,6 +30,7 @@
    `(show-paren-match ((t (:background ,red10))))
    `(shadow ((t nil)))
    `(error ((t (:weight bold))))
+   `(header-line ((t (:foreground ,red :background ,red3))))
 
    ;; font lock
    `(font-lock-comment-face ((t (:bold t :underline t))))
