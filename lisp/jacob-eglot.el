@@ -43,48 +43,67 @@ This advised version discards document changes that are not text
 document edits."
   ;; TODO: make version of this that can handle RenameFile
   (eglot--dbind ((WorkspaceEdit) changes documentChanges) wedit
-    (let ((prepared
+    (let ((prepared-tde
            (mapcar (eglot--lambda ((TextDocumentEdit) textDocument edits)
                      (eglot--dbind ((VersionedTextDocumentIdentifier) uri version)
                          textDocument
                        (list (eglot-uri-to-path uri) edits version)))
                    (seq-filter (lambda (dc)
                                  (ignore-errors (eglot--check-object 'TextDocumentEdit dc)))
+                               documentChanges)))
+          (prepared-rename-file
+           (mapcar (eglot--lambda ((RenameFile) oldUri newUri)
+                     (cons (eglot-uri-to-path oldUri) (eglot-uri-to-path newUri)))
+                   (seq-filter (lambda (dc)
+                                 (ignore-errors (eglot--check-object 'RenameFile dc)))
                                documentChanges))))
       (unless (and changes documentChanges)
         ;; We don't want double edits, and some servers send both
         ;; changes and documentChanges.  This unless ensures that we
         ;; prefer documentChanges over changes.
         (cl-loop for (uri edits) on changes by #'cddr
-                 do (push (list (eglot-uri-to-path uri) edits) prepared)))
+                 do (push (list (eglot-uri-to-path uri) edits) prepared-tde)))
       (cl-flet ((notevery-visited-p ()
                   (cl-notevery #'find-buffer-visiting
-                               (mapcar #'car prepared)))
+                               (mapcar #'car prepared-tde)))
                 (accept-p ()
                   (y-or-n-p
                    (format "[eglot] Server wants to edit:\n%sProceed? "
                            (cl-loop
-                            for (f eds _) in prepared
+                            for (f eds _) in prepared-tde
                             concat (format
                                     "  %s (%d change%s)\n"
                                     f (length eds)
                                     (if (> (length eds) 1) "s" ""))))))
                 (apply ()
-                  (cl-loop for edit in prepared
+                  (cl-loop for edit in prepared-tde
                            for (path edits version) = edit
                            do (with-current-buffer (find-file-noselect path)
                                 (eglot--apply-text-edits edits version))
                            finally (eldoc) (eglot--message "Edit successful!"))))
-        (let ((decision (eglot--confirm-server-edits origin prepared)))
+        (let ((decision (eglot--confirm-server-edits origin prepared-tde)))
           (cond
            ((or (eq decision 'diff)
                 (and (eq decision 'maybe-diff) (notevery-visited-p)))
-            (eglot--propose-changes-as-diff prepared))
+            (eglot--propose-changes-as-diff prepared-tde))
            ((or (memq decision '(t summary))
                 (and (eq decision 'maybe-summary) (notevery-visited-p)))
             (when (accept-p) (apply)))
            (t
-            (apply))))))))
+            (apply)))))
+
+      (jacob-eglot-rename-files prepared-rename-file)
+      )))
+
+(defun jacob-eglot-rename-files (filename-alist)
+  "Rename files according to FILENAME-ALIST.
+
+FILENAME-ALIST is an alist of (old-name . new-name) pairs."
+  (dolist (pair filename-alist)
+    (let ((old (car pair))
+          (new (cdr pair)))
+      (save-buffer)
+      (dired-rename-file old new nil))))
 
 (provide 'jacob-eglot)
 
