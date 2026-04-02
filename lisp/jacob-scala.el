@@ -146,8 +146,8 @@ lets you select one via completion, and inserts it at the top of the file."
          (search-regexp (concat "^import .*" (regexp-quote symbol)))
          (matches (when symbol
                     (split-string (shell-command-to-string
-                                   (format "grep -rh --include=*.scala -m 1 %s %s"
-                                           (shell-quote-argument search-regexp)
+                                   (format "grep --recursive --no-filename --include=\\*scala --max-count 1 \"%s\" %s"
+                                           search-regexp
                                            root))
                                   "\n"
                                   "OMIT-NULLS")))
