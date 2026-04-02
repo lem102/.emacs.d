@@ -501,7 +501,10 @@ then remove this function from `find-file-hook'."
           ("$" . jacob-scala-dollar)))
 
 (use-package sbt-mode
-  :defer t)
+  :defer t
+  :config
+  (advice-add #'sbt:initialize-for-compilation-mode :override #'ignore)
+  (add-hook 'sbt-mode-hook #'compilation-minor-mode))
 
 (use-package web-mode
   :mode ("\\.scala\\.html\\'" . web-mode)
