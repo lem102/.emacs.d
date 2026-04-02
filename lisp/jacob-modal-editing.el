@@ -39,6 +39,19 @@ Intended to be called by hooks, so takes any number of arguments and does nothin
   (set-keymap-parent jacob-modal-editing--internal-keymap
                      (jacob-modal-editing--build-keymap)))
 
+(defun jacob-modal-editing-ensure-priority (&optional _file)
+  "Ensure `jacob-modal-editing' keybindings have priority over other minor modes.
+
+Called via the `after-load-functions' special hook."
+  (unless (eq (caar minor-mode-map-alist) 'jacob-modal-editing-mode)
+    (let ((mykeys (assq 'jacob-modal-editing-mode minor-mode-map-alist)))
+      (assq-delete-all 'jacob-modal-editing-mode minor-mode-map-alist)
+      (add-to-list 'minor-mode-map-alist mykeys)))
+  (unless (eq (caar minor-mode-map-alist) 'jacob-modal-editing-command-mode)
+    (let ((mykeys (assq 'jacob-modal-editing-command-mode minor-mode-map-alist)))
+      (assq-delete-all 'jacob-modal-editing-command-mode minor-mode-map-alist)
+      (add-to-list 'minor-mode-map-alist mykeys))))
+
 (define-minor-mode jacob-modal-editing-mode
   "Simple modal editing mode.
 
@@ -47,6 +60,7 @@ Allows for major mode specific commands without too much nonsense."
   :init-value nil
   :lighter " jme"
   :keymap jacob-modal-editing-mode-keymap
+  (jacob-modal-editing-ensure-priority)
   (jacob-modal-editing-command-mode (if jacob-modal-editing-mode 1 0)))
 
 (define-minor-mode jacob-modal-editing-command-mode

@@ -854,7 +854,13 @@ then remove this function from `find-file-hook'."
           compilation-ask-about-save nil)
 
   (with-eval-after-load 'tramp
-    (remove-hook 'compilation-mode-hook #'tramp-compile-disable-ssh-controlmaster-options)))
+    (remove-hook 'compilation-mode-hook #'tramp-compile-disable-ssh-controlmaster-options))
+
+  (with-eval-after-load "jacob-modal-editing"
+    ;; Hack to prevent compilation mode keys from overriding modal
+    ;; editing keys. revisit if the overriding problem appears in more
+    ;; places.
+    (jacob-modal-editing-ensure-priority)))
 
 (autoload 'jacob-dired-in-other-project "jacob-project" nil "INTERACTIVE")
 
