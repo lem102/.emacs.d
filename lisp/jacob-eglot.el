@@ -22,7 +22,6 @@
   "Remove all occurances of ^M from the buffer.
 
     Useful for deleting ^M after `eglot-code-actions'."
-  ;; TODO: Review if needed.
   (save-excursion
     (goto-char (point-min))
     (while (search-forward (char-to-string 13) nil t)
@@ -41,7 +40,6 @@ edit proposed by the server.
 
 This advised version discards document changes that are not text
 document edits."
-  ;; TODO: make version of this that can handle RenameFile
   (eglot--dbind ((WorkspaceEdit) changes documentChanges) wedit
     (let ((prepared-tde
            (mapcar (eglot--lambda ((TextDocumentEdit) textDocument edits)
@@ -92,8 +90,7 @@ document edits."
            (t
             (apply)))))
 
-      (jacob-eglot-rename-files prepared-rename-file)
-      )))
+      (jacob-eglot-rename-files prepared-rename-file))))
 
 (defun jacob-eglot-rename-files (filename-alist)
   "Rename files according to FILENAME-ALIST.
