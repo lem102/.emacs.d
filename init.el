@@ -1118,7 +1118,11 @@ Patched so that `describe-keymap' is used when symbol is a keymap."
 (use-package sql-indent
   :hook (sql-mode-hook . sqlind-minor-mode))
 
-(require 'jacob-gptel)
+(use-package gptel
+  :defer t
+  :custom
+  (gptel-default-mode #'org-mode)
+  (gptel-confirm-tool-calls t))
 
 (use-package mcp
   :after gptel)
