@@ -203,6 +203,7 @@
 (defvar-keymap jacob-modal-editing-package-menu-map
   "d" #'package-menu-mark-delete
   "e" #'package-menu-mark-install
+  "q" #'quit-window
   "r" #'package-menu-mark-unmark
   "s" #'package-menu-describe-package
   "x" #'package-menu-execute)
