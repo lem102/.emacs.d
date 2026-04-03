@@ -504,7 +504,7 @@ then remove this function from `find-file-hook'."
   :defer t
   :config
   (advice-add #'sbt:initialize-for-compilation-mode :override #'ignore)
-  (add-hook 'sbt-mode-hook #'compilation-minor-mode))
+  (add-hook 'sbt-mode-hook #'compilation-shell-minor-mode))
 
 (use-package web-mode
   :mode ("\\.scala\\.html\\'" . web-mode)
