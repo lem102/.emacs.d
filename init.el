@@ -456,7 +456,7 @@ then remove this function from `find-file-hook'."
                                                :initializationOptions
                                                (:enable t :lint t :suggest.names t))))))
 
-  (push '((gdscript-mode gdscript-ts-mode) "localhost" 6008) eglot-server-programs)
+  (add-to-list 'eglot-server-programs '((gdscript-mode gdscript-ts-mode) "localhost" 6008))
 
   (add-to-list 'eglot-server-programs '(scala-ts-mode . ("metals" :initializationOptions (:isHttpEnabled t))))
 
