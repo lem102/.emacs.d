@@ -50,6 +50,15 @@
  '(grep-use-headings t)
  '(help-enable-variable-value-editing t)
  '(help-window-select t)
+ '(hippie-expand-try-functions-list
+   '(try-complete-file-name-partially try-complete-file-name
+                                      try-expand-all-abbrevs
+                                      try-expand-line
+                                      try-expand-dabbrev
+                                      try-expand-dabbrev-all-buffers
+                                      try-expand-dabbrev-from-kill
+                                      try-complete-lisp-symbol-partially
+                                      try-complete-lisp-symbol))
  '(history-delete-duplicates t)
  '(history-length 1000)
  '(imenu-use-popup-menu 'on-mouse)
