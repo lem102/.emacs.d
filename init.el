@@ -1266,16 +1266,6 @@ point."
 
       (setq jacob-format-words-style-and-start (cons style (point))))))
 
-(defun jacob-eval-and-replace ()
-  "Replace the preceding sexp with its value."
-  (interactive)
-  (backward-kill-sexp)
-  (condition-case nil
-      (prin1 (eval (read (current-kill 0)))
-             (current-buffer))
-    (error (message "Invalid expression")
-           (insert (current-kill 0)))))
-
 (defun jacob-swap-visible-buffers ()
   "If two windows in current frame, swap their buffers.
 Otherwise, display error message."
