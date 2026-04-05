@@ -19,17 +19,6 @@
          (call-interactively #'other-window))
         (t (call-interactively #'ace-window))))
 
-(with-eval-after-load "xah-fly-keys"
-  (keymap-set xah-fly-command-map "," #'jacob-split-or-switch-window))
-
-(use-package ace-window
-  :defer t
-  :custom
-  (aw-keys '(?a ?s ?d ?f ?q ?w ?e ?r))
-  (aw-minibuffer-flag t)
-  (aw-scope 'frame)
-  (aw-dispatch-when-more-than 3))
-
 (provide 'jacob-ace-window)
 
 ;;; jacob-ace-window.el ends here

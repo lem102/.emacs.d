@@ -1006,6 +1006,14 @@ then remove this function from `find-file-hook'."
   :if (not jacob-is-android)
   :hook (vertico-mode-hook . vertico-mouse-mode))
 
+(use-package ace-window
+  :defer t
+  :custom
+  (aw-keys '(?a ?s ?d ?f ?q ?w ?e ?r))
+  (aw-minibuffer-flag t)
+  (aw-scope 'frame)
+  (aw-dispatch-when-more-than 3))
+
 (use-package marginalia
   :hook (jacob-first-minibuffer-activation-hook . marginalia-mode))
 
