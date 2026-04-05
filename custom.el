@@ -22,6 +22,7 @@
  '(completion-styles '(orderless basic initials))
  '(confirm-kill-processes nil)
  '(consult-git-log-grep-open-function 'magit-show-commit)
+ '(consult-project-function 'consult-project-extra-project-fn)
  '(create-lockfiles nil)
  '(custom-enabled-themes '(modus-vivendi-tinted))
  '(custom-safe-themes
