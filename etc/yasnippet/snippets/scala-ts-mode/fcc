@@ -1,0 +1,4 @@
+# -*- mode: snippet -*-
+# key: fcc
+# --
+final case class ${1:x$(jacob-yas-pascal-case yas-text)}($0)
