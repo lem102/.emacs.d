@@ -1242,7 +1242,9 @@ point."
   (undo-boundary)
 
   (unless (eq last-command this-command)
-    (setq jacob-format-words-style-and-start (cons (read-char-from-minibuffer "select style: " '(?c ?p ?k ?s ?S))
+    (setq jacob-format-words-style-and-start (cons (pcase major-mode
+                                                     (emacs-lisp-mode ?k)
+                                                     (_ (read-char-from-minibuffer "select style: " '(?c ?p ?k ?s ?S))))
                                                    (point))))
 
   (save-excursion
@@ -1254,29 +1256,29 @@ point."
               (backward-word)
               (capitalize-word 1)
               (backward-word)
-              (backward-delete-char 1)))
+              (delete-char -1)))
         (?p (progn
               (backward-word)
               (capitalize-word 1)
               (backward-word)
-              (backward-delete-char 1)
+              (delete-char -1)
               (backward-word)
               (capitalize-word 1)))
         (?k (progn
               (backward-word)
-              (backward-delete-char 1)
+              (delete-char -1)
               (insert-char ?-)
               (backward-char)))
         (?s (progn
               (backward-word)
-              (backward-delete-char 1)
+              (delete-char -1)
               (insert-char ?_)
               (backward-char)))
         (?S (progn
               (backward-word)
               (upcase-word 1)
               (backward-word)
-              (backward-delete-char 1)
+              (delete-char -1)
               (insert-char ?_)
               (backward-char)
               (backward-word)
