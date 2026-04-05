@@ -106,10 +106,10 @@
                 orderless org org-edna pdf-tools peg prodigy project
                 puni python rainbow-mode sbt-mode scala-repl
                 scala-ts-mode sharper sln-mode sly sly-macrostep
-                sly-overlay sly-quicklisp sql-indent string-inflection
-                track-changes tramp treesit-auto verb verilog-mode
-                vertico web-mode wgrep which-key window-tool-bar
-                winnow yaml-pro yasnippet yeetube))
+                sly-overlay sly-quicklisp sql-indent track-changes
+                tramp treesit-auto verb verilog-mode vertico web-mode
+                wgrep which-key window-tool-bar winnow yaml-pro
+                yasnippet yeetube))
  '(package-vc-selected-packages
    '((nerd-icons-mode-line :url
                            "https://github.com/grolongo/nerd-icons-mode-line.git")

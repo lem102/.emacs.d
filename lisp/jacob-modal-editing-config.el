@@ -39,7 +39,7 @@
 (keymap-set jacob-modal-editing-keymap "b" #'xah-toggle-letter-case)
 (keymap-set jacob-modal-editing-keymap "g" #'expreg-expand)
 (keymap-set jacob-modal-editing-keymap "\\" #'embark-act)
-(keymap-set jacob-modal-editing-keymap "q" #'jacob-string-inflection)
+(keymap-set jacob-modal-editing-keymap "q" #'jacob-format-words)
 
 ;; Windows & UI
 (keymap-set jacob-modal-editing-keymap "'" #'delete-other-windows)
