@@ -18,7 +18,7 @@
 (keymap-set jacob-modal-editing-keymap ";" #'jacob-end-of-line)
 (keymap-set jacob-modal-editing-keymap "m" #'puni-backward-sexp-or-up-list)
 (keymap-set jacob-modal-editing-keymap "." #'puni-forward-sexp-or-up-list)
-(keymap-set jacob-modal-editing-keymap "," #'other-window)
+(keymap-set jacob-modal-editing-keymap "," #'jacob-split-or-switch-window)
 (keymap-set jacob-modal-editing-keymap "`" #'other-frame)
 
 ;; Editing & Actions
