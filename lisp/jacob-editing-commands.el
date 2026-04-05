@@ -465,6 +465,18 @@ Version: 2025-04-18"
     (error (message "Invalid expression")
            (insert (current-kill 0)))))
 
+(defun jacob-string-inflection ()
+  "Based on major mode, call string inflection library."
+  (interactive)
+  (call-interactively (pcase major-mode
+                        ((or 'lisp-interaction-mode
+                             'emacs-lisp-mode)
+                         #'string-inflection-lisp)
+                        (scala-ts-mode
+                         ;; TODO: try this in battle
+                         #'string-inflection-java-style-cycle)
+                        (_ #'string-inflection-all-cycle))))
+
 (provide 'jacob-editing-commands)
 
 ;;; jacob-editing-commands.el ends here
