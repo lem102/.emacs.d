@@ -154,7 +154,8 @@
            tramp-file-name-regexp) nil nil "In addition to the usual files, also disable vc functionality in tramp files.")
  '(vertico-count 20)
  '(warning-minimum-level :error)
- '(wgrep-auto-save-buffer t))
+ '(wgrep-auto-save-buffer t)
+ '(yas-wrap-around-region t))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
