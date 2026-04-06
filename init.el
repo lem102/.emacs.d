@@ -71,6 +71,7 @@
   (keymap-global-unset "<menu-bar> <file> <insert-file>")
   (keymap-global-unset "<menu-bar> <file> <make-frame-on-monitor>")
   (keymap-global-unset "<menu-bar> <file> <write-file>")
+  (keymap-global-unset "<menu-bar> <file> <print>")
 
   (easy-menu-define jacob-ui-menu global-map
     "UI menu"
@@ -79,6 +80,14 @@
       ["Line Numbers" global-display-line-numbers-mode
        :style toggle
        :selected global-display-line-numbers-mode]))
+
+  (easy-menu-define jacob-tools-menu global-map
+    "Tools"
+    '("JTools"
+      ["Magit" magit t]
+      ["Agenda" org-agenda t]
+      ["Calendar" calendar t]
+      ["Describe" consult-symbol t]))
 
   (easy-menu-define jacob-move-menu global-map
     "Movement menu"
@@ -95,9 +104,7 @@
     '("Jacob"
       ["M-x" execute-extended-command t]
       ["Restart" restart-emacs t]
-      ["Bookmark" bookmark-jump t]
-      ["Magit" magit t]
-      ["Agenda" org-agenda t])))
+      ["Bookmark" bookmark-jump t])))
 
 (use-package tool-bar
   :config
@@ -1256,7 +1263,7 @@ point."
 
   (unless (eq last-command this-command)
     (setq jacob-format-words-style-and-start (cons (pcase major-mode
-                                                     (emacs-lisp-mode ?k)
+                                                     ('emacs-lisp-mode ?k)
                                                      (_ (read-char-from-minibuffer "select style: " '(?c ?p ?k ?s ?S))))
                                                    (point))))
 
