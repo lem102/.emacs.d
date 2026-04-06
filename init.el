@@ -1236,25 +1236,6 @@ Patched so that `describe-keymap' is used when symbol is a keymap."
   (find-file user-init-file)
   (goto-char (random (point-max))))
 
-(defun jacob-async-shell-command (command)
-  "Wrapper command for (`async-shell-command' COMMAND)."
-  (interactive
-   (list
-    (read-shell-command (if shell-command-prompt-show-cwd
-                            (format-message "Async shell command in `%s': "
-                                            (abbreviate-file-name
-                                             default-directory))
-                          "Async shell command: ")
-                        nil nil
-                        (let ((filename
-                               (cond
-                                (buffer-file-name)
-                                ((eq major-mode 'dired-mode)
-                                 (dired-get-filename nil t)))))
-                          (and filename (file-relative-name filename))))))
-  (async-shell-command command
-                       (format "* %s %s *" default-directory command)))
-
 (defvar jacob-format-words-style-and-start nil
   "Pair of currently selected style and starting point.
 If nil, means you havent used the command for the first time yet.")
