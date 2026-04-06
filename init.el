@@ -71,21 +71,33 @@
   (keymap-global-unset "<menu-bar> <file> <insert-file>")
   (keymap-global-unset "<menu-bar> <file> <make-frame-on-monitor>")
   (keymap-global-unset "<menu-bar> <file> <write-file>")
-  
-  (keymap-global-set "<menu-bar> <jmove>" (cons "JMove" (make-sparse-keymap)))
-  (keymap-global-set "<menu-bar> <jmove> <project-find-file>" (cons "Project File" #'project-find-file))
-  (keymap-global-set "<menu-bar> <jmove> <jacob-dired-in-other-project>" (cons "Switch Project" #'jacob-dired-in-other-project))
-  (keymap-global-set "<menu-bar> <jmove> <find-file>" (cons "File" #'find-file))
-  (keymap-global-set "<menu-bar> <jmove> <consult-imenu>" (cons "Imenu" #'consult-imenu))
-  (keymap-global-set "<menu-bar> <jmove> <dired-jump>" (cons "Dired" #'dired-jump))
-  (keymap-global-set "<menu-bar> <jmove> <consult-buffer>" (cons "Buffer" #'consult-buffer))
 
-  (keymap-global-set "<menu-bar> <jacob>" (cons "Jacob" (make-sparse-keymap)))
-  (keymap-global-set "<menu-bar> <jacob> <execute-extended-command>" (cons "M-x" #'execute-extended-command))
-  (keymap-global-set "<menu-bar> <jacob> <restart>" (cons "Restart" #'restart-emacs))
-  (keymap-global-set "<menu-bar> <jacob> <bookmark-jump>" (cons "Bookmark" #'bookmark-jump))
-  (keymap-global-set "<menu-bar> <jacob> <magit>" (cons "Magit" #'magit))
-  (keymap-global-set "<menu-bar> <jacob> <org-agenda>" (cons "Agenda" #'org-agenda)))
+  (easy-menu-define jacob-ui-menu global-map
+    "UI menu"
+    '("JUI"
+      ["Theme" consult-theme t]
+      ["Line Numbers" global-display-line-numbers-mode
+       :style toggle
+       :selected global-display-line-numbers-mode]))
+
+  (easy-menu-define jacob-move-menu global-map
+    "Movement menu"
+    '("JMove"
+      ["Project File" project-find-file t]
+      ["Switch Project" jacob-dired-in-other-project t]
+      ["File" find-file t]
+      ["Imenu" consult-imenu t]
+      ["Dired" dired-jump t]
+      ["Buffer" consult-buffer t]))
+
+  (easy-menu-define jacob-menu global-map
+    "misc menu"
+    '("Jacob"
+      ["M-x" execute-extended-command t]
+      ["Restart" restart-emacs t]
+      ["Bookmark" bookmark-jump t]
+      ["Magit" magit t]
+      ["Agenda" org-agenda t])))
 
 (use-package tool-bar
   :config
