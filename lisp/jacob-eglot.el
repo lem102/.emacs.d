@@ -99,8 +99,8 @@ FILENAME-ALIST is an alist of (old-name . new-name) pairs."
   (dolist (pair filename-alist)
     (let ((old (car pair))
           (new (cdr pair)))
-      ;; TODO: test this code
       (eglot--signal-textDocument/didClose)
+      (save-buffer)
       (dired-rename-file old new nil)
       (eglot--signal-textDocument/didOpen))))
 
