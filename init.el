@@ -1178,8 +1178,7 @@ Patched so that `describe-keymap' is used when symbol is a keymap."
   (add-to-list 'exec-path-from-shell-variables "JAVA_HOME")
   (exec-path-from-shell-initialize))
 
-(use-package pdf-view
-  ;; from `pdf-tools' package
+(use-package pdf-tools
   :when jacob-is-linux
   :hook ((pdf-view-mode-hook . pdf-view-fit-page-to-window)
          (pdf-view-mode-hook . pdf-view-themed-minor-mode))
