@@ -104,6 +104,13 @@ FILENAME-ALIST is an alist of (old-name . new-name) pairs."
       (dired-rename-file old new nil)
       (eglot--signal-textDocument/didOpen))))
 
+(defun jacob-eglot-metals-bsp-switch ()
+  "Call the bsp-switch command on the metals server."
+  (interactive)
+  (jsonrpc-notify (eglot-current-server)
+                  :workspace/executeCommand
+                  (list :command "bsp-switch")))
+
 (provide 'jacob-eglot)
 
 ;;; jacob-eglot.el ends here
