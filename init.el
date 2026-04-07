@@ -852,6 +852,23 @@ then remove this function from `find-file-hook'."
 
   (add-to-list 'compilation-error-regexp-alist 'jacob-sbt-warning)
 
+  (dolist (re '(gcov-file gcov-header gcov-nomark gcov-called-line gcov-never-called guile-line guile-file))
+    (setq compilation-error-regexp-alist (remq re compilation-error-regexp-alist)))
+
+  (setq compilation-mode-font-lock-keywords '((" --?o\\(?:utfile\\|utput\\)?[= ]\\(\\S +\\)" . 1)
+                                              ("^Compilation \\(finished\\).*"
+                                               (0 '(face nil compilation-message nil help-echo nil mouse-face nil)
+                                                  t)
+                                               (1 compilation-info-face))
+                                              ("^Compilation \\(exited abnormally\\|interrupt\\|killed\\|terminated\\|segmentation fault\\)\\(?:.*with code \\([0-9]+\\)\\)?.*"
+                                               (0 '(face nil compilation-message nil help-echo nil mouse-face nil)
+                                                  t)
+                                               (1 compilation-error-face) (2 compilation-error-face nil t))
+                                              ("error\\|ERROR"
+                                               (0 compilation-error-face))
+                                              ("\\(warn\\|WARN\\)\\(ing\\|ING\\)?"
+                                               (0 compilation-warning-face))))
+
   (setopt compilation-always-kill t
           compilation-scroll-output t
           compilation-ask-about-save nil)
