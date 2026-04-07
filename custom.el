@@ -122,6 +122,7 @@
  '(project-switch-use-entire-map t)
  '(read-extended-command-predicate 'command-completion-default-include-p)
  '(read-process-output-max 1048576 t)
+ '(reb-re-syntax 'string)
  '(recentf-max-saved-items nil)
  '(remote-file-name-inhibit-auto-save-visited t)
  '(ring-bell-function 'ignore)
@@ -129,6 +130,7 @@
    '((Log . clx.log) (Package . Xlib) (Lowercase . Yes) (Base . 10)
      (Package . XLIB) (Syntax . Common-lisp) (flymake-mode)))
  '(save-interprogram-paste-before-kill t)
+ '(savehist-additional-variables '(search-ring regexp-search-ring kill-ring))
  '(scroll-conservatively 101 nil nil "Always scroll just enough text to bring point into view.")
  '(show-paren-when-point-inside-paren t)
  '(split-height-threshold nil)
@@ -155,6 +157,7 @@
  '(vertico-count 20)
  '(warning-minimum-level :error)
  '(wgrep-auto-save-buffer t)
+ '(window-combination-resize t)
  '(yas-wrap-around-region t))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.

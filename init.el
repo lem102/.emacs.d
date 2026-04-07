@@ -116,14 +116,18 @@ then remove this function from `find-file-hook'."
 
 (use-package emacs
   :config
-  ;; c code
+  ;; c source code
   (put 'narrow-to-region 'disabled nil)
+  (setq-default bidi-display-reordering t
+                bidi-paragraph-direction 'left-to-right)
+  (setq bidi-inhibit-bpa t)
+  (setq redisplay-skip-fontification-on-input t)
 
   ;; mule-cmds.el
   (prefer-coding-system 'utf-8)
 
   :custom
-  ;; c code
+  ;; c source code
   (truncate-lines (cond (jacob-is-android t)
                         (t nil)))
   (echo-keystrokes (cond (jacob-is-android 1)
