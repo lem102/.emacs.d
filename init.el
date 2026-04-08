@@ -847,8 +847,7 @@ then remove this function from `find-file-hook'."
   (defun jacob-compilation-project-file ()
     "Somehow determine the filepath for the compilation error"
     (save-match-data
-      (let (
-            (filename-from-error (match-string 1)) ;; FIXME: this will break when filename is not in first re group
+      (let ((filename-from-error (match-string 1)) ;; FIXME: this will break when filename is not in first re group
             )
         (seq-find (lambda (f)
                     (string= (file-name-nondirectory f)
