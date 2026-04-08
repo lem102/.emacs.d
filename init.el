@@ -47,6 +47,7 @@
 (require 'jacob-init-helpers)
 
 (use-package jacob-editing-commands
+  :demand
   :bind (("DEL" . jacob-delete-backwards)  ; `delete-backward-char'
          ("C-k" . jacob-kill-line)         ; `kill-line'
          ("C-a" . jacob-beginning-of-line) ; `beginning-of-line'
