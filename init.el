@@ -351,18 +351,8 @@ then remove this function from `find-file-hook'."
 
 (use-package help-fns
   :defer t
-  :init
-  (defun jacob-help-edit ()
-    "Edit variable in current help buffer."
-    (interactive)
-    (unless (equal major-mode 'help-mode)
-      (message "not in help buffer"))
-    (save-excursion
-      (goto-char (point-min))
-      (if (search-forward "Its value is " nil "NOERROR")
-          (help-fns-edit-variable)
-        (message "cannot find editable variable"))))
   :config
+  (require 'jacob-help-fns)
   (put 'help-fns-edit-variable 'disabled nil))
 
 (use-package subword
