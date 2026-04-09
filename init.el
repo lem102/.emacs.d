@@ -1180,7 +1180,9 @@ Patched so that `describe-keymap' is used when symbol is a keymap."
   :when (or jacob-is-linux jacob-is-mac)
   :defer t
   :init
-  (add-hook 'eshell-mode-hook #'eat-eshell-mode))
+  (add-hook 'eshell-mode-hook #'eat-eshell-mode)
+  ;; TODO: how can i have insert mode and eat semi-char mode at same time?
+  (add-hook 'eat-eshell-exec-hook #'eat-eshell-emacs-mode))
 
 (use-package exec-path-from-shell
   :if (or jacob-is-mac jacob-is-linux)
