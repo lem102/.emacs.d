@@ -842,17 +842,8 @@ then remove this function from `find-file-hook'."
   :init
   (keymap-global-set "<f5>" 'recompile)
   :config
+  (require 'jacob-compile)
   (add-hook 'compilation-filter-hook #'ansi-color-compilation-filter)
-
-  (defun jacob-compilation-project-file ()
-    "Somehow determine the filepath for the compilation error"
-    (save-match-data
-      (let ((filename-from-error (match-string 1)) ;; FIXME: this will break when filename is not in first re group
-            )
-        (seq-find (lambda (f)
-                    (string= (file-name-nondirectory f)
-                             filename-from-error))
-                  (project-files (project-current))))))
 
   (add-to-list 'compilation-error-regexp-alist-alist
                '(jacob-sbt-test-fail-re
