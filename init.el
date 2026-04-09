@@ -1177,7 +1177,7 @@ Patched so that `describe-keymap' is used when symbol is a keymap."
          (gdscript-ts-mode-hook . indent-tabs-mode)))
 
 (use-package eat
-  :when jacob-is-linux
+  :when (or jacob-is-linux jacob-is-mac)
   :defer t
   :init
   (add-hook 'eshell-mode-hook #'eat-eshell-mode))
