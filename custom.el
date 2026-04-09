@@ -94,7 +94,7 @@
                 caddyfile-mode cape color-theme-sanityinc-tomorrow
                 consult consult-git-log-grep consult-project-extra
                 consult-symbol csproj-mode dape denote dired-rsync
-                dumb-jump eat editorconfig ef-themes eglot
+                docker dumb-jump eat editorconfig ef-themes eglot
                 eglot-booster eldoc elisp-dev-mcp embark
                 embark-consult erc exec-path-from-shell expreg faceup
                 feature-mode flymake font-lock-ext forge gdscript-mode
