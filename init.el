@@ -856,7 +856,7 @@ then remove this function from `find-file-hook'."
 
   (add-to-list 'compilation-error-regexp-alist-alist
                '(jacob-sbt-test-fail-re
-                 ".* (\\([a-zA-Z\\.]+\\):\\([0-9]+\\))"
+                 "at .*(\\([a-zA-Z.]+\\):\\([0-9]+\\))"
                  jacob-compilation-project-file
                  2))
 
