@@ -559,27 +559,12 @@ then remove this function from `find-file-hook'."
 (use-package esh-mode
   :defer t
   :config
-  (defun jacob-async-eshell-command ()
-    "Run an async command through eshell."
-    (interactive)
-    (let* ((command (read-from-minibuffer "Emacs shell command: "))
-           (dir (if (project-current)
-                    (project-root (project-current))
-                  default-directory))
-           (buffer-name (concat "*" dir ":" command "*")))
-      (kill-buffer buffer-name)
-      (eshell-command (concat command " &"))
-      (with-current-buffer (get-buffer "*Eshell Async Command Output*")
-        (rename-buffer buffer-name))))
+  (require 'jacob-eshell)
 
   (when jacob-is-windows
-    (defun jacob-confirm-terminate-batch-job ()
-      "Type y and enter to terminate batch job after sending ^C."
-      (when (not (null eshell-process-list))
-        (insert "y")
-        (eshell-send-input)))
-
-    (advice-add 'eshell-interrupt-process :after #'jacob-confirm-terminate-batch-job)))
+    (advice-add 'eshell-interrupt-process
+                :after
+                #'jacob-eshell-windows-confirm-terminate-batch-job)))
 
 (use-package eldoc
   :hook (prog-mode-hook . global-eldoc-mode)
