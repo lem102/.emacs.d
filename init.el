@@ -530,21 +530,27 @@ then remove this function from `find-file-hook'."
 
 (use-package nerd-icons-dired
   :blackout
+  :when (display-graphic-p)
   :hook (dired-mode-hook . nerd-icons-dired-mode))
 
 (use-package nerd-icons-mode-line
+  :when (display-graphic-p)
   :hook (on-first-file-hook . nerd-icons-mode-line-global-mode))
 
 (use-package nerd-icons-completion
+  :when (display-graphic-p)
   :hook (prog-mode-hook . nerd-icons-completion-mode))
 
 (use-package nerd-icons-grep
+  :when (display-graphic-p)
   :hook (grep-mode-hook . nerd-icons-grep-mode))
 
 (use-package nerd-icons-xref
+  :when (display-graphic-p)
   :hook (xref--xref-buffer-mode-hook . nerd-icons-xref-mode))
 
 (use-package nerd-icons-ibuffer
+  :when (display-graphic-p)
   :hook (ibuffer-mode-hook . nerd-icons-ibuffer-mode))
 
 (use-package esh-mode
