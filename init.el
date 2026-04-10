@@ -754,15 +754,9 @@ then remove this function from `find-file-hook'."
   :blackout)
 
 (use-package pulse
-  :disabled
   :defer t
   :init
-  (defun jacob-pulse-line (&rest _)
-    "Pulse the current line."
-    (pulse-momentary-highlight-region (save-excursion
-                                        (back-to-indentation)
-                                        (point))
-                                      (line-end-position)))
+  (require 'jacob-pulse)
 
   (dolist (command '(recenter-top-bottom
                      scroll-up-command
@@ -773,11 +767,6 @@ then remove this function from `find-file-hook'."
                      xref-pop-marker-stack
                      isearch-done))
     (advice-add command :after #'jacob-pulse-line))
-
-  (defun jacob-pulse-defun (&rest _)
-    "Pulse the defun at point."
-    (let ((bounds (bounds-of-thing-at-point 'defun)))
-      (pulse-momentary-highlight-region (car bounds) (cdr bounds))))
 
   (advice-add #'eval-defun :after #'jacob-pulse-defun))
 
