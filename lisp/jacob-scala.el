@@ -161,6 +161,13 @@ lets you select one via completion, and inserts it at the top of the file."
         (insert import "\n")
         (message "Nicked import: %s" import)))))
 
+(defun jacob-scala-switch-build-server ()
+  "Switch metals build server."
+  (interactive)
+  (jsonrpc-notify (eglot-current-server)
+                  :workspace/executeCommand
+                  '( :command "bsp-switch")))
+
 (provide 'jacob-scala)
 
 ;;; jacob-scala.el ends here
