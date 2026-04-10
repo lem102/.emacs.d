@@ -411,6 +411,24 @@
 
 (add-hook 'jacob-modal-editing-command-mode-hook #'jacob-modal-editing-command-mode-hook-f)
 
+;; eat.el integration
+
+(defun jacob-align-modal-editing-with-eat ()
+  "TODO: write documentation."
+  (if jacob-modal-editing-command-mode
+      (eat-eshell-emacs-mode)
+    (eat-eshell-semi-char-mode)))
+
+(defun jacob-modal-editing-setup-eat ()
+  ""
+  (when eat--eshell-process-running-mode
+    (if jacob-modal-editing-command-mode
+        (eat-eshell-emacs-mode)
+      (eat-eshell-semi-char-mode))))
+
+(with-eval-after-load "eat"
+  (add-hook 'jacob-modal-editing-command-mode-hook #'jacob-modal-editing-setup-eat))
+
 (keymap-set jacob-modal-editing-mode-keymap "M-SPC" #'jacob-modal-editing-enable)
 
 (defun jacob-modal-editing-mode-hook-function ()

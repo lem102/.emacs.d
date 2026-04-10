@@ -1124,11 +1124,10 @@ then remove this function from `find-file-hook'."
 
 (use-package eat
   :when (or jacob-is-linux jacob-is-mac)
-  :defer t
   :init
   (add-hook 'eshell-mode-hook #'eat-eshell-mode)
-  ;; TODO: how can i have insert mode and eat semi-char mode at same time?
-  (add-hook 'eat-eshell-exec-hook #'eat-eshell-emacs-mode))
+  :config
+  (add-hook 'eat-eshell-exec-hook #'jacob-modal-editing-setup-eat))
 
 (use-package exec-path-from-shell
   :if (or jacob-is-mac jacob-is-linux)
