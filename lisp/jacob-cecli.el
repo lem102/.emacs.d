@@ -20,6 +20,8 @@
     (comint-send-string cecli-buffer
                         (concat "/add " relative-path "\n"))))
 
+;; TODO: support a cecli buffer per project
+
 (provide 'jacob-cecli)
 
 ;;; jacob-cecli.el ends here
