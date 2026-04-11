@@ -414,14 +414,15 @@
 ;; eat.el integration
 
 (defun jacob-modal-editing-setup-eat ()
-  ""
-  (when eat--eshell-process-running-mode
+  "Configure eat for modal editing."
+  (when (derived-mode-p 'eshell-mode)
     (if jacob-modal-editing-command-mode
         (eat-eshell-emacs-mode)
       (eat-eshell-semi-char-mode))))
 
 (with-eval-after-load "eat"
-  (add-hook 'jacob-modal-editing-command-mode-hook #'jacob-modal-editing-setup-eat))
+  (add-hook 'jacob-modal-editing-command-mode-hook #'jacob-modal-editing-setup-eat)
+  (add-hook 'eat-eshell-exec-hook #'jacob-modal-editing-setup-eat))
 
 (keymap-set jacob-modal-editing-mode-keymap "M-SPC" #'jacob-modal-editing-enable)
 

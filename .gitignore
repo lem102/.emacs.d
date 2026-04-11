@@ -53,3 +53,5 @@ elpa/
 /tree-sitter/
 /emacs-mcp-stdio.sh
 /temp/
+.aider*
+.cecli*

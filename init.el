@@ -1124,9 +1124,7 @@ then remove this function from `find-file-hook'."
 (use-package eat
   :when (or jacob-is-linux jacob-is-mac)
   :init
-  (add-hook 'eshell-mode-hook #'eat-eshell-mode)
-  :config
-  (add-hook 'eat-eshell-exec-hook #'jacob-modal-editing-setup-eat))
+  (add-hook 'eshell-mode-hook #'eat-eshell-mode))
 
 (use-package exec-path-from-shell
   :if (or jacob-is-mac jacob-is-linux)
