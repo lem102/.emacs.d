@@ -10,6 +10,13 @@
   (dolist (binding bindings)
     (keymap-set map (car binding) (cdr binding))))
 
+(defun jacob-modal-editing-major-mode-override-keys (mode bindings)
+  "Define a keymap for MODE with BINDINGS and add it to `jacob-modal-editing-major-mode-keymap-alist'."
+  (let ((map (make-sparse-keymap)))
+    (dolist (binding bindings)
+      (keymap-set map (car binding) (cdr binding)))
+    (add-to-list 'jacob-modal-editing-major-mode-keymap-alist (cons mode map))))
+
 (jacob-modal-editing-bind-keys jacob-modal-editing-keymap
                                `(("f" . jacob-modal-editing-disable)
                                  ("j" . backward-char)
@@ -162,225 +169,155 @@
 ;; ("c y" . xah-list-recently-closed)
 ;; ("c z" . revert-buffer-with-coding-system)
 
-(defvar-keymap jacob-modal-editing-dired-map
-  "s" #'dired-find-file
-  "d" #'dired-do-delete
-  "q" #'quit-window
-  "i" #'dired-previous-line
-  "k" #'dired-next-line
-  "e" #'dired-mark
-  "r" #'dired-unmark
-  "g" #'revert-buffer
-  "x" #'dired-do-rename
-  "c" #'dired-do-copy
-  "u" #'dired-up-directory
-  "j" #'dired-goto-file
-  "<remap> <previous-line>" nil
-  "<remap> <next-line>" nil)
+(jacob-modal-editing-major-mode-override-keys 'dired-mode
+                                              '(("s" . dired-find-file)
+                                                ("d" . dired-do-delete)
+                                                ("q" . quit-window)
+                                                ("i" . dired-previous-line)
+                                                ("k" . dired-next-line)
+                                                ("e" . dired-mark)
+                                                ("r" . dired-unmark)
+                                                ("g" . revert-buffer)
+                                                ("x" . dired-do-rename)
+                                                ("c" . dired-do-copy)
+                                                ("u" . dired-up-directory)
+                                                ("j" . dired-goto-file)
+                                                ("<remap> <previous-line>" . nil)
+                                                ("<remap> <next-line>" . nil)))
 
-(add-to-list 'jacob-modal-editing-major-mode-keymap-alist `(dired-mode . ,jacob-modal-editing-dired-map))
+(jacob-modal-editing-major-mode-override-keys 'package-menu-mode
+                                              '(("d" . package-menu-mark-delete)
+                                                ("e" . package-menu-mark-install)
+                                                ("q" . quit-window)
+                                                ("r" . package-menu-mark-unmark)
+                                                ("s" . package-menu-describe-package)
+                                                ("x" . package-menu-execute)))
 
-(defvar-keymap jacob-modal-editing-package-menu-map
-  "d" #'package-menu-mark-delete
-  "e" #'package-menu-mark-install
-  "q" #'quit-window
-  "r" #'package-menu-mark-unmark
-  "s" #'package-menu-describe-package
-  "x" #'package-menu-execute)
+(jacob-modal-editing-major-mode-override-keys 'org-agenda-mode
+                                              '(("q" . quit-window)
+                                                ("g" . org-agenda-redo-all)))
 
-(add-to-list 'jacob-modal-editing-major-mode-keymap-alist `(package-menu-mode . ,jacob-modal-editing-package-menu-map))
+(jacob-modal-editing-major-mode-override-keys 'help-mode
+                                              '(("w" . jacob-help-edit)
+                                                ("s" . help-view-source)
+                                                ("q" . quit-window)
+                                                ("e" . help-go-back)
+                                                ("r" . help-go-forward)
+                                                ("g" . revert-buffer)))
 
-(defvar-keymap jacob-modal-editing-org-agenda-map
-  "q" #'quit-window
-  "g" #'org-agenda-redo-all)
+(jacob-modal-editing-major-mode-override-keys 'Info-mode
+                                              '(("q" . quit-window)
+                                                ("r" . Info-scroll-up)
+                                                ("e" . Info-scroll-down)
+                                                ("w" . Info-up)
+                                                ("g" . Info-menu)))
 
-(add-to-list 'jacob-modal-editing-major-mode-keymap-alist
-             `(org-agenda-mode . ,jacob-modal-editing-org-agenda-map))
+(jacob-modal-editing-major-mode-override-keys 'Man-mode
+                                              '(("q" . quit-window)))
 
-(defvar-keymap jacob-modal-editing-help-map
-  "w" #'jacob-help-edit
-  "s" #'help-view-source
-  "q" #'quit-window
-  "e" #'help-go-back
-  "r" #'help-go-forward
-  "g" #'revert-buffer)
+(jacob-modal-editing-major-mode-override-keys 'occur-mode
+                                              '(("q" . quit-window)
+                                                ("i" . occur-prev)
+                                                ("k" . occur-next)))
 
-(add-to-list 'jacob-modal-editing-major-mode-keymap-alist
-             `(help-mode . ,jacob-modal-editing-help-map))
+(jacob-modal-editing-major-mode-override-keys 'diff-mode
+                                              '(("q" . quit-window)
+                                                ("e" . diff-hunk-prev)
+                                                ("r" . diff-hunk-next)
+                                                ("x" . diff-hunk-kill)
+                                                ("g" . revert-buffer)))
 
-(defvar-keymap jacob-modal-editing-info-map
-  "q" #'quit-window
-  "r" #'Info-scroll-up
-  "e" #'Info-scroll-down
-  "w" #'Info-up
-  "g" #'Info-menu)
+(jacob-modal-editing-major-mode-override-keys 'vc-git-log-view-mode
+                                              '(("q" . quit-window)))
 
-(add-to-list 'jacob-modal-editing-major-mode-keymap-alist
-             `(Info-mode . ,jacob-modal-editing-info-map))
+(jacob-modal-editing-major-mode-override-keys 'vc-dir-mode
+                                              '(("q" . quit-window)
+                                                ("g" . revert-buffer)
+                                                ("i" . vc-dir-previous-line)
+                                                ("k" . vc-dir-next-line)
+                                                ("o" . vc-dir-next-directory)
+                                                ("u" . vc-dir-previous-directory)
+                                                ("s" . vc-dir-find-file)
+                                                ("e" . vc-dir-mark)
+                                                ("r" . vc-dir-unmark)
+                                                ("v" . vc-next-action)
+                                                ("p" . vc-push)
+                                                ("=" . vc-diff)
+                                                ("x" . vc-dir-hide-up-to-date)))
 
-(defvar-keymap jacob-modal-editing-man-map
-  "q" #'quit-window)
+(jacob-modal-editing-major-mode-override-keys 'vc-annotate-mode
+                                              '(("q" . quit-window)
+                                                ("g" . revert-buffer)))
 
-(add-to-list 'jacob-modal-editing-major-mode-keymap-alist
-             `(Man-mode . ,jacob-modal-editing-man-map))
+(jacob-modal-editing-major-mode-override-keys 'prodigy-mode
+                                              '(("d" . prodigy-stop)
+                                                ("e" . prodigy-mark)
+                                                ("g" . consult-git-grep)
+                                                ("f" . project-find-file)
+                                                ("i" . prodigy-prev)
+                                                ("k" . prodigy-next)
+                                                ("q" . quit-window)
+                                                ("r" . prodigy-unmark)
+                                                ("s" . prodigy-restart)
+                                                ("v" . prodigy-display-process)))
 
-(defvar-keymap jacob-modal-editing-occur-map
-  "q" #'quit-window
-  "i" #'occur-prev
-  "k" #'occur-next)
+(jacob-modal-editing-major-mode-override-keys 'geiser-mode
+                                              '(("SPC , m" . geiser-eval-last-sexp)
+                                                ("SPC , d" . geiser-eval-definition)))
 
-(add-to-list 'jacob-modal-editing-major-mode-keymap-alist
-             `(occur-mode . ,jacob-modal-editing-occur-map))
+(jacob-modal-editing-major-mode-override-keys 'calendar-mode
+                                              '(("q" . quit-window)
+                                                ("i" . calendar-backward-week)
+                                                ("k" . calendar-forward-week)
+                                                ("j" . calendar-backward-day)
+                                                ("l" . calendar-forward-day)
+                                                ("u" . calendar-backward-month)
+                                                ("o" . calendar-forward-month)
+                                                ("d" . diary-view-entries)
+                                                ("s" . diary-insert-entry)
+                                                ("m" . diary-mark-entries)
+                                                ("." . calendar-goto-today)
+                                                ("t" . calendar-set-mark)))
 
-(defvar-keymap jacob-modal-editing-diff-map
-  "q" #'quit-window
-  "e" #'diff-hunk-prev
-  "r" #'diff-hunk-next
-  "x" #'diff-hunk-kill
-  "g" #'revert-buffer)
+(jacob-modal-editing-major-mode-override-keys 'compilation-mode
+                                              '(("g" . recompile)
+                                                ("q" . quit-window)))
 
-(add-to-list 'jacob-modal-editing-major-mode-keymap-alist
-             `(diff-mode . ,jacob-modal-editing-diff-map))
+(jacob-modal-editing-major-mode-override-keys 'doc-view-mode
+                                              '(("l" . doc-view-next-page)
+                                                ("j" . doc-view-previous-page)))
 
-(defvar-keymap jacob-modal-editing-vc-git-log-map
-  "q" #'quit-window)
+(jacob-modal-editing-major-mode-override-keys 'embark-collect-mode
+                                              '(("q" . quit-window)))
 
-(add-to-list 'jacob-modal-editing-major-mode-keymap-alist
-             `(vc-git-log-view-mode . ,jacob-modal-editing-vc-git-log-map))
+(jacob-modal-editing-major-mode-override-keys 'verb-response-body-mode
+                                              '(("q" . quit-window)))
 
-(defvar-keymap jacob-modal-editing-vc-dir-map
-  "q" #'quit-window
-  "g" #'revert-buffer
-  "i" #'vc-dir-previous-line
-  "k" #'vc-dir-next-line
-  "o" #'vc-dir-next-directory
-  "u" #'vc-dir-previous-directory
-  "s" #'vc-dir-find-file
-  "e" #'vc-dir-mark
-  "r" #'vc-dir-unmark
-  "v" #'vc-next-action
-  "p" #'vc-push
-  "=" #'vc-diff
-  "x" #'vc-dir-hide-up-to-date)
+(jacob-modal-editing-major-mode-override-keys 'sly-mode
+                                              '(("SPC , m" . sly-eval-last-expression)
+                                                ("SPC , d" . sly-eval-defun)
+                                                ("SPC , e" . sly-eval-buffer)
+                                                ("SPC w k" . sly-edit-definition)))
 
-(add-to-list 'jacob-modal-editing-major-mode-keymap-alist
-             `(vc-dir-mode . ,jacob-modal-editing-vc-dir-map))
+(jacob-modal-editing-major-mode-override-keys 'sly-db-mode
+                                              '(("q" . sly-db-quit)))
 
-(defvar-keymap jacob-modal-editing-vc-annotate-map
-  "q" #'quit-window
-  "g" #'revert-buffer)
+(jacob-modal-editing-major-mode-override-keys 'pdf-view-mode
+                                              '(("c" . pdf-view-kill-ring-save)))
 
-(add-to-list 'jacob-modal-editing-major-mode-keymap-alist
-             `(vc-annotate-mode . ,jacob-modal-editing-vc-annotate-map))
+(jacob-modal-editing-major-mode-override-keys 'ibuffer-mode
+                                              '(("q" . quit-window)
+                                                ("e" . ibuffer-mark-forward)
+                                                ("r" . ibuffer-unmark-forward)
+                                                ("g" . ibuffer-update)))
 
-(defvar-keymap jacob-modal-editing-prodigy-map
-  "d" #'prodigy-stop
-  "e" #'prodigy-mark
-  "g" #'consult-git-grep
-  "f" #'project-find-file
-  "i" #'prodigy-prev
-  "k" #'prodigy-next
-  "q" #'quit-window
-  "r" #'prodigy-unmark
-  "s" #'prodigy-restart
-  "v" #'prodigy-display-process)
+(jacob-modal-editing-major-mode-override-keys 'sql-interactive-mode
+                                              '(("SPC , d" . sql-send-paragraph)))
 
-(add-to-list 'jacob-modal-editing-major-mode-keymap-alist
-             `(prodigy-mode . ,jacob-modal-editing-prodigy-map))
-
-(defvar-keymap jacob-modal-editing-geiser-map
-  "SPC , m" #'geiser-eval-last-sexp
-  "SPC , d" #'geiser-eval-definition)
-
-(add-to-list 'jacob-modal-editing-major-mode-keymap-alist
-             `(geiser-mode . ,jacob-modal-editing-geiser-map))
-
-(defvar-keymap jacob-modal-editing-calendar-map
-  "q" #'quit-window
-  "i" #'calendar-backward-week
-  "k" #'calendar-forward-week
-  "j" #'calendar-backward-day
-  "l" #'calendar-forward-day
-  "u" #'calendar-backward-month
-  "o" #'calendar-forward-month
-  "d" #'diary-view-entries
-  "s" #'diary-insert-entry
-  "m" #'diary-mark-entries
-  "." #'calendar-goto-today
-  "t" #'calendar-set-mark)
-
-(add-to-list 'jacob-modal-editing-major-mode-keymap-alist
-             `(calendar-mode . ,jacob-modal-editing-calendar-map))
-
-(defvar-keymap jacob-modal-editing-compilation-map
-  "g" #'recompile
-  "q" #'quit-window)
-
-(add-to-list 'jacob-modal-editing-major-mode-keymap-alist
-             `(compilation-mode . ,jacob-modal-editing-compilation-map))
-
-(defvar-keymap jacob-modal-editing-doc-view-map
-  "l" #'doc-view-next-page
-  "j" #'doc-view-previous-page)
-
-(add-to-list 'jacob-modal-editing-major-mode-keymap-alist
-             `(doc-view-mode . ,jacob-modal-editing-doc-view-map))
-
-(defvar-keymap jacob-modal-editing-embark-collect-map
-  "q" #'quit-window)
-
-(add-to-list 'jacob-modal-editing-major-mode-keymap-alist
-             `(embark-collect-mode . ,jacob-modal-editing-embark-collect-map))
-
-(defvar-keymap jacob-modal-editing-verb-response-map
-  "q" #'quit-window)
-
-(add-to-list 'jacob-modal-editing-major-mode-keymap-alist
-             `(verb-response-body-mode . ,jacob-modal-editing-verb-response-map))
-
-(defvar-keymap jacob-modal-editing-sly-map
-  "SPC , m" #'sly-eval-last-expression
-  "SPC , d" #'sly-eval-defun
-  "SPC , e" #'sly-eval-buffer
-  "SPC w k" #'sly-edit-definition)
-
-(add-to-list 'jacob-modal-editing-major-mode-keymap-alist
-             `(sly-mode . ,jacob-modal-editing-sly-map))
-
-(defvar-keymap jacob-modal-editing-sly-db-map
-  "q" #'sly-db-quit)
-
-(add-to-list 'jacob-modal-editing-major-mode-keymap-alist
-             `(sly-db-mode . ,jacob-modal-editing-sly-db-map))
-
-(defvar-keymap jacob-modal-editing-pdf-view-map
-  "c" #'pdf-view-kill-ring-save)
-
-(add-to-list 'jacob-modal-editing-major-mode-keymap-alist
-             `(pdf-view-mode . ,jacob-modal-editing-pdf-view-map))
-
-(defvar-keymap jacob-modal-editing-ibuffer-map
-  "q" #'quit-window
-  "e" #'ibuffer-mark-forward
-  "r" #'ibuffer-unmark-forward
-  "g" #'ibuffer-update)
-
-(add-to-list 'jacob-modal-editing-major-mode-keymap-alist
-             `(ibuffer-mode . ,jacob-modal-editing-ibuffer-map))
-
-(defvar-keymap jacob-modal-editing-sql-interactive-map
-  "SPC , d" #'sql-send-paragraph)
-
-(add-to-list 'jacob-modal-editing-major-mode-keymap-alist
-             `(sql-interactive-mode . ,jacob-modal-editing-sql-interactive-map))
-
-(defvar-keymap jacob-modal-editing-grep-interactive-map
-  "w" #'wgrep-change-to-wgrep-mode
-  "e" #'previous-error-no-select
-  "r" #'next-error-no-select)
-
-(add-to-list 'jacob-modal-editing-major-mode-keymap-alist
-             `(grep-mode . ,jacob-modal-editing-grep-interactive-map))
+(jacob-modal-editing-major-mode-override-keys 'grep-mode
+                                              '(("w" . wgrep-change-to-wgrep-mode)
+                                                ("e" . previous-error-no-select)
+                                                ("r" . next-error-no-select)))
 
 (defun jacob-modal-editing-command-mode-hook-f ()
   "Make visual change depending on value of `jacob-modal-editing-command-mode'."
