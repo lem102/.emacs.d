@@ -385,7 +385,7 @@
 (defun jacob-modal-editing-command-mode-hook-f ()
   "Make visual change depending on value of `jacob-modal-editing-command-mode'."
   (unless (equal jacob-modal-editing-command-mode global-hl-line-mode)
-    (global-hl-line-mode (if jacob-modal-editing-command-mode 1 0)))
+    (global-hl-line-mode (if jacob-modal-editing-command-mode 1 -1)))
   (modify-all-frames-parameters `((cursor-type . ,(if jacob-modal-editing-command-mode 'box 'bar)))))
 
 (add-hook 'jacob-modal-editing-command-mode-hook #'jacob-modal-editing-command-mode-hook-f)
