@@ -400,7 +400,7 @@
 
 (defun jacob-modal-editing-setup-eat ()
   "Configure eat for modal editing."
-  (when (derived-mode-p 'eshell-mode)
+  (when eat--eshell-process-running-mode
     (if jacob-modal-editing-command-mode
         (eat-eshell-emacs-mode)
       (eat-eshell-semi-char-mode))))
