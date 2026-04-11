@@ -817,7 +817,6 @@ then remove this function from `find-file-hook'."
 
   (add-to-list 'compilation-error-regexp-alist 'jacob-sbt-test-fail-re)
 
-  ;; TODO: adapt regexp to include compilation error within sbt test
   (add-to-list 'compilation-error-regexp-alist-alist
                '(jacob-sbt-error
                  "^\\[error][[:space:]]--[[:space:]].*Error: \\([^:]+\\):\\([[:digit:]]+\\):\\([[:digit:]]+\\)" 1 2 3 nil 1))

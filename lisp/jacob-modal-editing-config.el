@@ -413,12 +413,6 @@
 
 ;; eat.el integration
 
-(defun jacob-align-modal-editing-with-eat ()
-  "TODO: write documentation."
-  (if jacob-modal-editing-command-mode
-      (eat-eshell-emacs-mode)
-    (eat-eshell-semi-char-mode)))
-
 (defun jacob-modal-editing-setup-eat ()
   ""
   (when eat--eshell-process-running-mode
