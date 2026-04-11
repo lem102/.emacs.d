@@ -11,7 +11,7 @@
     (keymap-set map (car binding) (cdr binding))))
 
 (jacob-modal-bind-keys jacob-modal-editing-keymap
-                       '(("f" . jacob-modal-editing-disable)
+                       `(("f" . jacob-modal-editing-disable)
                          ("j" . backward-char)
                          ("k" . next-line)
                          ("i" . previous-line)
@@ -41,10 +41,8 @@
                          ("b" . xah-toggle-letter-case)
                          ("g" . expreg-expand)
                          ("\\" . embark-act)
-                         ("q" . jacob-format-words)))
-
-(jacob-modal-bind-keys jacob-modal-editing-keymap
-                       `(("'" . delete-other-windows)
+                         ("q" . jacob-format-words)
+                         ("'" . delete-other-windows)
                          ("@" . delete-ndow)
                          ("-" . split-window-below)
                          ("=" . split-window-right)
@@ -71,10 +69,8 @@
                          ("SPC s" . exchange-point-and-mark)
                          ("SPC u" . kill-current-buffer)
                          ("SPC v" . consult-yank-from-kill-ring)
-                         ("SPC y" . isearch-forward-symbol-at-point)))
-
-(jacob-modal-bind-keys jacob-modal-editing-keymap
-                       '(("SPC e ." . isearch-forward-word)
+                         ("SPC y" . isearch-forward-symbol-at-point)
+                         ("SPC e ." . isearch-forward-word)
                          ("SPC e d" . highlight-regexp)
                          ("SPC e e" . highlight-symbol-at-point)
                          ("SPC e g" . isearch-forward-symbol)
@@ -128,19 +124,8 @@
                          ("SPC i f" . ffap)
                          ("SPC i j" . consult-recent-file)
                          ("SPC i o" . consult-bookmark)
-                         ("SPC i s" . xah-show-in-desktop)))
-
-;; ("c f" . xah-open-recently-closed)
-;; ("c g" . xah-open-in-terminal)
-;; ("c j" . xah-copy-file-path)
-;; ("c n" . xah-new-empty-buffer)
-;; ("c p" . xah-open-last-closed)
-;; ("c x" . set-buffer-file-coding-system)
-;; ("c y" . xah-list-recently-closed)
-;; ("c z" . revert-buffer-with-coding-system)
-
-(jacob-modal-bind-keys jacob-modal-editing-keymap
-                       '(("SPC k c" . consult-register-store)
+                         ("SPC i s" . xah-show-in-desktop)
+                         ("SPC k c" . consult-register-store)
                          ("SPC k i" . consult-register-load)
                          ("SPC k k" . repeat)
                          ("SPC k r" . query-replace-regexp)
@@ -167,6 +152,15 @@
                          ("SPC SPC e o" . eglot-code-action-organize-imports)
                          ("SPC SPC a a" . org-agenda)
                          ("SPC SPC a c" . org-capture)))
+
+;; ("c f" . xah-open-recently-closed)
+;; ("c g" . xah-open-in-terminal)
+;; ("c j" . xah-copy-file-path)
+;; ("c n" . xah-new-empty-buffer)
+;; ("c p" . xah-open-last-closed)
+;; ("c x" . set-buffer-file-coding-system)
+;; ("c y" . xah-list-recently-closed)
+;; ("c z" . revert-buffer-with-coding-system)
 
 (defvar-keymap jacob-modal-editing-dired-map
   "s" #'dired-find-file
