@@ -18,7 +18,7 @@
                       "cecli"
                       nil
                       "--linear-output"
-                      "--watch-files"))))))
+                      "--watch-files")))))) ; put the cli options in a var ai!
 
 (defun jacob-cecli-add-file ()
   "Add the current file to cecli."
