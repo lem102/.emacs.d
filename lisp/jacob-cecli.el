@@ -6,21 +6,27 @@
 ;;; Code:
 
 (defun jacob-cecli ()
-  "Start cecli."
+  "Start or switch to the cecli buffer for the current project."
   (interactive)
-  (comint-run "cecli" '("--model" "gemini/gemini-3.1-flash-lite-preview" "--linear-output"))
-  (font-lock-add-keywords nil smerge-font-lock-keywords 'append))
+  (pop-to-buffer
+   (if-let* ((proj (project-current "MAYBE-PROMPT"))
+             (buffer-name (format "%s-cecli" (project-name proj)))
+             (buffer (get-buffer buffer-name))
+             (default-directory (project-root proj)))
+       buffer
+     (make-comint buffer-name
+                  "cecli"
+                  nil
+                  "--linear-output"
+                  "--watch-files"))))
 
 (defun jacob-cecli-add-file ()
-  "Add the current file to cecli, relative to the git root."
+  "Add the current file to cecli."
   (interactive)
   (when-let* ((file-path (buffer-file-name (current-buffer)))
-              (cecli-buffer (get-buffer "*cecli*"))
-              (relative-path (file-relative-name file-path (vc-root-dir))))
-    (comint-send-string cecli-buffer
-                        (concat "/add " relative-path "\n"))))
-
-;; TODO: support a cecli buffer per project
+              (relative-path (file-relative-name file-path (project-root (project-current)))))
+    (comint-send-string (jacob-cecli)
+                        (format "/add %s\n" relative-path))))
 
 (provide 'jacob-cecli)
 

@@ -1104,6 +1104,8 @@ then remove this function from `find-file-hook'."
 
 (use-package gptel
   :defer t
+  :config
+  (require 'gptel-integrations)
   :custom
   (gptel-default-mode #'org-mode)
   (gptel-confirm-tool-calls t))
@@ -1113,6 +1115,8 @@ then remove this function from `find-file-hook'."
 
 (use-package elisp-dev-mcp
   :after gptel)
+
+(require 'jacob-cecli)
 
 (use-package gdscript-mode
   :hook ((gdscript-ts-mode-hook . apheleia-mode)
