@@ -5,7 +5,7 @@
 
 ;;; Code:
 
-(defvar jacob-cecli-options '("--linear-output" "--watch-files")
+(defvar jacob-cecli-options '("--linear-output" "--watch-files") ; call this flags instead of options AI!
   "Options to pass to the cecli process.")
 
 (defun jacob-cecli ()
