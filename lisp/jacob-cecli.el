@@ -9,16 +9,16 @@
   "Start or switch to the cecli buffer for the current project."
   (interactive)
   (pop-to-buffer
-   (if-let* ((proj (project-current "MAYBE-PROMPT"))
-             (buffer-name (format "%s-cecli" (project-name proj)))
-             (buffer (get-buffer buffer-name))
-             (default-directory (project-root proj)))
-       buffer
-     (make-comint buffer-name
-                  "cecli"
-                  nil
-                  "--linear-output"
-                  "--watch-files"))))
+   (let* ((proj (project-current t))    ; rename proj to project AI!
+          (buffer-name (format "%s-cecli" (project-name proj))))
+     (if-let* ((buffer (get-buffer buffer-name)))
+         buffer
+       (let ((default-directory (project-root proj)))
+         (make-comint buffer-name
+                      "cecli"
+                      nil
+                      "--linear-output"
+                      "--watch-files"))))))
 
 (defun jacob-cecli-add-file ()
   "Add the current file to cecli."
