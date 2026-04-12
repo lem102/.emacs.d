@@ -9,11 +9,11 @@
   "Start or switch to the cecli buffer for the current project."
   (interactive)
   (pop-to-buffer
-   (let* ((proj (project-current t))    ; rename proj to project AI!
-          (buffer-name (format "%s-cecli" (project-name proj))))
+   (let* ((project (project-current t))
+          (buffer-name (format "%s-cecli" (project-name project))))
      (if-let* ((buffer (get-buffer buffer-name)))
          buffer
-       (let ((default-directory (project-root proj)))
+       (let ((default-directory (project-root project)))
          (make-comint buffer-name
                       "cecli"
                       nil
