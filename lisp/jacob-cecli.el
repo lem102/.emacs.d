@@ -14,7 +14,8 @@
   (pop-to-buffer
    (let* ((project (project-current t))
           (buffer-name (format "%s-cecli" (project-name project))))
-     (if-let ((buffer (get-buffer buffer-name)))
+     (if-let* ((buffer (get-buffer buffer-name))
+               (_process (get-buffer-process buffer)))
          buffer
        (let ((default-directory (project-root project)))
          (apply #'make-comint buffer-name "cecli" nil jacob-cecli-arguments))))))
