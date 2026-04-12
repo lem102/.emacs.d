@@ -5,8 +5,8 @@
 
 ;;; Code:
 
-(defvar jacob-cecli-flags '("--linear-output" "--watch-files") ; instead of flags say arguments ai!
-  "Flags to pass to the cecli process.")
+(defvar jacob-cecli-arguments '("--linear-output" "--watch-files")
+  "Arguments to pass to the cecli process.")
 
 (defun jacob-cecli ()
   "Start or switch to the cecli buffer for the current project."
@@ -17,7 +17,7 @@
      (if-let* ((buffer (get-buffer buffer-name)))
          buffer
        (let ((default-directory (project-root project)))
-         (apply #'make-comint buffer-name "cecli" nil jacob-cecli-options))))))
+         (apply #'make-comint buffer-name "cecli" nil jacob-cecli-options)))))) ; correct the name jacob-cecli-options to jacob-cecli-arguments ai!
 
 (defun jacob-cecli-add-file ()
   "Add the current file to cecli."
