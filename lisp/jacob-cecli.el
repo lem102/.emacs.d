@@ -14,10 +14,10 @@
   (pop-to-buffer
    (let* ((project (project-current t))
           (buffer-name (format "%s-cecli" (project-name project))))
-     (if-let* ((buffer (get-buffer buffer-name)))
+     (if-let ((buffer (get-buffer buffer-name)))
          buffer
        (let ((default-directory (project-root project)))
-         (apply #'make-comint buffer-name "cecli" nil jacob-cecli-options)))))) ; correct the name jacob-cecli-options to jacob-cecli-arguments ai!
+         (apply #'make-comint buffer-name "cecli" nil jacob-cecli-arguments))))))
 
 (defun jacob-cecli-add-file ()
   "Add the current file to cecli."
