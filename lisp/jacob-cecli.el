@@ -5,6 +5,9 @@
 
 ;;; Code:
 
+(defvar jacob-cecli-options '("--linear-output" "--watch-files")
+  "Options to pass to the cecli process.")
+
 (defun jacob-cecli ()
   "Start or switch to the cecli buffer for the current project."
   (interactive)
@@ -14,11 +17,7 @@
      (if-let* ((buffer (get-buffer buffer-name)))
          buffer
        (let ((default-directory (project-root project)))
-         (make-comint buffer-name
-                      "cecli"
-                      nil
-                      "--linear-output"
-                      "--watch-files")))))) ; put the cli options in a var ai!
+         (apply #'make-comint buffer-name "cecli" nil jacob-cecli-options))))))
 
 (defun jacob-cecli-add-file ()
   "Add the current file to cecli."
