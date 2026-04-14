@@ -50,7 +50,7 @@
                                  ("\\" . embark-act)
                                  ("q" . jacob-format-words)
                                  ("'" . delete-other-windows)
-                                 ("@" . delete-ndow)
+                                 ("@" . delete-window)
                                  ("-" . split-window-below)
                                  ("=" . split-window-right)
                                  ("1" . winner-undo)
