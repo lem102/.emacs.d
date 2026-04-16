@@ -111,7 +111,6 @@
 
 (use-package tool-bar
   :config
-  (tool-bar-mode (if jacob-is-android 1 0))
   (when jacob-is-android
     (modifier-bar-mode 1))
   :custom
