@@ -5,7 +5,7 @@
 
 ;;; Code:
 
-(defvar jacob-cecli-arguments '("--linear-output" "--watch-files")
+(defvar jacob-cecli-arguments '("--linear-output" "--watch-files" "--no-auto-commits")
   "Arguments to pass to the cecli process.")
 
 (defun jacob-cecli ()

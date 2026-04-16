@@ -117,7 +117,7 @@
                 feature-mode flymake font-lock-ext forge gdscript-mode
                 geiser geiser-guile gptel gptel-agent hl-todo idlwave
                 jsonrpc just-mode magit marginalia markdown-ts-mode
-                mcp mct mermaid-mode nerd-icons-completion
+                mcp mct mermaid-mode minuet nerd-icons-completion
                 nerd-icons-dired nerd-icons-grep nerd-icons-ibuffer
                 nerd-icons-mode-line nerd-icons-modeline
                 nerd-icons-xref no-littering nov ob-mermaid on
