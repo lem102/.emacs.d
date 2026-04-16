@@ -1,5 +1,5 @@
 # key: let
 # name: let
 # --
-(let ()
+(let* ()
   $0)
