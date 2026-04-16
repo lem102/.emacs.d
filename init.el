@@ -1160,7 +1160,7 @@ then remove this function from `find-file-hook'."
 
 ;; personal functions
 
-(require 'jacob-rofi)
+(autoload 'jacob-rofi "jacob-rofi")
 
 (define-minor-mode jacob-screen-sharing-mode
   "Minor mode for sharing screens."
