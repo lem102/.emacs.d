@@ -88,17 +88,19 @@
       ["Magit" magit t]
       ["Agenda" org-agenda t]
       ["Calendar" calendar t]
-      ["Describe" consult-symbol t]))
+      ["Describe" consult-symbol t]
+      ["Cecli" jacob-cecli t]
+      ["Gptel" gptel t]))
 
   (easy-menu-define jacob-move-menu global-map
     "Movement menu"
     '("JMove"
+      ["Buffer" consult-buffer t]
       ["Project File" project-find-file t]
       ["Switch Project" jacob-dired-in-other-project t]
       ["File" find-file t]
       ["Imenu" consult-imenu t]
-      ["Dired" dired-jump t]
-      ["Buffer" consult-buffer t]))
+      ["Dired" dired-jump t]))
 
   (easy-menu-define jacob-menu global-map
     "misc menu"
