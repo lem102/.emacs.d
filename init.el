@@ -1174,9 +1174,9 @@ then remove this function from `find-file-hook'."
 (defun jacob-ip-to-kill-ring ()
   "Copy v4 ip address to kill ring."
   (interactive)
-  (kill-new (with-temp-buffer (shell-command "curl --silent -4 ifconfig.me"
-                                             t)
-                              (buffer-string))))
+  (kill-new (with-temp-buffer
+              (shell-command "curl --silent -4 ifconfig.me" t)
+              (buffer-string))))
 
 (defun jacob-random-init ()
   "Go to a random place in init file."
