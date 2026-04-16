@@ -168,6 +168,45 @@ lets you select one via completion, and inserts it at the top of the file."
                   :workspace/executeCommand
                   '( :command "bsp-switch")))
 
+(defun jacob-json-to-play-json (region-start region-end)
+  "Convert the json between REGION-START and REGION-END to an equivalent play json expression."
+  (interactive "r")
+  (let* ((json (buffer-substring-no-properties region-start region-end))
+         (data (condition-case nil
+                   (json-parse-string json
+                                      :object-type 'plist)
+                 (error (user-error "Region does not contain valid json"))))
+         (play-json-code (cl-labels ((traverse-outer (v)
+                                       (pcase v
+                                         ((pred plistp)
+                                          (concat "Json.obj(" (traverse-inner v) ")"))
+                                         ((pred vectorp)
+                                          (concat "Json.arr(" (traverse-inner (append v nil)) ")"))))
+                                     (traverse-inner (v)
+                                       (pcase (car v)
+                                         ((pred null)
+                                          "")
+                                         ((pred keywordp)
+                                          (format "\"%s\" -> %s"
+                                                  (seq-rest (symbol-name (car v)))
+                                                  (traverse-inner (cdr v))))
+                                         ((pred stringp)
+                                          (format "\"%s\", %s"
+                                                  (car v)
+                                                  (traverse-inner (cdr v))))
+                                         ((pred numberp)
+                                          (format "%s, %s"
+                                                  (car v)
+                                                  (traverse-inner (cdr v))))
+                                         ((or (pred listp)
+                                              (pred vectorp))
+                                          (format "%s, %s"
+                                                  (traverse-outer (car v))
+                                                  (traverse-inner (cdr v)))))))
+                           (traverse-outer data))))
+    (delete-region region-start region-end)
+    (insert play-json-code)))
+
 (provide 'jacob-scala)
 
 ;;; jacob-scala.el ends here
