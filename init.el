@@ -1316,6 +1316,14 @@ For use with GitLab only."
       (version-list-< (package-desc-version installed-pkg)
                       (package-desc-version available-pkg)))))
 
+(defun jacob-bash-export-to-setenv ()
+  "Convert the bash export statement at point to a `setenv' call."
+  (interactive)
+  (save-excursion
+    (beginning-of-line)
+    (re-search-forward "export \\(.+\\)=\\(.+\\)")
+    (replace-match "(setenv \"\\1\" \"\\2\")")))
+
 (provide 'init)
 
 ;;; init.el ends here
