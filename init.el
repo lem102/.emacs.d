@@ -823,11 +823,19 @@ then remove this function from `find-file-hook'."
 
   (add-to-list 'compilation-error-regexp-alist-alist
                '(jacob-sbt-test-fail-re
-                 "at .*(\\([a-zA-Z.]+\\):\\([0-9]+\\))"
+                 ".* (\\([a-zA-Z\\.]+\\):\\([0-9]+\\))"
                  jacob-compilation-project-file
                  2))
 
   (add-to-list 'compilation-error-regexp-alist 'jacob-sbt-test-fail-re)
+
+  (add-to-list 'compilation-error-regexp-alist-alist
+               '(jacob-sbt-stack-trace-re
+                 "at .*(\\([a-zA-Z.]+\\):\\([0-9]+\\))"
+                 jacob-compilation-project-file
+                 2))
+
+  (add-to-list 'compilation-error-regexp-alist 'jacob-sbt-stack-trace-re)
 
   (add-to-list 'compilation-error-regexp-alist-alist
                '(jacob-sbt-error
