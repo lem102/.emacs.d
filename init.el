@@ -1160,6 +1160,10 @@ then remove this function from `find-file-hook'."
 ;; personal functions
 
 (autoload 'jacob-rofi "jacob-rofi")
+(autoload 'jacob-format-words "jacob-format-words")
+(autoload 'jacob-gitlab-push-set-upstream "jacob-gitlab-push-set-upstream")
+
+;; TODO: how can i generate autoload files conveniently?
 
 (define-minor-mode jacob-screen-sharing-mode
   "Minor mode for sharing screens."
