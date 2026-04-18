@@ -691,7 +691,9 @@ then remove this function from `find-file-hook'."
 
   (jacob-defhookf org-mode-hook
     (toggle-truncate-lines 0)
-    (toggle-word-wrap 1)))
+    (toggle-word-wrap 1)
+    (setq-local jacob-backward-paragraph-function #'org-backward-paragraph)
+    (setq-local jacob-forward-paragraph-function #'org-forward-paragraph)))
 
 (use-package org-agenda
   :commands (org-agenda org-capture)

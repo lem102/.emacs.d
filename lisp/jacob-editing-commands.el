@@ -51,16 +51,14 @@
          ,@hook-function-body)
        (add-hook ',hook #',hook-function))))
 
-(defvar-local jacob-backward-paragraph-function nil
+(defvar-local jacob-backward-paragraph-function #'backward-paragraph
   "Function to use for backward paragraph in `jacob-beginning-of-line'.")
 
 (defun jacob-beginning-of-line ()
   "Go to indentation, line start, backward paragraph."
   (interactive)
   (cond ((bolp)
-         (if jacob-backward-paragraph-function
-             (funcall jacob-backward-paragraph-function)
-           (backward-paragraph)))
+         (funcall jacob-backward-paragraph-function))
         ((= (save-excursion
               (back-to-indentation)
               (point))
@@ -299,11 +297,14 @@ Version: 2023-07-10"
             (comment-or-uncomment-region xbegin xend)
             (forward-line)))))))
 
+(defvar-local jacob-forward-paragraph-function #'forward-paragraph
+  "Function to use for forward paragraph in `jacob-end-of-line'.")
+
 (defun jacob-end-of-line ()
   "Go to content end, line end, forward paragraph."
   (interactive)
   (if (eolp)
-      (forward-paragraph)
+      (funcall jacob-forward-paragraph-function)
     (let ((content-end (save-excursion
                          (when (condition-case error
                                    (comment-search-forward (line-end-position) "NOERROR")
