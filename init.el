@@ -771,7 +771,8 @@ then remove this function from `find-file-hook'."
                      isearch-done))
     (advice-add command :after #'jacob-pulse-line))
 
-  (advice-add #'eval-defun :after #'jacob-pulse-defun))
+  (advice-add #'eval-defun :after #'jacob-pulse-defun)
+  (advice-add #'eval-last-sexp :after #'jacob-pulse-previous-sexp))
 
 (use-package server
   :hook (after-init-hook . server-start))
