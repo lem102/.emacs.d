@@ -67,6 +67,8 @@
  '(enable-recursive-minibuffers t)
  '(eshell-scroll-to-bottom-on-output 'this)
  '(frame-resize-pixelwise t)
+ '(gptel-prompt-prefix-alist
+   '((markdown-mode . "### ") (org-mode . "** ") (text-mode . "### ")))
  '(grep-use-headings t)
  '(help-enable-variable-value-editing t)
  '(help-window-select t)
