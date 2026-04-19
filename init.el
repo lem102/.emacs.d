@@ -398,7 +398,8 @@ then remove this function from `find-file-hook'."
   (jacob-define-auto-insert "\\.el$" ["template.el" checkdoc elisp-enable-lexical-binding])
   (jacob-define-auto-insert "\\.scala$" ["template.scala" jacob-autoinsert-yas-expand])
   (jacob-define-auto-insert "\\.cs$" ["template.cs" jacob-autoinsert-yas-expand])
-  (jacob-define-auto-insert "Controller\\.cs$" ["controllerTemplate.cs" jacob-autoinsert-yas-expand]))
+  (jacob-define-auto-insert "Controller\\.cs$" ["controllerTemplate.cs" jacob-autoinsert-yas-expand])
+  (jacob-define-auto-insert "\\.org$" ["template.org" jacob-autoinsert-yas-expand]))
 
 (use-package tramp
   :defer t
@@ -674,6 +675,7 @@ then remove this function from `find-file-hook'."
 
 (use-package org
   :mode ("\\.org\\'" . org-mode)
+  :hook (org-mode-hook . yas-minor-mode)
   :config
   (defun jacob-org-babel-tangle-delete-whitespace ()
     "Get rid of the whitespace at the end of the buffer."

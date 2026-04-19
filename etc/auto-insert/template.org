@@ -1,0 +1,7 @@
+#+TITLE: ${1:Example Title$(capitalize yas-text)}
+#+DATE: <2026-04-17 Fri>
+#+AUTHOR: Jacob Leeming
+
+* Abstract
+
+${0:This is a template of a document. The abstract section briefly explains what the document is.}
