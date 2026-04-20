@@ -287,20 +287,9 @@ then remove this function from `find-file-hook'."
   (put 'set-goal-column 'disabled nil))
 
 (use-package thingatpt
+  :defer t
   :config
-  (defun jacob-bounds-of-puni-line-at-point ()
-    "Get the puni line at point."
-    (puni-soft-delete (line-beginning-position)
-                      (save-excursion
-                        (forward-line)
-                        (point))
-                      "STRICT-SEXP"
-                      'beyond
-                      nil
-                      nil
-                      "RETURN-REGION"))
-
-  (put 'puni-line 'bounds-of-thing-at-point 'jacob-bounds-of-puni-line-at-point))
+  (require 'jacob-thingatpt))
 
 (use-package timer-list
   :defer t
@@ -773,7 +762,7 @@ then remove this function from `find-file-hook'."
                      xref-find-definitions
                      xref-pop-marker-stack
                      isearch-done))
-    (advice-add command :after #'jacob-pulse-line))
+    (advice-add command :after #'jacob-pulse-jacob-line-content))
 
   (advice-add #'eval-defun :after #'jacob-pulse-defun)
   (advice-add #'eval-last-sexp :after #'jacob-pulse-previous-sexp))

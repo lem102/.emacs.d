@@ -10,9 +10,9 @@
   (let ((bounds (bounds-of-thing-at-point thing)))
     (pulse-momentary-highlight-region (car bounds) (cdr bounds))))
 
-(defun jacob-pulse-line (&rest _)
+(defun jacob-pulse-jacob-line-content (&rest _)
   "Pulse the line at point."
-  (jacob-pulse--thing-at-point 'line))
+  (jacob-pulse--thing-at-point 'jacob-line-content))
 
 (defun jacob-pulse-defun (&rest _)
   "Pulse the defun at point."
