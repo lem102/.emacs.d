@@ -24,9 +24,7 @@ point."
   (undo-boundary)
 
   (unless (eq last-command this-command)
-    (setq jacob-format-words-style-and-start (cons (pcase major-mode
-                                                     ('emacs-lisp-mode ?k)
-                                                     (_ (read-char-from-minibuffer "select style: " '(?c ?p ?k ?s ?S))))
+    (setq jacob-format-words-style-and-start (cons (read-char-from-minibuffer "select style: " '(?c ?p ?k ?s ?S))
                                                    (point))))
 
   (save-excursion
