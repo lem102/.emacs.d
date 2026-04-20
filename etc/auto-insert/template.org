@@ -1,5 +1,5 @@
 #+TITLE: ${1:Example Title$(capitalize yas-text)}
-#+DATE: <2026-04-17 Fri>
+#+DATE: `(format-time-string (org-time-stamp-format) (org-current-time))`
 #+AUTHOR: Jacob Leeming
 
 * Abstract
