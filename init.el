@@ -717,8 +717,18 @@ then remove this function from `find-file-hook'."
   (jacob-defhookf org-agenda-mode-hook
     (setq-local tool-bar-map org-agenda-tool-bar-map)
     (hl-line-mode 1))
+
+  (org-link-set-parameters "jira"
+                           :follow #'jacob-org-jira-follow)
+
+  (defun jacob-org-jira-follow (issue _)
+    "Open the jira ISSUE."
+    (browse-url (file-name-concat jacob-jira-url issue)))
   :bind (("C-c o a" . org-agenda)
          ("C-c o c" . org-capture)))
+
+(defvar jacob-jira-url nil
+  "Jira url for current project.")
 
 (use-package org-src
   :after org
