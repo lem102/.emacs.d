@@ -686,7 +686,14 @@ then remove this function from `find-file-hook'."
     (toggle-truncate-lines 0)
     (toggle-word-wrap 1)
     (setq-local jacob-backward-paragraph-function #'org-backward-paragraph)
-    (setq-local jacob-forward-paragraph-function #'org-forward-paragraph)))
+    (setq-local jacob-forward-paragraph-function #'org-forward-paragraph))
+
+  (org-link-set-parameters "jira"
+                           :follow #'jacob-org-jira-follow)
+
+  (defun jacob-org-jira-follow (issue _)
+    "Open the jira ISSUE."
+    (browse-url (file-name-concat jacob-jira-url issue))))
 
 (use-package org-agenda
   :commands (org-agenda org-capture)
@@ -717,13 +724,6 @@ then remove this function from `find-file-hook'."
   (jacob-defhookf org-agenda-mode-hook
     (setq-local tool-bar-map org-agenda-tool-bar-map)
     (hl-line-mode 1))
-
-  (org-link-set-parameters "jira"
-                           :follow #'jacob-org-jira-follow)
-
-  (defun jacob-org-jira-follow (issue _)
-    "Open the jira ISSUE."
-    (browse-url (file-name-concat jacob-jira-url issue)))
   :bind (("C-c o a" . org-agenda)
          ("C-c o c" . org-capture)))
 
