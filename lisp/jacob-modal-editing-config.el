@@ -82,7 +82,6 @@
                                  ("SPC j c" . consult-man)
                                  ("SPC j c" . man)
                                  ("SPC j g" . consult-info)
-                                 ("SPC j g" . info)
                                  ("SPC j i" . describe-char)
                                  ("SPC j j" . consult-symbol)
                                  ("SPC j k" . describe-function)
