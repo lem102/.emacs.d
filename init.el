@@ -662,13 +662,7 @@ then remove this function from `find-file-hook'."
   :mode ("\\.org\\'" . org-mode)
   :hook (org-mode-hook . yas-minor-mode)
   :config
-  (defun jacob-org-babel-tangle-delete-whitespace ()
-    "Get rid of the whitespace at the end of the buffer."
-    (goto-char (point-max))
-    (delete-trailing-whitespace)
-    (backward-delete-char 1)
-    (save-buffer))
-
+  (require 'jacob-org)
   (add-hook 'org-babel-post-tangle-hook 'jacob-org-babel-tangle-delete-whitespace)
 
   (org-babel-do-load-languages
@@ -689,11 +683,7 @@ then remove this function from `find-file-hook'."
     (setq-local jacob-forward-paragraph-function #'org-forward-paragraph))
 
   (org-link-set-parameters "jira"
-                           :follow #'jacob-org-jira-follow)
-
-  (defun jacob-org-jira-follow (issue _)
-    "Open the jira ISSUE."
-    (browse-url (file-name-concat jacob-jira-url issue))))
+                           :follow #'jacob-org-jira-follow))
 
 (use-package org-agenda
   :commands (org-agenda org-capture)
