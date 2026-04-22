@@ -49,7 +49,8 @@
       (insert-file-contents autoloads-file)
       (goto-char (point-min))
       (when (search-forward ";; This file is part of GNU Emacs."
-                            nil "NOERROR")
+                            nil
+                            "NOERROR")
         (kill-whole-line 2)))))
 
 ;; read custom file and environment file
@@ -61,8 +62,6 @@
   (ignore-errors (load-file jacob-environment-file)))
 
 ;; configure packages
-
-(require 'jacob-init-helpers)
 
 (use-package jacob-editing-commands
   :demand
