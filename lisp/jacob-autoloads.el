@@ -17,7 +17,12 @@
 
 ;;; Generated autoloads from jacob-autoinsert.el
 
-(register-definition-prefixes "jacob-autoinsert" '("jacob-define-auto-insert"))
+(autoload 'jacob-define-auto-insert "jacob-autoinsert" "\
+Set up an auto insert idempotently.
+
+CONDITION and ACTION are as in `define-auto-insert'.
+
+(fn CONDITION ACTION)")
 
 
 ;;; Generated autoloads from jacob-avy.el

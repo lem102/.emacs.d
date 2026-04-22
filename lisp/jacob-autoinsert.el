@@ -5,6 +5,7 @@
 
 ;;; Code:
 
+;;;###autoload
 (defun jacob-define-auto-insert (condition action)
   "Set up an auto insert idempotently.
 
