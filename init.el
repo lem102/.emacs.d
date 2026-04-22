@@ -413,7 +413,6 @@ then remove this function from `find-file-hook'."
    ("C-c e o" . eglot-code-action-organize-imports)
    ("C-c e y" . jacob-eglot-yank))
   :config
-  ;; TODO: how can i prevent pop ups from scala metals?
   (require 'jacob-eglot)
 
   (add-to-list 'eglot--lsp-interface-alist
@@ -683,7 +682,10 @@ then remove this function from `find-file-hook'."
     (setq-local jacob-forward-paragraph-function #'org-forward-paragraph))
 
   (org-link-set-parameters "jira"
-                           :follow #'jacob-org-jira-follow))
+                           :follow #'jacob-org-jira-follow)
+
+  (org-link-set-parameters "project"
+                           :follow #'jacob-org-project-follow))
 
 (use-package org-agenda
   :commands (org-agenda org-capture)
