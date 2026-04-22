@@ -88,7 +88,12 @@ point." t)
 
 ;;; Generated autoloads from jacob-gitlab.el
 
-(register-definition-prefixes "jacob-gitlab" '("jacob-gitlab-push-set-upstream"))
+(autoload 'jacob-gitlab-push-set-upstream "jacob-gitlab" "\
+Push the current branch and create an upstream branch.
+Use GitLab push options to create a merge request and set all
+necessary values.
+
+For use with GitLab only." t)
 
 
 ;;; Generated autoloads from jacob-help-fns.el
@@ -156,11 +161,6 @@ an application, raise an open application, power off the system).
 2. Use `completing-read' to select an action.
 3. Carry out the selected action." t)
 (register-definition-prefixes "jacob-rofi" '("jacob-"))
-
-
-;;; Generated autoloads from jacob-ryo-modal.el
-
-(register-definition-prefixes "jacob-ryo-modal" '("global-ryo-modal-mode" "jacob-ryo-modal-fix-cursor"))
 
 
 ;;; Generated autoloads from jacob-scala.el
