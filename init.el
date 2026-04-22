@@ -33,6 +33,24 @@
 (add-to-list 'custom-theme-load-path jacob-lisp-directory)
 
 (require 'jacob-init-helpers)
+(require 'jacob-autoloads)
+
+(defun jacob-autoloads-generate ()
+  "Generate autoloads file for Emacs configuration."
+  (interactive)
+  (let* ((autoloads-file (file-name-concat jacob-lisp-directory "jacob-autoloads.el")))
+    (loaddefs-generate jacob-lisp-directory
+                       autoloads-file
+                       nil
+                       nil
+                       nil
+                       "GENERATE-FULL")
+    (with-temp-file autoloads-file
+      (insert-file-contents autoloads-file)
+      (goto-char (point-min))
+      (when (search-forward ";; This file is part of GNU Emacs."
+                            nil "NOERROR")
+        (kill-whole-line 2)))))
 
 ;; read custom file and environment file
 
@@ -377,8 +395,6 @@ then remove this function from `find-file-hook'."
 
 (use-package autoinsert
   :hook (on-first-file-hook . auto-insert-mode)
-  :preface
-  (autoload 'jacob-define-auto-insert "jacob-autoinsert")
   :config
   (jacob-define-auto-insert "\\.el$" ["template.el" checkdoc elisp-enable-lexical-binding])
   (jacob-define-auto-insert "\\.scala$" ["template.scala" jacob-autoinsert-yas-expand])
@@ -484,8 +500,6 @@ then remove this function from `find-file-hook'."
   :config
   (remove-hook 'project-find-functions #'fsharp-mode-project-root)
   (setopt compilation-error-regexp-alist (remq 'fsharp compilation-error-regexp-alist)))
-
-(require 'jacob-trim-quotes-autoloads)
 
 (use-package scala-ts-mode
   :mode ("\\.scala\\'" . scala-ts-mode)
@@ -866,8 +880,6 @@ then remove this function from `find-file-hook'."
     ;; places.
     (jacob-modal-editing-ensure-priority)))
 
-(autoload 'jacob-dired-in-other-project "jacob-project" nil "INTERACTIVE")
-
 (use-package winnow
   :hook (compilation-mode-hook . winnow-mode))
 
@@ -1019,8 +1031,6 @@ then remove this function from `find-file-hook'."
   :hook (jacob-first-minibuffer-activation-hook . marginalia-mode))
 
 (use-package consult
-  :preface
-  (require 'jacob-consult-autoloads)
   :bind (("C-x b" . consult-buffer)
          ("M-g g" . consult-goto-line)
          ("M-g i" . consult-imenu)
@@ -1164,12 +1174,6 @@ then remove this function from `find-file-hook'."
 
 
 ;; personal functions
-
-(autoload 'jacob-rofi "jacob-rofi")
-(autoload 'jacob-format-words "jacob-format-words")
-(autoload 'jacob-gitlab-push-set-upstream "jacob-gitlab-push-set-upstream")
-
-;; TODO: how can i generate autoload files conveniently?
 
 (define-minor-mode jacob-screen-sharing-mode
   "Minor mode for sharing screens."

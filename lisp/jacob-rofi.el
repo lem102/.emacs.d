@@ -6,6 +6,7 @@
 
 ;;; Code:
 
+;;;###autoload
 (defun jacob-rofi ()
   "Rofi like thing.
 

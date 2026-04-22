@@ -9,6 +9,7 @@
   "Pair of currently selected style and starting point.
 If nil, means you havent used the command for the first time yet.")
 
+;;;###autoload
 (defun jacob-format-words ()
   "Command for formating words into identifiers when writing code.
 

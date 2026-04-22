@@ -5,6 +5,7 @@
 
 ;;; Code:
 
+;;;###autoload
 (defun jacob-gitlab-push-set-upstream ()
   "Push the current branch and create an upstream branch.
 Use GitLab push options to create a merge request and set all
