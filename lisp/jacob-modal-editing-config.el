@@ -319,6 +319,9 @@
                                                 ("e" . previous-error-no-select)
                                                 ("r" . next-error-no-select)))
 
+(jacob-modal-editing-major-mode-override-keys 'gnus-group-mode
+                                              '(("q" . gnus-group-quit)))
+
 (defun jacob-modal-editing-command-mode-hook-f ()
   "Make visual change depending on value of `jacob-modal-editing-command-mode'."
   (unless (equal jacob-modal-editing-command-mode global-hl-line-mode)
