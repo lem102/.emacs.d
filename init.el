@@ -1088,7 +1088,6 @@ then remove this function from `find-file-hook'."
 
 (use-package verb
   :after org
-  :hook (org-mode-hook . verb-mode)
   :config
   (defun jacob-verb-id (response-id)
     "Get the id property from the stored verb response pertaining to RESPONSE-ID."
