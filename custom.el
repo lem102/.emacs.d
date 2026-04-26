@@ -116,20 +116,20 @@
                 docker dumb-jump eat editorconfig ef-themes eglot
                 eglot-booster eldoc elisp-dev-mcp embark
                 embark-consult erc exec-path-from-shell expreg faceup
-                feature-mode flymake font-lock-ext forge gdscript-mode
-                geiser geiser-guile gptel gptel-agent hl-todo idlwave
-                jsonrpc just-mode magit marginalia markdown-ts-mode
-                mcp mct mermaid-mode minuet nerd-icons-completion
-                nerd-icons-dired nerd-icons-grep nerd-icons-ibuffer
-                nerd-icons-mode-line nerd-icons-modeline
-                nerd-icons-xref no-littering nov ob-mermaid on
-                orderless org org-edna pdf-tools peg prodigy project
-                puni python rainbow-mode sbt-mode scala-repl
-                scala-ts-mode sharper sln-mode sly sly-macrostep
-                sly-overlay sly-quicklisp sql-indent track-changes
-                tramp treesit-auto verb verilog-mode vertico web-mode
-                wgrep which-key window-tool-bar winnow yaml-pro
-                yasnippet yeetube))
+                feature-mode fennel-mode flymake font-lock-ext forge
+                gdscript-mode geiser geiser-guile gptel gptel-agent
+                hl-todo idlwave jsonrpc just-mode magit marginalia
+                markdown-ts-mode mcp mct mermaid-mode
+                nerd-icons-completion nerd-icons-dired nerd-icons-grep
+                nerd-icons-ibuffer nerd-icons-mode-line
+                nerd-icons-modeline nerd-icons-xref no-littering nov
+                ob-mermaid on orderless org org-edna pdf-tools peg
+                prodigy project puni python rainbow-mode sbt-mode
+                scala-repl scala-ts-mode sharper sln-mode sly
+                sly-macrostep sly-overlay sly-quicklisp sql-indent
+                syncthing track-changes tramp treesit-auto verb
+                verilog-mode vertico web-mode wgrep which-key
+                window-tool-bar winnow yaml-pro yasnippet yeetube))
  '(package-vc-selected-packages
    '((nerd-icons-mode-line :url
                            "https://github.com/grolongo/nerd-icons-mode-line.git")
