@@ -322,6 +322,9 @@
 (jacob-modal-editing-major-mode-override-keys 'gnus-group-mode
                                               '(("q" . gnus-group-quit)))
 
+(jacob-modal-editing-major-mode-override-keys 'magit-status-mode
+                                              '(("q" . magit-mode-bury-buffer)))
+
 (defun jacob-modal-editing-command-mode-hook-f ()
   "Make visual change depending on value of `jacob-modal-editing-command-mode'."
   (unless (equal jacob-modal-editing-command-mode global-hl-line-mode)
