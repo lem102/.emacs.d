@@ -1239,6 +1239,18 @@ Otherwise, display error message."
                                     end))
         jacob-title-case-downcase-words))
 
+(defun jacob-create-gnus-config ()
+  "Append basic gnus config to your environment.el file."
+  (interactive)
+  (with-temp-buffer
+    (insert "(setq user-full-name \"YOUR-NAME\"
+      user-mail-address \"YOUR-EMAIL\")
+
+(setq gnus-select-method '(nnnil nil))
+
+(setq gnus-secondary-select-methods '((nnimap \"YOUR-IMAP-SERVER\")))")
+    (write-region (point-min) (point-max) jacob-environment-file "append")))
+
 (provide 'init)
 
 ;;; init.el ends here
