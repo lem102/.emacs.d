@@ -398,8 +398,7 @@ then remove this function from `find-file-hook'."
   (jacob-define-auto-insert "\\.el$" ["template.el" checkdoc elisp-enable-lexical-binding])
   (jacob-define-auto-insert "\\.scala$" ["template.scala" jacob-autoinsert-yas-expand])
   (jacob-define-auto-insert "\\.cs$" ["template.cs" jacob-autoinsert-yas-expand])
-  (jacob-define-auto-insert "Controller\\.cs$" ["controllerTemplate.cs" jacob-autoinsert-yas-expand])
-  (jacob-define-auto-insert "\\.org$" ["template.org" jacob-autoinsert-yas-expand]))
+  (jacob-define-auto-insert "Controller\\.cs$" ["controllerTemplate.cs" jacob-autoinsert-yas-expand]))
 
 (use-package tramp
   :defer t

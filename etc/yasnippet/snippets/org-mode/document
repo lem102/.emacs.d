@@ -1,3 +1,6 @@
+# -*- mode: snippet -*-
+# key: document
+# --
 #+TITLE: ${1:Example Title$(capitalize yas-text)}
 #+DATE: `(format-time-string (org-time-stamp-format) (org-current-time))`
 #+AUTHOR: Jacob Leeming
