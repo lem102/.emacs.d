@@ -11,7 +11,8 @@
   "Directory where sm2 stores it's configuration.")
 
 ;;;###autoload
-(transient-define-prefix jacob-sm2 nil "Transient menu for sm2."
+(transient-define-prefix jacob-sm2 ()
+  "Transient menu for sm2."
   ["Commands"
    ("i" "Status" jacob-sm2-status)
    ("s" "Start" jacob-sm2-start)])
