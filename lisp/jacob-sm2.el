@@ -15,7 +15,8 @@
   "Transient menu for sm2."
   ["Commands"
    ("i" "Status" jacob-sm2-status)
-   ("s" "Start" jacob-sm2-start)])
+   ("s" "Start" jacob-sm2-start)
+   ("k" "Stop" jacob-sm2-stop)])
 
 (defun jacob-sm2-status ()
   "Run sm2 -s."
@@ -26,6 +27,13 @@
   "Run sm2 --start. Prompt for which service or profile should be started."
   (interactive)
   (async-shell-command (format "sm2 --start %s"
+                               (completing-read "Service or profile: "
+                                                (jacob-sm2-services-and-profiles)))))
+
+(defun jacob-sm2-stop ()
+  "Run sm2 --stop. Prompt for which service or profile should be stopped."
+  (interactive)
+  (async-shell-command (format "sm2 --stop %s"
                                (completing-read "Service or profile: "
                                                 (jacob-sm2-services-and-profiles)))))
 
