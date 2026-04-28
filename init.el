@@ -657,6 +657,10 @@ then remove this function from `find-file-hook'."
   (keymap-set scheme-mode-map "(" #'insert-parentheses)
   (keymap-set scheme-mode-map ")" #'move-past-close-and-reindent))
 
+(use-package fennel-mode
+  :hook ((fennel-mode-hook . yas-minor-mode)
+         (fennel-mode-hook . apheleia-mode)))
+
 (use-package geiser
   :after scheme)
 
@@ -949,6 +953,7 @@ then remove this function from `find-file-hook'."
   (add-to-list 'apheleia-mode-alist '(gdscript-ts-mode . gdscript-formatter))
   (add-to-list 'apheleia-mode-alist '("\\.routes\\'" . play-routes))
   (add-to-list 'apheleia-mode-alist '(scala-ts-mode . scalafmt))
+  (add-to-list 'apheleia-mode-alist '(fennel-mode . lisp-indent))
 
   (add-to-list 'apheleia-skip-functions #'jacob-apheleia-skip-function))
 
