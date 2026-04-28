@@ -5,6 +5,8 @@
 
 ;;; Code:
 
+(require 'transient)
+
 (defcustom jacob-sm2-config-directory "~/.sm2/service-manager-config/"
   "Directory where sm2 stores it's configuration.")
 
