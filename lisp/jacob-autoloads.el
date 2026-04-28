@@ -178,6 +178,15 @@ an application, raise an open application, power off the system).
 (register-definition-prefixes "jacob-shadow-theme" '("jacob-shadow"))
 
 
+;;; Generated autoloads from jacob-sm2.el
+
+(autoload 'jacob-sm2 "jacob-sm2" "\
+Transient menu for sm2.
+
+(fn)" t)
+(register-definition-prefixes "jacob-sm2" '("jacob-sm2-"))
+
+
 ;;; Generated autoloads from jacob-sql.el
 
 (register-definition-prefixes "jacob-sql" '("jacob-sql"))

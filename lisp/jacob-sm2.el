@@ -8,6 +8,7 @@
 (defcustom jacob-sm2-config-directory "~/.sm2/service-manager-config/"
   "Directory where sm2 stores it's configuration.")
 
+;;;###autoload
 (transient-define-prefix jacob-sm2 nil "Transient menu for sm2."
   ["Commands"
    ("i" "Status" jacob-sm2-status)
