@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# key: defun
+# --
+(lambda ${1:f$(jacob-yas-kebab-case yas-text)} [$2]
+  "TODO: Write documentation."
+  $0)
