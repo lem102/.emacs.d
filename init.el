@@ -660,7 +660,8 @@ then remove this function from `find-file-hook'."
 (use-package fennel-mode
   :hook ((fennel-mode-hook . yas-minor-mode)
          (fennel-mode-hook . apheleia-mode)
-         (fennel-mode-hook . electric-indent-mode)))
+         (fennel-mode-hook . electric-indent-mode)
+         (fennel-mode-hook . stripspace-local-mode)))
 
 (use-package geiser
   :after scheme)
