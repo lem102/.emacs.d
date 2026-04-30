@@ -1251,11 +1251,9 @@ Otherwise, display error message."
   (interactive)
   (with-temp-buffer
     (insert "(setq user-full-name \"YOUR-NAME\"
-      user-mail-address \"YOUR-EMAIL\")
-
-(setq gnus-select-method '(nnnil nil))
-
-(setq gnus-secondary-select-methods '((nnimap \"YOUR-IMAP-SERVER\")))")
+      user-mail-address \"YOUR-EMAIL\"
+      gnus-select-method '(nnnil nil)
+      gnus-secondary-select-methods '((nnimap \"YOUR-IMAP-SERVER\")))")
     (write-region (point-min) (point-max) jacob-environment-file "append")))
 
 (defun jacob-format-custom-file (&rest _args)
