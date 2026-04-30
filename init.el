@@ -35,8 +35,6 @@
 (require 'jacob-init-helpers)
 (require 'jacob-autoloads)
 
-(advice-add #'custom-save-all :after #'jacob-format-custom-file)
-
 ;; read custom file and environment file
 
 (setq custom-file (concat user-emacs-directory "custom.el"))
@@ -64,6 +62,11 @@
   :config
   (when use-package-compute-statistics
     (add-hook 'after-init-hook #'use-package-report)))
+
+(use-package cus-edit
+  :defer t
+  :config
+  (advice-add #'custom-save-all :after #'jacob-format-custom-file))
 
 (use-package menu-bar
   :config
