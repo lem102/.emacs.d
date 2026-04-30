@@ -61,11 +61,6 @@ Buffer state function that doesn't preview Tramp buffers.")
 (register-definition-prefixes "jacob-csharp-mode" '("csharp-toolbox-" "jacob-"))
 
 
-;;; Generated autoloads from jacob-custom.el
-
-(register-definition-prefixes "jacob-custom" '("jacob-format-custom-file"))
-
-
 ;;; Generated autoloads from jacob-editing-commands.el
 
 (register-definition-prefixes "jacob-editing-commands" '("jacob-" "xah-"))
@@ -113,7 +108,7 @@ For use with GitLab only." t)
 
 ;;; Generated autoloads from jacob-init-helpers.el
 
-(register-definition-prefixes "jacob-init-helpers" '("jacob-defhookf"))
+(register-definition-prefixes "jacob-init-helpers" '("jacob-"))
 
 
 ;;; Generated autoloads from jacob-long-time.el
