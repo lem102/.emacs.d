@@ -34,6 +34,9 @@
 
 (require 'jacob-init-helpers)
 (require 'jacob-autoloads)
+(require 'jacob-custom)
+
+(advice-add #'custom-save-all :after #'jacob-format-custom-file)
 
 (defun jacob-autoloads-generate ()
   "Generate autoloads file for Emacs configuration."
@@ -1255,25 +1258,6 @@ Otherwise, display error message."
       gnus-select-method '(nnnil nil)
       gnus-secondary-select-methods '((nnimap \"YOUR-IMAP-SERVER\")))")
     (write-region (point-min) (point-max) jacob-environment-file "append")))
-
-(defun jacob-format-custom-file (&rest _args)
-  "Modify custom file so `package-selected-packages' is one per line."
-  (with-temp-file custom-file
-    (switch-to-buffer (current-buffer))
-    (insert-file-contents custom-file)
-    (goto-char (point-min))
-    (search-forward "'(package-selected-packages")
-    (forward-sexp)
-    (backward-sexp)
-    (down-list)
-    (ignore-errors
-      (while t
-        (forward-sexp)
-        (lisp-indent-line)
-        (unless (= (char-after) (string-to-char "\n"))
-          (insert "\n"))))))
-
-(advice-add #'custom-save-all :after #'jacob-format-custom-file)
 
 (provide 'init)
 
