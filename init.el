@@ -492,6 +492,7 @@ then remove this function from `find-file-hook'."
          (scala-ts-mode-hook . electric-indent-local-mode)
          (scala-ts-mode-hook . jacob-trim-quotes-mode)
          (scala-ts-mode-hook . eglot-ensure)
+         (scala-ts-mode-hook . stripspace-local-mode)
          (scala-ts-mode-hook . jacob-scala-font-lock-setup))
   :config
   (require 'jacob-scala)
