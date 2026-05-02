@@ -420,6 +420,61 @@ Version: 2025-04-18"
     (error (message "Invalid expression")
            (insert (current-kill 0)))))
 
+(defun jacob-reformat-words--get-words (text)
+  "Extract all words/subwords from TEXT."
+  (let* (words)
+    (with-temp-buffer
+      (subword-mode 1)
+      (switch-to-buffer (current-buffer))
+      (insert text)
+      (goto-char (point-max))
+      (while (not (= (point) (point-min)))
+        (backward-word)
+        (push (thing-at-point 'word) words)))
+    words))
+
+(defun jacob-reformat-words--format (words case)
+  "Format WORDS as CASE."
+  (pcase case
+    ("kebab-case"
+     (string-join (mapcar #'downcase words)
+                  "-"))
+    ("snake_case"
+     (string-join (mapcar #'downcase words)
+                  "_"))
+    ("SCREAMING_SNAKE_CASE"
+     (string-join (mapcar #'upcase words)
+                  "_"))
+    ("camelCase"
+     (with-temp-buffer
+       (insert (string-join words " "))
+       (goto-char (point-min))
+       (forward-word)
+       (while (not (= (point) (point-max)))
+         (capitalize-word 1))
+       (replace-string-in-region " " "" (point-min) (point-max))
+       (buffer-string)))
+    ("PascalCase"
+     (with-temp-buffer
+       (insert (string-join words " "))
+       (goto-char (point-min))
+       (while (not (= (point) (point-max)))
+         (capitalize-word 1))
+       (replace-string-in-region " " "" (point-min) (point-max))
+       (buffer-string)))))
+
+(defun jacob-reformat-words (start end)
+  "Convert words between START and END region to case.
+
+Prompt user for case."
+  (interactive "r")
+  (let* ((case (completing-read "Select case: "
+                                '("kebab-case" "PascalCase" "camelCase" "snake_case" "SCREAMING_SNAKE_CASE")))
+         (words (jacob-reformat-words--get-words (buffer-substring start end)))
+         (cased-words (jacob-reformat-words--format words case)))
+    (delete-region start end)
+    (insert cased-words)))
+
 (provide 'jacob-editing-commands)
 
 ;;; jacob-editing-commands.el ends here
