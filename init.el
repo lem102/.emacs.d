@@ -1219,20 +1219,6 @@ Otherwise, display error message."
     (re-search-forward "export \\(.+\\)=\\(.+\\)")
     (replace-match "(setenv \"\\1\" \"\\2\")")))
 
-(defconst jacob-title-case-downcase-words '(" a " " an " " and " " at " " as " " by " " be " " into " " in " " is " " it " " for " " of " " or " " on " " via " " the " " that " " to " " vs " " with " " from " "'s " "'t ")
-  "Words that `jacob-title-case' should downcase.")
-
-(defun jacob-title-case (start end)
-  "Convert the words between START and END to title case."
-  (interactive "r")
-  (capitalize-region start end)
-  (mapc (lambda (w)
-          (replace-string-in-region (capitalize w)
-                                    (downcase w)
-                                    start
-                                    end))
-        jacob-title-case-downcase-words))
-
 (defun jacob-create-gnus-config ()
   "Append basic gnus config to your environment.el file."
   (interactive)
@@ -1246,4 +1232,3 @@ Otherwise, display error message."
 (provide 'init)
 
 ;;; init.el ends here
-
