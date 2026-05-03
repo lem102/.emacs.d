@@ -481,6 +481,8 @@ Prompt user for case."
 (defun jacob-title-case (start end)
   "Convert the words between START and END to title case."
   (interactive "r")
+  (unless (region-active-p)
+    (user-error "jacob-title-case: No text selected"))
   (capitalize-region start end)
   (mapc (lambda (w)
           (replace-string-in-region (capitalize w)
