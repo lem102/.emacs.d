@@ -209,7 +209,8 @@
      yeetube
 ))
  '(package-vc-selected-packages
-   '((nerd-icons-mode-line :url
+   '((sln-mode :url "https://github.com/lem102/sln-mode")
+     (nerd-icons-mode-line :url
                            "https://github.com/grolongo/nerd-icons-mode-line.git")
      (eglot-booster :url "https://github.com/jdtsmith/eglot-booster")))
  '(project-switch-commands

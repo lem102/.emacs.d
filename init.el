@@ -475,7 +475,6 @@ then remove this function from `find-file-hook'."
 (use-package csproj-mode
   :mode ("\\.csproj\\'" . csproj-mode))
 
-;; TODO: package my version of `sln-mode' for elpa/melpa
 (use-package sln-mode
   :mode ("\\.sln\\'" . sln-mode))
 
