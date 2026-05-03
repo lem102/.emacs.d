@@ -1228,6 +1228,15 @@ Otherwise, display error message."
       gnus-secondary-select-methods '((nnimap \"YOUR-IMAP-SERVER\")))")
     (write-region (point-min) (point-max) jacob-environment-file "append")))
 
+(defun jacob-open-in-vscode ()
+  "Open current file in vscode."
+  (interactive)
+  (let ((default-directory (project-root (project-current)))
+        (file (buffer-file-name))
+        (line (number-to-string (+ (line-number-at-pos (point)) 1)))
+        (column (number-to-string (+ (current-column) 1))))
+    (shell-command (concat "code . --reuse-window --goto \"" file "\":" line ":" column))))
+
 (provide 'init)
 
 ;;; init.el ends here

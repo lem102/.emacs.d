@@ -216,16 +216,6 @@ Prompt for branch name."
     (shell-command "git commit -m \"chore: fix linting\" -na")
     (shell-command "git push")))
 
-;; TODO: current-line and current-column come from array.el, so this function will not work until after that lib is loaded
-(defun jacob-open-in-vscode ()
-  "Open current file in vscode."
-  (interactive)
-  (let ((default-directory (project-root (project-current)))
-        (file (buffer-file-name))
-        (line (number-to-string (+ (current-line) 1)))
-        (column (number-to-string (+ (current-column) 1))))
-    (shell-command (concat "code . --reuse-window --goto \"" file "\":" line ":" column))))
-
 (defun jacob-toggle-mocha-only ()
   "Toggle the presence of .only after an it/describe mocha test."
   (interactive)
