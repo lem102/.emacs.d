@@ -111,6 +111,7 @@
  '(package-install-upgrade-built-in t)
  '(package-selected-packages
    '(ace-window
+     advice-patch
      apheleia
      applescript-mode
      auctex
