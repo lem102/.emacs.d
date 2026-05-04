@@ -468,6 +468,10 @@ Version: 2025-04-18"
 
 Prompt user for case."
   (interactive "r")
+  (unless (region-active-p)
+    (let* ((bounds (bounds-of-thing-at-point 'sexp)))
+      (setq start (car bounds))
+      (setq end (cdr bounds))))
   (let* ((case (completing-read "Select case: "
                                 '("kebab-case" "PascalCase" "camelCase" "snake_case" "SCREAMING_SNAKE_CASE")))
          (words (jacob-reformat-words--get-words (buffer-substring start end)))
