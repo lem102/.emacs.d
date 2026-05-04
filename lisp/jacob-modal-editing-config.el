@@ -207,6 +207,10 @@
                                                 ("s" . package-menu-describe-package)
                                                 ("x" . package-menu-execute)))
 
+(jacob-modal-editing-major-mode-override-keys 'org-mode
+                                              '(("SPC k b" . jacob-org-title-case ; TODO: write this command?
+                                                 )))
+
 (jacob-modal-editing-major-mode-override-keys 'org-agenda-mode
                                               '(("q" . quit-window)
                                                 ("g" . org-agenda-redo-all)))
