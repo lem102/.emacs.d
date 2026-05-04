@@ -123,6 +123,7 @@
                                  ("SPC l o" . count-words)
                                  ("SPC m" . dired-jump)
                                  ("SPC n" . end-of-buffer)
+                                 ("SPC o c" . copy-rectangle-as-kill)
                                  ("SPC o d" . kmacro-call-macro)
                                  ("SPC o e" . kmacro-start-macro)
                                  ("SPC o h" . delete-rectangle)
