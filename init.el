@@ -507,7 +507,27 @@ then remove this function from `find-file-hook'."
 (use-package web-mode
   :mode ("\\.scala\\.html\\'" . web-mode)
   :custom (web-mode-engines-alist
-           '(("play" . "\\.scala\\.html\\'"))))
+           '(("play" . "\\.scala\\.html\\'")))
+  :config
+  ;; patch web-mode-indent-line so that '}' is indented properly
+  (advice-patch #'web-mode-indent-line
+                '((and (string= web-mode-engine "razor")
+                       (string-match-p "^\\([{}]\\|else\\)" curr-line))
+                  (when debug (message "I142(%S) razor" pos))
+                  (if (string= "}" curr-line)
+                      (save-excursion
+                        (search-forward "}")
+                        (backward-sexp)
+                        (setq offset (current-indentation)))
+                    (save-excursion
+                      (web-mode-block-previous)
+                      (setq offset (current-indentation)))))
+                '((and (string= web-mode-engine "razor")
+                       (string-match-p "^\\([{}]\\|else\\)" curr-line))
+                  (when debug (message "I142(%S) razor" pos))
+                  (save-excursion
+                    (web-mode-block-previous)
+                    (setq offset (current-indentation))))))
 
 (require 'jacob-dired)
 
@@ -1236,25 +1256,6 @@ Otherwise, display error message."
         (line (number-to-string (+ (line-number-at-pos (point)) 1)))
         (column (number-to-string (+ (current-column) 1))))
     (shell-command (concat "code . --reuse-window --goto \"" file "\":" line ":" column))))
-
-(advice-patch #'web-mode-indent-line
-              '((and (string= web-mode-engine "razor")
-                     (string-match-p "^\\([{}]\\|else\\)" curr-line))
-                (when debug (message "I142(%S) razor" pos))
-                (if (string= "}" curr-line)
-                    (save-excursion
-                      (search-forward "}")
-                      (backward-sexp)
-                      (setq offset (current-indentation)))
-                  (save-excursion
-                    (web-mode-block-previous)
-                    (setq offset (current-indentation)))))
-              '((and (string= web-mode-engine "razor")
-                     (string-match-p "^\\([{}]\\|else\\)" curr-line))
-                (when debug (message "I142(%S) razor" pos))
-                (save-excursion
-                  (web-mode-block-previous)
-                  (setq offset (current-indentation)))))
 
 (provide 'init)
 
