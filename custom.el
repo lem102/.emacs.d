@@ -198,6 +198,7 @@
      track-changes
      tramp
      treesit-auto
+     verb
      verilog-mode
      vertico
      web-mode
