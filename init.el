@@ -1182,6 +1182,10 @@ then remove this function from `find-file-hook'."
   :bind ( :map grep-mode-map
           ("e" . wgrep-change-to-wgrep-mode)))
 
+(use-package dictionary
+  :custom
+  (dictionary-server "localhost"))
+
 
 ;; personal functions
 
