@@ -195,6 +195,8 @@
      sly-quicklisp
      sql-indent
      stripspace
+     syncthing
+     system-packages
      track-changes
      tramp
      treesit-auto
