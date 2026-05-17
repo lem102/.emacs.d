@@ -1,0 +1,4 @@
+# -*- mode: snippet -*-
+# key: sq
+# --
+(setq ${1:x$(jacob-yas-kebab-case yas-text)} $0)

@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# key: nl
+# --
+(named-let ${1:go} ($2)
+  $0)
