@@ -318,7 +318,23 @@ then remove this function from `find-file-hook'."
   ("M-n" . flymake-goto-next-error)
   ("M-p" . flymake-goto-prev-error))
 
-(require 'jacob-yasnippet)
+(use-package yasnippet
+  :defer t
+  :blackout "yas"
+  :bind ( :map yas-minor-mode-map
+          ("C-c y n" . yas-new-snippet)
+          ("C-c y v" . yas-visit-snippet-file)
+          ("C-c y i" . yas-insert-snippet))
+  :config
+  (require 'jacob-yasnippet)
+  (yas-reload-all)
+  (jacob-defhookf snippet-mode-hook
+    (setq-local auto-save-visited-mode nil))
+  :custom
+  (yas-new-snippet-default "# -*- mode: snippet -*-
+# key: $1
+# --
+$0`(yas-escape-text yas-selected-text)`"))
 
 (use-package minibuffer
   :config
@@ -967,7 +983,7 @@ then remove this function from `find-file-hook'."
 
   (add-to-list 'apheleia-skip-functions #'region-active-p)
   (add-to-list 'apheleia-skip-functions #'active-minibuffer-window)
-  (add-to-list 'apheleia-skip-functions #'jacob-yasnippet-active-p)
+  (add-to-list 'apheleia-skip-functions #'jacob-yas-active-p)
   (add-to-list 'apheleia-skip-functions #'smerge-mode))
 
 (use-package rainbow-mode

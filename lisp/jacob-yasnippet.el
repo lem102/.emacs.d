@@ -5,7 +5,7 @@
 
 ;;; Code:
 
-(defun jacob-yasnippet-active-p ()
+(defun jacob-yas-active-p ()
   "Return t when a yasnippet field is active.
 Created for `apheleia-skip-functions'."
   (seq-some (lambda (overlay)
@@ -70,28 +70,6 @@ For use in yasnippets."
   "Convert INPUT to kebab case e.g. apple banana -> apple_banana.
 For use in yasnippets."
   (string-replace " " "-" input))
-
-(defun jacob-yasnippet-config ()
-  "Configuration for `yasnippet'."
-  (yas-reload-all)
-
-  (jacob-defhookf snippet-mode-hook
-    (setq-local auto-save-visited-mode nil)))
-
-(use-package yasnippet
-  :defer t
-  :blackout "yas"
-  :bind ( :map yas-minor-mode-map
-          ("C-c y n" . yas-new-snippet)
-          ("C-c y v" . yas-visit-snippet-file)
-          ("C-c y i" . yas-insert-snippet))
-  :config
-  (jacob-yasnippet-config)
-  :custom
-  (yas-new-snippet-default "# -*- mode: snippet -*-
-# key: $1
-# --
-$0`(yas-escape-text yas-selected-text)`"))
 
 (provide 'jacob-yasnippet)
 
