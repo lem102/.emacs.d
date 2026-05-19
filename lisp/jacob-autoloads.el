@@ -223,16 +223,6 @@ disabled.
 ;;; Generated autoloads from jacob-yasnippet.el
 
 (register-definition-prefixes "jacob-yasnippet" '("jacob-"))
-
-
-;;; Generated autoloads from sln-mode.el
-
-(autoload 'sln-mode "sln-mode" "\
-Major mode for editing msvc's *.sln files.
-Turning on sln mode runs the normal hook `sln-mode-hook'.
-
-(fn)" t)
-(register-definition-prefixes "sln-mode" '("sln-"))
 
 ;;; End of scraped data
 
