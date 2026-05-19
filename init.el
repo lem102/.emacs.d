@@ -947,6 +947,7 @@ then remove this function from `find-file-hook'."
   (require 'jacob-avy))
 
 (use-package apheleia
+  ;; TODO: disable apheleia when smerge mode is active
   :blackout " ⚘"
   :config
   (require 'jacob-apheleia)
