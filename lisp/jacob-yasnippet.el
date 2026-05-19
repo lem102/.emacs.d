@@ -5,6 +5,13 @@
 
 ;;; Code:
 
+(defun jacob-yasnippet-active-p ()
+  "Return t when a yasnippet field is active.
+Created for `apheleia-skip-functions'."
+  (seq-some (lambda (overlay)
+              (overlay-get overlay 'yas--snippet))
+            (overlays-at (point))))
+
 (defun jacob-point-in-text-p ()
   "Return t if in comment or string.  Else nil."
   (let ((xsyntax-state (syntax-ppss)))

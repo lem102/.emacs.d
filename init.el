@@ -947,7 +947,7 @@ then remove this function from `find-file-hook'."
   (require 'jacob-avy))
 
 (use-package apheleia
-  ;; TODO: disable apheleia when smerge mode is active
+  :defer t
   :blackout " ⚘"
   :config
   (require 'jacob-apheleia)
@@ -965,7 +965,9 @@ then remove this function from `find-file-hook'."
   (add-to-list 'apheleia-mode-alist '(scala-ts-mode . scalafmt))
   (add-to-list 'apheleia-mode-alist '(fennel-mode . lisp-indent))
 
-  (add-to-list 'apheleia-skip-functions #'jacob-apheleia-skip-function))
+  (add-to-list 'apheleia-skip-functions #'region-active-p)
+  (add-to-list 'apheleia-skip-functions #'active-minibuffer-window)
+  (add-to-list 'apheleia-skip-functions #'jacob-yasnippet-active-p))
 
 (use-package rainbow-mode
   :blackout
