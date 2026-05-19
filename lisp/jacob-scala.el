@@ -56,6 +56,7 @@
         (goto-char (treesit-node-start string-node))
         (insert "s")))))
 
+;; TODO: combine this with `jacob-scala-package'
 (defun jacob-scala--package (&optional buffer-or-file)
   "Get the package of BUFFER-OR-FILE.
 
@@ -81,22 +82,21 @@ When BUFFER-OR-FILE is a file, query the file."
              (insert-file-contents buffer-or-file)
              (funcall f))))))
 
-(defun jacob-scala--find-nearest-scala-file (file)
-  "Find the nearest scala file to FILE."
-  (seq-find (lambda (f)
-              (string-match-p "\\.scala" f))
-            (directory-files (file-name-directory file))))
-
-;; TODO: improve this.
 (defun jacob-scala-package ()
   "Return the package of the current scala file."
-  (if-let* ((file (buffer-file-name (current-buffer)))
-            (nearest-file (jacob-scala--find-nearest-scala-file file)))
-      (jacob-scala--package nearest-file)
-    (string-replace "/"
-                    "."
-                    (file-relative-name (directory-file-name (file-name-directory file))
-                                        (project-root (project-current))))))
+  (let* ((file (buffer-file-name))
+         (sbt-root (locate-dominating-file file "build.sbt"))
+         (is-play-framework (file-exists-p (file-name-concat sbt-root "/conf/application.conf"))))
+
+    (unless is-play-framework
+      ;; TODO: extend this to work with "regular" scala projects
+      (user-error "Not a play framework project"))
+
+    (let* ((app-root (file-name-concat sbt-root "app"))
+           (relative-filepath (file-relative-name file app-root))
+           (directory (directory-file-name (file-name-directory relative-filepath)))
+           (package (string-replace "/" "." directory)))
+      package)))
 
 (defun jacob-scala-toggle-raw-string ()
   "Convert strings to raw strings and vice versa.
