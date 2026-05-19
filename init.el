@@ -967,7 +967,8 @@ then remove this function from `find-file-hook'."
 
   (add-to-list 'apheleia-skip-functions #'region-active-p)
   (add-to-list 'apheleia-skip-functions #'active-minibuffer-window)
-  (add-to-list 'apheleia-skip-functions #'jacob-yasnippet-active-p))
+  (add-to-list 'apheleia-skip-functions #'jacob-yasnippet-active-p)
+  (add-to-list 'apheleia-skip-functions #'smerge-mode))
 
 (use-package rainbow-mode
   :blackout
