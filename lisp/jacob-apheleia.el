@@ -5,6 +5,20 @@
 
 ;;; Code:
 
+(defun jacob-apheleia-yas-active-p ()
+  "Return t when a yasnippet field is active.
+Created for `apheleia-skip-functions'."
+  (and (boundp yas-minor-mode)
+       (seq-some (lambda (overlay)
+                   (overlay-get overlay 'yas--snippet))
+                 (overlays-at (point)))))
+
+(defun jacob-apheleia-smerge-active-p ()
+  "Return t if `smerge-mode' is active.
+Created for `apheleia-skip-functions'."
+  (and (boundp smerge-mode)
+       smerge-mode))
+
 (defun jacob-format-play-routes-file ()
   "Format a play routes file."
   (interactive)

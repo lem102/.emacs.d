@@ -983,8 +983,8 @@ $0`(yas-escape-text yas-selected-text)`"))
 
   (add-to-list 'apheleia-skip-functions #'region-active-p)
   (add-to-list 'apheleia-skip-functions #'active-minibuffer-window)
-  (add-to-list 'apheleia-skip-functions #'jacob-yas-active-p)
-  (add-to-list 'apheleia-skip-functions #'smerge-mode))
+  (add-to-list 'apheleia-skip-functions #'jacob-apheleia-yas-active-p)
+  (add-to-list 'apheleia-skip-functions #'jacob-apheleia-smerge-active-p))
 
 (use-package rainbow-mode
   :blackout
