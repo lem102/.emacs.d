@@ -82,10 +82,9 @@ When BUFFER-OR-FILE is a file, query the file."
              (insert-file-contents buffer-or-file)
              (funcall f))))))
 
-(defun jacob-scala-package ()
-  "Return the package of the current scala file."
-  (let* ((file (buffer-file-name))
-         (sbt-root (locate-dominating-file file "build.sbt"))
+(defun jacob-scala--package (file)
+  "Return the package of FILE."
+  (let* ((sbt-root (locate-dominating-file file "build.sbt"))
          (is-play-framework (file-exists-p (file-name-concat sbt-root "/conf/application.conf"))))
 
     (unless is-play-framework
@@ -93,10 +92,41 @@ When BUFFER-OR-FILE is a file, query the file."
       (user-error "Not a play framework project"))
 
     (let* ((app-root (file-name-concat sbt-root "app"))
-           (relative-filepath (file-relative-name file app-root))
+           (test-root (file-name-concat sbt-root "test"))
+           (root (if (file-in-directory-p file app-root)
+                     app-root
+                   test-root))
+           (relative-filepath (file-relative-name file root))
            (directory (directory-file-name (file-name-directory relative-filepath)))
            (package (string-replace "/" "." directory)))
       package)))
+
+(defun jacob-scala-fix-package (file)
+  "Fix the package of the scala file FILE.
+
+Interactively, fix the current buffer's package."
+  (interactive (list (buffer-file-name)))
+  (let* ((calculated-package (jacob-scala--package (buffer-file-name)))
+         (package-identifier-bounds (seq-first
+                                     (treesit-query-range
+                                      (treesit-buffer-root-node)
+                                      '((package_identifier (identifier) @x))))))
+    (save-excursion
+      (delete-region (car package-identifier-bounds)
+                     (cdr package-identifier-bounds))
+      (goto-char (car package-identifier-bounds))
+      (insert calculated-package))))
+
+(defun jacob-scala-fix-packages-in-project ()
+  "Fixup all the packages in the current project."
+  (interactive)
+  (let* ((files (directory-files-recursively (project-root (project-current))
+                                             ".scala$"
+                                             nil
+                                             (lambda (subdir)
+                                               (not (seq-contains-p '(".g8" ".metals")
+                                                                    (file-name-nondirectory subdir)))))))
+    (seq-map #'jacob-scala-fix-package files)))
 
 (defun jacob-scala-toggle-raw-string ()
   "Convert strings to raw strings and vice versa.
