@@ -46,6 +46,7 @@
                                  ("SPC / j" . vc-diff)
                                  ("SPC / m" . magit-project-status)
                                  ("SPC ;" . save-buffer)
+                                 ("SPC SPC 2" . jacob-sm2)
                                  ("SPC SPC a a" . org-agenda)
                                  ("SPC SPC a c" . org-capture)
                                  ("SPC SPC e a" . eglot-code-actions)
