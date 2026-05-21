@@ -117,6 +117,7 @@ Interactively, fix the current buffer's package."
       (goto-char (car package-identifier-bounds))
       (insert calculated-package))))
 
+;; TODO: figure out more automatic method of fixing packages on the fly
 (defun jacob-scala-fix-packages-in-project ()
   "Fixup all the packages in the current project."
   (interactive)
