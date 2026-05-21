@@ -14,9 +14,10 @@
 (transient-define-prefix jacob-sm2 ()
   "Transient menu for sm2."
   ["Commands"
-   ("i" "Status" jacob-sm2-status)
-   ("s" "Start" jacob-sm2-start)
-   ("k" "Stop" jacob-sm2-stop)])
+   ("i" "Status" jacob-sm2-status :transient t)
+   ("s" "Start" jacob-sm2-start :transient t)
+   ("k" "Stop" jacob-sm2-stop :transient t)
+   ("q" "Quit" ignore)])
 
 (defun jacob-sm2-status ()
   "Run sm2 -s."
@@ -26,7 +27,19 @@
 (defun jacob-sm2-start ()
   "Run sm2 --start. Prompt for which service or profile should be started."
   (interactive)
-  (let* ((process-connection-type nil))
+  (let* (
+
+         ;; Here we tell emacs to use a "pipe" instead of using a
+         ;; "pty". If a "pty" is used, the process created by sm2 will
+         ;; exit with no obvious errors straight away after it is
+         ;; created, according to the logs. My current line of
+         ;; reasoning is that when a "pty" is closed it does some kind
+         ;; of cleanup including the service sm2 is starting! A "pipe"
+         ;; does not have this issue. Will hopefully update this
+         ;; comment when I know what the heck I'm doing in this area.
+         (process-connection-type nil)
+
+         )
     (async-shell-command (format "sm2 --start %s"
                                  (completing-read "Service or profile: "
                                                   (jacob-sm2-services-and-profiles))))))
