@@ -26,9 +26,10 @@
 (defun jacob-sm2-start ()
   "Run sm2 --start. Prompt for which service or profile should be started."
   (interactive)
-  (async-shell-command (format "sm2 --start %s"
-                               (completing-read "Service or profile: "
-                                                (jacob-sm2-services-and-profiles)))))
+  (let* ((process-connection-type nil))
+    (async-shell-command (format "sm2 --start %s"
+                                 (completing-read "Service or profile: "
+                                                  (jacob-sm2-services-and-profiles))))))
 
 (defun jacob-sm2-stop ()
   "Run sm2 --stop. Prompt for which service or profile should be stopped."
