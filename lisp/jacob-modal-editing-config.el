@@ -101,7 +101,7 @@
                                  ("SPC k g" . delete-non-matching-lines)
                                  ("SPC k h" . mark-defun)
                                  ("SPC k i" . copy-matching-lines)
-                                 ("SPC k j" . repeat-complex-command) ;aaaa
+                                 ("SPC k j" . repeat-complex-command)
                                  ("SPC k k" . repeat)
                                  ("SPC k r" . query-replace-regexp)
                                  ("SPC k t" . delete-duplicate-lines)
@@ -109,6 +109,7 @@
                                  ("SPC k v" . consult-register-load)
                                  ("SPC k w" . sort-numeric-fields)
                                  ("SPC k y" . move-to-column)
+                                 ("SPC l ," . eww)
                                  ("SPC l 6" . calendar)
                                  ("SPC l ;" . jacob-screen-sharing-mode)
                                  ("SPC l a" . global-text-scale-adjust)
