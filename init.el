@@ -1249,11 +1249,16 @@ Otherwise, display error message."
 (defun jacob-update-config ()
   "Update your Emacs configuration with git."
   (interactive)
-  (let ((default-directory "~/.emacs.d/"))
+  (let ((default-directory (file-name-directory user-init-file)))
     (shell-command "git stash")
     (shell-command "git pull")
-    ;; (shell-command "git push")
     (shell-command "git stash pop")))
+
+(defun jacob-update-config-and-packages ()
+  "Get latest config and update packages."
+  (interactive)
+  (jacob-update-config)
+  (jacob-package-upgrade-all))
 
 (defun jacob-bash-export-to-setenv ()
   "Convert the bash export statement at point to a `setenv' call."
