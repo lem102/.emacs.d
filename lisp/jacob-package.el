@@ -5,6 +5,7 @@
 
 ;;; Code:
 
+;;;###autoload
 (defun jacob-package-upgrade-all ()
   "Upgrade all packages in `package-selected-packages'."
   (interactive)

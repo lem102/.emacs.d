@@ -135,7 +135,8 @@ Display the current date and time in the echo area." t)
 
 ;;; Generated autoloads from jacob-package.el
 
-(register-definition-prefixes "jacob-package" '("jacob-package-upgrade"))
+(autoload 'jacob-package-upgrade-all "jacob-package" "\
+Upgrade all packages in `package-selected-packages'." t)
 
 
 ;;; Generated autoloads from jacob-project.el
