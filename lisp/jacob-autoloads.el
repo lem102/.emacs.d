@@ -192,6 +192,14 @@ Transient menu for sm2.
 (register-definition-prefixes "jacob-sql" '("jacob-sql"))
 
 
+;;; Generated autoloads from jacob-tea.el
+
+(autoload 'jacob-tea-boil "jacob-tea" "\
+Start a timer to boil the kettle." t)
+(autoload 'jacob-tea-brew "jacob-tea" "\
+Start a timer for brewing tea." t)
+
+
 ;;; Generated autoloads from jacob-thingatpt.el
 
 (register-definition-prefixes "jacob-thingatpt" '("jacob-bounds-of-"))
