@@ -168,7 +168,6 @@
      nerd-icons-grep
      nerd-icons-ibuffer
      nerd-icons-mode-line
-     nerd-icons-modeline
      nerd-icons-xref
      no-littering
      nov
