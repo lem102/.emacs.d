@@ -196,6 +196,7 @@
      stripspace
      syncthing
      system-packages
+     tmr
      track-changes
      tramp
      treesit-auto
