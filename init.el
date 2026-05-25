@@ -1175,8 +1175,7 @@ $0`(yas-escape-text yas-selected-text)`"))
 
 (use-package eat
   :when (or jacob-is-linux jacob-is-mac)
-  :init
-  (add-hook 'eshell-mode-hook #'eat-eshell-mode))
+  :hook ((eshell-mode-hook . eat-eshell-mode)))
 
 (use-package exec-path-from-shell
   :if (or jacob-is-mac jacob-is-linux)
