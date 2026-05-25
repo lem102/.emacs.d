@@ -104,6 +104,7 @@
  '(mouse-1-double-click-prefer-symbols t)
  '(mouse-drag-copy-region 'non-empty)
  '(org-default-notes-file "~/Documents/notes.org")
+ '(org-log-into-drawer t)
  '(package-archives
    '(("gnu" . "https://elpa.gnu.org/packages/")
      ("nongnu" . "https://elpa.nongnu.org/nongnu/")
