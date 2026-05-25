@@ -217,6 +217,7 @@
      (nerd-icons-mode-line :url
                            "https://github.com/grolongo/nerd-icons-mode-line.git")
      (eglot-booster :url "https://github.com/jdtsmith/eglot-booster")))
+ '(project-compilation-buffer-name-function 'project-prefixed-buffer-name)
  '(project-switch-commands
    '((project-find-file "Find file") (consult-git-grep "Find regexp")
      (project-find-dir "Find directory")
