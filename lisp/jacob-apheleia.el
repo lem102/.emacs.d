@@ -16,7 +16,7 @@ Created for `apheleia-skip-functions'."
 (defun jacob-apheleia-smerge-active-p ()
   "Return t if `smerge-mode' is active.
 Created for `apheleia-skip-functions'."
-  (and (boundp smerge-mode)
+  (and (boundp 'smerge-mode)
        smerge-mode))
 
 (defun jacob-format-play-routes-file ()
