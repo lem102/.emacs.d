@@ -106,16 +106,18 @@ When BUFFER-OR-FILE is a file, query the file."
 
 Interactively, fix the current buffer's package."
   (interactive (list (buffer-file-name)))
-  (let* ((calculated-package (jacob-scala--package (buffer-file-name)))
-         (package-identifier-bounds (seq-first
-                                     (treesit-query-range
-                                      (treesit-buffer-root-node)
-                                      '((package_identifier (identifier) @x))))))
-    (save-excursion
-      (delete-region (car package-identifier-bounds)
-                     (cdr package-identifier-bounds))
-      (goto-char (car package-identifier-bounds))
-      (insert calculated-package))))
+  (with-temp-file file
+    (insert-file-contents file)
+    (when-let* ((calculated-package (jacob-scala--package file))
+                (package-identifier-bounds (seq-first
+                                            (treesit-query-range
+                                             (treesit-parser-root-node (treesit-parser-create 'scala (current-buffer)))
+                                             '((package_identifier (identifier) @x))))))
+      (save-excursion
+        (delete-region (car package-identifier-bounds)
+                       (cdr package-identifier-bounds))
+        (goto-char (car package-identifier-bounds))
+        (insert calculated-package)))))
 
 ;; TODO: figure out more automatic method of fixing packages on the fly
 (defun jacob-scala-fix-packages-in-project ()
@@ -127,7 +129,7 @@ Interactively, fix the current buffer's package."
                                              (lambda (subdir)
                                                (not (seq-contains-p '(".g8" ".metals")
                                                                     (file-name-nondirectory subdir)))))))
-    (seq-map #'jacob-scala-fix-package files)))
+    (seq-do #'jacob-scala-fix-package files)))
 
 (defun jacob-scala-toggle-raw-string ()
   "Convert strings to raw strings and vice versa.
