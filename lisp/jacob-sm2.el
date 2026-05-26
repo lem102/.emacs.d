@@ -14,9 +14,9 @@
 (transient-define-prefix jacob-sm2 ()
   "Transient menu for sm2."
   ["Commands"
-   ("i" "Status" jacob-sm2-status :transient t)
-   ("s" "Start" jacob-sm2-start :transient t)
-   ("k" "Stop" jacob-sm2-stop :transient t)
+   ("i" "Status" jacob-sm2-status)
+   ("s" "Start" jacob-sm2-start)
+   ("k" "Stop" jacob-sm2-stop)
    ("q" "Quit" ignore)])
 
 (defun jacob-sm2-status ()
