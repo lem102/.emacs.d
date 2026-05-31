@@ -47,8 +47,9 @@
                                  ("SPC / m" . magit-project-status)
                                  ("SPC ;" . save-buffer)
                                  ("SPC SPC 2" . jacob-sm2)
-                                 ("SPC SPC a a" . org-agenda)
-                                 ("SPC SPC a c" . org-capture)
+                                 ("SPC SPC o a" . org-agenda)
+                                 ("SPC SPC o c" . org-capture)
+                                 ("SPC SPC o l" . org-store-link)
                                  ("SPC SPC e a" . eglot-code-actions)
                                  ("SPC SPC e e" . eglot)
                                  ("SPC SPC e h" . eglot-inlay-hints-mode)
@@ -233,6 +234,12 @@
                                                 ("g" . Info-menu)))
 
 (jacob-modal-editing-major-mode-override-keys 'Man-mode
+                                              '(("q" . quit-window)
+                                                ("r" . scroll-up-command)
+                                                ("e" . scroll-down-command)
+                                                ("g" . Man-goto-section)))
+
+(jacob-modal-editing-major-mode-override-keys 'Man-mode
                                               '(("q" . quit-window)))
 
 (jacob-modal-editing-major-mode-override-keys 'occur-mode
@@ -306,6 +313,10 @@
 (jacob-modal-editing-major-mode-override-keys 'doc-view-mode
                                               '(("l" . doc-view-next-page)
                                                 ("j" . doc-view-previous-page)))
+
+(jacob-modal-editing-major-mode-override-keys 'nov-mode
+                                              '(("e" . nov-scroll-down)
+                                                ("r" . nov-scroll-up)))
 
 (jacob-modal-editing-major-mode-override-keys 'embark-collect-mode
                                               '(("q" . quit-window)))
