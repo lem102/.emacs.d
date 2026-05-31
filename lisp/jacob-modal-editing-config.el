@@ -165,7 +165,7 @@
                                  ("n" . isearch-forward)
                                  ("o" . forward-word)
                                  ("p" . recenter-top-bottom)
-                                 ("q" . fill-paragraph)
+                                 ("q" . duplicate-dwim)
                                  ("r" . puni-forward-kill-word)
                                  ("s" . jacob-return-macro)
                                  ("t" . set-mark-command)
