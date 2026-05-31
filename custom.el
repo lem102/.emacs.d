@@ -103,6 +103,7 @@
  '(modus-themes-to-toggle '(modus-operandi-tinted modus-vivendi-tinted))
  '(mouse-1-double-click-prefer-symbols t)
  '(mouse-drag-copy-region 'non-empty)
+ '(org-cycle-separator-lines 0)
  '(org-default-notes-file "~/Documents/notes.org")
  '(org-log-into-drawer t)
  '(package-archives
