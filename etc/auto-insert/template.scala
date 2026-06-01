@@ -1,1 +1,1 @@
-package `(jacob-scala-package)`
+package `(jacob-scala-calculate-package (buffer-file-name))`

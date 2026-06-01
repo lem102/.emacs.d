@@ -82,8 +82,8 @@ When BUFFER-OR-FILE is a file, query the file."
              (insert-file-contents buffer-or-file)
              (funcall f))))))
 
-(defun jacob-scala--package (file)
-  "Return the package of FILE."
+(defun jacob-scala-calculate-package (file)
+  "Calculate the package of FILE."
   (let* ((sbt-root (locate-dominating-file file "build.sbt"))
          (is-play-framework (file-exists-p (file-name-concat sbt-root "/conf/application.conf"))))
 
@@ -108,7 +108,7 @@ Interactively, fix the current buffer's package."
   (interactive (list (buffer-file-name)))
   (with-temp-file file
     (insert-file-contents file)
-    (when-let* ((calculated-package (jacob-scala--package file))
+    (when-let* ((calculated-package (jacob-scala-calculate-package file))
                 (package-identifier-bounds (seq-first
                                             (treesit-query-range
                                              (treesit-parser-root-node (treesit-parser-create 'scala (current-buffer)))
