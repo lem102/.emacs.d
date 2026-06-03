@@ -155,6 +155,7 @@
      geiser-guile
      gptel
      gptel-agent
+     groovy-mode
      hl-todo
      idlwave
      jsonrpc
