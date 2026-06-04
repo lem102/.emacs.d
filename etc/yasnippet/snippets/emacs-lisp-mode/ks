@@ -1,4 +1,4 @@
 # -*- mode: snippet -*-
 # key: ks
 # --
-keymap-set
+(keymap-set $0)

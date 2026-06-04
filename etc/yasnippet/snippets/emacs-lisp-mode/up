@@ -1,4 +1,5 @@
 # -*- mode: snippet -*-
 # key: up
 # --
-use-package
+(use-package ${1:x}
+  $0)

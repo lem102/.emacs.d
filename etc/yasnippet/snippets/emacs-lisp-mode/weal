@@ -1,4 +1,5 @@
 # -*- mode: snippet -*-
 # key: weal
 # --
-with-eval-after-load
+(with-eval-after-load ${1:x}
+  $0)
