@@ -138,7 +138,6 @@
                                  ("SPC o s" . open-rectangle)
                                  ("SPC o v" . yank-rectangle)
                                  ("SPC o x" . kill-rectangle)
-                                 ("SPC p f" . consult-project-extra-find)
                                  ("SPC p" . ,project-prefix-map)
                                  ("SPC r" . query-replace)
                                  ("SPC s" . exchange-point-and-mark)

@@ -318,6 +318,11 @@ then remove this function from `find-file-hook'."
   ("M-n" . flymake-goto-next-error)
   ("M-p" . flymake-goto-prev-error))
 
+(use-package consult-project-extra
+  :defer t
+  :init
+  (keymap-set project-prefix-map "f" #'consult-project-extra-find))
+
 (use-package yasnippet
   :defer t
   :blackout "yas"
