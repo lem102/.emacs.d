@@ -512,6 +512,8 @@ $0`(yas-escape-text yas-selected-text)`"))
          (scala-ts-mode-hook . jacob-scala-font-lock-setup))
   :config
   (require 'jacob-scala)
+  (with-eval-after-load 'project
+    (keymap-set project-prefix-map "S" #'jacob-scala-project-sbt))
   :bind ( :map scala-ts-mode-map
           ("$" . jacob-scala-dollar)))
 

@@ -5,6 +5,12 @@
 
 ;;; Code:
 
+(defun jacob-project-sbt ()
+  "Open sbt shell for a project."
+  (interactive)
+  (let* ((default-directory (funcall project-prompter)))
+    (sbt-start)))
+
 (defun jacob-scala-indentation-to-block ()
   "Convert the indentation based syntax at point to block based syntax."
   (interactive)
