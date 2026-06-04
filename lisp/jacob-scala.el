@@ -8,7 +8,7 @@
 (defun jacob-project-sbt ()
   "Open sbt shell for a project."
   (interactive)
-  (let* ((default-directory (funcall project-prompter)))
+  (let* ((default-directory (project-root (project-current "MAYBE-PROMPT"))))
     (sbt-start)))
 
 (defun jacob-scala-indentation-to-block ()
