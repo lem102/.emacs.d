@@ -126,6 +126,7 @@ Interactively, fix the current buffer's package."
         (insert calculated-package)))))
 
 ;; TODO: figure out more automatic method of fixing packages on the fly
+;; metals should be doing this for us, needs a change in eglot
 (defun jacob-scala-fix-packages-in-project ()
   "Fixup all the packages in the current project."
   (interactive)

@@ -33,6 +33,7 @@ Disables the eglot backend when inside a `.g8' template."
   (unless (string-match-p ".g8" default-directory)
     'eglot))
 
+;; TODO: consider removing, original function has significantly diverged
 (defun jacob-eglot--apply-workspace-edit (wedit origin)
   "Apply (or offer to apply) the workspace edit WEDIT.
 ORIGIN is a symbol designating the command that originated this

@@ -440,7 +440,8 @@ $0`(yas-escape-text yas-selected-text)`"))
   (add-to-list 'eglot--lsp-interface-alist
                '(RenameFile (:kind :oldUri :newUri)) ())
 
-  (advice-add #'eglot--apply-workspace-edit :override #'jacob-eglot--apply-workspace-edit)
+  ;; TODO: the original function has significantly changed, so disabling this for now. in future remove
+  ;; (advice-add #'eglot--apply-workspace-edit :override #'jacob-eglot--apply-workspace-edit)
 
   (jacob-defhookf eglot-managed-mode-hook
     (eglot-inlay-hints-mode 0)
