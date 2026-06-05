@@ -1089,11 +1089,6 @@ $0`(yas-escape-text yas-selected-text)`"))
         consult-source-buffer (plist-put consult-source-buffer
                                          :state #'jacob-consult-buffer-state-no-tramp)))
 
-(use-package consult-symbol
-  :config
-  (require 'jacob-consult-symbol)
-  (advice-add #'consult-symbol--default-action :override #'jacob-consult-symbol--default-action))
-
 (use-package embark
   :defer t
   :bind

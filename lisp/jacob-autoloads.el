@@ -51,11 +51,6 @@ CONDITION and ACTION are as in `define-auto-insert'.
 Buffer state function that doesn't preview Tramp buffers.")
 
 
-;;; Generated autoloads from jacob-consult-symbol.el
-
-(register-definition-prefixes "jacob-consult-symbol" '("jacob-consult-symbol--default-action"))
-
-
 ;;; Generated autoloads from jacob-csharp-mode.el
 
 (register-definition-prefixes "jacob-csharp-mode" '("csharp-toolbox-" "jacob-"))
