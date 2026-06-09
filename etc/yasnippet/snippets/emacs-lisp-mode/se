@@ -1,4 +1,5 @@
 # -*- mode: snippet -*-
 # key: se
 # --
-save-excursion
+(save-excursion
+  $0)
