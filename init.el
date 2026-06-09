@@ -521,7 +521,8 @@ $0`(yas-escape-text yas-selected-text)`"))
   (with-eval-after-load 'project
     (keymap-set project-prefix-map "S" #'jacob-project-sbt))
   :bind ( :map scala-ts-mode-map
-          ("$" . jacob-scala-dollar)))
+          ("$" . jacob-scala-dollar)
+          ("." . jacob-scala-.)))
 
 (use-package sbt-mode
   :defer t

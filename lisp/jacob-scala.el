@@ -62,6 +62,28 @@
         (goto-char (treesit-node-start string-node))
         (insert "s")))))
 
+(defun jacob-scala-. ()
+  "Insert a dot.
+
+If inside a string using string interpolation and to the right of a value to be interpolated into the string, add curly braces appropriately."
+  (interactive)
+  (unless (eq major-mode 'scala-ts-mode)
+    (user-error "Not in a `scala-ts-mode' buffer"))
+  (insert ".")
+  (let* ((interpolated-string-node (treesit-parent-until (treesit-node-at (point))
+                                                         "interpolated_string"
+                                                         "INCLUDE-NODE"))
+         (interpolation-node (treesit-parent-until (treesit-node-at (point))
+                                                   "interpolation"
+                                                   "INCLUDE-NODE")))
+    (when (and interpolated-string-node
+               (not interpolation-node))
+      (save-excursion
+        (insert "}")
+        (search-backward "$")
+        (forward-char 1)
+        (insert "{")))))
+
 ;; TODO: combine this with `jacob-scala-package'
 (defun jacob-scala--package (&optional buffer-or-file)
   "Get the package of BUFFER-OR-FILE.
