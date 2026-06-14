@@ -1,0 +1,4 @@
+# -*- mode: snippet -*-
+# key: or
+# --
+(or $0)
