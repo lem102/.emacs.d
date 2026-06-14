@@ -323,6 +323,19 @@ then remove this function from `find-file-hook'."
   :init
   (keymap-set project-prefix-map "f" #'consult-project-extra-find))
 
+(use-package project
+  :defer t
+  :config
+  (defun jacob-project-try-exercism (dir)
+    "Find exercism project in DIR."
+    (when-let ((dir (locate-dominating-file dir ".exercism")))
+      (list 'exercism dir)))
+
+  (add-hook 'project-find-functions #'jacob-project-try-exercism)
+
+  (cl-defmethod project-root ((project (head exercism)))
+    (nth 1 project)))
+
 (use-package yasnippet
   :defer t
   :blackout "yas"
@@ -957,7 +970,7 @@ $0`(yas-escape-text yas-selected-text)`"))
                                           :url "https://github.com/PrestonKnopp/tree-sitter-gdscript.git"
                                           :ext "\\.gd\\'"))
 
-  (setq treesit-auto-langs '(c-sharp scala yaml gdscript json markdown dockerfile))
+  (setq treesit-auto-langs '(c-sharp scala yaml gdscript json markdown dockerfile c))
   (treesit-auto-add-to-auto-mode-alist)
   (global-treesit-auto-mode 1))
 
