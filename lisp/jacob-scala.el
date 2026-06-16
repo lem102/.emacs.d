@@ -55,9 +55,11 @@
                                             "INCLUDE-NODE"))
          (interpolated-string-node (treesit-parent-until string-node
                                                          "interpolated_string"
-                                                         "INCLUDE-NODE")))
+                                                         "INCLUDE-NODE"))
+         (is-raw-string (string-match-p "^\"\"\".+\"\"\"" (treesit-node-text string-node))))
     (when (and string-node
-               (not interpolated-string-node))
+               (not interpolated-string-node)
+               (not is-raw-string))
       (save-excursion
         (goto-char (treesit-node-start string-node))
         (insert "s")))))
