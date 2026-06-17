@@ -1,0 +1,4 @@
+# -*- mode: snippet -*-
+# key: camel
+# --
+\$\{${1:1}:${0:x}\$\(jacob-yas-camel-case yas-text)\}

@@ -1,4 +1,4 @@
 # -*- mode: snippet -*-
 # key: pascal
 # --
-\$\{${1:1}:${0:x}\$\(jacob-yas-camel-case yas-text)\}
+\$\{${1:1}:${0:X}\$\(jacob-yas-pascal-case yas-text)\}

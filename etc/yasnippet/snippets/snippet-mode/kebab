@@ -1,0 +1,4 @@
+# -*- mode: snippet -*-
+# key: kebab
+# --
+\$\{${1:1}:${0:x}\$\(jacob-yas-kebab-case yas-text)\}
