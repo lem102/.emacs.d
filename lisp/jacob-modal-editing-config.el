@@ -238,8 +238,10 @@
                                                 ("e" . scroll-down-command)
                                                 ("g" . Man-goto-section)))
 
-(jacob-modal-editing-major-mode-override-keys 'Man-mode
-                                              '(("q" . quit-window)))
+(jacob-modal-editing-major-mode-override-keys 'eww-mode
+                                              '(("q" . quit-window)
+                                                ("r" . scroll-up-command)
+                                                ("e" . scroll-down-command)))
 
 (jacob-modal-editing-major-mode-override-keys 'occur-mode
                                               '(("q" . quit-window)

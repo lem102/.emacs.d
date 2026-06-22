@@ -129,6 +129,7 @@
      csproj-mode
      dape
      denote
+     devdocs
      dired-rsync
      docker
      dumb-jump
