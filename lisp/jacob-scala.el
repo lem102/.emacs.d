@@ -271,6 +271,68 @@ lets you select one via completion, and inserts it at the top of the file."
     (delete-region region-start region-end)
     (insert play-json-code)))
 
+;;; edit json string
+
+(defvar jacob-scala-edit-json-string-node nil
+  "The treesit node currently being edited in a json buffer.")
+
+(defun jacob-scala-edit-json-string ()
+  "Display a json buffer with the contents of the string at point in."
+  (interactive)
+  (let* ((string-node (car (treesit-query-capture (treesit-node-at (point))
+                                                  '(([(string) (interpolated_string)] @string))
+                                                  nil
+                                                  nil
+                                                  "NODE-ONLY")))
+         (buffer (get-buffer-create "*jacob-scala-edit-json*")))
+    (with-current-buffer buffer
+      (delete-region (point-min) (point-max))
+      (insert (string-trim (treesit-node-text string-node) "\"\"\"" "\"\"\""))
+      (goto-char (point-min))
+      ;; TODO: handle strings with no strip margin | characters
+      (while (re-search-forward " +|" nil "NOERROR")
+        (delete-region (match-beginning 0)
+                       (match-end 0)))
+      (json-ts-mode))
+    (setq jacob-scala-edit-json-string-node string-node)
+    (display-buffer buffer)))
+
+(defun jacob-scala-edit-json-string-apply ()
+  "Apply the string in the json editing buffer back to the original location."
+  (interactive)
+  (unless (string= "*jacob-scala-edit-json*" (buffer-name (current-buffer)))
+    (user-error "Not in correct buffer"))
+  (unless jacob-scala-edit-json-string-node
+    (user-error "String node not found"))
+  (let* ((new-text (buffer-string))
+         (string-node jacob-scala-edit-json-string-node)
+         (original-buffer (treesit-node-buffer string-node))
+         (start (treesit-node-start string-node))
+         (column (+ (with-current-buffer original-buffer
+                      (save-excursion
+                        (goto-char start)
+                        (current-column)))
+                    2))
+         (end (treesit-node-end string-node)))
+    (pop-to-buffer original-buffer)
+    (delete-region start end)
+    (goto-char start)
+    (insert "\"\"\"")
+    (let* ((lines (string-split new-text "\n"))
+           (first-line (car lines))
+           (last-line (car (last lines)))
+           (rest-lines (seq-subseq lines 1 -1)))
+      (insert first-line "\n")
+      (dolist (line rest-lines)
+        (dotimes (i column)
+          (insert " "))
+        (insert "|")
+        (insert line)
+        (insert "\n"))
+      (dotimes (i column)
+        (insert " "))
+      (insert "|" last-line "\"\"\""))))
+
 (provide 'jacob-scala)
 
 ;;; jacob-scala.el ends here
