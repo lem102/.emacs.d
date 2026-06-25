@@ -339,6 +339,7 @@ then remove this function from `find-file-hook'."
 (use-package yasnippet
   :defer t
   :blackout "yas"
+  :hook (snippet-mode . yas-minor-mode)
   :bind ( :map yas-minor-mode-map
           ("C-c y n" . yas-new-snippet)
           ("C-c y v" . yas-visit-snippet-file)
