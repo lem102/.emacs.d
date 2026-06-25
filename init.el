@@ -971,7 +971,16 @@ $0`(yas-escape-text yas-selected-text)`"))
                                           :url "https://github.com/PrestonKnopp/tree-sitter-gdscript.git"
                                           :ext "\\.gd\\'"))
 
-  (setq treesit-auto-langs '(c-sharp scala yaml gdscript json markdown dockerfile c))
+  (add-to-list 'treesit-auto-recipe-list
+               (make-treesit-auto-recipe
+                :lang 'lua
+                :ts-mode 'lua-ts-mode
+                :remap 'lua-mode
+                :url "https://github.com/tree-sitter-grammars/tree-sitter-lua"
+                :abi14-revision "v0.3.0"
+                :ext "\\.lua\\'"))
+
+  (setq treesit-auto-langs '(c-sharp scala yaml gdscript json markdown dockerfile c lua))
   (treesit-auto-add-to-auto-mode-alist)
   (global-treesit-auto-mode 1))
 
