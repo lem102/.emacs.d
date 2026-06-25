@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# key: unless
+# --
+(unless $1
+  $0)
