@@ -209,11 +209,14 @@ then remove this function from `find-file-hook'."
                                            ((control) . text-scale)))))
 
 (use-package tooltip
-  :custom (tooltip-delay (cond (jacob-is-android 0.7)
-                               (t 0.1))))
+  :custom ((tooltip-delay (cond (jacob-is-android 0.7)
+                                (t 0.1)))))
 
 (use-package files
-  :hook (on-first-file-hook . auto-save-visited-mode))
+  :hook (on-first-file-hook . auto-save-visited-mode)
+  :custom ((auto-save-default nil)
+           (auto-save-visited-interval 2) ; Save file after two seconds.
+           ))
 
 (use-package files-x
   :config
@@ -420,7 +423,8 @@ $0`(yas-escape-text yas-selected-text)`"))
   (jacob-define-auto-insert "\\.el$" ["template.el" checkdoc elisp-enable-lexical-binding])
   (jacob-define-auto-insert "\\.scala$" ["template.scala" jacob-autoinsert-yas-expand])
   (jacob-define-auto-insert "\\.cs$" ["template.cs" jacob-autoinsert-yas-expand])
-  (jacob-define-auto-insert "Controller\\.cs$" ["controllerTemplate.cs" jacob-autoinsert-yas-expand]))
+  (jacob-define-auto-insert "Controller\\.cs$" ["controllerTemplate.cs" jacob-autoinsert-yas-expand])
+  :custom ((auto-insert-query nil)))
 
 (use-package tramp
   :defer t
@@ -1014,7 +1018,14 @@ $0`(yas-escape-text yas-selected-text)`"))
          :map isearch-mode-map
          ("M-j" . avy-isearch))
   :config
-  (require 'jacob-avy))
+  (require 'jacob-avy)
+  (add-to-list 'avy-dispatch-alist (cons ?g #'avy-action-mark))
+  (add-to-list 'avy-dispatch-alist (cons ?x #'avy-action-kill-stay))
+  (add-to-list 'avy-dispatch-alist (cons ?v #'avy-action-yank))
+  (add-to-list 'avy-dispatch-alist (cons ?X #'jacob-avy-kill-line))
+  (add-to-list 'avy-dispatch-alist (cons ?C #'jacob-avy-copy-line))
+  (add-to-list 'avy-dispatch-alist (cons ?V #'jacob-avy-yank-line))
+  (add-to-list 'avy-dispatch-alist (cons ?\\ #'jacob-avy-embark)))
 
 (use-package apheleia
   :defer t

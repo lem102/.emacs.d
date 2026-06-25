@@ -4,16 +4,6 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(auto-insert-query nil)
- '(auto-save-default nil)
- '(auto-save-visited-interval 2 nil nil "Save file after two seconds.")
- '(avy-dispatch-alist
-   '((120 . avy-action-kill-stay) (88 . jacob-avy-kill-line)
-     (116 . avy-action-teleport) (103 . avy-action-mark)
-     (99 . avy-action-copy) (67 . jacob-avy-copy-line)
-     (118 . avy-action-yank) (86 . jacob-avy-yank-line)
-     (105 . avy-action-ispell) (122 . avy-action-zap-to-char)
-     (92 . jacob-avy-embark)))
  '(avy-keys '(97 115 100 102 104 106 108 59))
  '(backup-by-copying t)
  '(bookmark-fringe-mark nil)
@@ -215,7 +205,7 @@
      yaml-pro
      yasnippet
      yeetube
-))
+     ))
  '(package-vc-selected-packages
    '((sln-mode :url "https://github.com/lem102/sln-mode")
      (nerd-icons-mode-line :url
