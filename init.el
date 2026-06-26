@@ -151,43 +151,45 @@ then remove this function from `find-file-hook'."
   ;; mule-cmds.el
   (prefer-coding-system 'utf-8)
 
-  :custom
-  ;; c source code
-  (truncate-lines (cond (jacob-is-android t)
-                        (t nil)))
-  (echo-keystrokes (cond (jacob-is-android 1)
-                         (t 0.01)))
-  (mode-line-format '("%e"
-                      mode-line-front-space
-                      mode-line-modified
-                      mode-line-frame-identification
-                      mode-line-buffer-identification
-                      mode-line-position
-                      (project-mode-line project-mode-line-format)
-                      (vc-mode vc-mode)
-                      " "
-                      mode-line-modes
-                      mode-line-format-right-align
-                      mode-line-misc-info
-                      mode-line-end-spaces))
-  ;; startup.el
-  (inhibit-startup-screen t)
-  (initial-major-mode #'fundamental-mode)
-  (initial-scratch-message
-   (format
-    ";; %s\n\n"
-    (seq-random-elt
-     '("\"A journey of a thousand miles begins with a single step.\" - 老子"
-       "\"apex predator of grug is complexity\" - some grug"
-       "\"Perfection is achieved, not when there is nothing more to add, but when there is nothing left to take away.\" - Antoine de Saint-Exupéry"
-       "\"Always listen to Jiaqi.\" - Jacob Leeming"
-       "\"The king wisely had the computer scientist beheaded, and they all lived happily ever after.\" - anon"
-       "\"Success is going from failure to failure without losing your enthusiasm.\" - Winston Churchill (maybe)"))))
-  ;; lisp.el
-  (parens-require-spaces nil)
-  (delete-pair-blink-delay 0)
-  ;; paragraphs.el
-  (sentence-end-double-space nil)
+  :custom (
+           ;; c source code
+           (completion-ignore-case t)
+           (create-lockfiles nil)
+           (truncate-lines (cond (jacob-is-android t)
+                                 (t nil)))
+           (echo-keystrokes (cond (jacob-is-android 1)
+                                  (t 0.01)))
+           (mode-line-format '("%e"
+                               mode-line-front-space
+                               mode-line-modified
+                               mode-line-frame-identification
+                               mode-line-buffer-identification
+                               mode-line-position
+                               (project-mode-line project-mode-line-format)
+                               (vc-mode vc-mode)
+                               " "
+                               mode-line-modes
+                               mode-line-format-right-align
+                               mode-line-misc-info
+                               mode-line-end-spaces))
+           ;; startup.el
+           (inhibit-startup-screen t)
+           (initial-major-mode #'fundamental-mode)
+           (initial-scratch-message
+            (format
+             ";; %s\n\n"
+             (seq-random-elt
+              '("\"A journey of a thousand miles begins with a single step.\" - 老子"
+                "\"apex predator of grug is complexity\" - some grug"
+                "\"Perfection is achieved, not when there is nothing more to add, but when there is nothing left to take away.\" - Antoine de Saint-Exupéry"
+                "\"Always listen to Jiaqi.\" - Jacob Leeming"
+                "\"The king wisely had the computer scientist beheaded, and they all lived happily ever after.\" - anon"
+                "\"Success is going from failure to failure without losing your enthusiasm.\" - Winston Churchill (maybe)"))))
+           ;; lisp.el
+           (parens-require-spaces nil)
+           (delete-pair-blink-delay 0)
+           ;; paragraphs.el
+           (sentence-end-double-space nil))
   :bind (("C-M-k" . jacob-kill-sexp)    ; `kill-sexp'
          :map mode-line-buffer-identification-keymap
          ("<mode-line> <mouse-2>" . ibuffer)))
@@ -216,7 +218,8 @@ then remove this function from `find-file-hook'."
   :hook (on-first-file-hook . auto-save-visited-mode)
   :custom ((auto-save-default nil)
            (auto-save-visited-interval 2) ; Save file after two seconds.
-           ))
+           (backup-by-copying t)
+           (confirm-kill-processes nil)))
 
 (use-package files-x
   :config
@@ -314,7 +317,9 @@ then remove this function from `find-file-hook'."
 (use-package bookmark
   :defer t
   :config
-  (require 'jacob-bookmark))
+  (require 'jacob-bookmark)
+  :custom ((bookmark-fringe-mark nil)
+           (bookmark-watch-bookmark-file 'silent)))
 
 (use-package flymake
   :bind
@@ -324,7 +329,8 @@ then remove this function from `find-file-hook'."
 (use-package consult-project-extra
   :defer t
   :init
-  (keymap-set project-prefix-map "f" #'consult-project-extra-find))
+  (keymap-set project-prefix-map "f" #'consult-project-extra-find)
+  :custom ((consult-project-function 'consult-project-extra-project-fn)))
 
 (use-package project
   :defer t
@@ -366,8 +372,8 @@ $0`(yas-escape-text yas-selected-text)`"))
                                                      "Remove eglot-capf from `completion-category-defaults'."
                                                      (not (eq 'eglot-capf (car category))))
                                                    completion-category-defaults)))
-  :custom
-  (completion-category-overrides '((file (styles basic partial-completion)))))
+  :custom ((completion-styles '(orderless basic initials))
+           (completion-category-overrides '((file (styles basic partial-completion))))))
 
 (use-package mb-depth
   :hook (jacob-first-minibuffer-activation-hook . minibuffer-depth-indicate-mode))
@@ -1019,13 +1025,14 @@ $0`(yas-escape-text yas-selected-text)`"))
          ("M-j" . avy-isearch))
   :config
   (require 'jacob-avy)
-  (add-to-list 'avy-dispatch-alist (cons ?g #'avy-action-mark))
+  (add-to-list 'avy-dispatch-alist (cons ?t #'avy-action-mark))
   (add-to-list 'avy-dispatch-alist (cons ?x #'avy-action-kill-stay))
   (add-to-list 'avy-dispatch-alist (cons ?v #'avy-action-yank))
   (add-to-list 'avy-dispatch-alist (cons ?X #'jacob-avy-kill-line))
   (add-to-list 'avy-dispatch-alist (cons ?C #'jacob-avy-copy-line))
   (add-to-list 'avy-dispatch-alist (cons ?V #'jacob-avy-yank-line))
-  (add-to-list 'avy-dispatch-alist (cons ?\\ #'jacob-avy-embark)))
+  (add-to-list 'avy-dispatch-alist (cons ?\\ #'jacob-avy-embark))
+  :custom ((avy-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l ?\;))))
 
 (use-package apheleia
   :defer t

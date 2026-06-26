@@ -4,16 +4,6 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(avy-keys '(97 115 100 102 104 106 108 59))
- '(backup-by-copying t)
- '(bookmark-fringe-mark nil)
- '(bookmark-watch-bookmark-file 'silent)
- '(completion-ignore-case t t)
- '(completion-styles '(orderless basic initials))
- '(confirm-kill-processes nil)
- '(consult-git-log-grep-open-function 'magit-show-commit)
- '(consult-project-function 'consult-project-extra-project-fn)
- '(create-lockfiles nil)
  '(custom-enabled-themes '(modus-vivendi-tinted))
  '(custom-safe-themes
    '("2493d0ad0bb94bd2ad297a6d76288751a532fd6d8d6af694ac14008caa6b7fa2"
