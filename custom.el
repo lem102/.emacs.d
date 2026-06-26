@@ -25,7 +25,7 @@
      "b41d0a9413fb0034cea34eb8c9f89f6e243bdd76bccecf8292eb1fefa42eaf0a"
      default))
 
- '(eshell-scroll-to-bottom-on-output 'this)
+ 
  '(frame-resize-pixelwise t)
  '(gptel-prompt-prefix-alist
    '((markdown-mode . "### ") (org-mode . "** ") (text-mode . "### ")))

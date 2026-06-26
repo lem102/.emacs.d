@@ -644,11 +644,11 @@ $0`(yas-escape-text yas-selected-text)`"))
   :defer t
   :config
   (require 'jacob-eshell)
-
   (when jacob-is-windows
     (advice-add 'eshell-interrupt-process
                 :after
-                #'jacob-eshell-windows-confirm-terminate-batch-job)))
+                #'jacob-eshell-windows-confirm-terminate-batch-job))
+  :custom ((eshell-scroll-to-bottom-on-output 'this)))
 
 (use-package eldoc
   :hook (prog-mode-hook . global-eldoc-mode)
