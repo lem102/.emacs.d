@@ -156,6 +156,7 @@ then remove this function from `find-file-hook'."
            (completion-ignore-case t)
            (create-lockfiles nil)
            (delete-by-moving-to-trash t)
+           (enable-recursive-minibuffers t)
            (truncate-lines (cond (jacob-is-android t)
                                  (t nil)))
            (echo-keystrokes (cond (jacob-is-android 1)
@@ -323,6 +324,7 @@ then remove this function from `find-file-hook'."
            (bookmark-watch-bookmark-file 'silent)))
 
 (use-package dabbrev
+  :defer t
   :custom ((dabbrev-case-fold-search nil)
            (dabbrev-case-replace nil)))
 
@@ -400,6 +402,11 @@ $0`(yas-escape-text yas-selected-text)`"))
 
 (use-package paren
   :hook (on-first-input-hook . show-paren-mode))
+
+(use-package electric
+  :defer t
+  :custom ((electric-indent-mode nil) ; Enabled by default.
+           ))
 
 (use-package elec-pair
   :hook (on-first-input-hook . electric-pair-mode))

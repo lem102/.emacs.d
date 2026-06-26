@@ -24,10 +24,7 @@
      "ae20535e46a88faea5d65775ca5510c7385cbf334dfa7dde93c0cd22ed663ba0"
      "b41d0a9413fb0034cea34eb8c9f89f6e243bdd76bccecf8292eb1fefa42eaf0a"
      default))
- 
- 
- '(electric-indent-mode nil nil nil "Enabled by default.")
- '(enable-recursive-minibuffers t)
+
  '(eshell-scroll-to-bottom-on-output 'this)
  '(frame-resize-pixelwise t)
  '(gptel-prompt-prefix-alist
