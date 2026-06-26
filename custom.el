@@ -24,9 +24,6 @@
      "ae20535e46a88faea5d65775ca5510c7385cbf334dfa7dde93c0cd22ed663ba0"
      "b41d0a9413fb0034cea34eb8c9f89f6e243bdd76bccecf8292eb1fefa42eaf0a"
      default))
- '(dabbrev-case-fold-search nil)
- '(dabbrev-case-replace nil)
- '(delete-by-moving-to-trash t)
  '(eat-eshell-semi-char-non-bound-keys
    '([27] [28] [24] [7] [8] [27 3] [21] [17] [27 120] [27 58] [27 33]
      [27 38] [C-insert] [M-insert] [S-insert] [C-M-insert]

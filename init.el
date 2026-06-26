@@ -155,6 +155,7 @@ then remove this function from `find-file-hook'."
            ;; c source code
            (completion-ignore-case t)
            (create-lockfiles nil)
+           (delete-by-moving-to-trash t)
            (truncate-lines (cond (jacob-is-android t)
                                  (t nil)))
            (echo-keystrokes (cond (jacob-is-android 1)
@@ -320,6 +321,10 @@ then remove this function from `find-file-hook'."
   (require 'jacob-bookmark)
   :custom ((bookmark-fringe-mark nil)
            (bookmark-watch-bookmark-file 'silent)))
+
+(use-package dabbrev
+  :custom ((dabbrev-case-fold-search nil)
+           (dabbrev-case-replace nil)))
 
 (use-package flymake
   :bind
