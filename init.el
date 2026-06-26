@@ -170,6 +170,9 @@ then remove this function from `find-file-hook'."
            (history-length 1000)
            (kill-buffer-query-functions
             (remq 'process-kill-buffer-query-function kill-buffer-query-functions))
+           (read-process-output-max (* 1024 1024)) ; 1 MB
+           (ring-bell-function 'ignore)
+           (scroll-conservatively 101) ; Always scroll just enough text to bring point into view.
            (truncate-lines (cond (jacob-is-android t)
                                  (t nil)))
            (mode-line-format '("%e"
@@ -185,6 +188,8 @@ then remove this function from `find-file-hook'."
                                mode-line-format-right-align
                                mode-line-misc-info
                                mode-line-end-spaces))
+           ;; bindings.el
+           (mode-line-percent-position nil)
            ;; startup.el
            (inhibit-startup-screen t)
            (initial-major-mode #'fundamental-mode)
@@ -238,7 +243,8 @@ then remove this function from `find-file-hook'."
            (auto-save-visited-interval 2) ; Save file after two seconds.
            (backup-by-copying t)
            (confirm-kill-processes nil)
-           (make-backup-files nil)))
+           (make-backup-files nil)
+           (remote-file-name-inhibit-auto-save-visited t)))
 
 (use-package files-x
   :config
@@ -249,9 +255,6 @@ then remove this function from `find-file-hook'."
   (connection-local-set-profiles
    '(:application tramp :protocol "scp")
    'remote-direct-async-process))
-
-(use-package bindings
-  :custom ((mode-line-percent-position nil)))
 
 (use-package autorevert
   :blackout
@@ -290,12 +293,13 @@ then remove this function from `find-file-hook'."
   (setq disabled-command-function nil))
 
 (use-package recentf
-  :hook (on-first-input-hook . recentf-mode))
+  :hook (on-first-input-hook . recentf-mode)
+  :custom ((recentf-max-saved-items nil)))
 
 (use-package savehist
   :hook (jacob-first-minibuffer-activation-hook . savehist-mode)
-  :custom
-  (savehist-save-minibuffer-history t))
+  :custom ((savehist-additional-variables '(search-ring regexp-search-ring kill-ring))
+           (savehist-save-minibuffer-history t)))
 
 (use-package saveplace
   :hook (on-first-file-hook . save-place-mode)
@@ -318,7 +322,9 @@ then remove this function from `find-file-hook'."
   :config
   (put 'set-goal-column 'disabled nil)
   :custom ((indent-tabs-mode nil)       ; use spaces to indent
-           (kill-do-not-save-duplicates t)))
+           (kill-do-not-save-duplicates t)
+           (read-extended-command-predicate 'command-completion-default-include-p)
+           (save-interprogram-paste-before-kill t)))
 
 (use-package thingatpt
   :defer t
@@ -338,6 +344,10 @@ then remove this function from `find-file-hook'."
           ("<right>" . isearch-repeat-forward)
           ("<left>" . isearch-repeat-backward))
   :custom ((isearch-lazy-count t)))
+
+(use-package re-builder
+  :defer t
+  :custom ((reb-re-syntax 'string)))
 
 (use-package bookmark
   :defer t
@@ -370,15 +380,9 @@ then remove this function from `find-file-hook'."
 (use-package project
   :defer t
   :config
-  (defun jacob-project-try-exercism (dir)
-    "Find exercism project in DIR."
-    (when-let ((dir (locate-dominating-file dir ".exercism")))
-      (list 'exercism dir)))
-
   (add-hook 'project-find-functions #'jacob-project-try-exercism)
-
-  (cl-defmethod project-root ((project (head exercism)))
-    (nth 1 project)))
+  :custom ((project-compilation-buffer-name-function 'project-prefixed-buffer-name)
+           (project-switch-use-entire-map t)))
 
 (use-package yasnippet
   :defer t
@@ -431,7 +435,8 @@ $0`(yas-escape-text yas-selected-text)`"))
   :hook (on-first-input-hook . global-subword-mode))
 
 (use-package paren
-  :hook (on-first-input-hook . show-paren-mode))
+  :hook (on-first-input-hook . show-paren-mode)
+  :custom ((show-paren-when-point-inside-paren t)))
 
 (use-package electric
   :defer t
@@ -463,7 +468,7 @@ $0`(yas-escape-text yas-selected-text)`"))
 (use-package magit-mode
   :defer t
   :config
-  (unless (string-match-p "^\\*.+\\*$")
+  (unless (string-match-p "^\\*.+\\*$" magit-buffer-name-format)
     (setq magit-buffer-name-format
           (format "*%s*" magit-buffer-name-format))))
 

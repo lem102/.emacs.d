@@ -138,6 +138,12 @@ Upgrade all packages in `package-selected-packages'." t)
 
 (autoload 'jacob-dired-in-other-project "jacob-project" "\
 Switch to another project and open `dired' there." t)
+(autoload 'jacob-project-try-exercism "jacob-project" "\
+Find exercism project in DIR.
+
+(fn DIR)")
+(cl-defmethod project-root ((project (head exercism))) "\
+Get the PROJECT root for an Exercism project." (nth 1 project))
 
 
 ;;; Generated autoloads from jacob-pulse.el
@@ -194,6 +200,7 @@ Transient menu for sm2.
 Start a timer to boil the kettle." t)
 (autoload 'jacob-tea-brew "jacob-tea" "\
 Start a timer for brewing tea." t)
+(register-definition-prefixes "jacob-tea" '("jacob-tea-"))
 
 
 ;;; Generated autoloads from jacob-thingatpt.el
