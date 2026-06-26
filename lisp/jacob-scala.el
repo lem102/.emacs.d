@@ -1,7 +1,15 @@
 ;;; jacob-scala.el --- Utilities for scala  -*- lexical-binding: t; -*-
 
 ;;; Commentary:
-;; 
+;;
+
+;; TODO: a comprehensive solution for renaming/moving files in scala.
+;; needs to update filenames, and update packages around the project
+;; so that after the rename the package is updated and there are no
+;; compilation errors.
+
+;; it should be possible to rename a directory, and then have the
+;; packages around the project be updated accordingly.
 
 ;;; Code:
 
