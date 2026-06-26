@@ -1247,7 +1247,11 @@ $0`(yas-escape-text yas-selected-text)`"))
 
 (use-package eat
   :when (or jacob-is-linux jacob-is-mac)
-  :hook ((eshell-mode-hook . eat-eshell-mode)))
+  :hook ((eshell-mode-hook . eat-eshell-mode))
+  :config
+  (add-to-list 'eat-eshell-semi-char-non-bound-keys [?\e ? ]) ; make M-SPC not bound in eat-eshell
+  (eat-eshell-update-semi-char-mode-map) ; update the eat keymap
+  )
 
 (use-package exec-path-from-shell
   :if (or jacob-is-mac jacob-is-linux)
