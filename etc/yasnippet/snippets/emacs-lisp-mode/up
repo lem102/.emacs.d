@@ -1,5 +1,5 @@
 # -*- mode: snippet -*-
 # key: up
 # --
-(use-package ${1:x}
+(use-package ${1:x$(jacob-yas-kebab-case yas-text)}
   $0)

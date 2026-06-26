@@ -24,52 +24,6 @@
      "ae20535e46a88faea5d65775ca5510c7385cbf334dfa7dde93c0cd22ed663ba0"
      "b41d0a9413fb0034cea34eb8c9f89f6e243bdd76bccecf8292eb1fefa42eaf0a"
      default))
-
- 
- '(frame-resize-pixelwise t)
- '(gptel-prompt-prefix-alist
-   '((markdown-mode . "### ") (org-mode . "** ") (text-mode . "### ")))
- '(grep-use-headings t)
- '(help-enable-variable-value-editing t)
- '(help-window-select t)
- '(hippie-expand-try-functions-list
-   '(try-complete-file-name-partially try-complete-file-name
-                                      try-expand-all-abbrevs
-                                      try-expand-line
-                                      try-expand-dabbrev
-                                      try-expand-dabbrev-all-buffers
-                                      try-expand-dabbrev-from-kill
-                                      try-complete-lisp-symbol-partially
-                                      try-complete-lisp-symbol))
- '(history-delete-duplicates t)
- '(history-length 1000)
- '(imenu-use-popup-menu 'on-mouse)
- '(indent-tabs-mode nil nil nil "Use spaces to indent.")
- '(isearch-lazy-count t)
- '(kill-buffer-query-functions
-   (remq 'process-kill-buffer-query-function kill-buffer-query-functions) t)
- '(kill-do-not-save-duplicates t)
- '(magit-buffer-name-format "*%x%M%v: %t%x*")
- '(magit-section-initial-visibility-alist '((untracked . show) (stashes . show)))
- '(make-backup-files nil)
- '(mcp-hub-servers
-   '(("elisp-dev" :command "~/.emacs.d/emacs-mcp-stdio.sh" :args
-      ("--init-function=elisp-dev-mcp-enable"
-       "--stop-function=elisp-dev-mcp-disable"
-       "--server-id=elisp-dev-mcp"))))
- '(message-send-mail-function 'smtpmail-send-it)
- '(mode-line-percent-position nil)
- '(modus-themes-to-toggle '(modus-operandi-tinted modus-vivendi-tinted))
- '(mouse-1-double-click-prefer-symbols t)
- '(mouse-drag-copy-region 'non-empty)
- '(org-cycle-separator-lines 0)
- '(org-default-notes-file "~/Documents/notes.org")
- '(org-log-into-drawer t)
- '(package-archives
-   '(("gnu" . "https://elpa.gnu.org/packages/")
-     ("nongnu" . "https://elpa.nongnu.org/nongnu/")
-     ("melpa" . "https://melpa.org/packages/")))
- '(package-install-upgrade-built-in t)
  '(package-selected-packages
    '(ace-window
      advice-patch

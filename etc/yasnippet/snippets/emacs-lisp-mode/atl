@@ -1,4 +1,4 @@
 # -*- mode: snippet -*-
 # key: atl
 # --
-(add-to-list '${1:list$(jacob-yas-kebab-case yas-text)})
+(add-to-list '${1:list$(jacob-yas-kebab-case yas-text)} $0)

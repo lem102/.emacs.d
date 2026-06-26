@@ -45,6 +45,12 @@
 
 ;; configure packages
 
+(use-package package
+  :defer t
+  :config
+  (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
+  :custom ((package-install-upgrade-built-in t)))
+
 (use-package jacob-editing-commands
   :demand
   :bind (("DEL" . jacob-delete-backwards)  ; `delete-backward-char'
@@ -156,11 +162,16 @@ then remove this function from `find-file-hook'."
            (completion-ignore-case t)
            (create-lockfiles nil)
            (delete-by-moving-to-trash t)
-           (enable-recursive-minibuffers t)
-           (truncate-lines (cond (jacob-is-android t)
-                                 (t nil)))
            (echo-keystrokes (cond (jacob-is-android 1)
                                   (t 0.01)))
+           (enable-recursive-minibuffers t)
+           (frame-resize-pixelwise t)
+           (history-delete-duplicates t)
+           (history-length 1000)
+           (kill-buffer-query-functions
+            (remq 'process-kill-buffer-query-function kill-buffer-query-functions))
+           (truncate-lines (cond (jacob-is-android t)
+                                 (t nil)))
            (mode-line-format '("%e"
                                mode-line-front-space
                                mode-line-modified
@@ -205,7 +216,12 @@ then remove this function from `find-file-hook'."
                                       (t 0.01))))
 
 (use-package mouse
-  :hook (on-first-input-hook . context-menu-mode))
+  :hook (on-first-input-hook . context-menu-mode)
+  :custom ((mouse-1-double-click-prefer-symbols t)
+           (mouse-drag-copy-region 'non-empty)))
+
+(use-package modus-themes
+  :custom ((modus-themes-to-toggle '(modus-operandi-tinted modus-vivendi-tinted))))
 
 (use-package mwheel
   :custom ((mouse-wheel-scroll-amount '(10 ((shift) . hscroll)
@@ -221,7 +237,8 @@ then remove this function from `find-file-hook'."
   :custom ((auto-save-default nil)
            (auto-save-visited-interval 2) ; Save file after two seconds.
            (backup-by-copying t)
-           (confirm-kill-processes nil)))
+           (confirm-kill-processes nil)
+           (make-backup-files nil)))
 
 (use-package files-x
   :config
@@ -232,6 +249,9 @@ then remove this function from `find-file-hook'."
   (connection-local-set-profiles
    '(:application tramp :protocol "scp")
    'remote-direct-async-process))
+
+(use-package bindings
+  :custom ((mode-line-percent-position nil)))
 
 (use-package autorevert
   :blackout
@@ -296,7 +316,9 @@ then remove this function from `find-file-hook'."
   :bind (("C-x u" . nil)                ; `undo'
          )
   :config
-  (put 'set-goal-column 'disabled nil))
+  (put 'set-goal-column 'disabled nil)
+  :custom ((indent-tabs-mode nil)       ; use spaces to indent
+           (kill-do-not-save-duplicates t)))
 
 (use-package thingatpt
   :defer t
@@ -314,7 +336,8 @@ then remove this function from `find-file-hook'."
 (use-package isearch
   :bind ( :map isearch-mode-map
           ("<right>" . isearch-repeat-forward)
-          ("<left>" . isearch-repeat-backward)))
+          ("<left>" . isearch-repeat-backward))
+  :custom ((isearch-lazy-count t)))
 
 (use-package bookmark
   :defer t
@@ -327,6 +350,11 @@ then remove this function from `find-file-hook'."
   :defer t
   :custom ((dabbrev-case-fold-search nil)
            (dabbrev-case-replace nil)))
+
+(use-package hippie-exp
+  :defer t
+  :custom ((hippie-expand-try-functions-list (remq 'try-expand-list
+                                                   hippie-expand-try-functions-list))))
 
 (use-package flymake
   :bind
@@ -394,7 +422,9 @@ $0`(yas-escape-text yas-selected-text)`"))
   :defer t
   :config
   (require 'jacob-help-fns)
-  (put 'help-fns-edit-variable 'disabled nil))
+  (put 'help-fns-edit-variable 'disabled nil)
+  :custom ((help-enable-variable-value-editing t)
+           (help-window-select t)))
 
 (use-package subword
   :blackout
@@ -429,6 +459,16 @@ $0`(yas-escape-text yas-selected-text)`"))
 (use-package magit
   :bind ( :map project-prefix-map
           ("v" . magit-project-status)))
+
+(use-package magit-mode
+  :defer t
+  :config
+  (unless (string-match-p "^\\*.+\\*$")
+    (setq magit-buffer-name-format
+          (format "*%s*" magit-buffer-name-format))))
+
+(use-package magit-section
+  :custom ((magit-section-initial-visibility-alist '((untracked . show) (stashes . show)))))
 
 (use-package magit-process
   :defer t
@@ -650,6 +690,9 @@ $0`(yas-escape-text yas-selected-text)`"))
                 #'jacob-eshell-windows-confirm-terminate-batch-job))
   :custom ((eshell-scroll-to-bottom-on-output 'this)))
 
+(use-package imenu
+  :custom ((imenu-use-popup-menu 'on-mouse)))
+
 (use-package eldoc
   :hook (prog-mode-hook . global-eldoc-mode)
   :blackout
@@ -793,7 +836,9 @@ $0`(yas-escape-text yas-selected-text)`"))
                            :follow #'jacob-org-jira-follow)
 
   (org-link-set-parameters "project"
-                           :follow #'jacob-org-project-follow))
+                           :follow #'jacob-org-project-follow)
+  :custom ((org-default-notes-file "~/Documents/notes.org")
+           (org-log-into-drawer t)))
 
 (use-package org-agenda
   :commands (org-agenda org-capture)
@@ -841,6 +886,10 @@ $0`(yas-escape-text yas-selected-text)`"))
   (setopt org-calendar-to-agenda-key nil  ; don't bind calendar key
           org-calendar-insert-diary-entry-key nil) ; don't bind calendar key
   )
+
+(use-package org-cycle
+  :defer t
+  :custom ((org-cycle-separator-lines 0)))
 
 (use-package ox-latex
   :after org
@@ -1026,7 +1075,8 @@ $0`(yas-escape-text yas-selected-text)`"))
   :defer t
   :config
   (jacob-defhookf message-mode-hook
-    (setq-local auto-save-visited-mode nil)))
+    (setq-local auto-save-visited-mode nil))
+  :custom ((message-send-mail-function 'smtpmail-send-it)))
 
 (use-package nxml-mode
   :mode ("Directory.Packages.props" . nxml-mode))
@@ -1233,12 +1283,22 @@ $0`(yas-escape-text yas-selected-text)`"))
   :defer t
   :config
   (require 'gptel-integrations)
+  (add-to-list 'gptel-prompt-prefix-alist '(org-mode . "** "))
   :custom
-  (gptel-default-mode #'org-mode)
-  (gptel-confirm-tool-calls t))
+  (gptel-confirm-tool-calls t)
+  (gptel-default-mode #'org-mode))
 
 (use-package mcp
   :after gptel)
+
+(use-package mcp-hub
+  :defer t
+  :config
+  (add-to-list 'mcp-hub-servers '("elisp-dev"
+                                  :command "~/.emacs.d/emacs-mcp-stdio.sh"
+                                  :args ("--init-function=elisp-dev-mcp-enable"
+                                         "--stop-function=elisp-dev-mcp-disable"
+                                         "--server-id=elisp-dev-mcp"))))
 
 (use-package elisp-dev-mcp
   :after gptel)
@@ -1279,7 +1339,8 @@ $0`(yas-escape-text yas-selected-text)`"))
   :defer t
   :config
   (when jacob-is-windows
-    (setq find-program "C:/Program Files (x86)/GnuWin32/bin/find.exe")))
+    (setq find-program "C:/Program Files (x86)/GnuWin32/bin/find.exe"))
+  :custom ((grep-use-headings t)))
 
 (use-package wgrep
   :bind ( :map grep-mode-map
