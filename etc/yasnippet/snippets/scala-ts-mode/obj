@@ -1,6 +1,6 @@
 # -*- mode: snippet -*-
 # key: obj
 # --
-object ${1:X$(jacob-yas-camel-case yas-text)} {
+object ${1:X$(jacob-yas-pascal-case yas-text)} {
   $0
 }
