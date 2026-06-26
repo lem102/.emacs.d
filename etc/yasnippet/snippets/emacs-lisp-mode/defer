@@ -1,0 +1,4 @@
+# -*- mode: snippet -*-
+# key: defer
+# --
+:defer t
