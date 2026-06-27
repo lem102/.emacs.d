@@ -5,6 +5,7 @@
 
 ;;; Code:
 
+;;;###autoload
 (defun jacob-split-or-switch-window ()
   "Split or switch window.
 

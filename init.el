@@ -48,6 +48,11 @@
 
 ;; configure packages
 
+(when (member "--report" command-line-args)
+  (setq command-line-args (delete "--report" command-line-args))
+  (setq use-package-compute-statistics t)
+  (add-hook 'after-init-hook #'use-package-report))
+
 (use-package package
   :defer t
   :config
@@ -72,12 +77,9 @@
   (when use-package-compute-statistics
     (add-hook 'after-init-hook #'use-package-report)))
 
-;; TODO: add cli flag that enables use package reporting and shows report
-
 (use-package use-package-core
   :defer t
-  :custom ((use-package-compute-statistics nil)
-           (use-package-enable-imenu-support t)
+  :custom ((use-package-enable-imenu-support t)
            (use-package-hook-name-suffix nil)
            (use-package-verbose nil)))
 
@@ -1206,8 +1208,6 @@ $0")
 
   (remove-hook 'dape-start-hook #'dape-info))
 
-(require 'jacob-ace-window)
-
 (use-package tex
   :commands (TeX-PDF-mode)
   :mode ("\\.tex\\'" . latex-mode)
@@ -1238,11 +1238,10 @@ $0")
 
 (use-package ace-window
   :defer t
-  :custom
-  (aw-keys '(?a ?s ?d ?f ?q ?w ?e ?r))
-  (aw-minibuffer-flag t)
-  (aw-scope 'frame)
-  (aw-dispatch-when-more-than 3))
+  :custom ((aw-keys '(?a ?s ?d ?f ?q ?w ?e ?r))
+           (aw-minibuffer-flag t)
+           (aw-scope 'frame)
+           (aw-dispatch-when-more-than 3)))
 
 (use-package marginalia
   :hook (jacob-first-minibuffer-activation-hook . marginalia-mode))

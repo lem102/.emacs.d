@@ -7,7 +7,11 @@
 
 ;;; Generated autoloads from jacob-ace-window.el
 
-(register-definition-prefixes "jacob-ace-window" '("jacob-split-or-switch-window"))
+(autoload 'jacob-split-or-switch-window "jacob-ace-window" "\
+Split or switch window.
+
+  If there is only one window in the current frame, split the frame and
+  move to the new window. Otherwise, call `switch-buffer'." t)
 
 
 ;;; Generated autoloads from jacob-apheleia.el
