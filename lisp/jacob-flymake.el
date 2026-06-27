@@ -42,13 +42,10 @@ This is a flymake backend, hence it uses REPORT-FN to report diagnostics."
     (save-excursion
       (goto-char (point-min))
       (while-let ((expression (ignore-errors (read (current-buffer)))))
-        (when (and (eq 'use-package (car expression))
-                   (member :custom expression))
-          (while (not (eq :custom (car expression)))
-            (pop expression))
-          (pop expression)
-          (unless (and (listp (car expression))
-                       (listp (caar expression)))
+        (when-let ((custom-body (and (eq 'use-package (car expression))
+                                     (member :custom expression))))
+          (unless (and (listp (car custom-body))
+                       (listp (caar custom-body)))
             (save-excursion
               (backward-sexp)
               (re-search-forward ":custom" nil "NOERROR")
