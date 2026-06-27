@@ -236,12 +236,12 @@ then remove this function from `find-file-hook'."
 
 (use-package which-key
   :blackout
-  :hook (on-first-input-hook . which-key-mode)
+  :hook ((on-first-input-hook . which-key-mode))
   :custom ((which-key-idle-delay (cond (jacob-is-android 1)
                                        (t 0.01)))))
 
 (use-package mouse
-  :hook (on-first-input-hook . context-menu-mode)
+  :hook ((on-first-input-hook . context-menu-mode))
   :custom ((mouse-1-double-click-prefer-symbols t)
            (mouse-drag-copy-region 'non-empty)))
 
@@ -265,7 +265,7 @@ then remove this function from `find-file-hook'."
                                 (t 0.1)))))
 
 (use-package files
-  :hook (on-first-file-hook . auto-save-visited-mode)
+  :hook ((on-first-file-hook . auto-save-visited-mode))
   :custom ((auto-save-default nil)
            (auto-save-visited-interval 2) ; Save file after two seconds.
            (backup-by-copying t)
@@ -285,7 +285,7 @@ then remove this function from `find-file-hook'."
 
 (use-package autorevert
   :blackout
-  :hook (on-first-file-hook . global-auto-revert-mode))
+  :hook ((on-first-file-hook . global-auto-revert-mode)))
 
 (use-package window
   :bind ( :repeat-map jacob-window-repeat-map
@@ -325,16 +325,16 @@ then remove this function from `find-file-hook'."
   (setq disabled-command-function nil))
 
 (use-package recentf
-  :hook (on-first-input-hook . recentf-mode)
+  :hook ((on-first-input-hook . recentf-mode))
   :custom ((recentf-max-saved-items nil)))
 
 (use-package savehist
-  :hook (jacob-first-minibuffer-activation-hook . savehist-mode)
+  :hook ((jacob-first-minibuffer-activation-hook . savehist-mode))
   :custom ((savehist-additional-variables '(search-ring regexp-search-ring kill-ring))
            (savehist-save-minibuffer-history t)))
 
 (use-package saveplace
-  :hook (on-first-file-hook . save-place-mode)
+  :hook ((on-first-file-hook . save-place-mode))
   :custom ((save-place-forget-unreadable-files t)))
 
 (use-package generic-x           ; support for files like `/etc/fstab'
@@ -346,8 +346,8 @@ then remove this function from `find-file-hook'."
           ("C-c SPC" . nil)))
 
 (use-package simple
-  :hook (on-init-ui-hook . column-number-mode)
-  :hook (on-init-ui-hook . line-number-mode)
+  :hook ((on-init-ui-hook . column-number-mode)
+         (on-init-ui-hook . line-number-mode))
   :bind (("C-x u" . nil)                ; `undo'
          )
   :config
@@ -418,7 +418,7 @@ then remove this function from `find-file-hook'."
 (use-package yasnippet
   :defer t
   :blackout "yas"
-  :hook (snippet-mode . yas-minor-mode)
+  :hook ((snippet-mode . yas-minor-mode))
   :bind ( :map yas-minor-mode-map
           ("C-c y n" . yas-new-snippet)
           ("C-c y v" . yas-visit-snippet-file)
@@ -446,7 +446,7 @@ $0")
            (completion-category-overrides '((file (styles basic partial-completion))))))
 
 (use-package mb-depth
-  :hook (jacob-first-minibuffer-activation-hook . minibuffer-depth-indicate-mode))
+  :hook ((jacob-first-minibuffer-activation-hook . minibuffer-depth-indicate-mode)))
 
 (use-package man
   :defer t
@@ -462,10 +462,10 @@ $0")
 
 (use-package subword
   :blackout
-  :hook (on-first-input-hook . global-subword-mode))
+  :hook ((on-first-input-hook . global-subword-mode)))
 
 (use-package paren
-  :hook (on-first-input-hook . show-paren-mode)
+  :hook ((on-first-input-hook . show-paren-mode))
   :custom ((show-paren-context-when-offscreen 'echo)))
 
 (use-package electric
@@ -474,7 +474,7 @@ $0")
            ))
 
 (use-package elec-pair
-  :hook (on-first-input-hook . electric-pair-mode))
+  :hook ((on-first-input-hook . electric-pair-mode)))
 
 (use-package puni
   :bind (("M-d" . puni-forward-kill-word) ; `kill-word'
@@ -486,10 +486,10 @@ $0")
   (require 'jacob-puni))
 
 (use-package delsel
-  :hook (on-first-input-hook . delete-selection-mode))
+  :hook ((on-first-input-hook . delete-selection-mode)))
 
 (use-package repeat
-  :hook (on-first-input-hook . repeat-mode))
+  :hook ((on-first-input-hook . repeat-mode)))
 
 (use-package vc-hooks
   :defer t
@@ -519,7 +519,7 @@ $0")
   (setq magit-tramp-pipe-stty-settings 'pty))
 
 (use-package autoinsert
-  :hook (on-first-file-hook . auto-insert-mode)
+  :hook ((on-first-file-hook . auto-insert-mode))
   :config
   (jacob-define-auto-insert "\\.el$" ["template.el" checkdoc elisp-enable-lexical-binding])
   (jacob-define-auto-insert "\\.scala$" ["template.scala" jacob-autoinsert-yas-expand])
@@ -706,27 +706,27 @@ $0")
 (use-package nerd-icons-dired
   :blackout
   :when (display-graphic-p)
-  :hook (dired-mode-hook . nerd-icons-dired-mode))
+  :hook ((dired-mode-hook . nerd-icons-dired-mode)))
 
 (use-package nerd-icons-mode-line
   :when (display-graphic-p)
-  :hook (on-first-file-hook . nerd-icons-mode-line-global-mode))
+  :hook ((on-first-file-hook . nerd-icons-mode-line-global-mode)))
 
 (use-package nerd-icons-completion
   :when (display-graphic-p)
-  :hook (prog-mode-hook . nerd-icons-completion-mode))
+  :hook ((prog-mode-hook . nerd-icons-completion-mode)))
 
 (use-package nerd-icons-grep
   :when (display-graphic-p)
-  :hook (grep-mode-hook . nerd-icons-grep-mode))
+  :hook ((grep-mode-hook . nerd-icons-grep-mode)))
 
 (use-package nerd-icons-xref
   :when (display-graphic-p)
-  :hook (xref--xref-buffer-mode-hook . nerd-icons-xref-mode))
+  :hook ((xref--xref-buffer-mode-hook . nerd-icons-xref-mode)))
 
 (use-package nerd-icons-ibuffer
   :when (display-graphic-p)
-  :hook (ibuffer-mode-hook . nerd-icons-ibuffer-mode))
+  :hook ((ibuffer-mode-hook . nerd-icons-ibuffer-mode)))
 
 (use-package esh-mode
   :defer t
@@ -742,7 +742,7 @@ $0")
   :custom ((imenu-use-popup-menu 'on-mouse)))
 
 (use-package eldoc
-  :hook (prog-mode-hook . global-eldoc-mode)
+  :hook ((prog-mode-hook . global-eldoc-mode))
   :blackout
   :config
   (setopt eldoc-documentation-strategy 'eldoc-documentation-compose))
@@ -775,7 +775,7 @@ $0")
   :blackout)
 
 (use-package hl-todo
-  :hook (after-init-hook . global-hl-todo-mode))
+  :hook ((after-init-hook . global-hl-todo-mode)))
 
 (defun jacob-font-lock-programming-setup ()
   "Setup faces locally for programming."
@@ -818,7 +818,9 @@ $0")
     (add-hook 'flymake-diagnostic-functions
               #'jacob-elisp-flymake-check-removals nil "LOCAL")
     (add-hook 'flymake-diagnostic-functions
-              #'jacob-elisp-flymake-check-custom nil "LOCAL"))
+              #'jacob-elisp-flymake-check-custom nil "LOCAL")
+    (add-hook 'flymake-diagnostic-functions
+              #'jacob-elisp-flymake-check-hook nil "LOCAL"))
 
   (defun jacob-eval-print-last-sexp ()
     "Run `eval-print-last-sexp', indent the result."
@@ -862,7 +864,7 @@ $0")
 
 (use-package org
   :mode ("\\.org\\'" . org-mode)
-  :hook (org-mode-hook . yas-minor-mode)
+  :hook ((org-mode-hook . yas-minor-mode))
   :config
   (require 'jacob-org)
   (add-hook 'org-babel-post-tangle-hook 'jacob-org-babel-tangle-delete-whitespace)
@@ -979,7 +981,7 @@ $0")
   (advice-add #'eval-last-sexp :after #'jacob-pulse-previous-sexp))
 
 (use-package server
-  :hook (after-init-hook . server-start))
+  :hook ((after-init-hook . server-start)))
 
 (use-package smerge-mode
   :defer t
@@ -1007,7 +1009,7 @@ $0")
 (use-package winner
   :defer t
   :commands (winner-undo winner-redo)
-  :hook (on-first-input-hook . winner-mode))
+  :hook ((on-first-input-hook . winner-mode)))
 
 (use-package compile
   :defer t
@@ -1076,7 +1078,7 @@ $0")
     (jacob-modal-editing-ensure-priority)))
 
 (use-package winnow
-  :hook (compilation-mode-hook . winnow-mode))
+  :hook ((compilation-mode-hook . winnow-mode)))
 
 (require 'jacob-sql)
 
@@ -1117,7 +1119,7 @@ $0")
   :mode ("\\.ya?ml\\'" . yaml-ts-mode))
 
 (use-package yaml-pro
-  :hook (yaml-ts-mode-hook . yaml-pro-ts-mode))
+  :hook ((yaml-ts-mode-hook . yaml-pro-ts-mode)))
 
 (use-package php-ts-mode
   :mode ("\\.php\\'" . php-ts-mode))
@@ -1173,7 +1175,7 @@ $0")
 
 (use-package rainbow-mode
   :blackout
-  :hook (on-first-file-hook . rainbow-mode))
+  :hook ((on-first-file-hook . rainbow-mode)))
 
 (use-package eglot-booster
   :after eglot
@@ -1223,11 +1225,11 @@ $0")
 
 (use-package mct
   :if jacob-is-android
-  :hook (jacob-first-minibuffer-activation-hook . mct-mode))
+  :hook ((jacob-first-minibuffer-activation-hook . mct-mode)))
 
 (use-package vertico
   :if (not jacob-is-android)
-  :hook (jacob-first-minibuffer-activation-hook . vertico-mode)
+  :hook ((jacob-first-minibuffer-activation-hook . vertico-mode))
   :custom ((vertico-count 20)
            (vertico-resize t)))
 
@@ -1237,7 +1239,7 @@ $0")
 
 (use-package vertico-mouse
   :if (not jacob-is-android)
-  :hook (vertico-mode-hook . vertico-mouse-mode))
+  :hook ((vertico-mode-hook . vertico-mouse-mode)))
 
 (use-package ace-window
   :defer t
@@ -1247,7 +1249,7 @@ $0")
            (aw-dispatch-when-more-than 3)))
 
 (use-package marginalia
-  :hook (jacob-first-minibuffer-activation-hook . marginalia-mode))
+  :hook ((jacob-first-minibuffer-activation-hook . marginalia-mode)))
 
 (use-package consult
   :bind (("C-x b" . consult-buffer)
@@ -1310,7 +1312,7 @@ $0")
     (verb-json-get (oref (verb-stored-response response-id) body) "id")))
 
 (use-package sly
-  :hook (lisp-mode-hook . sly-mode)
+  :hook ((lisp-mode-hook . sly-mode))
   :config
   (sly-setup)
 
@@ -1331,7 +1333,7 @@ $0")
   :after sly)
 
 (use-package sql-indent
-  :hook (sql-mode-hook . sqlind-minor-mode))
+  :hook ((sql-mode-hook . sqlind-minor-mode)))
 
 (use-package gptel
   :defer t

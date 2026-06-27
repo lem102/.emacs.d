@@ -42,10 +42,10 @@ This is a flymake backend, hence it uses REPORT-FN to report diagnostics."
     (save-excursion
       (goto-char (point-min))
       (while-let ((expression (ignore-errors (read (current-buffer)))))
-        (when-let ((custom-body (and (eq 'use-package (car expression))
-                                     (member :custom expression))))
-          (unless (and (listp (car custom-body))
-                       (listp (caar custom-body)))
+        (when-let ((custom-expressions (and (eq 'use-package (car expression))
+                                            (member :custom expression))))
+          (unless (and (listp (seq-elt custom-expressions 1))
+                       (listp (car (seq-elt custom-expressions 1))))
             (save-excursion
               (backward-sexp)
               (re-search-forward ":custom" nil "NOERROR")
@@ -54,6 +54,37 @@ This is a flymake backend, hence it uses REPORT-FN to report diagnostics."
                                              (match-end 0)
                                              :note
                                              "Enclose the customs in a list e.g. :custom ((a b)).")
+                    diags))))))
+    (funcall report-fn diags)))
+
+;;;###autoload
+(defun jacob-elisp-flymake-check-hook (report-fn &rest _args)
+  "Flag `use-package' `:hook' sections.
+
+A proper `:hook' section looks like this:
+
+:hook ((a . b)
+       (c . d))
+
+Flag `:hook' sections that are not formatted in this way.
+
+This is a flymake backend, hence it uses REPORT-FN to report diagnostics."
+  (let* (diags)
+    (save-excursion
+      (goto-char (point-min))
+      (while-let ((expression (ignore-errors (read (current-buffer)))))
+        (when-let ((hook-expressions (and (eq 'use-package (car expression))
+                                          (member :hook expression))))
+          (unless (and (listp (seq-elt hook-expressions 1))
+                       (listp (car (seq-elt hook-expressions 1))))
+            (save-excursion
+              (backward-sexp)
+              (re-search-forward ":hook" nil "NOERROR")
+              (push (flymake-make-diagnostic (current-buffer)
+                                             (match-beginning 0)
+                                             (match-end 0)
+                                             :note
+                                             "Enclose the hooks in a list e.g. :hook ((a . b)).")
                     diags))))))
     (funcall report-fn diags)))
 
