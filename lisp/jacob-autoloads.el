@@ -75,6 +75,31 @@ Buffer state function that doesn't preview Tramp buffers.")
 (register-definition-prefixes "jacob-eshell" '("jacob-eshell-windows-confirm-terminate-batch-job"))
 
 
+;;; Generated autoloads from jacob-flymake.el
+
+(autoload 'jacob-elisp-flymake-check-removals "jacob-flymake" "\
+Flag `delq' `remq' and `delete'.
+
+Recommend `remove' instead.
+
+This is a flymake backend, hence it uses REPORT-FN to report diagnostics.
+
+(fn REPORT-FN &rest ARGS)")
+(autoload 'jacob-elisp-flymake-check-custom "jacob-flymake" "\
+Flag `use-package' `:custom' sections.
+
+A proper `:custom' section looks like this:
+
+:custom ((a b)
+         (c d))
+
+Flag `:custom' sections that are not formatted in this way.
+
+This is a flymake backend, hence it uses REPORT-FN to report diagnostics.
+
+(fn REPORT-FN &rest ARGS)")
+
+
 ;;; Generated autoloads from jacob-format-words.el
 
 (autoload 'jacob-format-words "jacob-format-words" "\

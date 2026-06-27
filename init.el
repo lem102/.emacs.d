@@ -49,7 +49,7 @@
 ;; configure packages
 
 (when (member "--report" command-line-args)
-  (setq command-line-args (delete "--report" command-line-args))
+  (setq command-line-args (remove "--report" command-line-args))
   (setq use-package-compute-statistics t)
   (add-hook 'after-init-hook #'use-package-report))
 
@@ -137,10 +137,9 @@
   :config
   (when jacob-is-android
     (modifier-bar-mode 1))
-  :custom
-  (tool-bar-button-margin (if jacob-is-android 40 4))
-  (tool-bar-position (if jacob-is-android 'bottom 'top))
-  (tool-bar-style 'image))
+  :custom ((tool-bar-button-margin (if jacob-is-android 40 4))
+           (tool-bar-position (if jacob-is-android 'bottom 'top))
+           (tool-bar-style 'image)))
 
 ;; custom hooks
 
@@ -183,7 +182,7 @@ then remove this function from `find-file-hook'."
            (history-delete-duplicates t)
            (history-length 1000)
            (kill-buffer-query-functions
-            (remq 'process-kill-buffer-query-function kill-buffer-query-functions))
+            (remove 'process-kill-buffer-query-function kill-buffer-query-functions))
            (mode-line-format '("%e"
                                mode-line-front-space
                                mode-line-modified
@@ -238,8 +237,8 @@ then remove this function from `find-file-hook'."
 (use-package which-key
   :blackout
   :hook (on-first-input-hook . which-key-mode)
-  :custom (which-key-idle-delay (cond (jacob-is-android 1)
-                                      (t 0.01))))
+  :custom ((which-key-idle-delay (cond (jacob-is-android 1)
+                                       (t 0.01)))))
 
 (use-package mouse
   :hook (on-first-input-hook . context-menu-mode)
@@ -292,19 +291,21 @@ then remove this function from `find-file-hook'."
   :bind ( :repeat-map jacob-window-repeat-map
           ("b" . consult-buffer)
           ("o" . other-window))
-  :custom
-  (display-buffer-alist '(((major-mode . sql-interactive-mode)
-                           (display-buffer-reuse-mode-window display-buffer-same-window))
-                          ((major-mode . prodigy-mode)
-                           (display-buffer-reuse-mode-window display-buffer-same-window))
-                          ((major-mode . magit-status-mode)
-                           (display-buffer-reuse-mode-window display-buffer-same-window))
-                          ((or (derived-mode . slack-mode)
-                               (derived-mode . lui-mode))
-                           (display-buffer-in-side-window)
-                           (side . right))))
-  (split-height-threshold nil)
-  (switch-to-buffer-obey-display-actions t))
+  :custom ((display-buffer-alist '(((major-mode . sql-interactive-mode)
+                                    (display-buffer-reuse-mode-window
+                                     display-buffer-same-window))
+                                   ((major-mode . prodigy-mode)
+                                    (display-buffer-reuse-mode-window
+                                     display-buffer-same-window))
+                                   ((major-mode . magit-status-mode)
+                                    (display-buffer-reuse-mode-window
+                                     display-buffer-same-window))
+                                   ((or (derived-mode . slack-mode)
+                                        (derived-mode . lui-mode))
+                                    (display-buffer-in-side-window)
+                                    (side . right))))
+           (split-height-threshold nil)
+           (switch-to-buffer-obey-display-actions t)))
 
 (defvar-keymap jacob-recenter-repeat-map
   :repeat t
@@ -313,7 +314,8 @@ then remove this function from `find-file-hook'."
 (use-package frame
   :config
   (blink-cursor-mode 0)
-  :custom (blink-cursor-blinks 0)     ; make cursor blink forever
+  :custom ((blink-cursor-blinks 0)      ; make cursor blink forever
+           )
   :bind ("C-z" . nil)                 ; `suspend-frame'
   )
 
@@ -333,8 +335,7 @@ then remove this function from `find-file-hook'."
 
 (use-package saveplace
   :hook (on-first-file-hook . save-place-mode)
-  :custom
-  (save-place-forget-unreadable-files t))
+  :custom ((save-place-forget-unreadable-files t)))
 
 (use-package generic-x           ; support for files like `/etc/fstab'
   :defer t)
@@ -393,8 +394,8 @@ then remove this function from `find-file-hook'."
 
 (use-package hippie-exp
   :defer t
-  :custom ((hippie-expand-try-functions-list (remq 'try-expand-list
-                                                   hippie-expand-try-functions-list))))
+  :custom ((hippie-expand-try-functions-list (remove 'try-expand-list
+                                                     hippie-expand-try-functions-list))))
 
 (use-package flymake
   :bind
@@ -448,9 +449,8 @@ $0")
   :hook (jacob-first-minibuffer-activation-hook . minibuffer-depth-indicate-mode))
 
 (use-package man
-  :defer
-  :custom
-  (Man-notify-method 'pushy))
+  :defer t
+  :custom ((Man-notify-method 'pushy)))
 
 (use-package help-fns
   :defer t
@@ -623,7 +623,7 @@ $0")
   :mode ("\\.fs\\'" . fsharp-mode)
   :config
   (remove-hook 'project-find-functions #'fsharp-mode-project-root)
-  (setopt compilation-error-regexp-alist (remq 'fsharp compilation-error-regexp-alist)))
+  (setopt compilation-error-regexp-alist (remove 'fsharp compilation-error-regexp-alist)))
 
 (use-package scala-ts-mode
   :mode ("\\.scala\\'" . scala-ts-mode)
@@ -650,8 +650,8 @@ $0")
 
 (use-package web-mode
   :mode ("\\.scala\\.html\\'" . web-mode)
-  :custom (web-mode-engines-alist
-           '(("play" . "\\.scala\\.html\\'")))
+  :custom ((web-mode-engines-alist
+            '(("play" . "\\.scala\\.html\\'"))))
   :config
   ;; patch web-mode-indent-line so that '}' is indented properly
   (advice-patch #'web-mode-indent-line
@@ -814,7 +814,11 @@ $0")
   (advice-add #'move-past-close-and-reindent :after #'jacob-move-past-close-and-reindent)
 
   (jacob-defhookf emacs-lisp-mode-hook
-    (setq-local yas-key-syntaxes '("w_")))
+    (setq-local yas-key-syntaxes '("w_"))
+    (add-hook 'flymake-diagnostic-functions
+              #'jacob-elisp-flymake-check-removals nil "LOCAL")
+    (add-hook 'flymake-diagnostic-functions
+              #'jacob-elisp-flymake-check-custom nil "LOCAL"))
 
   (defun jacob-eval-print-last-sexp ()
     "Run `eval-print-last-sexp', indent the result."
@@ -1042,7 +1046,7 @@ $0")
   (add-to-list 'compilation-error-regexp-alist 'jacob-sbt-warning)
 
   (dolist (re '(gcov-file gcov-header gcov-nomark gcov-called-line gcov-never-called guile-line guile-file))
-    (setq compilation-error-regexp-alist (remq re compilation-error-regexp-alist)))
+    (setq compilation-error-regexp-alist (remove re compilation-error-regexp-alist)))
 
   (setq compilation-mode-font-lock-keywords '((" --?o\\(?:utfile\\|utput\\)?[= ]\\(\\S +\\)" . 1)
                                               ("^Compilation \\(finished\\).*"
@@ -1078,8 +1082,7 @@ $0")
 
 (use-package treesit
   :defer t
-  :custom
-  (treesit-font-lock-level 4))
+  :custom ((treesit-font-lock-level 4)))
 
 (use-package treesit-auto
   :config
@@ -1288,6 +1291,7 @@ $0")
   :after (:and embark consult))
 
 (use-package cape
+  :defer t
   :init
   (add-to-list 'completion-at-point-functions #'cape-dabbrev))
 
@@ -1296,7 +1300,7 @@ $0")
          :repeat-map jacob-expreg-repeat-map
          ("SPC" . expreg-expand))
   :config
-  (setq-default expreg-functions (remq 'expreg--subword expreg-functions)))
+  (setq-default expreg-functions (remove 'expreg--subword expreg-functions)))
 
 (use-package verb
   :defer t
@@ -1334,9 +1338,8 @@ $0")
   :config
   (require 'gptel-integrations)
   (add-to-list 'gptel-prompt-prefix-alist '(org-mode . "** "))
-  :custom
-  (gptel-confirm-tool-calls t)
-  (gptel-default-mode #'org-mode))
+  :custom ((gptel-confirm-tool-calls t)
+           (gptel-default-mode #'org-mode)))
 
 (use-package mcp
   :after gptel)
