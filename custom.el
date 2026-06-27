@@ -136,33 +136,7 @@
      (eglot-booster :url "https://github.com/jdtsmith/eglot-booster")))
  '(safe-local-variable-values
    '((Log . clx.log) (Package . Xlib) (Lowercase . Yes) (Base . 10)
-     (Package . XLIB) (Syntax . Common-lisp) (flymake-mode)))
- '(split-height-threshold nil)
- '(switch-to-buffer-obey-display-actions t)
- '(tab-always-indent 'complete)
- '(tab-width 4 nil nil "set default tab char's display width to 4 spaces")
- '(touch-screen-display-keyboard t)
- '(touch-screen-extend-selection t)
- '(touch-screen-preview-select t)
- '(touch-screen-word-select nil)
- '(tramp-copy-size-limit 1048576)
- '(tramp-use-scp-direct-remote-copying t)
- '(truncate-partial-width-windows nil)
- '(use-dialog-box t)
- '(use-package-compute-statistics nil)
- '(use-package-enable-imenu-support t)
- '(use-package-hook-name-suffix nil)
- '(use-package-verbose t)
- '(use-short-answers t)
- '(vc-git-show-stash 0 nil nil "Do not show any stashes in vc-dir buffers.")
- '(vc-ignore-dir-regexp
-   (format "\\(%s\\)\\|\\(%s\\)" locate-dominating-stop-dir-regexp
-           tramp-file-name-regexp) nil nil "In addition to the usual files, also disable vc functionality in tramp files.")
- '(vertico-count 20)
- '(warning-minimum-level :error)
- '(wgrep-auto-save-buffer t)
- '(window-combination-resize t)
- '(yas-wrap-around-region t))
+     (Package . XLIB) (Syntax . Common-lisp) (flymake-mode))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

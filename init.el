@@ -7,6 +7,9 @@
 
 ;; constants and variables
 
+(defconst jacob-megabyte (* 1024 1024)
+  "Number of bytes in a megabyte.")
+
 (defconst jacob-lisp-directory
   (file-name-concat (file-name-directory user-init-file)
                     "lisp")
@@ -68,6 +71,15 @@
   :config
   (when use-package-compute-statistics
     (add-hook 'after-init-hook #'use-package-report)))
+
+;; TODO: add cli flag that enables use package reporting and shows report
+
+(use-package use-package-core
+  :defer t
+  :custom ((use-package-compute-statistics nil)
+           (use-package-enable-imenu-support t)
+           (use-package-hook-name-suffix nil)
+           (use-package-verbose nil)))
 
 (use-package cus-edit
   :defer t
@@ -170,11 +182,6 @@ then remove this function from `find-file-hook'."
            (history-length 1000)
            (kill-buffer-query-functions
             (remq 'process-kill-buffer-query-function kill-buffer-query-functions))
-           (read-process-output-max (* 1024 1024)) ; 1 MB
-           (ring-bell-function 'ignore)
-           (scroll-conservatively 101) ; Always scroll just enough text to bring point into view.
-           (truncate-lines (cond (jacob-is-android t)
-                                 (t nil)))
            (mode-line-format '("%e"
                                mode-line-front-space
                                mode-line-modified
@@ -188,8 +195,20 @@ then remove this function from `find-file-hook'."
                                mode-line-format-right-align
                                mode-line-misc-info
                                mode-line-end-spaces))
+           (read-process-output-max jacob-megabyte)
+           (ring-bell-function 'ignore)
+           (scroll-conservatively 101) ; Scroll just enough text to bring point into view.
+           (tab-width 4) ; Set default tab char's display width to 4 spaces.
+           (truncate-lines (cond (jacob-is-android t)
+                                 (t nil)))
+           (truncate-partial-width-windows nil)
+           (use-dialog-box t)
+           (use-short-answers t)
+           (window-combination-resize t)
            ;; bindings.el
            (mode-line-percent-position nil)
+           ;; indent.el
+           (tab-always-indent 'complete) ; first try completion, then indent
            ;; startup.el
            (inhibit-startup-screen t)
            (initial-major-mode #'fundamental-mode)
@@ -224,6 +243,13 @@ then remove this function from `find-file-hook'."
   :hook (on-first-input-hook . context-menu-mode)
   :custom ((mouse-1-double-click-prefer-symbols t)
            (mouse-drag-copy-region 'non-empty)))
+
+(use-package touch-screen
+  :defer t
+  :custom ((touch-screen-display-keyboard t)
+           (touch-screen-extend-selection t)
+           (touch-screen-preview-select t)
+           (touch-screen-word-select t)))
 
 (use-package modus-themes
   :custom ((modus-themes-to-toggle '(modus-operandi-tinted modus-vivendi-tinted))))
@@ -274,7 +300,9 @@ then remove this function from `find-file-hook'."
                           ((or (derived-mode . slack-mode)
                                (derived-mode . lui-mode))
                            (display-buffer-in-side-window)
-                           (side . right)))))
+                           (side . right))))
+  (split-height-threshold nil)
+  (switch-to-buffer-obey-display-actions t))
 
 (defvar-keymap jacob-recenter-repeat-map
   :repeat t
@@ -397,11 +425,11 @@ then remove this function from `find-file-hook'."
   (yas-reload-all)
   (jacob-defhookf snippet-mode-hook
     (setq-local auto-save-visited-mode nil))
-  :custom
-  (yas-new-snippet-default "# -*- mode: snippet -*-
+  :custom ((yas-new-snippet-default "# -*- mode: snippet -*-
 # key: $1
 # --
-$0`(yas-escape-text yas-selected-text)`"))
+$0")
+           (yas-wrap-around-region t)))
 
 (use-package minibuffer
   :config
@@ -436,7 +464,7 @@ $0`(yas-escape-text yas-selected-text)`"))
 
 (use-package paren
   :hook (on-first-input-hook . show-paren-mode)
-  :custom ((show-paren-when-point-inside-paren t)))
+  :custom ((show-paren-context-when-offscreen 'echo)))
 
 (use-package electric
   :defer t
@@ -460,6 +488,14 @@ $0`(yas-escape-text yas-selected-text)`"))
 
 (use-package repeat
   :hook (on-first-input-hook . repeat-mode))
+
+(use-package vc-hooks
+  :defer t
+  :custom ((vc-ignore-dir-regexp
+            (format "\\(%s\\)\\|\\(%s\\)"
+                    locate-dominating-stop-dir-regexp
+                    tramp-file-name-regexp)) ; Disable vc functionality in tramp files.
+           ))
 
 (use-package magit
   :bind ( :map project-prefix-map
@@ -495,6 +531,11 @@ $0`(yas-escape-text yas-selected-text)`"))
   (add-to-list 'tramp-remote-path 'tramp-own-remote-path)
   (setq tramp-archive-enabled nil) ; lots of problems. for now, disable it!
   )
+
+(use-package tramp-sh
+  :defer t
+  :custom ((tramp-copy-size-limit jacob-megabyte)
+           (tramp-use-scp-direct-remote-copying t)))
 
 (use-package dumb-jump
   :defer t
@@ -1184,7 +1225,12 @@ $0`(yas-escape-text yas-selected-text)`"))
 (use-package vertico
   :if (not jacob-is-android)
   :hook (jacob-first-minibuffer-activation-hook . vertico-mode)
-  :custom (vertico-resize t))
+  :custom ((vertico-count 20)
+           (vertico-resize t)))
+
+(use-package warnings
+  :defer t
+  :custom ((warning-minimum-level :error)))
 
 (use-package vertico-mouse
   :if (not jacob-is-android)
@@ -1349,11 +1395,12 @@ $0`(yas-escape-text yas-selected-text)`"))
 
 (use-package wgrep
   :bind ( :map grep-mode-map
-          ("e" . wgrep-change-to-wgrep-mode)))
+          ("e" . wgrep-change-to-wgrep-mode))
+  :custom ((wgrep-auto-save-buffer t)))
 
 (use-package dictionary
-  :custom
-  (dictionary-server "localhost"))
+  :defer t
+  :custom ((dictionary-server "localhost")))
 
 
 ;; personal functions
