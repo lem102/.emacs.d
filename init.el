@@ -818,9 +818,7 @@ $0")
     (add-hook 'flymake-diagnostic-functions
               #'jacob-elisp-flymake-check-removals nil "LOCAL")
     (add-hook 'flymake-diagnostic-functions
-              #'jacob-elisp-flymake-check-custom nil "LOCAL")
-    (add-hook 'flymake-diagnostic-functions
-              #'jacob-elisp-flymake-check-hook nil "LOCAL"))
+              #'jacob-flymake-use-package nil "LOCAL"))
 
   (defun jacob-eval-print-last-sexp ()
     "Run `eval-print-last-sexp', indent the result."

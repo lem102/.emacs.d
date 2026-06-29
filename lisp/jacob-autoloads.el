@@ -85,15 +85,8 @@ Recommend `remove' instead.
 This is a flymake backend, hence it uses REPORT-FN to report diagnostics.
 
 (fn REPORT-FN &rest ARGS)")
-(autoload 'jacob-elisp-flymake-check-custom "jacob-flymake" "\
-Flag `use-package' `:custom' sections.
-
-A proper `:custom' section looks like this:
-
-:custom ((a b)
-         (c d))
-
-Flag `:custom' sections that are not formatted in this way.
+(autoload 'jacob-flymake-use-package "jacob-flymake" "\
+Flag style issues with `use-package' declarations.
 
 This is a flymake backend, hence it uses REPORT-FN to report diagnostics.
 
