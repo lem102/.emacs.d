@@ -5,20 +5,28 @@
 (require 'package)
 (require 'package-vc)
 
-;; TODO: this doesn't upgrade builtin packages
-
-;; load `package' configuration
+;; load selected packages
 (load (concat user-emacs-directory "custom.el"))
 
-;; remove uneeded packages
-(package-autoremove)
+;; add melpa archive
+(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
+
+(setopt package-install-upgrade-built-in t)
 
 ;; upgrade installed packages (also does a refresh)
 (package-upgrade-all)
+
+;; ensure builtins are upgraded if possible
+(seq-do (lambda (package)
+          (package-upgrade package))
+        (seq-map #'car package--builtins))
 
 ;; install missing packages
 (package-install-selected-packages "NOCONFIRM")
 
 ;; install missing vc packages
 (package-vc-install-selected-packages)
+
+;; remove uneeded packages
+(package-autoremove)
 
