@@ -16,10 +16,7 @@
 ;; upgrade installed packages (also does a refresh)
 (package-upgrade-all)
 
-;; ensure builtins are upgraded if possible
-(seq-do (lambda (package)
-          (package-upgrade package))
-        (seq-map #'car package--builtins))
+;; TODO: how to automatically upgrade built in packages?
 
 ;; install missing packages
 (package-install-selected-packages "NOCONFIRM")
