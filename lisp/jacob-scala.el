@@ -279,6 +279,15 @@ lets you select one via completion, and inserts it at the top of the file."
     (delete-region region-start region-end)
     (insert play-json-code)))
 
+(defun jacob-scala-get-class-name ()
+  "Get the name of the current class."
+  (when-let ((class-name (car-safe (treesit-query-capture (treesit-buffer-root-node)
+                                                          '((class_definition name: (_) @identifier))
+                                                          nil
+                                                          nil
+                                                          "NODE-ONLY"))))
+    (treesit-node-text class-name)))
+
 ;;; edit json string
 
 (defvar jacob-scala-edit-json-string-node nil

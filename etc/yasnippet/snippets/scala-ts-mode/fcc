@@ -1,4 +1,4 @@
 # -*- mode: snippet -*-
 # key: fcc
 # --
-final case class ${1:X$(jacob-yas-pascal-case yas-text)}($0)
+final case class ${1:`(file-name-sans-extension (file-name-nondirectory (buffer-file-name)))`$(jacob-yas-pascal-case yas-text)}($0)

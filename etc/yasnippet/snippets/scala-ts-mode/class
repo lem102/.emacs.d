@@ -1,6 +1,6 @@
 # -*- mode: snippet -*-
 # key: class
 # --
-class ${1:ClassName$(jacob-yas-pascal-case yas-text)} {
+class ${1:`(file-name-sans-extension (file-name-nondirectory (buffer-file-name)))`$(jacob-yas-pascal-case yas-text)} {
   $0
 }

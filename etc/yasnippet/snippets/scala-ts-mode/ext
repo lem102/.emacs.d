@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# key: ext
+# --
+extension ($1) {
+  $0
+}
