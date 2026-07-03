@@ -53,6 +53,10 @@ CONDITION and ACTION are as in `define-auto-insert'.
 
 (autoload 'jacob-consult-buffer-state-no-tramp "jacob-consult" "\
 Buffer state function that doesn't preview Tramp buffers.")
+(defvar jacob-consult-source-compile `(:name "Compile" :narrow 99 :category buffer :face consult-buffer :history buffer-name-history :state ,#'consult--buffer-state :default t :items ,(lambda nil (consult--buffer-query :sort 'visibility :as #'consult--buffer-pair :mode #'compilation-mode))) "\
+Compilation buffer source for `consult-buffer'.")
+(defvar jacob-consult-source-magit `(:name "Magit" :narrow 103 :category buffer :face consult-buffer :history buffer-name-history :state ,#'consult--buffer-state :default t :items ,(lambda nil (consult--buffer-query :sort 'visibility :as #'consult--buffer-pair :mode #'magit-status-mode))) "\
+Magit buffer source for `consult-buffer'.")
 
 
 ;;; Generated autoloads from jacob-csharp-mode.el

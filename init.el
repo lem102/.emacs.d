@@ -1267,6 +1267,8 @@ $0")
          ("M-s" . consult-history)
          ("M-r" . consult-history))
   :config
+  (add-to-list 'consult-buffer-sources 'jacob-consult-source-compile "APPEND")
+  (add-to-list 'consult-buffer-sources 'jacob-consult-source-magit "APPEND")
   (setq completion-in-region-function 'consult-completion-in-region
         xref-show-xrefs-function 'consult-xref
         xref-show-definitions-function 'consult-xref

@@ -21,6 +21,36 @@
     (lambda (action candidate)
       (funcall orig-state action (funcall filter action candidate)))))
 
+;;;###autoload
+(defvar jacob-consult-source-compile
+  `( :name     "Compile"
+     :narrow   ?c
+     :category buffer
+     :face     consult-buffer
+     :history  buffer-name-history
+     :state    ,#'consult--buffer-state
+     :default  t
+     :items
+     ,(lambda () (consult--buffer-query :sort 'visibility
+                                        :as #'consult--buffer-pair
+                                        :mode #'compilation-mode)))
+  "Compilation buffer source for `consult-buffer'.")
+
+;;;###autoload
+(defvar jacob-consult-source-magit
+  `( :name     "Magit"
+     :narrow   ?g
+     :category buffer
+     :face     consult-buffer
+     :history  buffer-name-history
+     :state    ,#'consult--buffer-state
+     :default  t
+     :items
+     ,(lambda () (consult--buffer-query :sort 'visibility
+                                        :as #'consult--buffer-pair
+                                        :mode #'magit-status-mode)))
+  "Magit buffer source for `consult-buffer'.")
+
 (provide 'jacob-consult)
 
 ;;; jacob-consult.el ends here
