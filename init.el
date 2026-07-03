@@ -232,7 +232,6 @@ then remove this function from `find-file-hook'."
          :map mode-line-buffer-identification-keymap
          ("<mode-line> <mouse-2>" . ibuffer)))
 
-;; TODO: bug in on.el, `on-first-file-hook' does not work when opening a file. works in dired though
 (use-package on)                    ; load `on-first-input-hook', etc.
 
 (use-package blackout
@@ -253,10 +252,8 @@ then remove this function from `find-file-hook'."
     (blackout 'hi-lock-mode))
   (with-eval-after-load 'apheleia
     (blackout 'apheleia-mode " ⚘"))
-  ;; TODO: resolve `on-first-file-hook' issue
-  ;; (with-eval-after-load 'rainbow-mode
-  ;;   (blackout 'rainbow-mode))
-  )
+  (with-eval-after-load 'rainbow-mode
+    (blackout 'rainbow-mode)))
 
 (use-package which-key
   :hook ((on-first-input-hook . which-key-mode))
@@ -1181,7 +1178,7 @@ $0")
   (add-to-list 'apheleia-skip-functions #'jacob-apheleia-smerge-active-p))
 
 (use-package rainbow-mode
-  :hook ((on-first-file-hook . rainbow-mode)))
+  :hook ((find-file-hook . rainbow-mode)))
 
 (use-package eglot-booster
   :after eglot
