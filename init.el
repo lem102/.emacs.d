@@ -232,10 +232,33 @@ then remove this function from `find-file-hook'."
          :map mode-line-buffer-identification-keymap
          ("<mode-line> <mouse-2>" . ibuffer)))
 
+;; TODO: bug in on.el, `on-first-file-hook' does not work when opening a file. works in dired though
 (use-package on)                    ; load `on-first-input-hook', etc.
 
+(use-package blackout
+  :config
+  (with-eval-after-load 'which-key
+    (blackout 'which-key-mode))
+  (with-eval-after-load 'autorevert
+    (blackout 'auto-revert-mode))
+  (with-eval-after-load 'yasnippet
+    (blackout 'yas-minor-mode " yas"))
+  (with-eval-after-load 'subword
+    (blackout 'subword-mode))
+  (with-eval-after-load 'nerd-icons-dired
+    (blackout 'nerd-icons-dired-mode))
+  (with-eval-after-load 'eldoc
+    (blackout 'eldoc-mode))
+  (with-eval-after-load 'hi-lock
+    (blackout 'hi-lock-mode))
+  (with-eval-after-load 'apheleia
+    (blackout 'apheleia-mode " ⚘"))
+  ;; TODO: resolve `on-first-file-hook' issue
+  ;; (with-eval-after-load 'rainbow-mode
+  ;;   (blackout 'rainbow-mode))
+  )
+
 (use-package which-key
-  :blackout
   :hook ((on-first-input-hook . which-key-mode))
   :custom ((which-key-idle-delay (cond (jacob-is-android 1)
                                        (t 0.01)))))
@@ -284,7 +307,6 @@ then remove this function from `find-file-hook'."
    'remote-direct-async-process))
 
 (use-package autorevert
-  :blackout
   :hook ((on-first-file-hook . global-auto-revert-mode)))
 
 (use-package window
@@ -417,7 +439,6 @@ then remove this function from `find-file-hook'."
 
 (use-package yasnippet
   :defer t
-  :blackout "yas"
   :hook ((snippet-mode . yas-minor-mode))
   :bind ( :map yas-minor-mode-map
           ("C-c y n" . yas-new-snippet)
@@ -461,7 +482,6 @@ $0")
            (help-window-select t)))
 
 (use-package subword
-  :blackout
   :hook ((on-first-input-hook . global-subword-mode)))
 
 (use-package paren
@@ -704,7 +724,6 @@ $0")
   (add-to-list 'mode-line-misc-info '(:eval dired-rsync-modeline-status 'append)))
 
 (use-package nerd-icons-dired
-  :blackout
   :when (display-graphic-p)
   :hook ((dired-mode-hook . nerd-icons-dired-mode)))
 
@@ -743,7 +762,6 @@ $0")
 
 (use-package eldoc
   :hook ((prog-mode-hook . global-eldoc-mode))
-  :blackout
   :config
   (setopt eldoc-documentation-strategy 'eldoc-documentation-compose))
 
@@ -769,10 +787,6 @@ $0")
                      (prodigy-set-status service 'ready)))))
 
   (add-hook 'prodigy-view-mode-hook #'compilation-minor-mode))
-
-(use-package hi-lock
-  :defer t
-  :blackout)
 
 (use-package hl-todo
   :hook ((after-init-hook . global-hl-todo-mode)))
@@ -955,10 +969,6 @@ $0")
 
 (use-package denote
   :defer t)
-
-(use-package action-lock
-  :defer t
-  :blackout)
 
 (use-package pulse
   :defer t
@@ -1149,7 +1159,6 @@ $0")
 
 (use-package apheleia
   :defer t
-  :blackout " ⚘"
   :config
   (require 'jacob-apheleia)
 
@@ -1172,7 +1181,6 @@ $0")
   (add-to-list 'apheleia-skip-functions #'jacob-apheleia-smerge-active-p))
 
 (use-package rainbow-mode
-  :blackout
   :hook ((on-first-file-hook . rainbow-mode)))
 
 (use-package eglot-booster
