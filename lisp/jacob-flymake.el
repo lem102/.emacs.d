@@ -79,7 +79,9 @@ This is a flymake backend, hence it uses REPORT-FN to report diagnostics."
                       diags)))
             (let* ((keywords (seq-map #'car tree)))
               (when (and (member :defer keywords)
-                         (or (member :hook keywords)))
+                         (or (member :hook keywords)
+                             (member :bind keywords)
+                             (member :mode keywords)))
                 (save-excursion
                   (backward-sexp)
                   (re-search-forward ":defer" nil "NOERROR")
