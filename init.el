@@ -256,7 +256,7 @@ then remove this function from `find-file-hook'."
     (blackout 'rainbow-mode)))
 
 (use-package which-key
-  :hook ((on-first-input-hook . which-key-mode))
+  :defer t
   :custom ((which-key-idle-delay (cond (jacob-is-android 1)
                                        (t 0.01)))))
 
@@ -461,9 +461,14 @@ $0")
                                                      (not (eq 'eglot-capf (car category))))
                                                    completion-category-defaults)))
   :custom ((completion-styles '(orderless basic initials))
-           (completion-category-overrides '((file (styles basic partial-completion))))))
+           (completion-category-overrides '((file (styles basic partial-completion))))
+           (completion-auto-help 'always)
+           (completion-auto-select 'second-tab)
+           (completion-cycle-threshold 3)
+           (completions-format 'one-column)))
 
 (use-package mb-depth
+  :defer t
   :hook ((jacob-first-minibuffer-activation-hook . minibuffer-depth-indicate-mode)))
 
 (use-package man
@@ -1231,8 +1236,8 @@ $0")
   :hook ((jacob-first-minibuffer-activation-hook . mct-mode)))
 
 (use-package vertico
+  :defer t
   :if (not jacob-is-android)
-  :hook ((jacob-first-minibuffer-activation-hook . vertico-mode))
   :custom ((vertico-count 20)
            (vertico-resize t)))
 
@@ -1490,6 +1495,29 @@ Otherwise, display error message."
         (line (number-to-string (+ (line-number-at-pos (point)) 1)))
         (column (number-to-string (+ (current-column) 1))))
     (shell-command (concat "code . --reuse-window --goto \"" file "\":" line ":" column))))
+
+(defun jacob-handle-device-speed (_s is-fast)
+  "When device IS-FAST, enable features.
+
+Otherwise, disable them."
+  ;; TODO: add which key mode
+  (if is-fast
+      (progn
+        (vertico-mode 1)
+        (which-key-mode 1))
+    (when (featurep 'vertico)
+      (vertico-mode 0))
+    (when (featurep 'which-key)
+      (which-key-mode 0))))
+
+(defcustom jacob-is-fast-device nil
+  "Is the current device \"fast\"?
+
+If so, turn on some extra features."
+  :group 'jacob
+  :type 'boolean
+  :set #'jacob-handle-device-speed)
+
 
 (provide 'init)
 
