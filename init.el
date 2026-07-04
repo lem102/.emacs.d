@@ -435,7 +435,6 @@ then remove this function from `find-file-hook'."
            (project-switch-use-entire-map t)))
 
 (use-package yasnippet
-  :defer t
   :hook ((snippet-mode . yas-minor-mode))
   :bind ( :map yas-minor-mode-map
           ("C-c y n" . yas-new-snippet)
@@ -468,7 +467,6 @@ $0")
            (completions-format 'one-column)))
 
 (use-package mb-depth
-  :defer t
   :hook ((jacob-first-minibuffer-activation-hook . minibuffer-depth-indicate-mode)))
 
 (use-package man
@@ -815,7 +813,6 @@ $0")
           ))
 
 (use-package elisp-mode
-  :defer t
   :hook ((emacs-lisp-mode-hook . apheleia-mode)
          (emacs-lisp-mode-hook . jacob-font-lock-programming-setup)
          (emacs-lisp-mode-hook . yas-minor-mode)
@@ -1017,7 +1014,6 @@ $0")
           calendar-mark-holidays-flag t))
 
 (use-package winner
-  :defer t
   :commands (winner-undo winner-redo)
   :hook ((on-first-input-hook . winner-mode)))
 
