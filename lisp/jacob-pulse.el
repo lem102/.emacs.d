@@ -14,6 +14,7 @@
   "Pulse the line at point."
   (jacob-pulse--thing-at-point 'jacob-line-content))
 
+;; TODO: this pulses a different defun to C-M-x, do i care?
 (defun jacob-pulse-defun (&rest _)
   "Pulse the defun at point."
   (jacob-pulse--thing-at-point 'defun))
