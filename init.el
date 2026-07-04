@@ -68,6 +68,7 @@
          ))
 
 (use-package jacob-modal-editing
+  :disabled t
   :config
   (require 'jacob-modal-editing-config)
   (jacob-modal-editing-mode 1))
@@ -360,7 +361,6 @@ then remove this function from `find-file-hook'."
   :defer t)
 
 (use-package conf-mode
-  :defer t
   :bind ( :map conf-mode-map
           ("C-c SPC" . nil)))
 
@@ -639,7 +639,6 @@ $0")
   :mode ("\\.sln\\'" . sln-mode))
 
 (use-package fsharp-mode
-  :defer t
   :mode ("\\.fs\\'" . fsharp-mode)
   :config
   (remove-hook 'project-find-functions #'fsharp-mode-project-root)
@@ -1278,7 +1277,6 @@ $0")
                                          :state #'jacob-consult-buffer-state-no-tramp)))
 
 (use-package embark
-  :defer t
   :bind
   (("C-." . embark-act)
    ("C-;" . embark-dwim)
