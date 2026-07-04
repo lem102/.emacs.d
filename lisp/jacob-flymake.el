@@ -76,7 +76,19 @@ This is a flymake backend, hence it uses REPORT-FN to report diagnostics."
                                                (match-end 0)
                                                :note
                                                "Enclose the hooks in a list e.g. :hook ((a . b)).")
-                      diags)))))))
+                      diags)))
+            (let* ((keywords (seq-map #'car tree)))
+              (when (and (member :defer keywords)
+                         (or (member :hook keywords)))
+                (save-excursion
+                  (backward-sexp)
+                  (re-search-forward ":defer" nil "NOERROR")
+                  (push (flymake-make-diagnostic (current-buffer)
+                                                 (match-beginning 0)
+                                                 (match-end 0)
+                                                 :note
+                                                 "Unnecessary :defer keyword.")
+                        diags))))))))
     (funcall report-fn diags)))
 
 (provide 'jacob-flymake)
