@@ -1497,27 +1497,7 @@ Otherwise, display error message."
         (column (number-to-string (+ (current-column) 1))))
     (shell-command (concat "code . --reuse-window --goto \"" file "\":" line ":" column))))
 
-(defun jacob-handle-device-speed (_s is-fast)
-  "When device IS-FAST, enable features.
 
-Otherwise, disable them."
-  ;; TODO: add which key mode
-  (if is-fast
-      (progn
-        (vertico-mode 1)
-        (which-key-mode 1))
-    (when (featurep 'vertico)
-      (vertico-mode 0))
-    (when (featurep 'which-key)
-      (which-key-mode 0))))
-
-(defcustom jacob-is-fast-device nil
-  "Is the current device \"fast\"?
-
-If so, turn on some extra features."
-  :group 'jacob
-  :type 'boolean
-  :set #'jacob-handle-device-speed)
 
 
 (provide 'init)
