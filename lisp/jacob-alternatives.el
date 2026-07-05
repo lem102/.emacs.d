@@ -9,9 +9,11 @@
 (defun jacob-weight-configure-features (_symbol weight)
   "Configure features suitable for WEIGHT."
   (cond ((eq weight 'heavy)
+         (setq consult-preview-key 'any)
          (vertico-mode 1)
          (which-key-mode 1))
         (t
+         (setq consult-preview-key nil)
          (when (featurep 'vertico)
            (vertico-mode 0)
            (unload-feature 'vertico))
