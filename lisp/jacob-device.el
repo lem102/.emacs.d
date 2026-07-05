@@ -1,11 +1,11 @@
-;;; jacob-alternatives.el --- Utilities for configuring alternative packages to be used.  -*- lexical-binding: t; -*-
+;;; jacob-device.el --- Control the features that are configured for different devices. -*- lexical-binding: t; -*-
 
 ;;; Commentary:
 ;; 
 
 ;;; Code:
 
-(defun jacob-weight-configure-features (_symbol weight)
+(defun jacob-device--handle-weight-change (_symbol weight)
   "Configure features suitable for WEIGHT."
   (cond ((eq weight 'heavy)
          (setq consult-preview-key 'any)
@@ -32,8 +32,8 @@ considered lightweight."
   :type '(radio (const light)
                 (const heavy))
   :options '(light heavy)
-  :set #'jacob-weight-configure-features)
+  :set #'jacob-device--handle-weight-change)
 
-(provide 'jacob-alternatives)
+(provide 'jacob-device)
 
-;;; jacob-alternatives.el ends here
+;;; jacob-device.el ends here
