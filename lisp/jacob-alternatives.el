@@ -5,6 +5,7 @@
 
 ;;; Code:
 
+;; TODO: switch between magit and vc.el?
 (defun jacob-weight-configure-features (_symbol weight)
   "Configure features suitable for WEIGHT."
   (cond ((eq weight 'heavy)
