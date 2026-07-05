@@ -5,13 +5,13 @@
 
 ;;; Code:
 
-;; TODO: switch between magit and vc.el?
 (defun jacob-weight-configure-features (_symbol weight)
   "Configure features suitable for WEIGHT."
   (cond ((eq weight 'heavy)
          (setq consult-preview-key 'any)
          (vertico-mode 1)
-         (which-key-mode 1))
+         (which-key-mode 1)
+         (keymap-set jacob-modal-editing-keymap "SPC p v" #'magit-project-status))
         (t
          (setq consult-preview-key nil)
          (when (featurep 'vertico)
@@ -19,7 +19,8 @@
            (unload-feature 'vertico))
          (when (featurep 'which-key)
            (which-key-mode 0)
-           (unload-feature 'which-key)))))
+           (unload-feature 'which-key))
+         (keymap-set jacob-modal-editing-keymap "SPC p v" #'project-vc-dir))))
 
 ;;;###autoload
 (defcustom jacob-device-weight 'light

@@ -518,10 +518,6 @@ $0")
                     tramp-file-name-regexp)) ; Disable vc functionality in tramp files.
            ))
 
-(use-package magit
-  :bind ( :map project-prefix-map
-          ("v" . magit-project-status)))
-
 (use-package magit-mode
   :defer t
   :config
@@ -530,6 +526,7 @@ $0")
           (format "*%s*" magit-buffer-name-format))))
 
 (use-package magit-section
+  :defer t
   :custom ((magit-section-initial-visibility-alist '((untracked . show) (stashes . show)))))
 
 (use-package magit-process
