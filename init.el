@@ -980,7 +980,8 @@ $0")
     (advice-add command :after #'jacob-pulse-jacob-line-content))
 
   (advice-add #'eval-defun :after #'jacob-pulse-defun)
-  (advice-add #'eval-last-sexp :after #'jacob-pulse-previous-sexp))
+  (advice-add #'eval-last-sexp :after #'jacob-pulse-previous-sexp)
+  (advice-add #'eval-buffer :after #'jacob-pulse-buffer))
 
 (use-package server
   :hook ((after-init-hook . server-start)))
