@@ -68,7 +68,6 @@
          ))
 
 (use-package jacob-modal-editing
-  :disabled t
   :config
   (require 'jacob-modal-editing-config)
   (jacob-modal-editing-mode 1))
