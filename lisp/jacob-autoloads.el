@@ -14,18 +14,6 @@ Split or switch window.
   move to the new window. Otherwise, call `switch-buffer'." t)
 
 
-;;; Generated autoloads from jacob-alternatives.el
-
-(defvar jacob-device-weight 'light "\
-The \"weight\" of the current device.
-
-Can be either lightweight or heavyweight. This will affect features
-enabled or disabled in the init files. By default, the device is
-considered lightweight.")
-(custom-autoload 'jacob-device-weight "jacob-alternatives" nil)
-(register-definition-prefixes "jacob-alternatives" '("jacob-weight-configure-features"))
-
-
 ;;; Generated autoloads from jacob-apheleia.el
 
 (register-definition-prefixes "jacob-apheleia" '("jacob-"))
@@ -75,6 +63,17 @@ Magit buffer source for `consult-buffer'.")
 
 (register-definition-prefixes "jacob-csharp-mode" '("csharp-toolbox-" "jacob-"))
 
+
+;;; Generated autoloads from jacob-device.el
+
+(defvar jacob-device-weight 'light "\
+The \"weight\" of the current device.
+
+Can be either lightweight or heavyweight. This will affect features
+enabled or disabled in the init files. By default, the device is
+considered lightweight.")
+(custom-autoload 'jacob-device-weight "jacob-device" nil)
+(register-definition-prefixes "jacob-device" '("jacob-device--handle-weight-change"))
 
 
 ;;; Generated autoloads from jacob-diff.el
