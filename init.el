@@ -1270,6 +1270,7 @@ $0")
   (setq completion-in-region-function 'consult-completion-in-region
         xref-show-xrefs-function 'consult-xref
         xref-show-definitions-function 'consult-xref
+        consult-preview-key nil
         consult-source-buffer (plist-put consult-source-buffer
                                          :state #'jacob-consult-buffer-state-no-tramp)))
 
