@@ -42,7 +42,6 @@
                                  ("SPC , r" . eval-expression)
                                  ("SPC , x" . save-buffers-kill-emacs)
                                  ("SPC ." . universal-argument)
-                                 ("SPC / /" . vc-next-action)
                                  ("SPC / h" . vc-annotate)
                                  ("SPC / i" . vc-update)
                                  ("SPC / j" . vc-diff)
@@ -53,6 +52,7 @@
                                  ("SPC / o" . vc-merge)
                                  ("SPC / p" . vc-print-root-log)
                                  ("SPC / u" . vc-push)
+                                 ("SPC / v" . vc-next-action)
                                  ("SPC / y" . vc-revert)
                                  ("SPC ;" . save-buffer)
                                  ("SPC SPC 2" . jacob-sm2)
@@ -258,11 +258,13 @@
                                                 ("k" . occur-next)))
 
 (jacob-modal-editing-major-mode-override-keys 'diff-mode
-                                              '(("q" . quit-window)
-                                                ("e" . diff-hunk-prev)
+                                              '(("e" . diff-hunk-prev)
+                                                ("g" . revert-buffer)
                                                 ("r" . diff-hunk-next)
-                                                ("x" . diff-hunk-kill)
-                                                ("g" . revert-buffer)))
+                                                ("q" . quit-window)
+                                                ("d" . diff-hunk-kill)
+                                                ("v" . vc-next-action)
+                                                ("x" . diff-split-hunk)))
 
 (jacob-modal-editing-major-mode-override-keys 'vc-git-log-view-mode
                                               '(("q" . quit-window)))
