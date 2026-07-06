@@ -258,13 +258,13 @@
                                                 ("k" . occur-next)))
 
 (jacob-modal-editing-major-mode-override-keys 'diff-mode
-                                              '(("e" . diff-hunk-prev)
+                                              '(("d" . diff-hunk-kill)
+                                                ("e" . diff-hunk-prev)
                                                 ("g" . revert-buffer)
-                                                ("r" . diff-hunk-next)
                                                 ("q" . quit-window)
-                                                ("d" . diff-hunk-kill)
+                                                ("r" . diff-hunk-next)
                                                 ("v" . vc-next-action)
-                                                ("x" . diff-split-hunk)))
+                                                ("x" . diff-split-hunk)
                                                 ("y" . jacob-diff-unapply-hunk)))
 
 (jacob-modal-editing-major-mode-override-keys 'vc-git-log-view-mode
