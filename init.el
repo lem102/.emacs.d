@@ -1490,7 +1490,7 @@ Otherwise, display error message."
     (shell-command (concat "code . --reuse-window --goto \"" file "\":" line ":" column))))
 
 (defun jacob-dvorak-to-qwerty (char)
-  "Convert CHAR from qwerty to dvorak."
+  "Convert CHAR from dvorak to qwerty."
   (alist-get char '((?' . ?q)
                     (?, . ?w)
                     (?. . ?e)
