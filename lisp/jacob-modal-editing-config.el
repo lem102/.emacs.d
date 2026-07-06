@@ -268,18 +268,18 @@
                                               '(("q" . quit-window)))
 
 (jacob-modal-editing-major-mode-override-keys 'vc-dir-mode
-                                              '(("q" . quit-window)
+                                              '(("d" . vc-diff)
+                                                ("e" . vc-dir-mark)
                                                 ("g" . revert-buffer)
                                                 ("i" . vc-dir-previous-line)
                                                 ("k" . vc-dir-next-line)
                                                 ("o" . vc-dir-next-directory)
-                                                ("u" . vc-dir-previous-directory)
-                                                ("s" . vc-dir-find-file)
-                                                ("e" . vc-dir-mark)
-                                                ("r" . vc-dir-unmark)
-                                                ("v" . vc-next-action)
                                                 ("p" . vc-push)
-                                                ("=" . vc-diff)
+                                                ("q" . quit-window)
+                                                ("r" . vc-dir-unmark)
+                                                ("s" . vc-dir-find-file)
+                                                ("u" . vc-dir-previous-directory)
+                                                ("v" . vc-next-action)
                                                 ("x" . vc-dir-hide-up-to-date)))
 
 (jacob-modal-editing-major-mode-override-keys 'vc-annotate-mode
