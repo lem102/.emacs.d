@@ -75,6 +75,13 @@ Magit buffer source for `consult-buffer'.")
 
 (register-definition-prefixes "jacob-csharp-mode" '("csharp-toolbox-" "jacob-"))
 
+
+
+;;; Generated autoloads from jacob-diff.el
+
+(autoload 'jacob-diff-unapply-hunk "jacob-diff" "\
+In diff mode, unapply the hunk at point." t)
+
 
 ;;; Generated autoloads from jacob-editing-commands.el
 

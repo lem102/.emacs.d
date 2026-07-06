@@ -265,6 +265,7 @@
                                                 ("d" . diff-hunk-kill)
                                                 ("v" . vc-next-action)
                                                 ("x" . diff-split-hunk)))
+                                                ("y" . jacob-diff-unapply-hunk)))
 
 (jacob-modal-editing-major-mode-override-keys 'vc-git-log-view-mode
                                               '(("q" . quit-window)))
