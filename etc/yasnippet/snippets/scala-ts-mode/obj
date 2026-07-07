@@ -1,6 +1,6 @@
 # -*- mode: snippet -*-
 # key: obj
 # --
-object ${1:`(if-let (class-name (jacob-scala-get-class-name)) class-name "X")`$(jacob-yas-pascal-case yas-text)} {
+object ${1:`(file-name-sans-extension (file-name-nondirectory (buffer-file-name)))`$(jacob-yas-pascal-case yas-text)} {
   $0
 }
