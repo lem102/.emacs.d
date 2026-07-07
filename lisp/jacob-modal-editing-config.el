@@ -367,7 +367,12 @@
                                               '(("q" . gnus-group-quit)))
 
 (jacob-modal-editing-major-mode-override-keys 'magit-status-mode
-                                              '(("q" . magit-mode-bury-buffer)))
+                                              '(("." . magit-section-forward)
+                                                ("e" . magit-stage)
+                                                ("m" . magit-section-backward)
+                                                ("q" . magit-mode-bury-buffer)
+                                                ("r" . magit-unstage)
+                                                ("y" . magit-discard)))
 
 (defun jacob-modal-editing-command-mode-hook-f ()
   "Make visual change depending on value of `jacob-modal-editing-command-mode'."
