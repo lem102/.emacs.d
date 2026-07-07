@@ -42,12 +42,38 @@ Disables the eglot backend when inside a `.g8' template."
 
 ;; TODO: wip
 (cl-defmethod eglot-client-capabilities :around (server)
-  "Try add support for workspace/didRenameFiles notification."
+  "Try add support for workspace/willRenameFiles notification."
   (let* ((base (cl-call-next-method)))
     (setf (cl-getf (cl-getf base :workspace)
-                   :didRenameFiles)
+                   :willRenameFiles)
           t)
     base))
+
+;; i have added this ^implementation^. i wonder how eglot will then function given there is no implementation....
+
+(cl-defmethod eglot-handle-notification
+  (_server (_method (eql workspace/didRenameFiles))
+           &allow-other-keys)
+  ;; is this needed? or is this to handle a notification from the server?
+  "Handle the workspace/willRenameFiles notification."
+  (debug nil "jacob just did a sick rename"))
+
+(defun jacob-eglot--after-set-visited-file-name-hook ()
+  "Maybe send workspace/willRenameFiles to server.
+
+Intended to be an advice :after `eglot--after-set-visited-file-name-hook'."
+  (when (and eglot--managed-mode buffer-file-name)
+    (jacob-eglot--signal-workspace/willRenameFiles)))
+
+(advice-add #'eglot--after-set-visited-file-name-hook :after #'jacob-eglot--after-set-visited-file-name-hook)
+
+(defun jacob-eglot--signal-workspace/willRenameFiles ()
+  "Send workspace/willRenameFiles to server."
+  (let* ((new-file (eglot-path-to-uri (buffer-file-name))) ; HACK: temp hack, won't work if renamed outside of current dir (which is whole point orz)
+         (dir (file-name-directory new-file)))
+    (eglot--request (eglot--current-server-or-lose)
+                    :workspace/willRenameFiles `( :files [( :oldUri ,(file-name-concat dir (buffer-last-name)) ; TODO: how to get previous name of the file before rename?
+                                                            :newUri ,new-file)]))))
 
 (provide 'jacob-eglot)
 
