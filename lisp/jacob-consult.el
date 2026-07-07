@@ -36,20 +36,19 @@
                                         :mode #'compilation-mode)))
   "Compilation buffer source for `consult-buffer'.")
 
-;; TODO: can i make use of virtual buffers here? e.g. open a magit buffer for a project i do not have a magit buffer open for?
 ;;;###autoload
 (defvar jacob-consult-source-magit
   `( :name     "Magit"
-     :narrow   ?g
+     :narrow   ?v
      :category buffer
      :face     consult-buffer
      :history  buffer-name-history
-     :state    ,#'consult--buffer-state
-     :default  t
-     :items
-     ,(lambda () (consult--buffer-query :sort 'visibility
-                                        :as #'consult--buffer-pair
-                                        :mode #'magit-status-mode)))
+     :items    ,#'(lambda ()
+                    "Get all known project directories."
+                    (flatten-tree project--list))
+     :action   ,#'(lambda (project-dir)
+                    "Open the project residing in PROJECT-DIR's magit status buffer."
+                    (magit-status-setup-buffer project-dir)))
   "Magit buffer source for `consult-buffer'.")
 
 (provide 'jacob-consult)
