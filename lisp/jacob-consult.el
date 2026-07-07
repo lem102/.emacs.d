@@ -36,6 +36,7 @@
                                         :mode #'compilation-mode)))
   "Compilation buffer source for `consult-buffer'.")
 
+;; TODO: can i make use of virtual buffers here? e.g. open a magit buffer for a project i do not have a magit buffer open for?
 ;;;###autoload
 (defvar jacob-consult-source-magit
   `( :name     "Magit"
