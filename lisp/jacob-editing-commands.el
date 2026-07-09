@@ -495,6 +495,14 @@ Prompt user for case."
                                     end))
         jacob-title-case-downcase-words))
 
+;;;###autoload
+(defun jacob-mark ()
+  "TODO: write documentation."
+  (interactive)
+  (if (region-active-p)
+      (call-interactively #'expreg-expand)
+    (call-interactively #'set-mark-command)))
+
 (provide 'jacob-editing-commands)
 
 ;;; jacob-editing-commands.el ends here

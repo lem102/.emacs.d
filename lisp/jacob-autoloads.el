@@ -55,7 +55,7 @@ CONDITION and ACTION are as in `define-auto-insert'.
 Buffer state function that doesn't preview Tramp buffers.")
 (defvar jacob-consult-source-compile `(:name "Compile" :narrow 99 :category buffer :face consult-buffer :history buffer-name-history :state ,#'consult--buffer-state :default t :items ,(lambda nil (consult--buffer-query :sort 'visibility :as #'consult--buffer-pair :mode #'compilation-mode))) "\
 Compilation buffer source for `consult-buffer'.")
-(defvar jacob-consult-source-magit `(:name "Magit" :narrow 103 :category buffer :face consult-buffer :history buffer-name-history :state ,#'consult--buffer-state :default t :items ,(lambda nil (consult--buffer-query :sort 'visibility :as #'consult--buffer-pair :mode #'magit-status-mode))) "\
+(defvar jacob-consult-source-magit `(:name "Magit" :narrow 118 :category buffer :face consult-buffer :history buffer-name-history :items ,#'(lambda nil "Get all known project directories." (flatten-tree project--list)) :action ,#'(lambda (project-dir) "Open the project residing in PROJECT-DIR's magit status buffer." (magit-status-setup-buffer project-dir))) "\
 Magit buffer source for `consult-buffer'.")
 
 
@@ -84,6 +84,8 @@ In diff mode, unapply the hunk at point." t)
 
 ;;; Generated autoloads from jacob-editing-commands.el
 
+(autoload 'jacob-mark "jacob-editing-commands" "\
+TODO: write documentation." t)
 (register-definition-prefixes "jacob-editing-commands" '("jacob-" "xah-"))
 
 

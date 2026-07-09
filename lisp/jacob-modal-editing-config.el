@@ -21,6 +21,8 @@
 
 ;; TODO: can c x and d keys be rethought? (copy, cut, delete)
 
+;; i feel like x and d can be merged, but won't i miss killing by line?
+
 (jacob-modal-editing-bind-keys jacob-modal-editing-keymap
                                `(("'" . delete-other-windows)
                                  ("," . jacob-split-or-switch-window)
@@ -168,7 +170,7 @@
                                  ("d" . jacob-delete-backwards)
                                  ("e" . puni-backward-kill-word)
                                  ("f" . jacob-modal-editing-disable)
-                                 ("g" . expreg-expand)
+                                 ("g" . jacob-mark)
                                  ("h" . jacob-beginning-of-line)
                                  ("i" . previous-line)
                                  ("j" . backward-char)
