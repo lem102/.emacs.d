@@ -1,7 +1,7 @@
 ;;; jacob-modal-editing-config.el --- configuration for `jacob-modal-editing'
 
 ;;; Commentary:
-;; 
+;;
 
 ;;; Code:
 
@@ -16,6 +16,10 @@
     (dolist (binding bindings)
       (keymap-set map (car binding) (cdr binding)))
     (add-to-list 'jacob-modal-editing-major-mode-keymap-alist (cons mode map))))
+
+;; TODO: can t and g keys be combined? (set mark and expand region)
+
+;; TODO: can c x and d keys be rethought? (copy, cut, delete)
 
 (jacob-modal-editing-bind-keys jacob-modal-editing-keymap
                                `(("'" . delete-other-windows)
