@@ -121,7 +121,7 @@ When BUFFER-OR-FILE is a file, query the file."
              (funcall f))))))
 
 (defun jacob-scala-calculate-package (file)
-  "Calculate the package of FILE."
+  "Calculate the package of FILE based on the directory."
   (let* ((sbt-root (locate-dominating-file file "build.sbt"))
          (is-play-framework (file-exists-p (file-name-concat sbt-root "/conf/application.conf"))))
 
@@ -279,15 +279,6 @@ lets you select one via completion, and inserts it at the top of the file."
     (delete-region region-start region-end)
     (insert play-json-code)))
 
-(defun jacob-scala-get-class-name ()
-  "Get the name of the current class."
-  (when-let ((class-name (car-safe (treesit-query-capture (treesit-buffer-root-node)
-                                                          '((class_definition name: (_) @identifier))
-                                                          nil
-                                                          nil
-                                                          "NODE-ONLY"))))
-    (treesit-node-text class-name)))
-
 ;;; edit json string
 
 (defvar jacob-scala-edit-json-string-node nil
@@ -349,6 +340,90 @@ lets you select one via completion, and inserts it at the top of the file."
       (dotimes (i column)
         (insert " "))
       (insert "|" last-line "\"\"\""))))
+
+;; flymake
+
+(defun jacob-flymake-scala-filename-alignment (report-fn &rest _args)
+  "Check for classes that differ to their filename.
+
+This is a flymake backend, hence it uses REPORT-FN to report diagnostics."
+  (funcall report-fn (when-let* ((nodes (treesit-query-capture (treesit-buffer-root-node)
+                                                               '([(class_definition name: (_) @identifier)
+                                                                  (object_definition name: (_) @identifier)])
+                                                               nil
+                                                               nil
+                                                               "NODE-ONLY"))
+                                 (file-name (file-name-sans-extension (file-name-nondirectory buffer-file-name))))
+                       (seq-keep (lambda (node)
+                                   "If the NODE text does not match the file name, return a flymake diagnostic."
+                                   (unless (string= (treesit-node-text node) file-name)
+                                     (flymake-make-diagnostic (current-buffer)
+                                                              (treesit-node-start node)
+                                                              (treesit-node-end node)
+                                                              :note
+                                                              (format "Identifier %s does not match filename %s"
+                                                                      (treesit-node-text node)
+                                                                      file-name))))
+                                 nodes))))
+
+(defun jacob-flymake-scala-use-identity (report-fn &rest _args)
+  "Check for anonymous functions that could be replaced by identity.
+
+This is a flymake backend, hence it uses REPORT-FN to report diagnostics."
+  (funcall report-fn (when-let* ((nodes (treesit-query-capture (treesit-buffer-root-node)
+                                                               '((lambda_expression parameters:
+                                                                                    (identifier) @x
+                                                                                    "=>"
+                                                                                    (identifier) @y))
+                                                               nil
+                                                               nil
+                                                               "NODE-ONLY"))
+                                 (node-pairs (seq-partition nodes 2)))
+                       (seq-keep (lambda (node-pair)
+                                   "If the NODE-PAIR both have the same text, return a flymake diagnostic."
+                                   (let* ((node1 (seq-elt node-pair 0))
+                                          (node2 (seq-elt node-pair 1)))
+                                     (when (string= (treesit-node-text node1) (treesit-node-text node2))
+                                       (flymake-make-diagnostic (current-buffer)
+                                                                (treesit-node-start node1)
+                                                                (treesit-node-end node2)
+                                                                :note
+                                                                "Can be replaced with the identity function"))))
+                                 node-pairs))))
+
+(defun jacob-flymake-scala-prefer-nil (report-fn &rest _args)
+  "Check for usage of list constructor instead of Nil.
+
+This is a flymake backend, hence it uses REPORT-FN to report diagnostics."
+  (let* (diags)
+    (save-excursion
+      (goto-char (point-min))
+      (while (re-search-forward "List()" nil "NOERROR")
+        (push (flymake-make-diagnostic (current-buffer)
+                                       (match-beginning 0)
+                                       (match-end 0)
+                                       :note
+                                       "Prefer Nil")
+              diags)))
+    (funcall report-fn diags)))
+
+(defun jacob-flymake-scala-directory-alignment (report-fn &rest _args)
+  "Check for packages that don't match the directory structure.
+
+This is a flymake backend, hence it uses REPORT-FN to report diagnostics."
+  (funcall report-fn
+           (when-let* ((directory-structure-package (jacob-scala-calculate-package buffer-file-name))
+                       (node (car-safe (treesit-query-capture (treesit-buffer-root-node 'scala)
+                                                              '((package_clause (package_identifier) @package))
+                                                              nil
+                                                              nil
+                                                              "NODE-ONLY"))))
+             (unless (string= (treesit-node-text node) directory-structure-package)
+               (list (flymake-make-diagnostic (current-buffer)
+                                              (treesit-node-start node)
+                                              (treesit-node-end node)
+                                              :note
+                                              "Package does not match directory structure"))))))
 
 (provide 'jacob-scala)
 

@@ -623,7 +623,7 @@ $0")
   (eglot--code-action eglot-code-action-add-missing-imports-ts "source.addMissingImports.ts")
 
   (setopt eglot-ignored-server-capabilities '(:documentOnTypeFormattingProvider :documentFormattingProvider)
-          eglot-stay-out-of '(imenu)
+          eglot-stay-out-of '(imenu flymake)
           eglot-code-action-indications '(eldoc-hint mode-line)))
 
 (require 'jacob-csharp-mode)
@@ -649,12 +649,19 @@ $0")
          (scala-ts-mode-hook . electric-indent-local-mode)
          (scala-ts-mode-hook . jacob-trim-quotes-mode)
          (scala-ts-mode-hook . eglot-ensure)
+         (scala-ts-mode-hook . flymake-mode)
          (scala-ts-mode-hook . stripspace-local-mode)
          (scala-ts-mode-hook . jacob-scala-font-lock-setup))
   :config
   (require 'jacob-scala)
   (with-eval-after-load 'project
     (keymap-set project-prefix-map "S" #'jacob-project-sbt))
+  (jacob-defhookf scala-ts-mode-hook
+    (add-hook 'flymake-diagnostic-functions #'jacob-flymake-scala-filename-alignment nil "LOCAL")
+    (add-hook 'flymake-diagnostic-functions #'jacob-flymake-scala-directory-alignment nil "LOCAL")
+    (add-hook 'flymake-diagnostic-functions #'jacob-flymake-scala-use-identity nil "LOCAL")
+    (add-hook 'flymake-diagnostic-functions #'jacob-flymake-scala-prefer-nil nil "LOCAL")
+    (add-hook 'flymake-diagnostic-functions #'eglot-flymake-backend nil "LOCAL"))
   :bind ( :map scala-ts-mode-map
           ("$" . jacob-scala-dollar)
           ("." . jacob-scala-.)))
