@@ -253,7 +253,9 @@ then remove this function from `find-file-hook'."
   (with-eval-after-load 'apheleia
     (blackout 'apheleia-mode " ⚘"))
   (with-eval-after-load 'rainbow-mode
-    (blackout 'rainbow-mode)))
+    (blackout 'rainbow-mode))
+  (with-eval-after-load 'stripspace
+    (blackout 'stripspace-local-mode)))
 
 (use-package which-key
   :defer t
@@ -771,7 +773,7 @@ $0")
   (keymap-set project-prefix-map "L" #'prodigy)
   :config
   (setopt prodigy-kill-process-buffer-on-stop t)
-  
+
   (prodigy-define-tag
     :name 'asp.net
     :stop-signal 'kill
@@ -811,6 +813,7 @@ $0")
   :hook ((emacs-lisp-mode-hook . apheleia-mode)
          (emacs-lisp-mode-hook . jacob-font-lock-programming-setup)
          (emacs-lisp-mode-hook . yas-minor-mode)
+         (emacs-lisp-mode-hook . stripspace-local-mode)
          (emacs-lisp-mode-hook . electric-indent-local-mode)
          (emacs-lisp-mode-hook . flymake-mode))
   :config
