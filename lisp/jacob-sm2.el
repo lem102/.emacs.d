@@ -1,7 +1,13 @@
 ;;; jacob-sm2.el --- Library for interacting with sm2  -*- lexical-binding: t; -*-
 
 ;;; Commentary:
-;;
+
+;; TODO: handle colima start as well?
+
+;; TODO: handle updating sm2
+
+;; TODO: implement a mutex of sorts to prevent multiple sm2 commands
+;; from running simultaneously
 
 ;;; Code:
 
