@@ -1,7 +1,7 @@
 ;;; jacob-flymake.el --- Flymake utilities  -*- lexical-binding: t; -*-
 
 ;;; Commentary:
-;; 
+;;
 
 ;;; Code:
 
@@ -17,7 +17,8 @@ This is a flymake backend, hence it uses REPORT-FN to report diagnostics."
       (goto-char (point-min))
       (let (diags)
         (while (re-search-forward regexp nil "NOERROR")
-          (unless (nth 3 (syntax-ppss))
+          (unless (or (nth 3 (syntax-ppss))
+                      (nth 4 xsyntax-state))
             (push (flymake-make-diagnostic (current-buffer)
                                            (match-beginning 1)
                                            (match-end 1)
