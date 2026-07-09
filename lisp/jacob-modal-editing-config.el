@@ -299,7 +299,6 @@
                                               '(("d" . prodigy-stop)
                                                 ("e" . prodigy-mark)
                                                 ("g" . consult-git-grep)
-                                                ("f" . project-find-file)
                                                 ("i" . prodigy-prev)
                                                 ("k" . prodigy-next)
                                                 ("q" . quit-window)

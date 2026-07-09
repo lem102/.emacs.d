@@ -775,11 +775,12 @@ $0")
   (keymap-set project-prefix-map "l" #'consult-git-log-grep))
 
 (use-package prodigy
-  :defer t
+  :hook ((prodigy-view-mode-hook . (lambda ()
+                                     "Disable view mode"
+                                     (view-mode 0))))
   :init
   (keymap-set project-prefix-map "L" #'prodigy)
   :config
-  (setopt prodigy-kill-process-buffer-on-stop t)
 
   (prodigy-define-tag
     :name 'asp.net
@@ -789,6 +790,12 @@ $0")
                        (service (plist-get args :service)))
                    (when (string-match-p "Hosting started *$" output)
                      (prodigy-set-status service 'ready)))))
+
+  (prodigy-define-tag
+    :name 'sbt
+    :command "sbt"
+    :args '("run")
+    :ready-message "(Server started, use Enter to stop and go back to the console...)")
 
   (add-hook 'prodigy-view-mode-hook #'compilation-minor-mode))
 
