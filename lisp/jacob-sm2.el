@@ -4,11 +4,6 @@
 
 ;; TODO: handle colima start as well?
 
-;; TODO: handle updating sm2
-
-;; TODO: implement a mutex of sorts to prevent multiple sm2 commands
-;; from running simultaneously
-
 ;;; Code:
 
 (require 'transient)
@@ -21,14 +16,23 @@
   "Transient menu for sm2."
   ["Commands"
    ("i" "Status" jacob-sm2-status)
-   ("s" "Start" jacob-sm2-start)
-   ("k" "Stop" jacob-sm2-stop)
+   ("s" "Start service or profile" jacob-sm2-start)
+   ("k" "Stop service or profile" jacob-sm2-stop)
+   ("l" "View Logs for service" jacob-sm2-logs)
+   ("p" "Prune services" jacob-sm2-prune)
+   ("us" "Update sm2" jacob-sm2-update)
+   ("uc" "Update sm2 config" jacob-sm2-update-config)
    ("q" "Quit" ignore)])
 
 (defun jacob-sm2-status ()
   "Run sm2 -s."
   (interactive)
   (async-shell-command "sm2 -s"))
+
+(defun jacob-sm2-prune ()
+  "Run sm2 --prune."
+  (interactive)
+  (async-shell-command "sm2 --prune"))
 
 (defun jacob-sm2-start ()
   "Run sm2 --start. Prompt for which service or profile should be started."
@@ -47,21 +51,39 @@
 
          )
     (async-shell-command (format "sm2 --start %s"
-                                 (completing-read "Service or profile: "
-                                                  (jacob-sm2-services-and-profiles))))))
+                                 (completing-read "Start service or profile: "
+                                                  (jacob-sm2--get-services "AND-PROFILES"))))))
 
 (defun jacob-sm2-stop ()
   "Run sm2 --stop. Prompt for which service or profile should be stopped."
   (interactive)
   (async-shell-command (format "sm2 --stop %s"
-                               (completing-read "Service or profile: "
-                                                (jacob-sm2-services-and-profiles)))))
+                               (completing-read "Stop service or profile: "
+                                                (jacob-sm2--get-services "AND-PROFILES")))))
 
-(defun jacob-sm2-services-and-profiles ()
-  "Get all sm2 services and profiles."
-  (append (mapcar #'car
-                  (json-read-file (file-name-concat jacob-sm2-config-directory
-                                                    "profiles.json")))
+(defun jacob-sm2-logs ()
+  "View logs for a service."
+  (interactive)
+  (async-shell-command (format "sm2 --logs %s"
+                               (completing-read "View logs for service: "
+                                                (jacob-sm2--get-services)))))
+
+(defun jacob-sm2-update ()
+  "Run sm2 --update."
+  (interactive)
+  (async-shell-command "sm2 --update"))
+
+(defun jacob-sm2-update-config ()
+  "Run sm2 --update-config."
+  (interactive)
+  (async-shell-command "sm2 --update-config"))
+
+(defun jacob-sm2--get-services (&optional and-profiles)
+  "Get all sm2 services. If AND-PROFILES is non-nil, also return profiles."
+  (append (when and-profiles
+            (mapcar #'car
+                    (json-read-file (file-name-concat jacob-sm2-config-directory
+                                                      "profiles.json"))))
           (mapcar #'car
                   (json-read-file (file-name-concat jacob-sm2-config-directory
                                                     "services.json")))
