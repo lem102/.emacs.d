@@ -43,7 +43,9 @@
 (setq custom-file (concat user-emacs-directory "custom.el"))
 (load custom-file)
 
+;; TODO: if errors are handled can we remove this when?
 (when (file-exists-p jacob-environment-file)
+  ;; TODO: log any errors that occur when environment file is loaded
   (ignore-errors (load-file jacob-environment-file)))
 
 ;; configure packages
