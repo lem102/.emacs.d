@@ -2,6 +2,8 @@
 ;;; Commentary:
 ;;; Code:
 
+;; TODO: configure editor config mode
+
 ;; `no-littering' needs to be loaded ASAP
 (use-package no-littering)
 
