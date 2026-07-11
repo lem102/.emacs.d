@@ -2,8 +2,6 @@
 ;;; Commentary:
 ;;; Code:
 
-;; TODO: configure editor config mode
-
 ;; `no-littering' needs to be loaded ASAP
 (use-package no-littering)
 
@@ -244,6 +242,8 @@ then remove this function from `find-file-hook'."
     (blackout 'which-key-mode))
   (with-eval-after-load 'autorevert
     (blackout 'auto-revert-mode))
+  (with-eval-after-load 'editorconfig
+    (blackout 'editorconfig-mode))
   (with-eval-after-load 'yasnippet
     (blackout 'yas-minor-mode " yas"))
   (with-eval-after-load 'subword
@@ -420,6 +420,9 @@ then remove this function from `find-file-hook'."
   :defer t
   :custom ((hippie-expand-try-functions-list (remove 'try-expand-list
                                                      hippie-expand-try-functions-list))))
+
+(use-package editorconfig
+  :hook ((prog-mode-hook . editorconfig-mode)))
 
 (use-package flymake
   :bind
