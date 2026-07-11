@@ -35,7 +35,7 @@
 (defvar jacob-device-weight 'light
   "The \"weight\" of the current device.
 
-Can be either lightweight or heavyweight. This will affect features
+Can be either light or heavy. This will affect features
 enabled or disabled in the init files. By default, the device is
 considered lightweight.")
 
