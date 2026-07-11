@@ -54,7 +54,8 @@ This is a flymake backend, hence it uses REPORT-FN to report diagnostics."
                                           (cdr tree))))))))
             (when (seq-some (lambda (branch)
                               (and (eq :custom (car branch))
-                                   (not (= 2 (length branch)))))
+                                   (or (symbolp (caadr branch))
+                                       (not (= 2 (length branch))))))
                             tree)
               (save-excursion
                 (backward-sexp)
