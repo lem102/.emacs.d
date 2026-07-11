@@ -1286,7 +1286,6 @@ $0")
            (aw-dispatch-when-more-than 3)))
 
 (use-package marginalia
-  ;; TODO: investigate configuring width of candidates per device
   :hook ((jacob-first-minibuffer-activation-hook . marginalia-mode)))
 
 (use-package consult
