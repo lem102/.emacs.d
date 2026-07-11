@@ -32,6 +32,13 @@
 (defconst jacob-is-mac (eq system-type 'darwin)
   "Is the current OS a mac?")
 
+(defvar jacob-device-weight 'light
+  "The \"weight\" of the current device.
+
+Can be either lightweight or heavyweight. This will affect features
+enabled or disabled in the init files. By default, the device is
+considered lightweight.")
+
 (add-to-list 'load-path jacob-lisp-directory)
 (add-to-list 'custom-theme-load-path jacob-lisp-directory)
 
@@ -43,10 +50,13 @@
 (setq custom-file (concat user-emacs-directory "custom.el"))
 (load custom-file)
 
-;; TODO: if errors are handled can we remove this when?
-(when (file-exists-p jacob-environment-file)
-  ;; TODO: log any errors that occur when environment file is loaded
-  (ignore-errors (load-file jacob-environment-file)))
+(condition-case error
+    (load-file jacob-environment-file)
+  (error
+   (display-warning 'jacob
+                    (format "error loading environment file %s"
+                            error)
+                    :error)))
 
 ;; configure packages
 
@@ -262,7 +272,8 @@ then remove this function from `find-file-hook'."
     (blackout 'stripspace-local-mode)))
 
 (use-package which-key
-  :defer t
+  :if (eq jacob-device-weight 'heavy)
+  :hook ((on-first-input-hook . which-key-mode))
   :custom ((which-key-idle-delay (cond (jacob-is-android 1)
                                        (t 0.01)))))
 
@@ -439,6 +450,9 @@ then remove this function from `find-file-hook'."
   :defer t
   :config
   (add-hook 'project-find-functions #'jacob-project-try-exercism)
+  (keymap-set project-prefix-map "v" (if (eq jacob-device-weight 'heavy)
+                                         #'magit-project-status
+                                       #'project-vc-dir))
   :custom ((project-compilation-buffer-name-function 'project-prefixed-buffer-name)
            (project-switch-use-entire-map t)))
 
@@ -1252,8 +1266,9 @@ $0")
   :hook ((jacob-first-minibuffer-activation-hook . mct-mode)))
 
 (use-package vertico
-  :defer t
-  :if (not jacob-is-android)
+  :if (or (not jacob-is-android)
+          (eq jacob-device-weight 'heavy))
+  :hook ((jacob-first-minibuffer-activation-hook . vertico-mode))
   :custom ((vertico-count 20)
            (vertico-resize t)))
 
@@ -1294,9 +1309,11 @@ $0")
   (setq completion-in-region-function 'consult-completion-in-region
         xref-show-xrefs-function 'consult-xref
         xref-show-definitions-function 'consult-xref
-        consult-preview-key nil
         consult-source-buffer (plist-put consult-source-buffer
-                                         :state #'jacob-consult-buffer-state-no-tramp)))
+                                         :state #'jacob-consult-buffer-state-no-tramp))
+  :custom ((consult-preview-key (if (eq jacob-device-weight 'heavy)
+                                    'any
+                                  nil))))
 
 (use-package embark
   :bind

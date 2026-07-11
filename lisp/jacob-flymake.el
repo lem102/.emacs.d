@@ -65,6 +65,7 @@ This is a flymake backend, hence it uses REPORT-FN to report diagnostics."
                                                :note
                                                "Enclose the customs in a list e.g. :custom ((a b)).")
                       diags)))
+            ;; TODO: catch case when only one hook but not enclosed in outer list
             (when (seq-some (lambda (branch)
                               (and (eq :hook (car branch))
                                    (not (= 2 (length branch)))))
