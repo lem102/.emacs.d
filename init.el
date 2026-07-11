@@ -32,12 +32,10 @@
 (defconst jacob-is-mac (eq system-type 'darwin)
   "Is the current OS a mac?")
 
-(defvar jacob-device-weight 'light
-  "The \"weight\" of the current device.
+(defvar jacob-is-fast nil
+  "Is the device running Emacs fast?
 
-Can be either light or heavy. This will affect features
-enabled or disabled in the init files. By default, the device is
-considered lightweight.")
+Setting this to a non-nil value will cause different features to be loaded.")
 
 (add-to-list 'load-path jacob-lisp-directory)
 (add-to-list 'custom-theme-load-path jacob-lisp-directory)
@@ -272,7 +270,7 @@ then remove this function from `find-file-hook'."
     (blackout 'stripspace-local-mode)))
 
 (use-package which-key
-  :if (eq jacob-device-weight 'heavy)
+  :if jacob-is-fast
   :hook ((on-first-input-hook . which-key-mode))
   :custom ((which-key-idle-delay (cond (jacob-is-android 1)
                                        (t 0.01)))))
@@ -450,7 +448,7 @@ then remove this function from `find-file-hook'."
   :defer t
   :config
   (add-hook 'project-find-functions #'jacob-project-try-exercism)
-  (keymap-set project-prefix-map "v" (if (eq jacob-device-weight 'heavy)
+  (keymap-set project-prefix-map "v" (if jacob-is-fast
                                          #'magit-project-status
                                        #'project-vc-dir))
   :custom ((project-compilation-buffer-name-function 'project-prefixed-buffer-name)
@@ -1267,7 +1265,7 @@ $0")
 
 (use-package vertico
   :if (or (not jacob-is-android)
-          (eq jacob-device-weight 'heavy))
+          jacob-is-fast)
   :hook ((jacob-first-minibuffer-activation-hook . vertico-mode))
   :custom ((vertico-count 20)
            (vertico-resize t)))
@@ -1311,7 +1309,7 @@ $0")
         xref-show-definitions-function 'consult-xref
         consult-source-buffer (plist-put consult-source-buffer
                                          :state #'jacob-consult-buffer-state-no-tramp))
-  :custom ((consult-preview-key (if (eq jacob-device-weight 'heavy)
+  :custom ((consult-preview-key (if jacob-is-fast
                                     'any
                                   nil))))
 
