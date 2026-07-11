@@ -1,7 +1,7 @@
 ;;; jacob-pulse.el --- Utilities for pulse  -*- lexical-binding: t; -*-
 
 ;;; Commentary:
-;; 
+;;
 
 ;;; Code:
 
@@ -24,10 +24,6 @@
   (save-excursion
     (backward-sexp)
     (jacob-pulse--thing-at-point 'sexp)))
-
-(defun jacob-pulse-buffer (&rest _)
-  "Pulse the whole buffer."
-  (pulse-momentary-highlight-region (point-min) (point-max)))
 
 (provide 'jacob-pulse)
 
