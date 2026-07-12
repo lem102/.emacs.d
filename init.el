@@ -78,6 +78,7 @@ Setting this to a non-nil value will cause different features to be loaded.")
          ))
 
 (use-package jacob-modal-editing
+  :functions (jacob-modal-editing-mode)
   :config
   (require 'jacob-modal-editing-config)
   (jacob-modal-editing-mode 1))
@@ -245,6 +246,7 @@ then remove this function from `find-file-hook'."
 (use-package on)                    ; load `on-first-input-hook', etc.
 
 (use-package blackout
+  :functions (blackout)
   :config
   (with-eval-after-load 'which-key
     (blackout 'which-key-mode))
@@ -440,12 +442,14 @@ then remove this function from `find-file-hook'."
 
 (use-package consult-project-extra
   :defer t
+  :functions (consult-project-extra-find)
   :init
   (keymap-set project-prefix-map "f" #'consult-project-extra-find)
   :custom ((consult-project-function 'consult-project-extra-project-fn)))
 
 (use-package project
   :defer t
+  :functions (magit-project-status)
   :config
   (add-hook 'project-find-functions #'jacob-project-try-exercism)
   (keymap-set project-prefix-map "v" (if jacob-is-fast
@@ -460,6 +464,7 @@ then remove this function from `find-file-hook'."
           ("C-c y n" . yas-new-snippet)
           ("C-c y v" . yas-visit-snippet-file)
           ("C-c y i" . yas-insert-snippet))
+  :functions (yas-reload-all)
   :config
   (require 'jacob-yasnippet)
   (yas-reload-all)
@@ -578,6 +583,7 @@ $0")
 
 (use-package dumb-jump
   :defer t
+  :functions (dumb-jump-xref-activate)
   :config
   (add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
   (when jacob-is-mac
@@ -595,13 +601,17 @@ $0")
    ("C-c e h" . eglot-inlay-hints-mode)
    ("C-c e o" . eglot-code-action-organize-imports)
    ("C-c e y" . jacob-eglot-yank))
+  :functions (eglot-semantic-tokens-mode
+              eglot-alternatives
+              eglot-flymake-backend)
   :config
   (require 'jacob-eglot)
 
   (jacob-defhookf eglot-managed-mode-hook
     (eglot-inlay-hints-mode 0)
     (eglot-semantic-tokens-mode 0)
-    (setq-local xref-backend-functions '(eglot-xref-backend dumb-jump-xref-activate t)))
+    (setq-local xref-backend-functions '(eglot-xref-backend dumb-jump-xref-activate t))
+    (add-hook 'flymake-diagnostic-functions #'eglot-flymake-backend nil "LOCAL"))
 
   (setq-default eglot-workspace-configuration '(:metals ( :inlayHints ( :implicitArguments (:enable t)
                                                                         :implicitConversions (:enable t))
@@ -657,6 +667,7 @@ $0")
 
 (use-package fsharp-mode
   :mode ("\\.fs\\'" . fsharp-mode)
+  :functions (fsharp-mode-project-root)
   :config
   (remove-hook 'project-find-functions #'fsharp-mode-project-root)
   (setopt compilation-error-regexp-alist (remove 'fsharp compilation-error-regexp-alist)))
@@ -669,32 +680,28 @@ $0")
          (scala-ts-mode-hook . jacob-trim-quotes-mode)
          (scala-ts-mode-hook . eglot-ensure)
          (scala-ts-mode-hook . flymake-mode)
-         (scala-ts-mode-hook . stripspace-local-mode)
-         (scala-ts-mode-hook . jacob-scala-font-lock-setup))
-  :config
-  (require 'jacob-scala)
-  (with-eval-after-load 'project
-    (keymap-set project-prefix-map "S" #'jacob-project-sbt))
-  (jacob-defhookf scala-ts-mode-hook
-    (add-hook 'flymake-diagnostic-functions #'jacob-flymake-scala-filename-alignment nil "LOCAL")
-    (add-hook 'flymake-diagnostic-functions #'jacob-flymake-scala-directory-alignment nil "LOCAL")
-    (add-hook 'flymake-diagnostic-functions #'jacob-flymake-scala-use-identity nil "LOCAL")
-    (add-hook 'flymake-diagnostic-functions #'jacob-flymake-scala-prefer-nil nil "LOCAL")
-    (add-hook 'flymake-diagnostic-functions #'eglot-flymake-backend nil "LOCAL"))
+         (scala-ts-mode-hook . stripspace-local-mode))
   :bind ( :map scala-ts-mode-map
           ("$" . jacob-scala-dollar)
           ("." . jacob-scala-.)))
 
 (use-package sbt-mode
-  :defer t
+  :hook ((sbt-mode-hook . compilation-shell-minor-mode))
+  :functions (sbt:initialize-for-compilation-mode)
   :config
-  (advice-add #'sbt:initialize-for-compilation-mode :override #'ignore)
-  (add-hook 'sbt-mode-hook #'compilation-shell-minor-mode))
+  (advice-add #'sbt:initialize-for-compilation-mode :override #'ignore))
+
+(use-package jacob-scala
+  :hook ((scala-ts-mode-hook . jacob-scala-font-lock-setup)
+         (scala-ts-mode-hook . jacob-scala-setup-flymake))
+  :bind ( :map project-prefix-map
+          ("S" . jacob-project-sbt)))
 
 (use-package web-mode
   :mode ("\\.scala\\.html\\'" . web-mode)
   :custom ((web-mode-engines-alist
             '(("play" . "\\.scala\\.html\\'"))))
+  :functions (web-mode-indent-line)
   :config
   ;; patch web-mode-indent-line so that '}' is indented properly
   (advice-patch #'web-mode-indent-line
@@ -723,17 +730,17 @@ $0")
         ls-lisp-dirs-first t))
 
 (use-package dired
+  :hook ((dired-mode-hook . dired-hide-details-mode)
+         (dired-mode-hook . auto-revert-mode))
+  :custom ((dired-recursive-copies 'always)
+           (dired-dwim-target t)
+           (dired-listing-switches "-hal") ; the h option needs to come first 🙃
+           (dired-guess-shell-alist-user '(("\\.mkv\\'" "mpv")
+                                           ("\\.mp4\\'" "mpv")))))
+
+(use-package dired-x
   :defer t
-  :init
-  (add-hook 'dired-mode-hook #'dired-hide-details-mode)
-  (add-hook 'dired-mode-hook #'auto-revert-mode)
-  :config
-  (require 'dired-x)
-  (setopt dired-recursive-copies 'always
-          dired-dwim-target t
-          dired-listing-switches "-hal" ; the h option needs to come first 🙃
-          dired-guess-shell-alist-user '(("\\.mkv\\'" "mpv")
-                                         ("\\.mp4\\'" "mpv"))))
+  :after dired)
 
 (use-package dired-aux
   :defer t
@@ -1220,6 +1227,7 @@ $0")
 
 (use-package dape
   :defer t
+  :functions (dape-info)
   :config
   (setopt dape-info-hide-mode-line nil
           dape-buffer-window-arrangement 'right)
@@ -1263,8 +1271,8 @@ $0")
   :hook ((jacob-first-minibuffer-activation-hook . mct-mode)))
 
 (use-package vertico
-  :if (or (not jacob-is-android)
-          jacob-is-fast)
+  :if (and (not jacob-is-android)
+           jacob-is-fast)
   :hook ((jacob-first-minibuffer-activation-hook . vertico-mode))
   :custom ((vertico-count 20)
            (vertico-resize t)))

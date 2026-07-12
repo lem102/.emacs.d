@@ -193,8 +193,7 @@ Leave escaped characters alone."
         (insert "\"\"")
         (goto-char (treesit-node-start string-node))
         (search-forward "\"")
-        (insert "\"\""))
-      )))
+        (insert "\"\"")))))
 
 (defun jacob-scala-font-lock-setup ()
   "Setup faces locally for scala."
@@ -424,6 +423,13 @@ This is a flymake backend, hence it uses REPORT-FN to report diagnostics."
                                               (treesit-node-end node)
                                               :note
                                               "Package does not match directory structure"))))))
+
+(defun jacob-scala-setup-flymake ()
+  "Activate flymake diagnostics functions."
+  (add-hook 'flymake-diagnostic-functions #'jacob-flymake-scala-filename-alignment nil "LOCAL")
+  (add-hook 'flymake-diagnostic-functions #'jacob-flymake-scala-directory-alignment nil "LOCAL")
+  (add-hook 'flymake-diagnostic-functions #'jacob-flymake-scala-use-identity nil "LOCAL")
+  (add-hook 'flymake-diagnostic-functions #'jacob-flymake-scala-prefer-nil nil "LOCAL"))
 
 (provide 'jacob-scala)
 

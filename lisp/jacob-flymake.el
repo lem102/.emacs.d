@@ -94,7 +94,21 @@ This is a flymake backend, hence it uses REPORT-FN to report diagnostics."
                                                  (match-end 0)
                                                  :note
                                                  "Unnecessary :defer keyword.")
-                        diags))))))))
+                        diags))))
+            (when (seq-some (lambda (branch)
+                              (and (eq :functions (car branch))
+                                   (or (symbolp (cadr branch))
+                                       (not (= 2 (length branch))))))
+                            tree)
+              (save-excursion
+                (backward-sexp)
+                (re-search-forward ":functions" nil "NOERROR")
+                (push (flymake-make-diagnostic (current-buffer)
+                                               (match-beginning 0)
+                                               (match-end 0)
+                                               :note
+                                               ":functions should be a list.")
+                      diags)))))))
     (funcall report-fn diags)))
 
 (provide 'jacob-flymake)
