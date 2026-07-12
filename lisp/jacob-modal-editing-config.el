@@ -17,11 +17,7 @@
       (keymap-set map (car binding) (cdr binding)))
     (add-to-list 'jacob-modal-editing-major-mode-keymap-alist (cons mode map))))
 
-;; TODO: can t and g keys be combined? (set mark and expand region)
-
-;; TODO: can c x and d keys be rethought? (copy, cut, delete)
-
-;; i feel like x and d can be merged, but won't i miss killing by line?
+;; TODO: t and g have been combined, t is now a free key
 
 (jacob-modal-editing-bind-keys jacob-modal-editing-keymap
                                `(("'" . delete-other-windows)
@@ -183,7 +179,7 @@
                                  ("q" . duplicate-dwim)
                                  ("r" . puni-forward-kill-word)
                                  ("s" . jacob-return-macro)
-                                 ("t" . set-mark-command)
+                                 ("t" . puni-slurp-forward) ; experimental, is this too lisp specific?
                                  ("u" . backward-word)
                                  ("v" . yank)
                                  ("w" . jacob-shrink-whitespaces)
