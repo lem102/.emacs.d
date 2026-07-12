@@ -5,18 +5,6 @@
 
 ;;; Code:
 
-;; TODO: move out of this module, generalise
-(defun jacob-point-in-text-p ()
-  "Return t if in comment or string.  Else nil."
-  (let ((xsyntax-state (syntax-ppss)))
-    (or (nth 3 xsyntax-state)
-        (nth 4 xsyntax-state))))
-
-;; TODO: move out of this module, generalise
-(defun jacob-point-in-code-p ()
-  "Return t if outside of string or comment.  Else nil."
-  (not (jacob-point-in-text-p)))
-
 (defun jacob-autoinsert-yas-expand ()
   "Replace text in yasnippet template."
   (yas-expand-snippet (buffer-string) (point-min) (point-max)))

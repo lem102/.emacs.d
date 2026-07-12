@@ -1,7 +1,7 @@
 # -*- mode: snippet -*-
 # name: if
 # key: if
-# condition: (jacob-point-in-code-p)
+# condition: (jacob-in-code-p)
 # expand-env: ((yas-wrap-around-region t))
 # --
 if (${1:true})

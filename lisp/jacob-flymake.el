@@ -5,6 +5,8 @@
 
 ;;; Code:
 
+(require 'jacob-utils)
+
 ;;;###autoload
 (defun jacob-elisp-flymake-check-removals (report-fn &rest _args)
   "Flag `delq' `remq' and `delete'.
@@ -17,8 +19,7 @@ This is a flymake backend, hence it uses REPORT-FN to report diagnostics."
       (goto-char (point-min))
       (let (diags)
         (while (re-search-forward regexp nil "NOERROR")
-          (unless (or (nth 3 (syntax-ppss))
-                      (nth 4 xsyntax-state))
+          (unless (jacob-in-text-p)
             (push (flymake-make-diagnostic (current-buffer)
                                            (match-beginning 1)
                                            (match-end 1)

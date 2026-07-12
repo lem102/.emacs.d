@@ -8,6 +8,8 @@
 
 ;;; Code:
 
+(require 'jacob-utils)
+
 (defun jacob-trim-quotes--trim (text)
   "If TEXT is a string, remove the leading and ending quotes."
   (if (string-match "^\\([[:space:]]*\\)\"\\(.*\\)\"\\([[:space:]]*\\)$" text)
@@ -16,13 +18,9 @@
               (match-string 3 text))
     text))
 
-(defun jacob-trim-quotes--point-in-string-p ()
-  "Return non-nil if point is inside a string."
-  (nth 3 (syntax-ppss)))
-
 (defun jacob-trim-quotes--yank-transform (text)
   "Trim quotes from TEXT if point is inside a string."
-  (if (jacob-trim-quotes--point-in-string-p)
+  (if (jacob-in-string-p)
       (jacob-trim-quotes--trim text)
     text))
 

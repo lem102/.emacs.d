@@ -5,6 +5,8 @@
 
 ;;; Code:
 
+(require 'jacob-utils)
+
 (defvar-local jacob-backward-paragraph-function #'backward-paragraph
   "Function to use for backward paragraph in `jacob-beginning-of-line'.")
 
@@ -48,7 +50,7 @@
       (unless (ignore-errors
                 (funcall jacob-delete-backwards-function delete-function))
         (cond ((= ?\" char-class)     ; string
-               (if (nth 3 (syntax-ppss))
+               (if (jacob-in-string-p)
                    (progn
                      (backward-char)
                      (save-excursion
@@ -76,7 +78,7 @@
                              #'delete-pair
                            #'kill-sexp)))
     (cond ((= ?\" char-class)           ; string
-           (when (nth 3 (syntax-ppss))
+           (when (jacob-in-string-p)
              (backward-up-list))
            (funcall delete-function))
           ((= ?\( char-class)           ; delete from start of pair
