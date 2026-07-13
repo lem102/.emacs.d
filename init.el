@@ -581,6 +581,12 @@ $0")
   :custom ((tramp-copy-size-limit jacob-megabyte)
            (tramp-use-scp-direct-remote-copying t)))
 
+(use-package tramp-integration
+  :functions (tramp-compile-disable-ssh-controlmaster-options)
+  :config
+  (with-eval-after-load 'compile
+    (remove-hook 'compilation-mode-hook #'tramp-compile-disable-ssh-controlmaster-options)))
+
 (use-package dumb-jump
   :defer t
   :functions (dumb-jump-xref-activate)
@@ -796,18 +802,18 @@ $0")
   (setopt eldoc-documentation-strategy 'eldoc-documentation-compose))
 
 (use-package consult-git-log-grep
-  :defer t
-  :init
-  (keymap-set project-prefix-map "l" #'consult-git-log-grep))
+  :bind ( :map project-prefix-map
+          ("l" . consult-git-log-grep)))
 
 (use-package prodigy
   :hook ((prodigy-view-mode-hook . (lambda ()
                                      "Disable view mode"
-                                     (view-mode 0))))
-  :init
-  (keymap-set project-prefix-map "L" #'prodigy)
+                                     (view-mode 0)))
+         (prodigy-view-mode-hook . compilation-minor-mode))
+  :bind ( :map project-prefix-map
+          ("L" . prodigy))
+  :functions (prodigy-define-tag prodigy-set-status)
   :config
-
   (prodigy-define-tag
     :name 'asp.net
     :stop-signal 'kill
@@ -821,9 +827,7 @@ $0")
     :name 'sbt
     :command "sbt"
     :args '("run")
-    :ready-message "(Server started, use Enter to stop and go back to the console...)")
-
-  (add-hook 'prodigy-view-mode-hook #'compilation-minor-mode))
+    :ready-message "(Server started, use Enter to stop and go back to the console...)"))
 
 (use-package hl-todo
   :hook ((after-init-hook . global-hl-todo-mode)))
@@ -914,6 +918,10 @@ $0")
 (use-package org
   :mode ("\\.org\\'" . org-mode)
   :hook ((org-mode-hook . yas-minor-mode))
+  :functions (org-backward-paragraph
+              org-forward-paragraph
+              org-link-set-parameters
+              org-agenda-todo)
   :config
   (require 'jacob-org)
   (add-hook 'org-babel-post-tangle-hook 'jacob-org-babel-tangle-delete-whitespace)
@@ -1028,17 +1036,6 @@ $0")
 (use-package server
   :hook ((after-init-hook . server-start)))
 
-(use-package smerge-mode
-  :defer t
-  :config
-  (defvar-keymap jacob-smerge-repeat-map
-    :repeat t
-    "l" #'smerge-next
-    "j" #'smerge-prev
-    "i" #'smerge-keep-upper
-    "k" #'smerge-keep-lower
-    "SPC" #'smerge-keep-all))
-
 (use-package calendar
   :defer t
   :config
@@ -1112,9 +1109,6 @@ $0")
           compilation-scroll-output t
           compilation-ask-about-save nil)
 
-  (with-eval-after-load 'tramp
-    (remove-hook 'compilation-mode-hook #'tramp-compile-disable-ssh-controlmaster-options))
-
   (with-eval-after-load "jacob-modal-editing"
     ;; Hack to prevent compilation mode keys from overriding modal
     ;; editing keys. revisit if the overriding problem appears in more
@@ -1129,8 +1123,10 @@ $0")
 (use-package treesit
   :defer t
   :custom ((treesit-font-lock-level 4)))
-
+;; TODO: write a function that sorts the lines inside a list
 (use-package treesit-auto
+  :functions (treesit-auto-add-to-auto-mode-alist
+              global-treesit-auto-mode)
   :config
   (add-to-list 'treesit-auto-recipe-list (make-treesit-auto-recipe
                                           :lang 'gdscript
@@ -1182,6 +1178,9 @@ $0")
   :bind (("M-j" . avy-goto-char-timer)
          :map isearch-mode-map
          ("M-j" . avy-isearch))
+  :functions (avy-action-mark
+              avy-action-kill-stay
+              avy-action-yank)
   :config
   (require 'jacob-avy)
   (add-to-list 'avy-dispatch-alist (cons ?t #'avy-action-mark))
@@ -1222,8 +1221,7 @@ $0")
 (use-package eglot-booster
   :after eglot
   :when (executable-find "emacs-lsp-booster")
-  :config
-  (eglot-booster-mode 1))
+  :hook ((after-init-hook . eglot-booster-mode)))
 
 (use-package dape
   :defer t
@@ -1332,7 +1330,7 @@ $0")
    :map embark-flymake-map
    ("a" . eglot-code-actions)
    ("r" . eglot-rename))
-  :config
+  :functions (cape-dabbrev):config
   (setf (alist-get 'eglot-code-actions embark-target-injection-hooks) 'embark--ignore-target
         (alist-get 'eglot-rename embark-target-injection-hooks) 'embark--ignore-target))
 
@@ -1342,7 +1340,9 @@ $0")
 
 (use-package cape
   :defer t
+  :functions (cape-dabbrev)
   :init
+  ;; TODO: enable this in elisp mode
   (add-to-list 'completion-at-point-functions #'cape-dabbrev))
 
 (use-package expreg
@@ -1354,6 +1354,7 @@ $0")
 
 (use-package verb
   :defer t
+  :functions (verb-json-get verb-stored-response)
   :config
   (defun jacob-verb-id (response-id)
     "Get the id property from the stored verb response pertaining to RESPONSE-ID."
@@ -1361,6 +1362,7 @@ $0")
 
 (use-package sly
   :hook ((lisp-mode-hook . sly-mode))
+  :functions (sly-setup sly-symbol-completion-mode)
   :config
   (sly-setup)
 
@@ -1418,6 +1420,7 @@ $0")
 (use-package eat
   :when (or jacob-is-linux jacob-is-mac)
   :hook ((eshell-mode-hook . eat-eshell-mode))
+  :functions (eat-eshell-update-semi-char-mode-map)
   :config
   (add-to-list 'eat-eshell-semi-char-non-bound-keys [?\e ? ]) ; make M-SPC not bound in eat-eshell
   (eat-eshell-update-semi-char-mode-map) ; update the eat keymap
@@ -1425,6 +1428,7 @@ $0")
 
 (use-package exec-path-from-shell
   :if (or jacob-is-mac jacob-is-linux)
+  :functions (exec-path-from-shell-initialize)
   :config
   (add-to-list 'exec-path-from-shell-variables "JAVA_HOME")
   (exec-path-from-shell-initialize))
