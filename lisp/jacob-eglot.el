@@ -1,7 +1,7 @@
 ;;; jacob-eglot.el --- Utilities for `eglot'  -*- lexical-binding: t; -*-
 
 ;;; Commentary:
-;; 
+;;
 
 ;;; Code:
 
@@ -18,7 +18,7 @@
       (save-buffer)
       (add-hook 'jsonrpc-event-hook #'handle-code-actions))))
 
-(defun jacob-remove-ret-character-from-buffer (&rest _)
+(defun jacob-eglot-remove-ret-character-from-buffer (&rest _)
   "Remove all occurances of ^M from the buffer.
 
     Useful for deleting ^M after `eglot-code-actions'."

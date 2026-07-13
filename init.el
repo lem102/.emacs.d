@@ -611,8 +611,6 @@ $0")
               eglot-alternatives
               eglot-flymake-backend)
   :config
-  (require 'jacob-eglot)
-
   (jacob-defhookf eglot-managed-mode-hook
     (eglot-inlay-hints-mode 0)
     (eglot-semantic-tokens-mode 0)
@@ -625,9 +623,6 @@ $0")
                                                           :targetBuildTool "sbt"
                                                           :defaultBspToBuildTool t
                                                           :enableBestEffort t)))
-
-  (advice-add 'eglot-code-actions :after #'jacob-remove-ret-character-from-buffer)
-  (advice-add 'eglot-rename :after #'jacob-remove-ret-character-from-buffer)
 
   (add-to-list 'eglot-server-programs '((csharp-mode csharp-ts-mode) . (lambda (_interactive _project)
                                                                          "Don't activate eglot when in a C# script."
@@ -662,9 +657,12 @@ $0")
 (use-package jacob-eglot
   :defer t
   :after (eglot)
-  :functions (jacob-eglot-xref-backend)
+  :functions (jacob-eglot-xref-backend
+              jacob-eglot-remove-ret-character-from-buffer)
   :config
-  (advice-add 'eglot-xref-backend :override #'jacob-eglot-xref-backend))
+  (advice-add 'eglot-xref-backend :override #'jacob-eglot-xref-backend)
+  (advice-add 'eglot-code-actions :after #'jacob-eglot-remove-ret-character-from-buffer)
+  (advice-add 'eglot-rename :after #'jacob-eglot-remove-ret-character-from-buffer))
 
 (require 'jacob-csharp-mode)
 
