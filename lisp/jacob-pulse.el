@@ -5,6 +5,8 @@
 
 ;;; Code:
 
+(require 'pulse)
+
 (defun jacob-pulse--thing-at-point (thing)
   "Pulse the THING at point."
   (let ((bounds (bounds-of-thing-at-point thing)))

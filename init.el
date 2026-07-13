@@ -626,8 +626,6 @@ $0")
                                                           :defaultBspToBuildTool t
                                                           :enableBestEffort t)))
 
-  (advice-add 'eglot-xref-backend :override #'jacob-eglot-xref-backend)
-
   (advice-add 'eglot-code-actions :after #'jacob-remove-ret-character-from-buffer)
   (advice-add 'eglot-rename :after #'jacob-remove-ret-character-from-buffer)
 
@@ -660,6 +658,13 @@ $0")
   (setopt eglot-ignored-server-capabilities '(:documentOnTypeFormattingProvider :documentFormattingProvider)
           eglot-stay-out-of '(imenu flymake)
           eglot-code-action-indications '(eldoc-hint mode-line)))
+
+(use-package jacob-eglot
+  :defer t
+  :after (eglot)
+  :functions (jacob-eglot-xref-backend)
+  :config
+  (advice-add 'eglot-xref-backend :override #'jacob-eglot-xref-backend))
 
 (require 'jacob-csharp-mode)
 
@@ -785,13 +790,16 @@ $0")
 
 (use-package esh-mode
   :defer t
+  :custom ((eshell-scroll-to-bottom-on-output 'this)))
+
+(use-package jacob-eshell
+  :after (esh-mode)
+  :functions (jacob-eshell-windows-confirm-terminate-batch-job)
   :config
-  (require 'jacob-eshell)
   (when jacob-is-windows
     (advice-add 'eshell-interrupt-process
                 :after
-                #'jacob-eshell-windows-confirm-terminate-batch-job))
-  :custom ((eshell-scroll-to-bottom-on-output 'this)))
+                #'jacob-eshell-windows-confirm-terminate-batch-job)))
 
 (use-package imenu
   :custom ((imenu-use-popup-menu 'on-mouse)))
@@ -943,13 +951,18 @@ $0")
     (setq-local jacob-backward-paragraph-function #'org-backward-paragraph)
     (setq-local jacob-forward-paragraph-function #'org-forward-paragraph))
 
-  (org-link-set-parameters "jira"
-                           :follow #'jacob-org-jira-follow)
-
-  (org-link-set-parameters "project"
-                           :follow #'jacob-org-project-follow)
   :custom ((org-default-notes-file "~/Documents/notes.org")
            (org-log-into-drawer t)))
+
+(use-package jacob-org
+  :defer t
+  :after ol
+  :functions (jacob-org-jira-follow jacob-org-project-follow)
+  :config
+  (org-link-set-parameters "jira"
+                           :follow #'jacob-org-jira-follow)
+  (org-link-set-parameters "project"
+                           :follow #'jacob-org-project-follow))
 
 (use-package org-agenda
   :commands (org-agenda org-capture)
@@ -1015,11 +1028,10 @@ $0")
 (use-package denote
   :defer t)
 
-(use-package pulse
+(use-package jacob-pulse
   :defer t
+  :functions (jacob-pulse-jacob-line-content jacob-pulse-defun jacob-pulse-previous-sexp)
   :init
-  (require 'jacob-pulse)
-
   (dolist (command '(recenter-top-bottom
                      scroll-up-command
                      scroll-down-command
@@ -1182,26 +1194,30 @@ $0")
               avy-action-kill-stay
               avy-action-yank)
   :config
-  (require 'jacob-avy)
   (add-to-list 'avy-dispatch-alist (cons ?t #'avy-action-mark))
   (add-to-list 'avy-dispatch-alist (cons ?x #'avy-action-kill-stay))
   (add-to-list 'avy-dispatch-alist (cons ?v #'avy-action-yank))
+  :custom ((avy-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l ?\;))))
+
+(use-package jacob-avy
+  :after (avy)
+  :functions (jacob-avy-kill-line
+              jacob-avy-copy-line
+              jacob-avy-yank-line
+              jacob-avy-embark)
+  :config
   (add-to-list 'avy-dispatch-alist (cons ?X #'jacob-avy-kill-line))
   (add-to-list 'avy-dispatch-alist (cons ?C #'jacob-avy-copy-line))
   (add-to-list 'avy-dispatch-alist (cons ?V #'jacob-avy-yank-line))
-  (add-to-list 'avy-dispatch-alist (cons ?\\ #'jacob-avy-embark))
-  :custom ((avy-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l ?\;))))
+  (add-to-list 'avy-dispatch-alist (cons ?\\ #'jacob-avy-embark)))
 
 (use-package apheleia
   :defer t
   :config
-  (require 'jacob-apheleia)
-
   (keymap-set global-map "<menu-bar> <tools> <apheleia>" '("Format Buffer" . apheleia-format-buffer))
 
   (add-to-list 'apheleia-formatters '(csharpier "dotnet" "csharpier" "--write-stdout"))
   (add-to-list 'apheleia-formatters '(gdscript-formatter "gdscript-formatter"))
-  (add-to-list 'apheleia-formatters '(play-routes . jacob-apheleia-format-play-routes-file))
   (add-to-list 'apheleia-formatters '(scalafmt "scalafmt" "--stdin" "--non-interactive" "--quiet" "--stdout"))
 
   (add-to-list 'apheleia-mode-alist '(csharp-ts-mode . csharpier))
@@ -1211,7 +1227,14 @@ $0")
   (add-to-list 'apheleia-mode-alist '(fennel-mode . lisp-indent))
 
   (add-to-list 'apheleia-skip-functions #'region-active-p)
-  (add-to-list 'apheleia-skip-functions #'active-minibuffer-window)
+  (add-to-list 'apheleia-skip-functions #'active-minibuffer-window))
+
+(use-package jacob-apheleia
+  :after apheleia
+  :functions (jacob-apheleia-smerge-active-p jacob-apheleia-yas-active-p)
+  :config
+  (add-to-list 'apheleia-formatters '(play-routes . jacob-apheleia-format-play-routes-file))
+
   (add-to-list 'apheleia-skip-functions #'jacob-apheleia-yas-active-p)
   (add-to-list 'apheleia-skip-functions #'jacob-apheleia-smerge-active-p))
 
