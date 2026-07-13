@@ -82,6 +82,14 @@ TODO: write documentation." t)
 (register-definition-prefixes "jacob-eglot" '("jacob-"))
 
 
+;;; Generated autoloads from jacob-elisp.el
+
+(autoload 'jacob-elisp-eval-print-last-sexp "jacob-elisp" "\
+Run `eval-print-last-sexp', indent the result." t)
+(autoload 'jacob-elisp-move-past-close-and-reindent "jacob-elisp" "\
+Advice for `move-past-close-and-reindent'.")
+
+
 ;;; Generated autoloads from jacob-eshell.el
 
 (register-definition-prefixes "jacob-eshell" '("jacob-eshell-windows-confirm-terminate-batch-job"))
@@ -263,6 +271,11 @@ disabled.
 
 (fn &optional ARG)" t)
 (register-definition-prefixes "jacob-trim-quotes" '("jacob-trim-quotes--"))
+
+
+;;; Generated autoloads from jacob-utils.el
+
+(register-definition-prefixes "jacob-utils" '("jacob-in-"))
 
 
 ;;; Generated autoloads from jacob-yasnippet.el

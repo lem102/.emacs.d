@@ -869,12 +869,6 @@ $0")
          (emacs-lisp-mode-hook . electric-indent-local-mode)
          (emacs-lisp-mode-hook . flymake-mode))
   :config
-  (defun jacob-move-past-close-and-reindent ()
-    "Advice for `move-past-close-and-reindent'."
-    (when (bolp)
-      (delete-blank-lines)))
-
-  (advice-add #'move-past-close-and-reindent :after #'jacob-move-past-close-and-reindent)
 
   (jacob-defhookf emacs-lisp-mode-hook
     (setq-local yas-key-syntaxes '("w_"))
@@ -883,21 +877,18 @@ $0")
     (add-hook 'flymake-diagnostic-functions
               #'jacob-flymake-use-package nil "LOCAL"))
 
-  (defun jacob-eval-print-last-sexp ()
-    "Run `eval-print-last-sexp', indent the result."
-    (interactive)
-    (save-excursion
-      (eval-print-last-sexp 0))
-    (save-excursion
-      (forward-line)
-      (indent-pp-sexp t)))
-
-  (keymap-set lisp-interaction-mode-map "C-j" #'jacob-eval-print-last-sexp)
-
   (setopt elisp-flymake-byte-compile-load-path load-path)
 
   (font-lock-add-keywords 'emacs-lisp-mode
                           '(("(use-package \\([[:word:]-]+\\)" 1 'font-lock-function-name-face))))
+
+(use-package jacob-elisp
+  :after elisp-mode
+  :bind ( :map lisp-interaction-mode-map
+          ("C-j" . jacob-eval-print-last-sexp))
+  :functions (jacob-elisp-move-past-close-and-reindent)
+  :config
+  (advice-add #'move-past-close-and-reindent :after #'jacob-elisp-move-past-close-and-reindent))
 
 (use-package scheme
   :mode ("\\.scm\\'" . scheme-mode)
