@@ -79,7 +79,7 @@ TODO: write documentation." t)
 
 ;;; Generated autoloads from jacob-eglot.el
 
-(register-definition-prefixes "jacob-eglot" '("jacob-"))
+(register-definition-prefixes "jacob-eglot" '("jacob-eglot-"))
 
 
 ;;; Generated autoloads from jacob-elisp.el
@@ -145,6 +145,8 @@ For use with GitLab only." t)
 
 ;;; Generated autoloads from jacob-init-helpers.el
 
+(autoload 'jacob-disable-auto-save-in-buffer "jacob-init-helpers" "\
+Disable `auto-save-visited-mode' locally.")
 (register-definition-prefixes "jacob-init-helpers" '("jacob-"))
 
 

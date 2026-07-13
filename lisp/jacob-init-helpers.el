@@ -2,7 +2,7 @@
 
 
 ;;; Commentary:
-;; 
+;;
 
 ;;; Code:
 
@@ -51,6 +51,11 @@
                             nil
                             "NOERROR")
         (kill-whole-line 2)))))
+
+;;;###autoload
+(defun jacob-disable-auto-save-in-buffer ()
+  "Disable `auto-save-visited-mode' locally."
+  (setq-local auto-save-visited-mode nil))
 
 (provide 'jacob-init-helpers)
 

@@ -459,7 +459,8 @@ then remove this function from `find-file-hook'."
            (project-switch-use-entire-map t)))
 
 (use-package yasnippet
-  :hook ((snippet-mode . yas-minor-mode))
+  :hook ((snippet-mode . yas-minor-mode)
+         (snippet-mode . jacob-disable-auto-save-in-buffer))
   :bind ( :map yas-minor-mode-map
           ("C-c y n" . yas-new-snippet)
           ("C-c y v" . yas-visit-snippet-file)
@@ -468,8 +469,6 @@ then remove this function from `find-file-hook'."
   :config
   (require 'jacob-yasnippet)
   (yas-reload-all)
-  (jacob-defhookf snippet-mode-hook
-    (setq-local auto-save-visited-mode nil))
   :custom ((yas-new-snippet-default "# -*- mode: snippet -*-
 # key: $1
 # --
@@ -920,8 +919,7 @@ $0")
               org-link-set-parameters
               org-agenda-todo)
   :config
-  (require 'jacob-org)
-  (add-hook 'org-babel-post-tangle-hook 'jacob-org-babel-tangle-delete-whitespace)
+  (add-hook 'org-babel-post-tangle-hook #'jacob-org-babel-tangle-delete-whitespace)
 
   (org-babel-do-load-languages
    'org-babel-load-languages
@@ -954,7 +952,7 @@ $0")
                            :follow #'jacob-org-project-follow))
 
 (use-package org-agenda
-  :commands (org-agenda org-capture)
+  :hook ((org-agenda-mode-hook . hl-line-mode))
   :config
   (setopt org-agenda-custom-commands '(("r" "Routine" agenda "" ((org-agenda-tag-filter-preset '("+tickler"))
                                                                  (org-agenda-span 'day)))
@@ -980,8 +978,8 @@ $0")
       map))
 
   (jacob-defhookf org-agenda-mode-hook
-    (setq-local tool-bar-map org-agenda-tool-bar-map)
-    (hl-line-mode 1))
+    (setq-local tool-bar-map org-agenda-tool-bar-map))
+
   :bind (("C-c o a" . org-agenda)
          ("C-c o c" . org-capture)))
 
@@ -1166,10 +1164,7 @@ $0")
   :mode ("\\.php\\'" . php-ts-mode))
 
 (use-package message
-  :defer t
-  :config
-  (jacob-defhookf message-mode-hook
-    (setq-local auto-save-visited-mode nil))
+  :hook ((message-mode-hook . jacob-disable-auto-save-in-buffer))
   :custom ((message-send-mail-function 'smtpmail-send-it)))
 
 (use-package nxml-mode
