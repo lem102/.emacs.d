@@ -1142,6 +1142,17 @@ $0")
                 :abi14-revision "v0.3.0"
                 :ext "\\.lua\\'"))
 
+  (add-to-list 'treesit-auto-recipe-list
+               (make-treesit-auto-recipe
+                :lang 'javascript
+                :ts-mode 'js-ts-mode
+                :remap '(js-mode javascript-mode js2-mode)
+                :url "https://github.com/tree-sitter/tree-sitter-javascript"
+                :revision "master"
+                :abi14-revision "v0.23.1"
+                :source-dir "src"
+                :ext "\\.js\\'"))
+
   (setq treesit-auto-langs '(c-sharp scala yaml gdscript json markdown dockerfile c lua))
   (treesit-auto-add-to-auto-mode-alist)
   (global-treesit-auto-mode 1))
