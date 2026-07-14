@@ -1016,7 +1016,6 @@ $0")
   :defer t)
 
 (use-package jacob-pulse
-  :defer t
   :functions (jacob-pulse-jacob-line-content jacob-pulse-defun jacob-pulse-previous-sexp)
   :init
   (dolist (command '(recenter-top-bottom
