@@ -226,7 +226,8 @@
 
 (jacob-modal-editing-major-mode-override-keys 'org-agenda-mode
                                               '(("q" . quit-window)
-                                                ("g" . org-agenda-redo-all)))
+                                                ("g" . org-agenda-redo-all)
+                                                ("SPC ;" . org-save-all-org-buffers)))
 
 (jacob-modal-editing-major-mode-override-keys 'help-mode
                                               '(("w" . jacob-help-edit)
