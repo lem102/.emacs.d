@@ -1,0 +1,4 @@
+# key: oformat
+# name: oformat
+# --
+given OFormat[${1:`(file-name-sans-extension (file-name-nondirectory (buffer-file-name)))`}] = Json.format

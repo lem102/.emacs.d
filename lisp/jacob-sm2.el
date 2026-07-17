@@ -17,6 +17,8 @@
   ["Commands"
    ("i" "Status" jacob-sm2-status)
    ("s" "Start service or profile" jacob-sm2-start)
+   ("c" "Clean then start service or profile" jacob-sm2-start-clean)
+   ("h" "See help" jacob-sm2-help)
    ("k" "Stop service or profile" jacob-sm2-stop)
    ("l" "View Logs for service" jacob-sm2-logs)
    ("p" "Prune services" jacob-sm2-prune)
@@ -28,6 +30,11 @@
   "Run sm2 -s."
   (interactive)
   (async-shell-command "sm2 -s"))
+
+(defun jacob-sm2-help ()
+  "Run sm2 --help."
+  (interactive)
+  (async-shell-command "sm2 --help"))
 
 (defun jacob-sm2-prune ()
   "Run sm2 --prune."
@@ -50,7 +57,15 @@
          (process-connection-type nil)
 
          )
-    (async-shell-command (format "sm2 --start %s"
+    (async-shell-command (format "sm2 --workers 20 --start %s"
+                                 (completing-read "Start service or profile: "
+                                                  (jacob-sm2--get-services "AND-PROFILES"))))))
+
+(defun jacob-sm2-start-clean ()
+  "Run sm2 --clean --start. Prompt for which service or profile should be started."
+  (interactive)
+  (let* ((process-connection-type nil))
+    (async-shell-command (format "sm2 --workers 20 --clean --start %s"
                                  (completing-read "Start service or profile: "
                                                   (jacob-sm2--get-services "AND-PROFILES"))))))
 

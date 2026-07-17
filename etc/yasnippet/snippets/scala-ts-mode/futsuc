@@ -1,0 +1,4 @@
+# -*- mode: snippet -*-
+# key: futsuc
+# --
+Future.successful($0)

@@ -342,6 +342,9 @@ lets you select one via completion, and inserts it at the top of the file."
 
 ;; flymake
 
+;; TODO: change this so it only applies when there is one class/object
+;; pair in a file. when their are more pairs check that the class and
+;; object are adjacent.
 (defun jacob-flymake-scala-filename-alignment (report-fn &rest _args)
   "Check for classes that differ to their filename.
 
