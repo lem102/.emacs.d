@@ -16,7 +16,7 @@
 (defvar-keymap jacob-modal-editing--internal-map
   :doc "Internal keymap. Do not edit. Contains composition of:
 - `jacob-modal-editing-command-mode-map'
-- elements of `jacob-modal-editing-major-mode-keymap-alist'")
+- elements of `jacob-modal-editing-overriding-map-alist'")
 
 (defvar jacob-modal-editing--map-alist `((jacob-modal-editing-command-mode . ,jacob-modal-editing--internal-map))
   "Keymap alist which:
@@ -25,8 +25,9 @@
 - Used in `emulation-mode-map-alists' to make
   `jacob-modal-editing--internal-map' active.")
 
-(defvar jacob-modal-editing-major-mode-keymap-alist nil
-  "TODO: document and reconsider name.")
+(defvar jacob-modal-editing-overriding-map-alist nil
+  "Alist of major or minor modes and keymaps.
+Used to construct `jacob-modal-editing--internal-map'.")
 
 (defun jacob-modal-editing-command-mode-activate ()
   "Activate `jacob-modal-editing-command-mode'."
@@ -46,7 +47,7 @@ Result is coposition of:
   (let* ((modes (with-current-buffer (window-buffer (selected-window))
                   (append local-minor-modes global-minor-modes (list major-mode))))
          (mode-keymaps (seq-keep (lambda (m)
-                                   (alist-get m jacob-modal-editing-major-mode-keymap-alist))
+                                   (alist-get m jacob-modal-editing-overriding-map-alist))
                                  modes)))
     (make-composed-keymap mode-keymaps jacob-modal-editing-command-mode-map)))
 

@@ -11,11 +11,11 @@
     (keymap-set map (car binding) (cdr binding))))
 
 (defun jacob-modal-editing-major-mode-override-keys (mode bindings)
-  "Define a keymap for MODE with BINDINGS and add it to `jacob-modal-editing-major-mode-keymap-alist'."
+  "Define a keymap for MODE with BINDINGS and add it to `jacob-modal-editing-overriding-map-alist'."
   (let ((map (make-sparse-keymap)))
     (dolist (binding bindings)
       (keymap-set map (car binding) (cdr binding)))
-    (add-to-list 'jacob-modal-editing-major-mode-keymap-alist (cons mode map))))
+    (add-to-list 'jacob-modal-editing-overriding-map-alist (cons mode map))))
 
 ;; TODO: t and g have been combined, t is now a free key
 
