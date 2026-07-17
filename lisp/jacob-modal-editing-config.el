@@ -19,7 +19,7 @@
 
 ;; TODO: t and g have been combined, t is now a free key
 
-(jacob-modal-editing-bind-keys jacob-modal-editing-keymap
+(jacob-modal-editing-bind-keys jacob-modal-editing-command-mode-map
                                `(("'" . delete-other-windows)
                                  ("," . jacob-split-or-switch-window)
                                  ("-" . split-window-below)
@@ -165,7 +165,7 @@
                                  ("c" . jacob-copy-line-or-region)
                                  ("d" . jacob-delete-backwards)
                                  ("e" . puni-backward-kill-word)
-                                 ("f" . jacob-modal-editing-disable)
+                                 ("f" . jacob-modal-editing-command-mode-deactivate)
                                  ("g" . jacob-mark)
                                  ("h" . jacob-beginning-of-line)
                                  ("i" . previous-line)
@@ -396,16 +396,16 @@
   (add-hook 'jacob-modal-editing-command-mode-hook #'jacob-modal-editing-setup-eat)
   (add-hook 'eat-eshell-exec-hook #'jacob-modal-editing-setup-eat))
 
-(keymap-set jacob-modal-editing-mode-keymap "M-SPC" #'jacob-modal-editing-enable)
+(keymap-set jacob-modal-editing-mode-map "M-SPC" #'jacob-modal-editing-command-mode-activate)
 
 (defun jacob-modal-editing-mode-hook-function ()
   "Hook function for `jacob-modal-editing-mode'."
   (if jacob-modal-editing-mode
       (progn
-        (add-hook 'minibuffer-setup-hook #'jacob-modal-editing-disable)
-        (add-hook 'minibuffer-exit-hook #'jacob-modal-editing-enable))
-    (remove-hook 'minibuffer-setup-hook #'jacob-modal-editing-disable)
-    (remove-hook 'minibuffer-exit-hook #'jacob-modal-editing-enable)))
+        (add-hook 'minibuffer-setup-hook #'jacob-modal-editing-command-mode-deactivate)
+        (add-hook 'minibuffer-exit-hook #'jacob-modal-editing-command-mode-activate))
+    (remove-hook 'minibuffer-setup-hook #'jacob-modal-editing-command-mode-deactivate)
+    (remove-hook 'minibuffer-exit-hook #'jacob-modal-editing-command-mode-activate)))
 
 (add-hook 'jacob-modal-editing-mode-hook #'jacob-modal-editing-mode-hook-function)
 

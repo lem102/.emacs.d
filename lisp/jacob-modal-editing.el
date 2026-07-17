@@ -5,77 +5,85 @@
 
 ;;; Code:
 
-(defvar-keymap jacob-modal-editing-keymap)
+(defvar-keymap jacob-modal-editing-command-mode-map
+  :doc "Keymap for command mode.
+- Used to construct `jacob-modal-editing--internal-map'
+- This keymap is not activated alongside `jacob-modal-editing-command-mode'")
 
-(defvar-keymap jacob-modal-editing-mode-keymap)
+(defvar-keymap jacob-modal-editing-mode-map
+  :doc "Keymap for `jacob-modal-editing-mode'.")
 
-(defvar-keymap jacob-modal-editing--internal-keymap)
+(defvar-keymap jacob-modal-editing--internal-map
+  :doc "Internal keymap. Do not edit. Contains composition of:
+- `jacob-modal-editing-command-mode-map'
+- elements of `jacob-modal-editing-major-mode-keymap-alist'")
 
-(defvar jacob-modal-editing-major-mode-keymap-alist nil)
+(defvar jacob-modal-editing--map-alist `((jacob-modal-editing-command-mode . ,jacob-modal-editing--internal-map))
+  "Keymap alist which:
+- Associates `jacob-modal-editing-command-mode' with
+  `jacob-modal-editing--internal-map'.
+- Used in `emulation-mode-map-alists' to make
+  `jacob-modal-editing--internal-map' active.")
 
-(defun jacob-modal-editing-enable ()
-  "Use keybinds from relevant `jacob-modal-editing' keymaps."
+(defvar jacob-modal-editing-major-mode-keymap-alist nil
+  "TODO: document and reconsider name.")
+
+(defun jacob-modal-editing-command-mode-activate ()
+  "Activate `jacob-modal-editing-command-mode'."
   (interactive)
   (jacob-modal-editing-command-mode 1))
 
-(defun jacob-modal-editing-disable ()
-  "Use regular keybinds."
+(defun jacob-modal-editing-command-mode-deactivate ()
+  "Deactivate `jacob-modal-editing-command-mode'."
   (interactive)
   (jacob-modal-editing-command-mode 0))
 
 (defun jacob-modal-editing--build-keymap ()
-  "Construct the keymap for command state."
+  "Construct the keymap used in command mode.
+Result is coposition of:
+- `jacob-modal-editing-command-mode-map'
+- elements of `jacob-modal-editing--map-alist'"
   (let* ((modes (with-current-buffer (window-buffer (selected-window))
                   (append local-minor-modes global-minor-modes (list major-mode))))
          (mode-keymaps (seq-keep (lambda (m)
                                    (alist-get m jacob-modal-editing-major-mode-keymap-alist))
                                  modes)))
-    (make-composed-keymap mode-keymaps jacob-modal-editing-keymap)))
+    (make-composed-keymap mode-keymaps jacob-modal-editing-command-mode-map)))
 
 (defun jacob-modal-editing--update-keymap (&rest _parameters)
-  "Update the internal keymap.
+  "Update `jacob-modal-editing--internal-map'.
 
-Intended to be called by hooks, so takes any number of arguments and does nothing with them."
-  (set-keymap-parent jacob-modal-editing--internal-keymap
+Intended to be called by hooks, so ignores arguments."
+  (set-keymap-parent jacob-modal-editing--internal-map
                      (jacob-modal-editing--build-keymap)))
 
-(defun jacob-modal-editing-ensure-priority (&optional _file)
-  "Ensure `jacob-modal-editing' keybindings have priority over other minor modes.
-
-Called via the `after-load-functions' special hook."
-  (unless (eq (caar minor-mode-map-alist) 'jacob-modal-editing-mode)
-    (let ((mykeys (assq 'jacob-modal-editing-mode minor-mode-map-alist)))
-      (assq-delete-all 'jacob-modal-editing-mode minor-mode-map-alist)
-      (add-to-list 'minor-mode-map-alist mykeys)))
-  (unless (eq (caar minor-mode-map-alist) 'jacob-modal-editing-command-mode)
-    (let ((mykeys (assq 'jacob-modal-editing-command-mode minor-mode-map-alist)))
-      (assq-delete-all 'jacob-modal-editing-command-mode minor-mode-map-alist)
-      (add-to-list 'minor-mode-map-alist mykeys))))
-
 (define-minor-mode jacob-modal-editing-mode
-  "Simple modal editing mode.
+  "Simple modal editing.
 
 Allows for major mode specific commands without too much nonsense."
   :global t
   :init-value nil
   :lighter " jme"
-  :keymap jacob-modal-editing-mode-keymap
-  (jacob-modal-editing-ensure-priority)
   (jacob-modal-editing-command-mode (if jacob-modal-editing-mode 1 0)))
 
 (define-minor-mode jacob-modal-editing-command-mode
-  "Enable the command state."
+  "Command mode for `jacob-modal-editing'.
+
+- Setup hooks to ensure command mode keymap aligns with active modes.
+- Modify `emulation-mode-map-alists' to control command mode keymap activation."
   :global t
   :init-value nil
   :lighter " jmec"
-  :keymap jacob-modal-editing--internal-keymap
+  :keymap nil
   (if jacob-modal-editing-command-mode
       (progn
         (jacob-modal-editing--update-keymap)
         (add-hook 'window-state-change-functions #'jacob-modal-editing--update-keymap)
-        (add-hook 'change-major-mode-hook #'jacob-modal-editing--update-keymap))
+        (add-hook 'change-major-mode-hook #'jacob-modal-editing--update-keymap)
+        (add-to-list 'emulation-mode-map-alists 'jacob-modal-editing--map-alist))
     (remove-hook 'window-state-change-functions #'jacob-modal-editing--update-keymap)
-    (remove-hook 'change-major-mode-hook #'jacob-modal-editing--update-keymap)))
+    (remove-hook 'change-major-mode-hook #'jacob-modal-editing--update-keymap)
+    (setq emulation-mode-map-alists (remove 'jacob-modal-editing--map-alist emulation-mode-map-alists))))
 
 (provide 'jacob-modal-editing)
 

@@ -1105,13 +1105,7 @@ $0")
 
   (setopt compilation-always-kill t
           compilation-scroll-output t
-          compilation-ask-about-save nil)
-
-  (with-eval-after-load "jacob-modal-editing"
-    ;; Hack to prevent compilation mode keys from overriding modal
-    ;; editing keys. revisit if the overriding problem appears in more
-    ;; places.
-    (jacob-modal-editing-ensure-priority)))
+          compilation-ask-about-save nil))
 
 (use-package winnow
   :hook ((compilation-mode-hook . winnow-mode)))
