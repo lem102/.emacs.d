@@ -145,10 +145,10 @@ Setting this to a non-nil value will cause different features to be loaded.")
       ["Bookmark" bookmark-jump t])))
 
 (use-package tool-bar
-  :config
-  (when jacob-is-android
-    (modifier-bar-mode 1))
-  :custom ((tool-bar-button-margin (if jacob-is-android 40 4))
+  ;; :config
+  ;; (when jacob-is-android
+  ;;   (modifier-bar-mode 1))
+  :custom ((tool-bar-button-margin (if jacob-is-android 39 4))
            (tool-bar-position (if jacob-is-android 'bottom 'top))
            (tool-bar-style 'image)))
 
