@@ -762,27 +762,33 @@ $0")
   (add-to-list 'mode-line-misc-info '(:eval dired-rsync-modeline-status 'append)))
 
 (use-package nerd-icons-dired
-  :when (display-graphic-p)
+  :when (and (display-graphic-p)
+             (not jacob-is-android))
   :hook ((dired-mode-hook . nerd-icons-dired-mode)))
 
 (use-package nerd-icons-mode-line
-  :when (display-graphic-p)
+  :when (and (display-graphic-p)
+             (not jacob-is-android))
   :hook ((on-first-file-hook . nerd-icons-mode-line-global-mode)))
 
 (use-package nerd-icons-completion
-  :when (display-graphic-p)
+  :when (and (display-graphic-p)
+             (not jacob-is-android))
   :hook ((prog-mode-hook . nerd-icons-completion-mode)))
 
 (use-package nerd-icons-grep
-  :when (display-graphic-p)
+  :when (and (display-graphic-p)
+             (not jacob-is-android))
   :hook ((grep-mode-hook . nerd-icons-grep-mode)))
 
 (use-package nerd-icons-xref
-  :when (display-graphic-p)
+  :when (and (display-graphic-p)
+             (not jacob-is-android))
   :hook ((xref--xref-buffer-mode-hook . nerd-icons-xref-mode)))
 
 (use-package nerd-icons-ibuffer
-  :when (display-graphic-p)
+  :when (and (display-graphic-p)
+             (not jacob-is-android))
   :hook ((ibuffer-mode-hook . nerd-icons-ibuffer-mode)))
 
 (use-package esh-mode
