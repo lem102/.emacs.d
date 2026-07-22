@@ -5,6 +5,8 @@
 
 ;;; Code:
 
+(require 'svg)
+
 (defun jacob-setup-tool-bars ()
   "Setup tool bars."
   (let* ((down-arrow (let* ((svg (svg-create 25 25)))
