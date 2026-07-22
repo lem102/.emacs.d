@@ -14,22 +14,22 @@
   (jacob-tool-bar-add-top-item "spell" #'ignore 'jacob-ignore2)
   (jacob-tool-bar-add-top-item "spell" #'ignore 'jacob-ignore3)
 
-  (jacob-tool-bar-add-top-item "left-arrow" #'backward-char 'jacob-left)
-  (jacob-tool-bar-add-top-item "sort-ascending" #'next-line 'jacob-down)
-  (jacob-tool-bar-add-top-item "right-arrow" #'forward-char 'jacob-right)
+  (jacob-tool-bar-add-top-item "prev-node" #'puni-backward-sexp-or-up-list 'jacob-backward-sexp)
+  (jacob-tool-bar-add-top-item "up-arrow" #'previous-line 'jacob-up)
+  (jacob-tool-bar-add-top-item "next-node" #'puni-forward-sexp-or-up-list 'jacob-forward-sexp)
 
-  (jacob-tool-bar-add-top-item "spell" #'ignore 'jacob-ignore4)
+  (jacob-tool-bar-add-top-item "search" #'isearch-forward 'jacob-isearch)
   (jacob-tool-bar-add-top-item "spell" #'ignore 'jacob-ignore5)
   (jacob-tool-bar-add-top-item "spell" #'ignore 'jacob-ignore6)
 
 
-  (jacob-tool-bar-add-bottom-item "spell" #'ignore 'jacob-ignore7)
-  (jacob-tool-bar-add-bottom-item "spell" #'ignore 'jacob-ignore8)
-  (jacob-tool-bar-add-bottom-item "spell" #'ignore 'jacob-ignore9)
+  (jacob-tool-bar-add-bottom-item "undo" #'undo 'jacob-undo)
+  (jacob-tool-bar-add-bottom-item "cut" #'jacob-kill-line 'jacob-kill-line)
+  (jacob-tool-bar-add-bottom-item "paste" #'ignore 'jacob-ignore9)
 
-  (jacob-tool-bar-add-bottom-item "prev-node" #'puni-backward-sexp-or-up-list 'jacob-backward-sexp)
-  (jacob-tool-bar-add-bottom-item "up-arrow" #'previous-line 'jacob-up)
-  (jacob-tool-bar-add-bottom-item "next-node" #'puni-forward-sexp-or-up-list 'jacob-forward-sexp)
+  (jacob-tool-bar-add-bottom-item "left-arrow" #'backward-char 'jacob-left)
+  (jacob-tool-bar-add-bottom-item "sort-ascending" #'next-line 'jacob-down)
+  (jacob-tool-bar-add-bottom-item "right-arrow" #'forward-char 'jacob-right)
 
   (jacob-tool-bar-add-bottom-item "spell" #'ignore 'jacob-ignore10)
   (jacob-tool-bar-add-bottom-item "spell" #'ignore 'jacob-ignore11)
@@ -44,8 +44,8 @@ ICON, DEF, KEY and PROPS are as in `tool-bar-add-item'."
          def
          key
          (if jacob-is-android
-             tool-bar-map
-           secondary-tool-bar-map)
+             secondary-tool-bar-map
+           tool-bar-map)
          props)
   (tool-bar--flush-cache))
 
@@ -58,8 +58,8 @@ ICON, DEF, KEY and PROPS are as in `tool-bar-add-item'."
          def
          key
          (if jacob-is-android
-             secondary-tool-bar-map
-           tool-bar-map)
+             tool-bar-map
+           secondary-tool-bar-map)
          props)
   (tool-bar--flush-cache))
 

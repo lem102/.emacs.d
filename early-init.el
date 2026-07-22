@@ -3,6 +3,8 @@
 		                 (getenv "PATH")))
   (push "/data/data/com.termux/files/usr/bin" exec-path))
 
+(tool-bar-mode 0)
+
 ;; Local Variables:
 ;; flymake-mode: nil
 ;; End:
