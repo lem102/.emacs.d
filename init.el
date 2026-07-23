@@ -455,12 +455,14 @@ then remove this function from `find-file-hook'."
 
 (use-package project
   :defer t
+  ;; FIXME: this function doesn't come from this package
   :functions (magit-project-status)
   :config
   (add-hook 'project-find-functions #'jacob-project-try-exercism)
   (keymap-set project-prefix-map "v" (if jacob-is-fast
                                          #'magit-project-status
                                        #'project-vc-dir))
+  (keymap-set project-prefix-map "t" #'jacob-project-visit-test) ; TODO: add use package declaration for jacob-project
   :custom ((project-compilation-buffer-name-function 'project-prefixed-buffer-name)
            (project-switch-use-entire-map t)))
 
