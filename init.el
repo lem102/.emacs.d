@@ -593,6 +593,7 @@ $0")
            (tramp-use-scp-direct-remote-copying t)))
 
 (use-package tramp-integration
+  :defer t
   :functions (tramp-compile-disable-ssh-controlmaster-options)
   :config
   (with-eval-after-load 'compile
