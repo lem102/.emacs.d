@@ -843,7 +843,7 @@ $0")
   (prodigy-define-tag
     :name 'sbt
     :command "sbt"
-    :args '("run")
+    :args '("run" "-Dapplication.router=testOnlyDoNotUseInAppConf.Routes")
     :ready-message "(Server started, use Enter to stop and go back to the console...)"))
 
 (use-package hl-todo
