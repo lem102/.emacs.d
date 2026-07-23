@@ -4,6 +4,8 @@
 
 ;; TODO: handle colima start as well?
 
+;; TODO: handle append args
+
 ;;; Code:
 
 (require 'transient)
@@ -57,7 +59,7 @@
          (process-connection-type nil)
 
          )
-    (async-shell-command (format "sm2 --workers 20 --start %s"
+    (async-shell-command (format "sm2 --workers 4 --start %s"
                                  (completing-read "Start service or profile: "
                                                   (jacob-sm2--get-services "AND-PROFILES"))))))
 
@@ -65,7 +67,7 @@
   "Run sm2 --clean --start. Prompt for which service or profile should be started."
   (interactive)
   (let* ((process-connection-type nil))
-    (async-shell-command (format "sm2 --workers 20 --clean --start %s"
+    (async-shell-command (format "sm2 --workers 4 --clean --start %s"
                                  (completing-read "Start service or profile: "
                                                   (jacob-sm2--get-services "AND-PROFILES"))))))
 
