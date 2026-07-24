@@ -156,7 +156,7 @@ Setting this to a non-nil value will cause different features to be loaded.")
   :when jacob-is-android
   :functions (jacob-setup-tool-bars)
   :config
-  (jacob-setup-tool-bars))
+  (jacob-tool-bar-setup))
 
 ;; custom hooks
 
@@ -290,10 +290,11 @@ then remove this function from `find-file-hook'."
 
 (use-package touch-screen
   :defer t
-  :custom ((touch-screen-display-keyboard t)
+  :custom ((touch-screen-display-keyboard nil)
            (touch-screen-extend-selection t)
            (touch-screen-preview-select t)
-           (touch-screen-word-select t)))
+           (touch-screen-word-select t)
+           (touch-screen-set-point-commands nil)))
 
 (use-package modus-themes
   :custom ((modus-themes-to-toggle '(modus-operandi-tinted modus-vivendi-tinted))))
@@ -1220,9 +1221,9 @@ $0")
 
 (use-package apheleia
   :defer t
-  :config
+  :init
   (keymap-set global-map "<menu-bar> <tools> <apheleia>" '("Format Buffer" . apheleia-format-buffer))
-
+  :config
   (add-to-list 'apheleia-formatters '(csharpier "dotnet" "csharpier" "--write-stdout"))
   (add-to-list 'apheleia-formatters '(gdscript-formatter "gdscript-formatter"))
   (add-to-list 'apheleia-formatters '(scalafmt "scalafmt" "--stdin" "--non-interactive" "--quiet" "--stdout"))
@@ -1293,10 +1294,6 @@ $0")
   :custom ((TeX-auto-save t)
            (TeX-parse-self t)
            (japanese-TeX-error-messages nil)))
-
-(use-package mct
-  :if jacob-is-android
-  :hook ((jacob-first-minibuffer-activation-hook . mct-mode)))
 
 (use-package vertico
   :if (and (not jacob-is-android)

@@ -7,7 +7,7 @@
 
 (require 'svg)
 
-(defun jacob-setup-tool-bars ()
+(defun jacob-tool-bar-setup ()
   "Setup tool bars."
   (let* ((down-arrow (let* ((svg (svg-create 25 25)))
                        (svg-polygon svg
@@ -34,7 +34,7 @@
 
     (jacob-tool-bar-add-top-item "search" #'isearch-forward 'jacob-isearch)
     (jacob-tool-bar-add-top-item "bookmark_add" #'expreg-expand 'jacob-mark)
-    (jacob-tool-bar-add-top-item "spell" #'ignore 'jacob-ignore6)
+    (jacob-tool-bar-add-top-item "save" #'jacob-tool-bar-display-keyboard 'jacob-display-keyboard)
 
 
     (jacob-tool-bar-add-bottom-item "undo" #'undo 'jacob-undo)
@@ -48,6 +48,11 @@
     (jacob-tool-bar-add-bottom-item "spell" #'ignore 'jacob-ignore10)
     (jacob-tool-bar-add-bottom-item "spell" #'ignore 'jacob-ignore11)
     (jacob-tool-bar-add-bottom-item "spell" #'ignore 'jacob-ignore12)))
+
+(defun jacob-tool-bar-display-keyboard ()
+  "Display the keyboard."
+  (interactive)
+  (frame-toggle-on-screen-keyboard (selected-frame) nil))
 
 (defun jacob-tool-bar-add-top-item (icon def key &rest props)
   "Add an item to top tool bar.
