@@ -885,7 +885,7 @@ $0")
          (emacs-lisp-mode-hook . electric-indent-local-mode)
          (emacs-lisp-mode-hook . flymake-mode))
   :config
-
+  (keymap-set emacs-lisp-mode-menu "<eval-defun>" '("Evaluate definition" . eval-defun))
   (jacob-defhookf emacs-lisp-mode-hook
     (setq-local yas-key-syntaxes '("w_"))
     (add-hook 'flymake-diagnostic-functions
