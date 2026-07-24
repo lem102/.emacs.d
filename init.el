@@ -78,6 +78,7 @@ Setting this to a non-nil value will cause different features to be loaded.")
          ))
 
 (use-package jacob-modal-editing
+  :when (not jacob-is-android)
   :functions (jacob-modal-editing-mode)
   :config
   (require 'jacob-modal-editing-config)
