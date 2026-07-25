@@ -109,41 +109,21 @@ Setting this to a non-nil value will cause different features to be loaded.")
   (keymap-global-unset "<menu-bar> <file> <make-frame-on-monitor>")
   (keymap-global-unset "<menu-bar> <file> <write-file>")
   (keymap-global-unset "<menu-bar> <file> <print>")
+  (keymap-global-set "<menu-bar> <file> <restart>" '("Restart" . restart-emacs))
 
-  (easy-menu-define jacob-ui-menu global-map
-    "UI menu"
-    '("JUI"
-      ["Theme" consult-theme t]
-      ["Line Numbers" global-display-line-numbers-mode
-       :style toggle
-       :selected global-display-line-numbers-mode]))
+  (keymap-global-set "<menu-bar> <edit> <goto> <imenu>" '("Imenu" . imenu))
 
-  (easy-menu-define jacob-tools-menu global-map
-    "Tools"
-    '("JTools"
-      ["Magit" magit t]
-      ["Agenda" org-agenda t]
-      ["Calendar" calendar t]
-      ["Describe" consult-symbol t]
-      ["Cecli" jacob-cecli t]
-      ["Gptel" gptel t]))
+  (keymap-global-set "<menu-bar> <tools> <magit>" '("Magit" . magit))
+  (keymap-global-set "<menu-bar> <tools> <org-agenda>" '("Agenda" . org-agenda))
+  (keymap-global-set "<menu-bar> <tools> <gptel>" '("Gptel" . gptel))
+  (keymap-global-set "<menu-bar> <tools> <dired>" '("Dired" . dired-jump))
 
   (easy-menu-define jacob-move-menu global-map
     "Movement menu"
     '("JMove"
       ["Buffer" consult-buffer t]
-      ["Project File" project-find-file t]
       ["Switch Project" jacob-dired-in-other-project t]
-      ["File" find-file t]
-      ["Imenu" consult-imenu t]
-      ["Dired" dired-jump t]))
-
-  (easy-menu-define jacob-menu global-map
-    "misc menu"
-    '("Jacob"
-      ["M-x" execute-extended-command t]
-      ["Restart" restart-emacs t]
-      ["Bookmark" bookmark-jump t])))
+      ["Dired" dired-jump t])))
 
 (use-package tool-bar
   :config
