@@ -384,19 +384,6 @@
 
 (add-hook 'jme-command-mode-hook #'jme-command-mode-hook-f)
 
-;; eat.el integration
-
-(defun jme-setup-eat ()
-  "Configure eat for modal editing."
-  (when eat--eshell-process-running-mode
-    (if jme-command-mode
-        (eat-eshell-emacs-mode)
-      (eat-eshell-semi-char-mode))))
-
-(with-eval-after-load "eat"
-  (add-hook 'jme-command-mode-hook #'jme-setup-eat)
-  (add-hook 'eat-eshell-exec-hook #'jme-setup-eat))
-
 (keymap-set jme-mode-map "M-SPC" #'jme-command-mode-activate)
 
 (defun jme-mode-hook-function ()
@@ -409,6 +396,19 @@
     (remove-hook 'minibuffer-exit-hook #'jme-command-mode-activate)))
 
 (add-hook 'jme-mode-hook #'jme-mode-hook-function)
+
+;; eat.el integration
+
+(defun jme-setup-eat ()
+  "Configure eat for modal editing."
+  (when eat--eshell-process-running-mode
+    (if jme-command-mode
+        (eat-eshell-emacs-mode)
+      (eat-eshell-semi-char-mode))))
+
+(with-eval-after-load "eat"
+  (add-hook 'jme-command-mode-hook #'jme-setup-eat)
+  (add-hook 'eat-eshell-exec-hook #'jme-setup-eat))
 
 (provide 'jme-config)
 
