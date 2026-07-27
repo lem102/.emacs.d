@@ -1105,10 +1105,9 @@ $0")
                                                (0 compilation-error-face))
                                               ("\\(warn\\|WARN\\)\\(ing\\|ING\\)?"
                                                (0 compilation-warning-face))))
-
-  (setopt compilation-always-kill t
-          compilation-scroll-output t
-          compilation-ask-about-save nil))
+  :custom ((compilation-always-kill t)
+           (compilation-scroll-output t)
+           (compilation-ask-about-save nil)))
 
 (use-package winnow
   :hook ((compilation-mode-hook . winnow-mode)))
