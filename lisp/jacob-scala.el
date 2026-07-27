@@ -122,22 +122,20 @@ When BUFFER-OR-FILE is a file, query the file."
 
 (defun jacob-scala-calculate-package (file)
   "Calculate the package of FILE based on the directory."
-  (let* ((sbt-root (locate-dominating-file file "build.sbt"))
-         (is-play-framework (file-exists-p (file-name-concat sbt-root "/conf/application.conf"))))
-
-    (unless is-play-framework
-      ;; TODO: extend this to work with "regular" scala projects
-      (user-error "Not a play framework project"))
-
-    (let* ((app-root (file-name-concat sbt-root "app"))
-           (test-root (file-name-concat sbt-root "test"))
-           (root (if (file-in-directory-p file app-root)
-                     app-root
-                   test-root))
-           (relative-filepath (file-relative-name file root))
-           (directory (directory-file-name (file-name-directory relative-filepath)))
-           (package (string-replace "/" "." directory)))
-      package)))
+  (let* ((relative-roots '("app" "test" "it/test" "src/test/scala"))
+         (sbt-root (locate-dominating-file file "build.sbt"))
+         (absolute-roots (seq-map (lambda (root)
+                                    "Append ROOT to the sbt-root."
+                                    (file-name-concat sbt-root root))
+                                  relative-roots))
+         (absolute-root (seq-find (lambda (root)
+                                    "Return t if file belongs to ROOT."
+                                    (file-in-directory-p file root))
+                                  absolute-roots))
+         (relative-filepath (file-relative-name file absolute-root))
+         (directory (directory-file-name (file-name-directory relative-filepath)))
+         (package (string-replace "/" "." directory)))
+    package))
 
 (defun jacob-scala-fix-package (file)
   "Fix the package of the scala file FILE.
