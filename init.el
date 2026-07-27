@@ -464,14 +464,10 @@ $0")
            (yas-wrap-around-region t)))
 
 (use-package minibuffer
-  :config
-  (keymap-set minibuffer-local-completion-map "SPC" #'self-insert-command)
-  (with-eval-after-load "eglot"
-    (setq completion-category-defaults (seq-filter (lambda (category)
-                                                     "Remove eglot-capf from `completion-category-defaults'."
-                                                     (not (eq 'eglot-capf (car category))))
-                                                   completion-category-defaults)))
+  :bind ( :map minibuffer-local-completion-map
+          ("SPC" . self-insert-command))
   :custom ((completion-styles '(orderless basic initials))
+           (completion-at-point-functions nil) ; Remove the default tags based backend
            (completion-category-overrides '((file (styles basic partial-completion))))
            (completion-auto-help 'always)
            (completion-auto-select 'second-tab)
@@ -646,7 +642,12 @@ $0")
 
   (setopt eglot-ignored-server-capabilities '(:documentOnTypeFormattingProvider :documentFormattingProvider)
           eglot-stay-out-of '(imenu flymake)
-          eglot-code-action-indications '(eldoc-hint mode-line)))
+          eglot-code-action-indications '(eldoc-hint mode-line))
+
+  (setq completion-category-defaults (seq-filter (lambda (category)
+                                                   "Remove eglot-capf from `completion-category-defaults'."
+                                                   (not (eq 'eglot-capf (car category))))
+                                                 completion-category-defaults)))
 
 (use-package jacob-eglot
   :defer t
@@ -873,7 +874,8 @@ $0")
     (add-hook 'flymake-diagnostic-functions
               #'jacob-elisp-flymake-check-removals nil "LOCAL")
     (add-hook 'flymake-diagnostic-functions
-              #'jacob-flymake-use-package nil "LOCAL"))
+              #'jacob-flymake-use-package nil "LOCAL")
+    (add-to-list 'completion-at-point-functions #'cape-dabbrev))
 
   (setopt elisp-flymake-byte-compile-load-path load-path)
 
@@ -1350,7 +1352,6 @@ $0")
   :defer t
   :functions (cape-dabbrev)
   :init
-  ;; TODO: enable this in elisp mode
   (add-to-list 'completion-at-point-functions #'cape-dabbrev))
 
 (use-package expreg
