@@ -1322,9 +1322,7 @@ $0")
         xref-show-definitions-function 'consult-xref
         consult-source-buffer (plist-put consult-source-buffer
                                          :state #'jacob-consult-buffer-state-no-tramp))
-  :custom ((consult-preview-key (if jacob-is-fast
-                                    'any
-                                  nil))))
+  :custom ((consult-preview-key (list :debounce 2 'any))))
 
 (use-package embark
   :bind
