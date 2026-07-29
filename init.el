@@ -642,12 +642,7 @@ $0")
 
   (setopt eglot-ignored-server-capabilities '(:documentOnTypeFormattingProvider :documentFormattingProvider)
           eglot-stay-out-of '(imenu flymake)
-          eglot-code-action-indications '(eldoc-hint mode-line))
-
-  (setq completion-category-defaults (seq-filter (lambda (category)
-                                                   "Remove eglot-capf from `completion-category-defaults'."
-                                                   (not (eq 'eglot-capf (car category))))
-                                                 completion-category-defaults)))
+          eglot-code-action-indications '(eldoc-hint mode-line)))
 
 (use-package jacob-eglot
   :defer t
