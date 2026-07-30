@@ -38,18 +38,23 @@
                (goto-char (treesit-node-start indented-cases-node))
                (insert "{")))))
 
-(defun jacob-scala-test-file ()
+(defun jscala-test-file ()
   "Test the current file."
+  ;; TODO: if in implementation, try find the corresponding test file and run the tests for that file.
   (interactive)
-  (let ((package (jacob-scala--package (buffer-file-name (current-buffer))))
-        (class (treesit-node-text
-                (car
-                 (treesit-query-capture (treesit-buffer-root-node)
-                                        '((class_definition name: (identifier) @x))
-                                        nil
-                                        nil
-                                        "NODE_ONLY"))))
-        (default-directory (project-root (project-current))))
+  (let* ((file (if (jscala-test-file-p)
+                   (buffer-file-name (current-buffer))
+                 (jscala-find-test-file)))
+         (package (jscala--package file))
+         (class (with-current-buffer (get-file-buffer file)
+                  (treesit-node-text
+                   (car
+                    (treesit-query-capture (treesit-buffer-root-node)
+                                           '((class_definition name: (identifier) @x))
+                                           nil
+                                           nil
+                                           "NODE_ONLY")))))
+         (default-directory (project-root (project-current))))
     (sbt-command (format "testOnly %s.%s" package class))))
 
 (defun jacob-scala-dollar ()
@@ -94,9 +99,8 @@ If inside a string using string interpolation and to the right of a value to be 
         (forward-char 1)
         (insert "{")))))
 
-;; TODO: combine this with `jacob-scala-package'
-(defun jacob-scala--package (&optional buffer-or-file)
-  "Get the package of BUFFER-OR-FILE.
+(defun jscala--package (&optional buffer-or-file)
+  "Get the current package of BUFFER-OR-FILE.
 
 When BUFFER-OR-FILE is nil, query the current buffer.
 When BUFFER-OR-FILE is a buffer, query the buffer.
@@ -119,6 +123,35 @@ When BUFFER-OR-FILE is a file, query the file."
            (with-temp-buffer
              (insert-file-contents buffer-or-file)
              (funcall f))))))
+
+(defun jscala-test-file-p (&optional buffer-or-file)
+  "Return t if BUFFER-OR-FILE is a scala test file.
+
+When BUFFER-OR-FILE is nil, query the current buffer.
+When BUFFER-OR-FILE is a buffer, query the buffer.
+When BUFFER-OR-FILE is a file, query the file."
+  (string-match-p "\\Spec.scala$"
+                  (cond ((null buffer-or-file) (buffer-file-name (current-buffer)))
+                        ((bufferp buffer-or-file) (buffer-file-name buffer-or-file))
+                        ((file-readable-p buffer-or-file) buffer-or-file)
+                        (t (user-error "Invalid argument to jacob-scala-test-file-p")))))
+
+(defun jscala-find-test-file (&optional buffer-or-file)
+  "Return the test file that corresponds to BUFFER-OR-FILE.
+
+When BUFFER-OR-FILE is nil, query the current buffer.
+When BUFFER-OR-FILE is a buffer, query the buffer.
+When BUFFER-OR-FILE is a file, query the file.
+
+If argument is already a test file, return the argument."
+  (seq-find (lambda (f)
+              (string= (file-name-nondirectory f)
+                       (if (jscala-test-file-p)
+                           (file-name-nondirectory (buffer-file-name (current-buffer)))
+                         (format "%s.%s"
+                                 (concat (file-name-sans-extension (file-name-nondirectory (buffer-file-name (current-buffer)))) "Spec")
+                                 (file-name-extension (buffer-file-name (current-buffer)))))))
+            (project-files (project-current))))
 
 (defun jacob-scala-calculate-package (file)
   "Calculate the package of FILE based on the directory."
@@ -435,3 +468,7 @@ This is a flymake backend, hence it uses REPORT-FN to report diagnostics."
 (provide 'jacob-scala)
 
 ;;; jacob-scala.el ends here
+
+;; Local Variables:
+;; read-symbol-shorthands: (("jscala-" . "jacob-scala-"))
+;; End:
