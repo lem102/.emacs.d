@@ -41,7 +41,6 @@
      consult-symbol
      csproj-mode
      dape
-     denote
      devdocs
      dired-rsync
      docker

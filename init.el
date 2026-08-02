@@ -1005,9 +1005,6 @@ $0")
 
 ;; (ox-extras-activate '(latex-header-blocks ignore-headlines))
 
-(use-package denote
-  :defer t)
-
 (use-package jacob-pulse
   :functions (jacob-pulse-jacob-line-content jacob-pulse-defun jacob-pulse-previous-sexp)
   :init
