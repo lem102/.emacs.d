@@ -116,14 +116,7 @@ Setting this to a non-nil value will cause different features to be loaded.")
   (keymap-global-set "<menu-bar> <tools> <magit>" '("Magit" . magit))
   (keymap-global-set "<menu-bar> <tools> <org-agenda>" '("Agenda" . org-agenda))
   (keymap-global-set "<menu-bar> <tools> <gptel>" '("Gptel" . gptel))
-  (keymap-global-set "<menu-bar> <tools> <dired>" '("Dired" . dired-jump))
-
-  (easy-menu-define jacob-move-menu global-map
-    "Movement menu"
-    '("JMove"
-      ["Buffer" consult-buffer t]
-      ["Switch Project" jacob-dired-in-other-project t]
-      ["Dired" dired-jump t])))
+  (keymap-global-set "<menu-bar> <tools> <dired>" '("Dired" . dired-jump)))
 
 (use-package tool-bar
   :config
