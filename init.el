@@ -664,16 +664,18 @@ $0")
   (remove-hook 'project-find-functions #'fsharp-mode-project-root)
   (setopt compilation-error-regexp-alist (remove 'fsharp compilation-error-regexp-alist)))
 
-(use-package scala-ts-mode
-  :mode ("\\.scala\\'" . scala-ts-mode)
-  :hook ((scala-ts-mode-hook . apheleia-mode)
-         (scala-ts-mode-hook . yas-minor-mode)
-         (scala-ts-mode-hook . electric-indent-local-mode)
-         (scala-ts-mode-hook . jacob-trim-quotes-mode)
-         (scala-ts-mode-hook . eglot-ensure)
-         (scala-ts-mode-hook . flymake-mode)
-         (scala-ts-mode-hook . stripspace-local-mode))
-  :bind ( :map scala-ts-mode-map
+(use-package scala-mode
+  :hook ((scala-mode-hook . apheleia-mode)
+         (scala-mode-hook . yas-minor-mode)
+         (scala-mode-hook . electric-indent-local-mode)
+         (scala-mode-hook . jacob-trim-quotes-mode)
+         (scala-mode-hook . eglot-ensure)
+         (scala-mode-hook . flymake-mode)
+         (scala-mode-hook . stripspace-local-mode)))
+
+(use-package scala-mode-map
+  :defines (scala-mode-map)
+  :bind ( :map scala-mode-map
           ("$" . jacob-scala-dollar)
           ("." . jacob-scala-.)))
 
@@ -684,8 +686,8 @@ $0")
   (advice-add #'sbt:initialize-for-compilation-mode :override #'ignore))
 
 (use-package jacob-scala
-  :hook ((scala-ts-mode-hook . jacob-scala-font-lock-setup)
-         (scala-ts-mode-hook . jacob-scala-setup-flymake))
+  :hook ((scala-mode-hook . jacob-scala-font-lock-setup)
+         (scala-mode-hook . jacob-scala-setup-flymake))
   :bind ( :map project-prefix-map
           ("S" . jacob-project-sbt)))
 
@@ -1201,7 +1203,7 @@ $0")
   (add-to-list 'apheleia-mode-alist '(csharp-ts-mode . csharpier))
   (add-to-list 'apheleia-mode-alist '(gdscript-ts-mode . gdscript-formatter))
   (add-to-list 'apheleia-mode-alist '("\\.routes\\'" . play-routes))
-  (add-to-list 'apheleia-mode-alist '(scala-ts-mode . scalafmt))
+  (add-to-list 'apheleia-mode-alist '(scala-mode . scalafmt))
   (add-to-list 'apheleia-mode-alist '(fennel-mode . lisp-indent))
 
   (add-to-list 'apheleia-skip-functions #'region-active-p)
@@ -1325,7 +1327,7 @@ $0")
    :map embark-flymake-map
    ("a" . eglot-code-actions)
    ("r" . eglot-rename))
-  :functions (cape-dabbrev):config
+  :config
   (setf (alist-get 'eglot-code-actions embark-target-injection-hooks) 'embark--ignore-target
         (alist-get 'eglot-rename embark-target-injection-hooks) 'embark--ignore-target))
 

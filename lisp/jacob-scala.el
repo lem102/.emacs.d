@@ -40,16 +40,16 @@
 
 (defun jscala-test-file ()
   "Test the current file."
-  ;; TODO: if in implementation, try find the corresponding test file and run the tests for that file.
   (interactive)
   (let* ((file (if (jscala-test-file-p)
                    (buffer-file-name (current-buffer))
                  (jscala-find-test-file)))
          (package (jscala--package file))
-         (class (with-current-buffer (get-file-buffer file)
+         (class (with-temp-buffer
+                  (insert-file-contents file)
                   (treesit-node-text
                    (car
-                    (treesit-query-capture (treesit-buffer-root-node)
+                    (treesit-query-capture (treesit-buffer-root-node 'scala)
                                            '((class_definition name: (identifier) @x))
                                            nil
                                            nil
@@ -60,10 +60,11 @@
 (defun jacob-scala-dollar ()
   "Insert a dollar. If inside a string, enable string interpolation."
   (interactive)
-  (unless (eq major-mode 'scala-ts-mode)
+  (unless (or (eq major-mode 'scala-mode)
+              (eq major-mode 'scala-ts-mode))
     (user-error "Not in a `scala-ts-mode' buffer"))
   (insert "$")
-  (let* ((string-node (treesit-parent-until (treesit-node-at (point))
+  (let* ((string-node (treesit-parent-until (treesit-node-at (point) 'scala)
                                             "string"
                                             "INCLUDE-NODE"))
          (interpolated-string-node (treesit-parent-until string-node
@@ -82,7 +83,8 @@
 
 If inside a string using string interpolation and to the right of a value to be interpolated into the string, add curly braces appropriately."
   (interactive)
-  (unless (eq major-mode 'scala-ts-mode)
+  (unless (or (eq major-mode 'scala-mode)
+              (eq major-mode 'scala-ts-mode))
     (user-error "Not in a `scala-ts-mode' buffer"))
   (insert ".")
   (let* ((interpolated-string-node (treesit-parent-until (treesit-node-at (point))
@@ -102,34 +104,37 @@ If inside a string using string interpolation and to the right of a value to be 
 (defun jscala--package (&optional buffer-or-file)
   "Get the current package of BUFFER-OR-FILE.
 
-When BUFFER-OR-FILE is nil, query the current buffer.
-When BUFFER-OR-FILE is a buffer, query the buffer.
-When BUFFER-OR-FILE is a file, query the file."
-  (let ((f (lambda ()
-             (treesit-node-text
-              (seq-first
-               (treesit-query-capture (treesit-buffer-root-node 'scala)
-                                      '((package_clause (package_identifier) @package))
-                                      nil
-                                      nil
-                                      "NODE-ONLY"))
-              "NO_PROPERTY"))))
+When BUFFER-OR-FILE is:
+- nil, query the current buffer.
+- a buffer, query the buffer.
+- a file, query the file."
+  (let ((parse-package-from-buffer
+         (lambda ()
+           (treesit-node-text
+            (seq-first
+             (treesit-query-capture (treesit-buffer-root-node 'scala)
+                                    '((package_clause (package_identifier) @package))
+                                    nil
+                                    nil
+                                    "NODE-ONLY"))
+            "NO_PROPERTY"))))
     (cond ((null buffer-or-file)
-           (funcall f))
+           (funcall parse-package-from-buffer))
           ((bufferp buffer-or-file)
            (with-current-buffer buffer-or-file
-             (funcall f)))
+             (funcall parse-package-from-buffer)))
           ((file-readable-p buffer-or-file)
            (with-temp-buffer
              (insert-file-contents buffer-or-file)
-             (funcall f))))))
+             (funcall parse-package-from-buffer))))))
 
 (defun jscala-test-file-p (&optional buffer-or-file)
-  "Return t if BUFFER-OR-FILE is a scala test file.
+  "Return t if BUFFER-OR-FILE corresponds to a scala test file.
 
-When BUFFER-OR-FILE is nil, query the current buffer.
-When BUFFER-OR-FILE is a buffer, query the buffer.
-When BUFFER-OR-FILE is a file, query the file."
+When BUFFER-OR-FILE is:
+- nil, check the current buffer;
+- a buffer, check the buffer;
+- a file, check the file."
   (string-match-p "\\Spec.scala$"
                   (cond ((null buffer-or-file) (buffer-file-name (current-buffer)))
                         ((bufferp buffer-or-file) (buffer-file-name buffer-or-file))
@@ -137,21 +142,27 @@ When BUFFER-OR-FILE is a file, query the file."
                         (t (user-error "Invalid argument to jacob-scala-test-file-p")))))
 
 (defun jscala-find-test-file (&optional buffer-or-file)
-  "Return the test file that corresponds to BUFFER-OR-FILE.
+  "Return the filename of the test file that corresponds to BUFFER-OR-FILE.
 
-When BUFFER-OR-FILE is nil, query the current buffer.
-When BUFFER-OR-FILE is a buffer, query the buffer.
-When BUFFER-OR-FILE is a file, query the file.
+When BUFFER-OR-FILE is:
+- nil, find the test file that corresponds to the current buffer;
+- a buffer, find the test file that corresponds to the buffer;
+- a file, find the test file that corresponds to the file.
 
-If argument is already a test file, return the argument."
-  (seq-find (lambda (f)
-              (string= (file-name-nondirectory f)
-                       (if (jscala-test-file-p)
-                           (file-name-nondirectory (buffer-file-name (current-buffer)))
-                         (format "%s.%s"
-                                 (concat (file-name-sans-extension (file-name-nondirectory (buffer-file-name (current-buffer)))) "Spec")
-                                 (file-name-extension (buffer-file-name (current-buffer)))))))
-            (project-files (project-current))))
+If BUFFER-OR-FILE already corresponds to a test file, return the
+filename equivalent of BUFFER-OR-FILE."
+  (let* ((target (cond ((null buffer-or-file) (buffer-file-name (current-buffer)))
+                       ((bufferp buffer-or-file) (buffer-file-name (current-buffer)))
+                       ((file-readable-p buffer-or-file) buffer-or-file)
+                       (t (user-error "Invalid argument to jacob-scala-find-test-file")))))
+    (seq-find (lambda (f)
+                (string= (file-name-nondirectory f)
+                         (if (jscala-test-file-p buffer-or-file)
+                             (file-name-nondirectory target)
+                           (format "%s.%s"
+                                   (concat (file-name-sans-extension (file-name-nondirectory target)) "Spec")
+                                   (file-name-extension target)))))
+              (project-files (project-current)))))
 
 (defun jacob-scala-calculate-package (file)
   "Calculate the package of FILE based on the directory."
