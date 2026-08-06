@@ -87,13 +87,18 @@ Setting this to a non-nil value will cause different features to be loaded.")
 (use-package use-package
   :config
   (when use-package-compute-statistics
-    (add-hook 'after-init-hook #'use-package-report)))
+    (add-hook 'after-init-hook #'use-package-report))
+  (setq use-package-keywords (append (seq-subseq use-package-keywords 0 2)
+                                     (list :jacob-ensure-safely)
+                                     (seq-subseq use-package-keywords 2))))
 
 (use-package use-package-core
   :defer t
   :custom ((use-package-enable-imenu-support t)
            (use-package-hook-name-suffix nil)
            (use-package-verbose nil)))
+
+(use-package jacob-use-package)
 
 (use-package cus-edit
   :defer t
@@ -464,7 +469,6 @@ $0")
            (completion-category-overrides '((file (styles basic partial-completion))))
            (completion-auto-help 'always)
            (completion-auto-select 'second-tab)
-           (completion-cycle-threshold 3)
            (completions-format 'one-column)))
 
 (use-package mb-depth
@@ -758,6 +762,7 @@ $0")
   :hook ((on-first-file-hook . nerd-icons-mode-line-global-mode)))
 
 (use-package nerd-icons-completion
+  :jacob-ensure-safely t
   :when (and (display-graphic-p)
              (not jacob-is-android))
   :hook ((prog-mode-hook . nerd-icons-completion-mode)))
@@ -1216,7 +1221,8 @@ $0")
   (add-to-list 'apheleia-skip-functions #'jacob-apheleia-smerge-active-p))
 
 (use-package rainbow-mode
-  :hook ((find-file-hook . rainbow-mode)))
+  :jacob-ensure-safely t
+  :hook ((prog-mode-hook . rainbow-mode)))
 
 (use-package eglot-booster
   :after eglot
