@@ -26,6 +26,7 @@
 (defvar-local jacob-delete-backwards-function nil
   "Called by `jacob-delete-backwards' if non-nil.")
 
+;; FIXME doesn't delete strings properly in scala-mode
 (defun jacob-delete-backwards ()
   "DWIM backspace command.
 

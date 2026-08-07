@@ -231,33 +231,60 @@ then remove this function from `find-file-hook'."
 ;; this fault tolerant? if this package is unavailable, then we won't
 ;; be able to load the other packages which rely on its hooks to load.
 
-;; i could make wrapper hooks that are eagerly called if on is unavailable
+;; TODO: move wrapper hooks somewhere appropriate
 
-;; the below approach works: TODO: for other on hooks
+;; TODO: on input
+;; TODO: on init ui
 
 (defvar jacob-on-first-file-wrapper-hook nil
   "Wrapper hook for `on-first-file-hook'.
 
 The idea is if the `on' package is unavailable, we can eagerly call this
-hook so that functionality outside of `on' is unaffected.")
+hook so that functionality outside of `on' is unaffected.
+
+Elsewhere in the init file, do not use `on' directly, instead use this
+and similar hooks.")
 
 (defun jacob-run-first-file-wrapper-hook ()
   "Run `jacob-on-first-file-wrapper-hook' hooks."
   (run-hooks 'jacob-on-first-file-wrapper-hook))
+
+(defvar jacob-on-first-input-wrapper-hook nil
+  "Wrapper hook for `on-first-input-hook'.
+
+The idea is if the `on' package is unavailable, we can eagerly call this
+hook so that functionality outside of `on' is unaffected.
+
+Elsewhere in the init file, do not use `on' directly, instead use this
+and similar hooks.")
+
+(defun jacob-run-first-input-wrapper-hook ()
+  "Run `jacob-on-first-input-wrapper-hook' hooks."
+  (message "%s" "run first input hook")
+  (run-hooks 'jacob-on-first-input-wrapper-hook))
 
 (defun jacob-handle-on-unavailable ()
   "Handle `on' being unavailable.
 
 When the package `on' is unavailable, run the wrapper hooks to ensure
 functionality outside of `on' is not lost."
-  (unless (featurep 'on)
+  (unless (boundp 'on-first-input-hook)
+    (message "%s" "on-first-input-hook unavailable")
+    (jacob-run-first-input-wrapper-hook))
+  (unless (boundp 'on-first-file-hook)
+    (message "%s" "on-first-file-hook unavailable")
     (jacob-run-first-file-wrapper-hook)))
 
 (add-hook 'after-init-hook #'jacob-handle-on-unavailable)
 
-(use-package on                     ; load `on-first-input-hook', etc.
-  :jacob-ensure-safely t
-  :hook ((on-first-file-hook . jacob-run-first-file-wrapper-hook)))
+;; (jacob-run-first-input-wrapper-hook)           ; temp hack
+;; (jacob-run-first-file-wrapper-hook)           ; temp hack
+
+(use-package on
+  ;; :jacob-ensure-safely t ; FIXME this is causing on to not load when the package is installed
+  :demand t ; we don't want to defer this
+  :hook ((on-first-file-hook . jacob-run-first-file-wrapper-hook)
+         (on-first-input-hook . jacob-run-first-input-wrapper-hook)))
 
 (use-package blackout
   :functions (blackout)
@@ -287,12 +314,12 @@ functionality outside of `on' is not lost."
 
 (use-package which-key
   :if jacob-is-fast
-  :hook ((on-first-input-hook . which-key-mode))
+  :hook ((jacob-on-first-input-wrapper-hook . which-key-mode))
   :custom ((which-key-idle-delay (cond (jacob-is-android 1)
                                        (t 0.01)))))
 
 (use-package mouse
-  :hook ((on-first-input-hook . context-menu-mode))
+  :hook ((jacob-on-first-input-wrapper-hook . context-menu-mode))
   :custom ((mouse-1-double-click-prefer-symbols t)
            (mouse-drag-copy-region 'non-empty)))
 
@@ -376,7 +403,7 @@ functionality outside of `on' is not lost."
   (setq disabled-command-function nil))
 
 (use-package recentf
-  :hook ((on-first-input-hook . recentf-mode))
+  :hook ((jacob-on-first-input-wrapper-hook . recentf-mode))
   :custom ((recentf-max-saved-items nil)))
 
 (use-package savehist
@@ -516,10 +543,10 @@ $0")
            (help-window-select t)))
 
 (use-package subword
-  :hook ((on-first-input-hook . global-subword-mode)))
+  :hook ((jacob-on-first-input-wrapper-hook . global-subword-mode)))
 
 (use-package paren
-  :hook ((on-first-input-hook . show-paren-mode))
+  :hook ((jacob-on-first-input-wrapper-hook . show-paren-mode))
   :custom ((show-paren-context-when-offscreen 'echo)))
 
 (use-package electric
@@ -528,7 +555,7 @@ $0")
            ))
 
 (use-package elec-pair
-  :hook ((on-first-input-hook . electric-pair-mode)))
+  :hook ((jacob-on-first-input-wrapper-hook . electric-pair-mode)))
 
 (use-package puni
   :bind (("M-d" . puni-forward-kill-word) ; `kill-word'
@@ -540,10 +567,10 @@ $0")
   (require 'jacob-puni))
 
 (use-package delsel
-  :hook ((on-first-input-hook . delete-selection-mode)))
+  :hook ((jacob-on-first-input-wrapper-hook . delete-selection-mode)))
 
 (use-package repeat
-  :hook ((on-first-input-hook . repeat-mode)))
+  :hook ((jacob-on-first-input-wrapper-hook . repeat-mode)))
 
 (use-package vc-hooks
   :defer t
@@ -1072,7 +1099,7 @@ $0")
 
 (use-package winner
   :commands (winner-undo winner-redo)
-  :hook ((on-first-input-hook . winner-mode)))
+  :hook ((jacob-on-first-input-wrapper-hook . winner-mode)))
 
 (use-package compile
   :defer t
