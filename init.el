@@ -58,39 +58,12 @@ Setting this to a non-nil value will cause different features to be loaded.")
 
 ;; configure packages
 
-(when (member "--report" command-line-args)
-  (setq command-line-args (remove "--report" command-line-args))
-  (setq use-package-compute-statistics t)
-  (add-hook 'after-init-hook #'use-package-report))
-
-(use-package package
-  :defer t
-  :config
-  (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
-  :custom ((package-install-upgrade-built-in t)))
-
-(use-package jacob-editing-commands
-  :demand
-  :bind (("DEL" . jacob-delete-backwards)  ; `delete-backward-char'
-         ("C-k" . jacob-kill-line)         ; `kill-line'
-         ("C-a" . jacob-beginning-of-line) ; `beginning-of-line'
-         ("C-e" . jacob-end-of-line)       ; `end-of-line'
-         ))
-
-(use-package jacob-modal-editing
-  :when (not jacob-is-android)
-  :functions (jacob-modal-editing-mode)
-  :config
-  (require 'jacob-modal-editing-config)
-  (jacob-modal-editing-mode 1))
-
 (use-package use-package
   :config
-  (when use-package-compute-statistics
-    (add-hook 'after-init-hook #'use-package-report))
-  (setq use-package-keywords (append (seq-subseq use-package-keywords 0 2)
-                                     (list :jacob-ensure-safely)
-                                     (seq-subseq use-package-keywords 2))))
+  (when (member "--report" command-line-args)
+    (setq command-line-args (remove "--report" command-line-args))
+    (setq use-package-compute-statistics t)
+    (add-hook 'after-init-hook #'use-package-report)))
 
 (use-package use-package-core
   :defer t
@@ -98,61 +71,11 @@ Setting this to a non-nil value will cause different features to be loaded.")
            (use-package-hook-name-suffix nil)
            (use-package-verbose nil)))
 
-(use-package jacob-use-package)
-
-(use-package cus-edit
-  :defer t
+(use-package jacob-use-package
   :config
-  (advice-add #'custom-save-all :after #'jacob-format-custom-file))
-
-(use-package menu-bar
-  :config
-  (keymap-global-unset "<menu-bar> <file> <make-frame-on-display>")
-  (keymap-global-unset "<menu-bar> <file> <open-file>")
-  (keymap-global-unset "<menu-bar> <file> <recover-session>")
-  (keymap-global-unset "<menu-bar> <file> <insert-file>")
-  (keymap-global-unset "<menu-bar> <file> <make-frame-on-monitor>")
-  (keymap-global-unset "<menu-bar> <file> <write-file>")
-  (keymap-global-unset "<menu-bar> <file> <print>")
-  (keymap-global-set "<menu-bar> <file> <restart>" '("Restart" . restart-emacs))
-
-  (keymap-global-set "<menu-bar> <edit> <goto> <imenu>" '("Imenu" . imenu))
-
-  (keymap-global-set "<menu-bar> <tools> <magit>" '("Magit" . magit))
-  (keymap-global-set "<menu-bar> <tools> <org-agenda>" '("Agenda" . org-agenda))
-  (keymap-global-set "<menu-bar> <tools> <gptel>" '("Gptel" . gptel))
-  (keymap-global-set "<menu-bar> <tools> <dired>" '("Dired" . dired-jump)))
-
-(use-package tool-bar
-  :config
-  (when jacob-is-android
-    (tool-bar-mode 1))
-  :custom ((tool-bar-button-margin (if jacob-is-android 39 4))
-           (tool-bar-position (if jacob-is-android 'bottom 'top))
-           (tool-bar-style 'image)))
-
-(use-package jacob-tool-bar
-  :when jacob-is-android
-  :functions (jacob-setup-tool-bars)
-  :config
-  (jacob-tool-bar-setup))
-
-;; custom hooks
-
-(defvar jacob-first-minibuffer-activation-hook '()
-  "Hook for first time minibuffer activated.")
-
-(defun jacob-run-first-minibuffer-activation-hook (&rest _args)
-  "Run `jacob-first-minibuffer-activation-hook';
-then remove this function from `find-file-hook'."
-  (when (member 'init features)
-    (run-hooks 'jacob-first-minibuffer-activation-hook)
-    (advice-remove #'completing-read
-                   #'jacob-run-first-minibuffer-activation-hook)))
-
-(advice-add #'completing-read
-            :before
-            #'jacob-run-first-minibuffer-activation-hook)
+  (setq use-package-keywords (append (seq-subseq use-package-keywords 0 2)
+                                     (list :jacob-ensure-safely)
+                                     (seq-subseq use-package-keywords 2))))
 
 (use-package emacs
   :config
@@ -165,6 +88,24 @@ then remove this function from `find-file-hook'."
 
   ;; mule-cmds.el
   (prefer-coding-system 'utf-8)
+
+
+  ;; custom hooks TODO: move to package
+
+  (defvar jacob-first-minibuffer-activation-hook '()
+    "Hook for first time minibuffer activated.")
+
+  (defun jacob-run-first-minibuffer-activation-hook (&rest _args)
+    "Run `jacob-first-minibuffer-activation-hook';
+then remove this function from `find-file-hook'."
+    (when (member 'init features)
+      (run-hooks 'jacob-first-minibuffer-activation-hook)
+      (advice-remove #'completing-read
+                     #'jacob-run-first-minibuffer-activation-hook)))
+
+  (advice-add #'completing-read
+              :before
+              #'jacob-run-first-minibuffer-activation-hook)
 
   :custom (
            ;; c source code
@@ -228,7 +169,95 @@ then remove this function from `find-file-hook'."
          :map mode-line-buffer-identification-keymap
          ("<mode-line> <mouse-2>" . ibuffer)))
 
-(use-package on)                    ; load `on-first-input-hook', etc.
+(use-package package
+  :defer t
+  :config
+  (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
+  :custom ((package-install-upgrade-built-in t)))
+
+(use-package jacob-editing-commands
+  :demand
+  :bind (("DEL" . jacob-delete-backwards)  ; `delete-backward-char'
+         ("C-k" . jacob-kill-line)         ; `kill-line'
+         ("C-a" . jacob-beginning-of-line) ; `beginning-of-line'
+         ("C-e" . jacob-end-of-line)       ; `end-of-line'
+         ))
+
+(use-package jacob-modal-editing
+  :when (not jacob-is-android)
+  :functions (jacob-modal-editing-mode)
+  :config
+  (require 'jacob-modal-editing-config)
+  (jacob-modal-editing-mode 1))
+
+(use-package cus-edit
+  :defer t
+  :config
+  (advice-add #'custom-save-all :after #'jacob-format-custom-file))
+
+(use-package menu-bar
+  :config
+  (keymap-global-unset "<menu-bar> <file> <make-frame-on-display>")
+  (keymap-global-unset "<menu-bar> <file> <open-file>")
+  (keymap-global-unset "<menu-bar> <file> <recover-session>")
+  (keymap-global-unset "<menu-bar> <file> <insert-file>")
+  (keymap-global-unset "<menu-bar> <file> <make-frame-on-monitor>")
+  (keymap-global-unset "<menu-bar> <file> <write-file>")
+  (keymap-global-unset "<menu-bar> <file> <print>")
+  (keymap-global-set "<menu-bar> <file> <restart>" '("Restart" . restart-emacs))
+
+  (keymap-global-set "<menu-bar> <edit> <goto> <imenu>" '("Imenu" . imenu))
+
+  (keymap-global-set "<menu-bar> <tools> <magit>" '("Magit" . magit))
+  (keymap-global-set "<menu-bar> <tools> <org-agenda>" '("Agenda" . org-agenda))
+  (keymap-global-set "<menu-bar> <tools> <gptel>" '("Gptel" . gptel))
+  (keymap-global-set "<menu-bar> <tools> <dired>" '("Dired" . dired-jump)))
+
+(use-package tool-bar
+  :config
+  (when jacob-is-android
+    (tool-bar-mode 1))
+  :custom ((tool-bar-button-margin (if jacob-is-android 39 4))
+           (tool-bar-position (if jacob-is-android 'bottom 'top))
+           (tool-bar-style 'image)))
+
+(use-package jacob-tool-bar
+  :when jacob-is-android
+  :functions (jacob-tool-bar-setup)
+  :config
+  (jacob-tool-bar-setup))
+
+;; TODO: bring all uses of `on' into its declaration. how can i make
+;; this fault tolerant? if this package is unavailable, then we won't
+;; be able to load the other packages which rely on its hooks to load.
+
+;; i could make wrapper hooks that are eagerly called if on is unavailable
+
+;; the below approach works: TODO: for other on hooks
+
+(defvar jacob-on-first-file-wrapper-hook nil
+  "Wrapper hook for `on-first-file-hook'.
+
+The idea is if the `on' package is unavailable, we can eagerly call this
+hook so that functionality outside of `on' is unaffected.")
+
+(defun jacob-run-first-file-wrapper-hook ()
+  "Run `jacob-on-first-file-wrapper-hook' hooks."
+  (run-hooks 'jacob-on-first-file-wrapper-hook))
+
+(defun jacob-handle-on-unavailable ()
+  "Handle `on' being unavailable.
+
+When the package `on' is unavailable, run the wrapper hooks to ensure
+functionality outside of `on' is not lost."
+  (unless (featurep 'on)
+    (jacob-run-first-file-wrapper-hook)))
+
+(add-hook 'after-init-hook #'jacob-handle-on-unavailable)
+
+(use-package on                     ; load `on-first-input-hook', etc.
+  :jacob-ensure-safely t
+  :hook ((on-first-file-hook . jacob-run-first-file-wrapper-hook)))
 
 (use-package blackout
   :functions (blackout)
@@ -288,7 +317,7 @@ then remove this function from `find-file-hook'."
                                 (t 0.1)))))
 
 (use-package files
-  :hook ((on-first-file-hook . auto-save-visited-mode))
+  :hook ((jacob-on-first-file-wrapper-hook . auto-save-visited-mode))
   :custom ((auto-save-default nil)
            (auto-save-visited-interval 2) ; Save file after two seconds.
            (backup-by-copying t)
@@ -307,7 +336,7 @@ then remove this function from `find-file-hook'."
    'remote-direct-async-process))
 
 (use-package autorevert
-  :hook ((on-first-file-hook . global-auto-revert-mode)))
+  :hook ((jacob-on-first-file-wrapper-hook . global-auto-revert-mode)))
 
 (use-package window
   :bind ( :repeat-map jacob-window-repeat-map
@@ -356,7 +385,7 @@ then remove this function from `find-file-hook'."
            (savehist-save-minibuffer-history t)))
 
 (use-package saveplace
-  :hook ((on-first-file-hook . save-place-mode))
+  :hook ((jacob-on-first-file-wrapper-hook . save-place-mode))
   :custom ((save-place-forget-unreadable-files t)))
 
 (use-package generic-x           ; support for files like `/etc/fstab'
@@ -547,7 +576,7 @@ $0")
   (setq magit-tramp-pipe-stty-settings 'pty))
 
 (use-package autoinsert
-  :hook ((on-first-file-hook . auto-insert-mode))
+  :hook ((jacob-on-first-file-wrapper-hook . auto-insert-mode))
   :config
   (jacob-define-auto-insert "\\.el$" ["template.el" checkdoc elisp-enable-lexical-binding])
   (jacob-define-auto-insert "\\.scala$" ["template.scala" jacob-autoinsert-yas-expand])
@@ -759,7 +788,7 @@ $0")
 (use-package nerd-icons-mode-line
   :when (and (display-graphic-p)
              (not jacob-is-android))
-  :hook ((on-first-file-hook . nerd-icons-mode-line-global-mode)))
+  :hook ((jacob-on-first-file-wrapper-hook . nerd-icons-mode-line-global-mode)))
 
 (use-package nerd-icons-completion
   :jacob-ensure-safely t
