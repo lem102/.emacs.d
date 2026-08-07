@@ -926,8 +926,8 @@ $0")
               #'jacob-elisp-flymake-check-removals nil "LOCAL")
     (add-hook 'flymake-diagnostic-functions
               #'jacob-flymake-use-package nil "LOCAL")
-    (add-to-list 'completion-at-point-functions #'cape-dabbrev))
-
+    (setq-local completion-at-point-functions (list (cape-capf-super #'elisp-completion-at-point
+                                                                     :with #'cape-dabbrev))))
   (setopt elisp-flymake-byte-compile-load-path load-path)
 
   (font-lock-add-keywords 'emacs-lisp-mode
