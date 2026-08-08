@@ -57,6 +57,19 @@
   "Disable `auto-save-visited-mode' locally."
   (setq-local auto-save-visited-mode nil))
 
+;; first minibuffer use hook
+
+(defvar jacob-first-minibuffer-use-hook '()
+  "Hook for the first time the minibuffer is used.")
+
+(defun jacob-first-minibuffer-use-run-hook (&rest _args)
+  "Run `jacob-first-minibuffer-use-hook';
+then remove this function from `find-file-hook'."
+  (when (member 'init features)
+    (run-hooks 'jacob-first-minibuffer-use-hook)
+    (advice-remove #'completing-read
+                   #'jacob-first-minibuffer-use-run-hook)))
+
 (provide 'jacob-init-helpers)
 
 ;;; jacob-init-helpers.el ends here

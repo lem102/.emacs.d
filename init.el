@@ -40,12 +40,19 @@ Setting this to a non-nil value will cause different features to be loaded.")
 (add-to-list 'load-path jacob-lisp-directory)
 (add-to-list 'custom-theme-load-path jacob-lisp-directory)
 
-(require 'jacob-init-helpers)
+(use-package jacob-init-helpers
+  :functions (jacob-first-minibuffer-use-run-hook)
+  :config
+  (advice-add #'completing-read
+              :before
+              #'jacob-first-minibuffer-use-run-hook))
+
 (require 'jacob-autoloads)
 
 ;; read custom file and environment file
 
 (setq custom-file (concat user-emacs-directory "custom.el"))
+;; (setq custom-file nil)
 (load custom-file)
 
 (condition-case error
@@ -88,24 +95,6 @@ Setting this to a non-nil value will cause different features to be loaded.")
 
   ;; mule-cmds.el
   (prefer-coding-system 'utf-8)
-
-
-  ;; custom hooks TODO: move to package
-
-  (defvar jacob-first-minibuffer-activation-hook '()
-    "Hook for first time minibuffer activated.")
-
-  (defun jacob-run-first-minibuffer-activation-hook (&rest _args)
-    "Run `jacob-first-minibuffer-activation-hook';
-then remove this function from `find-file-hook'."
-    (when (member 'init features)
-      (run-hooks 'jacob-first-minibuffer-activation-hook)
-      (advice-remove #'completing-read
-                     #'jacob-run-first-minibuffer-activation-hook)))
-
-  (advice-add #'completing-read
-              :before
-              #'jacob-run-first-minibuffer-activation-hook)
 
   :custom (
            ;; c source code
