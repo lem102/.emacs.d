@@ -227,64 +227,16 @@ then remove this function from `find-file-hook'."
   :config
   (jacob-tool-bar-setup))
 
-;; TODO: bring all uses of `on' into its declaration. how can i make
-;; this fault tolerant? if this package is unavailable, then we won't
-;; be able to load the other packages which rely on its hooks to load.
-
-;; TODO: move wrapper hooks somewhere appropriate
-
-;; TODO: on input
-;; TODO: on init ui
-
-(defvar jacob-on-first-file-wrapper-hook nil
-  "Wrapper hook for `on-first-file-hook'.
-
-The idea is if the `on' package is unavailable, we can eagerly call this
-hook so that functionality outside of `on' is unaffected.
-
-Elsewhere in the init file, do not use `on' directly, instead use this
-and similar hooks.")
-
-(defun jacob-run-first-file-wrapper-hook ()
-  "Run `jacob-on-first-file-wrapper-hook' hooks."
-  (run-hooks 'jacob-on-first-file-wrapper-hook))
-
-(defvar jacob-on-first-input-wrapper-hook nil
-  "Wrapper hook for `on-first-input-hook'.
-
-The idea is if the `on' package is unavailable, we can eagerly call this
-hook so that functionality outside of `on' is unaffected.
-
-Elsewhere in the init file, do not use `on' directly, instead use this
-and similar hooks.")
-
-(defun jacob-run-first-input-wrapper-hook ()
-  "Run `jacob-on-first-input-wrapper-hook' hooks."
-  (message "%s" "run first input hook")
-  (run-hooks 'jacob-on-first-input-wrapper-hook))
-
-(defun jacob-handle-on-unavailable ()
-  "Handle `on' being unavailable.
-
-When the package `on' is unavailable, run the wrapper hooks to ensure
-functionality outside of `on' is not lost."
-  (unless (boundp 'on-first-input-hook)
-    (message "%s" "on-first-input-hook unavailable")
-    (jacob-run-first-input-wrapper-hook))
-  (unless (boundp 'on-first-file-hook)
-    (message "%s" "on-first-file-hook unavailable")
-    (jacob-run-first-file-wrapper-hook)))
-
-(add-hook 'after-init-hook #'jacob-handle-on-unavailable)
-
-;; (jacob-run-first-input-wrapper-hook)           ; temp hack
-;; (jacob-run-first-file-wrapper-hook)           ; temp hack
-
 (use-package on
-  ;; :jacob-ensure-safely t ; FIXME this is causing on to not load when the package is installed
+  :jacob-ensure-safely t
   :demand t ; we don't want to defer this
   :hook ((on-first-file-hook . jacob-run-first-file-wrapper-hook)
-         (on-first-input-hook . jacob-run-first-input-wrapper-hook)))
+         (on-first-input-hook . jacob-run-first-input-wrapper-hook)
+         (on-init-ui-hook . jacob-run-init-ui-wrapper-hook)))
+
+(use-package jacob-on
+  :demand t
+  :hook ((after-init-hook . jacob-handle-on-unavailable)))
 
 (use-package blackout
   :functions (blackout)
@@ -423,8 +375,8 @@ functionality outside of `on' is not lost."
           ("C-c SPC" . nil)))
 
 (use-package simple
-  :hook ((on-init-ui-hook . column-number-mode)
-         (on-init-ui-hook . line-number-mode))
+  :hook ((jacob-on-init-ui-wrapper-hook . column-number-mode)
+         (jacob-on-init-ui-wrapper-hook . line-number-mode))
   :bind (("C-x u" . nil)                ; `undo'
          )
   :config
@@ -1335,7 +1287,8 @@ $0")
 
 (use-package warnings
   :defer t
-  :custom ((warning-minimum-level :error)))
+  :custom ((display-warning-minimum-level :warning)
+           (log-warning-minimum-level :debug)))
 
 (use-package vertico-mouse
   :if (not jacob-is-android)

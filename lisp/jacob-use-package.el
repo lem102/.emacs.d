@@ -1,7 +1,7 @@
 ;;; jacob-use-package.el --- Utilities for use-package  -*- lexical-binding: t; -*-
 
 ;;; Commentary:
-;; 
+;;
 
 ;;; Code:
 
@@ -23,9 +23,9 @@
           (funcall use-package-ensure-function name ensure state)
           body)
       ;;  or else wait until runtime.
-      `((progn
-          (when (,use-package-ensure-function ',name ',ensure ',state)
-            ,@body))))))
+      (list `(when (or (,use-package-ensure-function ',name ',ensure ',state)
+                       (package-installed-p ',name))
+               ,@body)))))
 
 (provide 'jacob-use-package)
 
