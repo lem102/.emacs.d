@@ -1466,6 +1466,12 @@ $0")
   :defer t
   :custom ((dictionary-server "localhost")))
 
+(use-package google-translate
+  :jacob-ensure-safely t
+  ;; TODO: defer loading
+  :custom ((google-translate-default-source-language "en")
+           (google-translate-default-target-language "zh-CN")))
+
 
 ;; personal functions
 
