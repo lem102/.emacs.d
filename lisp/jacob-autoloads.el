@@ -73,7 +73,7 @@ In diff mode, unapply the hunk at point." t)
 ;;; Generated autoloads from jacob-editing-commands.el
 
 (autoload 'jacob-mark "jacob-editing-commands" "\
-TODO: write documentation." t)
+Command to combine `expreg' with setting the mark." t)
 (register-definition-prefixes "jacob-editing-commands" '("jacob-" "xah-"))
 
 
@@ -167,6 +167,11 @@ Display the current date and time in the echo area." t)
 (register-definition-prefixes "jacob-modal-editing-config" '("jacob-modal-editing-"))
 
 
+;;; Generated autoloads from jacob-on.el
+
+(register-definition-prefixes "jacob-on" '("jacob-"))
+
+
 ;;; Generated autoloads from jacob-org.el
 
 (register-definition-prefixes "jacob-org" '("jacob-org-"))
@@ -182,12 +187,12 @@ Upgrade all packages in `package-selected-packages'." t)
 
 (autoload 'jacob-dired-in-other-project "jacob-project" "\
 Switch to another project and open `dired' there." t)
-(autoload 'jacob-project-try-exercism "jacob-project" "\
-Find exercism project in DIR.
+(autoload 'jacob-project-visit-test "jacob-project" "\
+If a test file that corresponds to the current buffer exists, visit it.
 
-(fn DIR)")
-(cl-defmethod project-root ((project (head exercism))) "\
-Get the PROJECT root for an Exercism project." (nth 1 project))
+If a non-test file that corresponds to the current buffer exists, visit it.
+
+Currently this command assumes we are in a scala project." t)
 
 
 ;;; Generated autoloads from jacob-pulse.el
@@ -252,6 +257,11 @@ Start a timer for brewing tea." t)
 (register-definition-prefixes "jacob-thingatpt" '("jacob-bounds-of-"))
 
 
+;;; Generated autoloads from jacob-tool-bar.el
+
+(register-definition-prefixes "jacob-tool-bar" '("jacob-tool-bar-"))
+
+
 ;;; Generated autoloads from jacob-trim-quotes.el
 
 (autoload 'jacob-trim-quotes-mode "jacob-trim-quotes" "\
@@ -273,6 +283,11 @@ disabled.
 
 (fn &optional ARG)" t)
 (register-definition-prefixes "jacob-trim-quotes" '("jacob-trim-quotes--"))
+
+
+;;; Generated autoloads from jacob-use-package.el
+
+(register-definition-prefixes "jacob-use-package" '("use-package-"))
 
 
 ;;; Generated autoloads from jacob-utils.el

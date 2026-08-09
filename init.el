@@ -432,14 +432,15 @@ Setting this to a non-nil value will cause different features to be loaded.")
 
 (use-package project
   :defer t
+  :config
+  (add-to-list 'project-vc-extra-root-markers ".exercism")
   :custom ((project-compilation-buffer-name-function 'project-prefixed-buffer-name)
            (project-switch-use-entire-map t)))
 
 (use-package jacob-project
   :after project
   :bind ( :map project-prefix-map
-          ("t" . jacob-project-visit-test))
-  :hook ((project-find-functions . jacob-project-try-exercism)))
+          ("t" . jacob-project-visit-test)))
 
 (use-package yasnippet
   :hook ((snippet-mode . yas-minor-mode)
@@ -1457,9 +1458,14 @@ $0")
 
 (use-package google-translate
   :jacob-ensure-safely t
-  ;; TODO: defer loading
+  :commands (google-translate-query-translate
+             google-translate-query-translate-reverse)
+  :config
+  (set-face-attribute 'google-translate-translation-face nil :weight 'unspecified)
   :custom ((google-translate-default-source-language "en")
-           (google-translate-default-target-language "zh-CN")))
+           (google-translate-default-target-language "zh-CN")
+           (google-translate-show-phonetic t) ; show pinyin
+           ))
 
 
 ;; personal functions

@@ -42,21 +42,6 @@ Currently this command assumes we are in a scala project."
                                       test-name)))
                          (project-files (project-current))))))
 
-;; Exercism
-
-;; TODO: investigate `project-vc-extra-root-markers' as an alternative to the below
-
-;;;###autoload
-(defun jacob-project-try-exercism (dir)
-  "Find exercism project in DIR."
-  (when-let ((dir (locate-dominating-file dir ".exercism")))
-    (list 'exercism dir)))
-
-;;;###autoload
-(cl-defmethod project-root ((project (head exercism)))
-  "Get the PROJECT root for an Exercism project."
-  (nth 1 project))
-
 (provide 'jacob-project)
 
 ;;; jacob-project.el ends here

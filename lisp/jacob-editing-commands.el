@@ -500,7 +500,7 @@ Prompt user for case."
 
 ;;;###autoload
 (defun jacob-mark ()
-  "TODO: write documentation."
+  "Command to combine `expreg' with setting the mark."
   (interactive)
   (if (region-active-p)
       (call-interactively #'expreg-expand)
