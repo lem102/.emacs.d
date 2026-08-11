@@ -20,8 +20,7 @@
 ;; TODO: t and g have been combined, t is now a free key
 
 (jme-bind-keys jme-command-mode-map
-               `(("'" . delete-other-windows)
-                 ("," . jacob-split-or-switch-window)
+               `(("," . jacob-split-or-switch-window)
                  ("-" . split-window-below)
                  ("." . puni-forward-sexp-or-up-list)
                  ("0" . pop-to-mark-command)
@@ -34,6 +33,7 @@
                  (";" . jacob-end-of-line)
                  ("=" . split-window-right)
                  ("@" . delete-window)
+                 ("N" . isearch-backward)
                  ("SPC '" . delete-window)
                  ("SPC , ," . delete-frame)
                  ("SPC , d" . eval-defun)
@@ -187,7 +187,8 @@
                  ("w" . jacob-shrink-whitespaces)
                  ("x" . jacob-kill-line)
                  ("y" . undo)
-                 ("z" . xah-comment-dwim)))
+                 ("z" . xah-comment-dwim)
+                 ("'" . delete-other-windows)))
 
 ;; ("c f" . xah-open-recently-closed)
 ;; ("c g" . xah-open-in-terminal)
