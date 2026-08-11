@@ -348,7 +348,7 @@ Setting this to a non-nil value will cause different features to be loaded.")
   :custom ((recentf-max-saved-items nil)))
 
 (use-package savehist
-  :hook ((jacob-first-minibuffer-activation-hook . savehist-mode))
+  :hook ((jacob-first-minibuffer-use-hook . savehist-mode))
   :custom ((savehist-additional-variables '(search-ring regexp-search-ring kill-ring))
            (savehist-save-minibuffer-history t)))
 
@@ -470,7 +470,7 @@ $0")
            (completions-format 'one-column)))
 
 (use-package mb-depth
-  :hook ((jacob-first-minibuffer-activation-hook . minibuffer-depth-indicate-mode)))
+  :hook ((jacob-first-minibuffer-use-hook . minibuffer-depth-indicate-mode)))
 
 (use-package man
   :defer t
@@ -1271,7 +1271,7 @@ $0")
 (use-package vertico
   :if (and (not jacob-is-android)
            jacob-is-fast)
-  :hook ((jacob-first-minibuffer-activation-hook . vertico-mode))
+  :hook ((jacob-first-minibuffer-use-hook . vertico-mode))
   :custom ((vertico-count 20)
            (vertico-resize t)))
 
@@ -1292,7 +1292,7 @@ $0")
            (aw-dispatch-when-more-than 3)))
 
 (use-package marginalia
-  :hook ((jacob-first-minibuffer-activation-hook . marginalia-mode)))
+  :hook ((jacob-first-minibuffer-use-hook . marginalia-mode)))
 
 (use-package consult
   :bind (("C-x b" . consult-buffer)
