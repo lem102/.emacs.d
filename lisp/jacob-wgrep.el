@@ -10,7 +10,7 @@
   "Handle the \"w\" key being pressed in grep-mode."
   (interactive)
   (if (and (boundp wgrep-prepared) wgrep-prepared)
-      (jacob-shrink-whitespaces)
+      (funcall (keymap-lookup jacob-modal-editing-command-mode-map "w"))
     (wgrep-change-to-wgrep-mode)))
 
 ;;;###autoload
@@ -18,7 +18,7 @@
   "Handle the \"e\" key being pressed in grep-mode."
   (interactive)
   (if (and (boundp wgrep-prepared) wgrep-prepared)
-      (puni-backward-kill-word)
+      (funcall (keymap-lookup jacob-modal-editing-command-mode-map "e"))
     (previous-error-no-select)))
 
 ;;;###autoload
@@ -26,7 +26,7 @@
   "Handle the \"r\" key being pressed in grep-mode."
   (interactive)
   (if (and (boundp wgrep-prepared) wgrep-prepared)
-      (puni-forward-kill-word)
+      (funcall (keymap-lookup jacob-modal-editing-command-mode-map "r"))
     (next-error-no-select)))
 
 (provide 'jacob-wgrep)
