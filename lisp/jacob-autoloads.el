@@ -295,6 +295,16 @@ disabled.
 (register-definition-prefixes "jacob-utils" '("jacob-in-"))
 
 
+;;; Generated autoloads from jacob-wgrep.el
+
+(autoload 'jacob-wgrep-handle-w "jacob-wgrep" "\
+Handle the \"w\" key being pressed in grep-mode." t)
+(autoload 'jacob-wgrep-handle-e "jacob-wgrep" "\
+Handle the \"e\" key being pressed in grep-mode." t)
+(autoload 'jacob-wgrep-handle-r "jacob-wgrep" "\
+Handle the \"r\" key being pressed in grep-mode." t)
+
+
 ;;; Generated autoloads from jacob-yasnippet.el
 
 (register-definition-prefixes "jacob-yasnippet" '("jacob-"))

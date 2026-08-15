@@ -364,9 +364,9 @@
                               '(("SPC , d" . sql-send-paragraph)))
 
 (jme-major-mode-override-keys 'grep-mode
-                              '(("w" . wgrep-change-to-wgrep-mode)
-                                ("e" . previous-error-no-select)
-                                ("r" . next-error-no-select)))
+                              '(("w" . jacob-wgrep-handle-w)
+                                ("e" . jacob-wgrep-handle-e)
+                                ("r" . jacob-wgrep-handle-r)))
 
 (jme-major-mode-override-keys 'gnus-group-mode
                               '(("q" . gnus-group-quit)))
