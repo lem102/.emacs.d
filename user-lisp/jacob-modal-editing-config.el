@@ -363,10 +363,36 @@
 (jme-major-mode-override-keys 'sql-interactive-mode
                               '(("SPC , d" . sql-send-paragraph)))
 
+(defun jme--wgrep-handle-w ()
+  "Handle the \"w\" key being pressed in grep-mode."
+  (interactive)
+  (jme--wgrep--helper "w" #'wgrep-change-to-wgrep-mode))
+
+(defun jme--wgrep-handle-e ()
+  "Handle the \"e\" key being pressed in grep-mode."
+  (interactive)
+  (jme--wgrep--helper "e" #'previous-error-no-select))
+
+(defun jme--wgrep-handle-r ()
+  "Handle the \"r\" key being pressed in grep-mode."
+  (interactive)
+  (jme--wgrep--helper "r" #'next-error-no-select))
+
+(defun jme--wgrep--helper (key command)
+  "Helper for `jacob-modal-editing' in grep/wgrep modes.
+
+- If wgrep is active, use the command bound to KEY in
+  `jacob-modal-editing-command-mode-map'.
+- If wgrep is inactive, use COMMAND."
+  (call-interactively (if (equal (current-local-map) wgrep-mode-map)
+                          (keymap-lookup jacob-modal-editing-command-mode-map
+                                         key)
+                        command)))
+
 (jme-major-mode-override-keys 'grep-mode
-                              '(("w" . jacob-wgrep-handle-w)
-                                ("e" . jacob-wgrep-handle-e)
-                                ("r" . jacob-wgrep-handle-r)))
+                              '(("w" . jme--wgrep-handle-w)
+                                ("e" . jme--wgrep-handle-e)
+                                ("r" . jme--wgrep-handle-r)))
 
 (jme-major-mode-override-keys 'gnus-group-mode
                               '(("q" . gnus-group-quit)))
