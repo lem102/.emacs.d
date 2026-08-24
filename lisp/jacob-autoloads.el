@@ -39,6 +39,12 @@ CONDITION and ACTION are as in `define-auto-insert'.
 (register-definition-prefixes "jacob-bookmark" '("jacob-bookmark-"))
 
 
+;;; Generated autoloads from jacob-cape.el
+
+(autoload 'jacob-cape-configure-elisp-mode "jacob-cape" "\
+Configure capfs for elisp-mode using cape.")
+
+
 ;;; Generated autoloads from jacob-cecli.el
 
 (register-definition-prefixes "jacob-cecli" '("jacob-cecli"))
