@@ -34,13 +34,16 @@ Currently this command assumes we are in a scala project."
                                     (insert filename)
                                     (re-search-backward "^\\(.+\\)Spec\..+$" nil "NOERROR")
                                     (format "%s.%s" (match-string 1) extension))
-                                filename)))
-    (find-file (seq-find (lambda (f)
-                           (string= (file-name-nondirectory f)
-                                    (if is-test-file
-                                        implementation-name
-                                      test-name)))
-                         (project-files (project-current))))))
+                                filename))
+         (file-to-find (seq-find (lambda (f)
+                                   (string= (file-name-nondirectory f)
+                                            (if is-test-file
+                                                implementation-name
+                                              test-name)))
+                                 (project-files (project-current)))))
+    (if file-to-find
+        (find-file file-to-find)
+      (user-error "`jacob-project-visit-test' could not find a corresponding file"))))
 
 (provide 'jacob-project)
 
