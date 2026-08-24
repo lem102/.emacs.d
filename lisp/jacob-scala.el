@@ -54,8 +54,11 @@
                                            nil
                                            nil
                                            "NODE_ONLY")))))
-         (default-directory (project-root (project-current))))
-    (sbt-command (format "testOnly %s.%s" package class))))
+         (default-directory (project-root (project-current)))
+         (command (if (jscala-it-test-file-p)
+                      "it/testOnly"
+                    "testOnly")))
+    (sbt-command (format "%s %s.%s" command package class))))
 
 (defun jacob-scala-dollar ()
   "Insert a dollar. If inside a string, enable string interpolation."
@@ -135,11 +138,25 @@ When BUFFER-OR-FILE is:
 - nil, check the current buffer;
 - a buffer, check the buffer;
 - a file, check the file."
-  (string-match-p "\\Spec.scala$"
+  (string-match-p "Spec.scala$"
                   (cond ((null buffer-or-file) (buffer-file-name (current-buffer)))
                         ((bufferp buffer-or-file) (buffer-file-name buffer-or-file))
                         ((file-readable-p buffer-or-file) buffer-or-file)
                         (t (user-error "Invalid argument to jacob-scala-test-file-p")))))
+
+(defun jscala-it-test-file-p (&optional buffer-or-file)
+  "Return t if BUFFER-OR-FILE corresponds to a scala test file.
+
+When BUFFER-OR-FILE is:
+- nil, check the current buffer;
+- a buffer, check the buffer;
+- a file, check the file."
+  (and (jscala-test-file-p)
+       (string-match-p "/it/test/"
+                       (cond ((null buffer-or-file) (buffer-file-name (current-buffer)))
+                             ((bufferp buffer-or-file) (buffer-file-name buffer-or-file))
+                             ((file-readable-p buffer-or-file) buffer-or-file)
+                             (t (user-error "Invalid argument to jacob-scala-test-file-p"))))))
 
 (defun jscala-find-test-file (&optional buffer-or-file)
   "Return the filename of the test file that corresponds to BUFFER-OR-FILE.
