@@ -12,7 +12,7 @@
 
 (defun jacob-trim-quotes--trim (text)
   "If TEXT is a string, remove the leading and ending quotes."
-  (if (string-match "^\\([[:space:]]*\\)\"\\(.*\\)\"\\([[:space:]]*\\)$" text)
+  (if (string-match "\\`\\([[:space:]]*\\)\"\\(.*\\)\"\\([[:space:]]*\\)\\'" text)
       (concat (match-string 1 text)
               (match-string 2 text)
               (match-string 3 text))
