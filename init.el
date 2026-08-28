@@ -47,8 +47,6 @@ Setting this to a non-nil value will cause different features to be loaded.")
               :before
               #'jacob-first-minibuffer-use-run-hook))
 
-(require 'jacob-autoloads)
-
 ;; read custom file and environment file
 
 (setq custom-file (concat user-emacs-directory "custom.el"))

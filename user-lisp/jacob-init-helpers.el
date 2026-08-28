@@ -34,24 +34,6 @@
         (unless (= (char-after) (string-to-char "\n"))
           (insert "\n"))))))
 
-(defun jacob-autoloads-generate ()
-  "Generate autoloads file for Emacs configuration."
-  (interactive)
-  (let* ((autoloads-file (file-name-concat jacob-lisp-directory "jacob-autoloads.el")))
-    (loaddefs-generate jacob-lisp-directory
-                       autoloads-file
-                       nil
-                       nil
-                       nil
-                       "GENERATE-FULL")
-    (with-temp-file autoloads-file
-      (insert-file-contents autoloads-file)
-      (goto-char (point-min))
-      (when (search-forward ";; This file is part of GNU Emacs."
-                            nil
-                            "NOERROR")
-        (kill-whole-line 2)))))
-
 ;;;###autoload
 (defun jacob-disable-auto-save-in-buffer ()
   "Disable `auto-save-visited-mode' locally."
