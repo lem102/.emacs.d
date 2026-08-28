@@ -1,4 +1,4 @@
-;;; jacob-yasnippet.el --- Configuration for yasnippet
+;;; jacob-yasnippet.el --- Configuration for yasnippet  -*- lexical-binding: t; -*-
 
 ;;; Commentary:
 ;;

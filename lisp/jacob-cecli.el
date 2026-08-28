@@ -1,7 +1,7 @@
-;;; jacob-cecli.el --- integration with cecli
+;;; jacob-cecli.el --- integration with cecli  -*- lexical-binding: t; -*-
 
 ;;; Commentary:
-;; 
+;;
 
 ;;; Code:
 

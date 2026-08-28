@@ -1,7 +1,7 @@
-;;; jacob-apheleia.el --- Utilities for apheleia
+;;; jacob-apheleia.el --- Utilities for apheleia  -*- lexical-binding: t; -*-
 
 ;;; Commentary:
-;; 
+;;
 
 ;;; Code:
 

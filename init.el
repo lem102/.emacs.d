@@ -876,7 +876,7 @@ $0")
 (use-package jacob-elisp
   :after elisp-mode
   :bind ( :map lisp-interaction-mode-map
-          ("C-j" . jacob-eval-print-last-sexp))
+          ("C-j" . jacob-elisp-eval-print-last-sexp))
   :functions (jacob-elisp-move-past-close-and-reindent)
   :config
   (advice-add #'move-past-close-and-reindent :after #'jacob-elisp-move-past-close-and-reindent))

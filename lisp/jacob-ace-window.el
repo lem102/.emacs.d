@@ -1,4 +1,4 @@
-;;; jacob-ace-window.el --- Configuration for the ace-window package
+;;; jacob-ace-window.el --- Configuration for the ace-window package  -*- lexical-binding: t; -*-
 
 ;;; Commentary:
 ;;

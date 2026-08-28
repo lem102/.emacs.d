@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t; -*-
 (when (eq system-type 'android)
   (setenv "PATH" (format "%s:%s" "/data/data/com.termux/files/usr/bin"
 		                 (getenv "PATH")))

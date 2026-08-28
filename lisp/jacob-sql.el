@@ -1,7 +1,7 @@
-;;; jacob-sql.el --- Configuration for the sql package.
+;;; jacob-sql.el --- Configuration for the sql package.  -*- lexical-binding: t; -*-
 
 ;;; Commentary:
-;; 
+;;
 
 ;;; Code:
 
