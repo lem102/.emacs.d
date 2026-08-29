@@ -35,9 +35,6 @@
 
 Setting this to a non-nil value will cause different features to be loaded.")
 
-(add-to-list 'custom-theme-load-path user-lisp-directory)
-(add-to-list 'trusted-content user-lisp-directory)
-
 (use-package jacob-init-helpers
   :functions (jacob-first-minibuffer-use-run-hook)
   :config
@@ -175,6 +172,11 @@ Setting this to a non-nil value will cause different features to be loaded.")
   (require 'jacob-modal-editing-config)
   (jacob-modal-editing-mode 1))
 
+(use-package custom
+  :defer t
+  :config
+  (add-to-list 'custom-theme-load-path user-lisp-directory))
+
 (use-package cus-edit
   :defer t
   :config
@@ -282,6 +284,8 @@ Setting this to a non-nil value will cause different features to be loaded.")
 
 (use-package files
   :hook ((jacob-on-first-file-wrapper-hook . auto-save-visited-mode))
+  :config
+  (add-to-list 'trusted-content user-lisp-directory)
   :custom ((auto-save-default nil)
            (auto-save-visited-interval 2) ; Save file after two seconds.
            (backup-by-copying t)
