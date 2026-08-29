@@ -721,7 +721,8 @@ $0")
 (use-package dired
   :hook ((dired-mode-hook . dired-hide-details-mode)
          (dired-mode-hook . auto-revert-mode))
-  :custom ((dired-recursive-copies 'always)
+  :custom ((dired-auto-toggle-b-switch t)
+           (dired-recursive-copies 'always)
            (dired-dwim-target t)
            (dired-listing-switches "-hal") ; the h option needs to come first 🙃
            (dired-guess-shell-alist-user '(("\\.mkv\\'" "mpv")
