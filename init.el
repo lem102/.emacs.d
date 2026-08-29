@@ -10,11 +10,6 @@
 (defconst jacob-megabyte (* 1024 1024)
   "Number of bytes in a megabyte.")
 
-(defconst jacob-lisp-directory
-  (file-name-concat (file-name-directory user-init-file)
-                    "lisp")
-  "Directory for my Lisp packages.")
-
 (defconst jacob-environment-file
   (file-name-concat (file-name-directory user-init-file)
                     "environment.el")
@@ -37,8 +32,8 @@
 
 Setting this to a non-nil value will cause different features to be loaded.")
 
-(add-to-list 'load-path jacob-lisp-directory)
-(add-to-list 'custom-theme-load-path jacob-lisp-directory)
+(add-to-list 'custom-theme-load-path user-lisp-directory)
+(add-to-list 'trusted-content user-lisp-directory)
 
 (use-package jacob-init-helpers
   :functions (jacob-first-minibuffer-use-run-hook)
