@@ -5,6 +5,8 @@
 
 ;;; Code:
 
+(require 'ace-window)
+
 ;;;###autoload
 (defun jacob-split-or-switch-window ()
   "Split or switch window.
