@@ -10,6 +10,9 @@
 (defconst jacob-megabyte (* 1024 1024)
   "Number of bytes in a megabyte.")
 
+(defconst jacob-5-minutes-in-seconds (* 5 60)
+  "The equivalent of 5 minutes in seconds.")
+
 (defconst jacob-environment-file
   (file-name-concat (file-name-directory user-init-file)
                     "environment.el")
@@ -338,7 +341,8 @@ Setting this to a non-nil value will cause different features to be loaded.")
 
 (use-package recentf
   :hook ((jacob-on-first-input-wrapper-hook . recentf-mode))
-  :custom ((recentf-max-saved-items nil)))
+  :custom ((recentf-max-saved-items nil)
+           (recentf-autosave-interval jacob-5-minutes-in-seconds)))
 
 (use-package savehist
   :hook ((jacob-first-minibuffer-use-hook . savehist-mode))
@@ -347,7 +351,8 @@ Setting this to a non-nil value will cause different features to be loaded.")
 
 (use-package saveplace
   :hook ((jacob-on-first-file-wrapper-hook . save-place-mode))
-  :custom ((save-place-forget-unreadable-files t)))
+  :custom ((save-place-forget-unreadable-files t)
+           (save-place-autosave-interval jacob-5-minutes-in-seconds)))
 
 (use-package generic-x           ; support for files like `/etc/fstab'
   :defer t)
@@ -777,6 +782,10 @@ $0")
 (use-package esh-mode
   :defer t
   :custom ((eshell-scroll-to-bottom-on-output 'this)))
+
+(use-package em-hist
+  :defer t
+  :custom ((eshell-history-isearch 'dwim)))
 
 (use-package jacob-eshell
   :after (esh-mode)
