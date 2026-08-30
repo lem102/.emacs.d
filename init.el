@@ -127,6 +127,7 @@ Setting this to a non-nil value will cause different features to be loaded.")
            (window-combination-resize t)
            ;; bindings.el
            (mode-line-percent-position nil)
+           (mode-line-collapse-minor-modes '(not flymake-mode smerge-mode))
            ;; indent.el
            (tab-always-indent 'complete) ; first try completion, then indent
            ;; startup.el
@@ -224,32 +225,6 @@ Setting this to a non-nil value will cause different features to be loaded.")
 (use-package jacob-on
   :demand t
   :hook ((after-init-hook . jacob-handle-on-unavailable)))
-
-(use-package blackout
-  :functions (blackout)
-  :config
-  (with-eval-after-load 'which-key
-    (blackout 'which-key-mode))
-  (with-eval-after-load 'autorevert
-    (blackout 'auto-revert-mode))
-  (with-eval-after-load 'editorconfig
-    (blackout 'editorconfig-mode))
-  (with-eval-after-load 'yasnippet
-    (blackout 'yas-minor-mode " yas"))
-  (with-eval-after-load 'subword
-    (blackout 'subword-mode))
-  (with-eval-after-load 'nerd-icons-dired
-    (blackout 'nerd-icons-dired-mode))
-  (with-eval-after-load 'eldoc
-    (blackout 'eldoc-mode))
-  (with-eval-after-load 'hi-lock
-    (blackout 'hi-lock-mode))
-  (with-eval-after-load 'apheleia
-    (blackout 'apheleia-mode " ⚘"))
-  (with-eval-after-load 'rainbow-mode
-    (blackout 'rainbow-mode))
-  (with-eval-after-load 'stripspace
-    (blackout 'stripspace-local-mode)))
 
 (use-package which-key
   :if jacob-is-fast
