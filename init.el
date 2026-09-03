@@ -1288,21 +1288,10 @@ $0")
            (TeX-parse-self t)
            (japanese-TeX-error-messages nil)))
 
-(use-package vertico
-  :if (and (not jacob-is-android)
-           jacob-is-fast)
-  :hook ((jacob-first-minibuffer-use-hook . vertico-mode))
-  :custom ((vertico-count 20)
-           (vertico-resize t)))
-
 (use-package warnings
   :defer t
   :custom ((display-warning-minimum-level :warning)
            (log-warning-minimum-level :debug)))
-
-(use-package vertico-mouse
-  :if (not jacob-is-android)
-  :hook ((vertico-mode-hook . vertico-mouse-mode)))
 
 (use-package ace-window
   :defer t
@@ -1472,11 +1461,6 @@ $0")
   (when jacob-is-windows
     (setq find-program "C:/Program Files (x86)/GnuWin32/bin/find.exe"))
   :custom ((grep-use-headings t)))
-
-(use-package wgrep
-  :bind ( :map grep-mode-map
-          ("e" . wgrep-change-to-wgrep-mode))
-  :custom ((wgrep-auto-save-buffer t)))
 
 (use-package dictionary
   :defer t
