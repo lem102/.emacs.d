@@ -215,6 +215,10 @@
                                 ("<remap> <previous-line>" . nil)
                                 ("<remap> <next-line>" . nil)))
 
+(jme-major-mode-override-keys 'minibuffer-mode
+                              '(("i" . minibuffer-previous-completion)
+                                ("k" . minibuffer-next-completion)))
+
 (jme-major-mode-override-keys 'package-menu-mode
                               '(("d" . package-menu-mark-delete)
                                 ("e" . package-menu-mark-install)
