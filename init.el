@@ -2,6 +2,37 @@
 ;;; Commentary:
 ;;; Code:
 
+(use-package package
+  :defer t
+  :config
+  (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
+  :custom ((package-install-upgrade-built-in t)
+           (package-menu-use-current-if-no-marks nil)))
+
+(use-package package-activate
+  :hook ((jacob-on-first-input-wrapper-hook . package-activate-mode)))
+
+;; use-package
+
+(use-package use-package
+  :config
+  (when (member "--report" command-line-args)
+    (setq command-line-args (remove "--report" command-line-args))
+    (setq use-package-compute-statistics t)
+    (add-hook 'after-init-hook #'use-package-report)))
+
+(use-package use-package-core
+  :defer t
+  :custom ((use-package-enable-imenu-support t)
+           (use-package-hook-name-suffix nil)
+           (use-package-verbose nil)))
+
+(use-package jacob-use-package
+  :config
+  (setq use-package-keywords (append (seq-subseq use-package-keywords 0 2)
+                                     (list :jacob-ensure-safely)
+                                     (seq-subseq use-package-keywords 2))))
+
 ;; `no-littering' needs to be loaded ASAP
 (use-package no-littering)
 
@@ -58,25 +89,6 @@ Setting this to a non-nil value will cause different features to be loaded.")
 
 ;; configure packages
 
-(use-package use-package
-  :config
-  (when (member "--report" command-line-args)
-    (setq command-line-args (remove "--report" command-line-args))
-    (setq use-package-compute-statistics t)
-    (add-hook 'after-init-hook #'use-package-report)))
-
-(use-package use-package-core
-  :defer t
-  :custom ((use-package-enable-imenu-support t)
-           (use-package-hook-name-suffix nil)
-           (use-package-verbose nil)))
-
-(use-package jacob-use-package
-  :config
-  (setq use-package-keywords (append (seq-subseq use-package-keywords 0 2)
-                                     (list :jacob-ensure-safely)
-                                     (seq-subseq use-package-keywords 2))))
-
 (use-package emacs
   :config
   ;; c source code
@@ -97,11 +109,14 @@ Setting this to a non-nil value will cause different features to be loaded.")
            (echo-keystrokes (cond (jacob-is-android 1)
                                   (t 0.01)))
            (enable-recursive-minibuffers t)
+           (font-use-system-font t)
+           (frame-inhibit-implied-resize t)
            (frame-resize-pixelwise t)
            (history-delete-duplicates t)
            (history-length 1000)
            (kill-buffer-query-functions
             (remove 'process-kill-buffer-query-function kill-buffer-query-functions))
+           (mode-line-compact 'long)
            (mode-line-format '("%e"
                                mode-line-front-space
                                mode-line-modified
@@ -125,6 +140,7 @@ Setting this to a non-nil value will cause different features to be loaded.")
            (use-dialog-box t)
            (use-short-answers t)
            (window-combination-resize t)
+           (window-resize-pixelwise t)
            ;; bindings.el
            (mode-line-percent-position nil)
            (mode-line-collapse-minor-modes '(not flymake-mode smerge-mode))
@@ -151,12 +167,6 @@ Setting this to a non-nil value will cause different features to be loaded.")
   :bind (("C-M-k" . jacob-kill-sexp)    ; `kill-sexp'
          :map mode-line-buffer-identification-keymap
          ("<mode-line> <mouse-2>" . ibuffer)))
-
-(use-package package
-  :defer t
-  :config
-  (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
-  :custom ((package-install-upgrade-built-in t)))
 
 (use-package jacob-editing-commands
   :demand
@@ -216,7 +226,6 @@ Setting this to a non-nil value will cause different features to be loaded.")
   (jacob-tool-bar-setup))
 
 (use-package on
-  :jacob-ensure-safely t
   :demand t ; we don't want to defer this
   :hook ((on-first-file-hook . jacob-run-first-file-wrapper-hook)
          (on-first-input-hook . jacob-run-first-input-wrapper-hook)
@@ -235,7 +244,14 @@ Setting this to a non-nil value will cause different features to be loaded.")
 (use-package mouse
   :hook ((jacob-on-first-input-wrapper-hook . context-menu-mode))
   :custom ((mouse-1-double-click-prefer-symbols t)
-           (mouse-drag-copy-region 'non-empty)))
+           (mouse-drag-and-drop-region t)
+           (mouse-drag-and-drop-region-cross-program t)
+           (mouse-drag-copy-region 'non-empty)
+           (mouse-drag-mode-line-buffer t)
+           (mouse-yank-at-point t)))
+
+(use-package pixel-scroll
+  :hook ((jacob-on-first-input-wrapper-hook . pixel-scroll-precision-mode)))
 
 (use-package touch-screen
   :defer t
@@ -266,7 +282,8 @@ Setting this to a non-nil value will cause different features to be loaded.")
            (backup-by-copying t)
            (confirm-kill-processes nil)
            (make-backup-files nil)
-           (remote-file-name-inhibit-auto-save-visited t)))
+           (remote-file-name-inhibit-auto-save-visited t)
+           (view-read-only t)))
 
 (use-package files-x
   :config
@@ -347,10 +364,12 @@ Setting this to a non-nil value will cause different features to be loaded.")
          )
   :config
   (put 'set-goal-column 'disabled nil)
-  :custom ((indent-tabs-mode nil)       ; use spaces to indent
+  :custom ((completion-auto-select 'second-tab)
+           (indent-tabs-mode nil)       ; use spaces to indent
            (kill-do-not-save-duplicates t)
            (read-extended-command-predicate 'command-completion-default-include-p)
-           (save-interprogram-paste-before-kill t)))
+           (save-interprogram-paste-before-kill t)
+           (shell-command-prompt-show-cwd t)))
 
 (use-package thingatpt
   :defer t
@@ -439,12 +458,16 @@ $0")
 (use-package minibuffer
   :bind ( :map minibuffer-local-completion-map
           ("SPC" . self-insert-command))
-  :custom ((completion-styles '(orderless basic initials))
-           (completion-at-point-functions nil) ; Remove the default tags based backend
-           (completion-category-overrides '((file (styles basic partial-completion))))
+  :custom ((completion-at-point-functions nil) ; Remove the default tags based backend
            (completion-auto-help 'always)
-           (completion-auto-select 'second-tab)
-           (completions-format 'one-column)))
+           (completion-category-overrides '((file (styles basic partial-completion))))
+           (completion-eager-display t)
+           (completion-eager-update t)
+           (completion-styles '(orderless basic initials))
+           (completions-detailed t)
+           (completions-group t)
+           (completions-format 'one-column)
+           (minibuffer-visible-completions 'up-down)))
 
 (use-package mb-depth
   :hook ((jacob-first-minibuffer-use-hook . minibuffer-depth-indicate-mode)))
@@ -490,6 +513,12 @@ $0")
 
 (use-package repeat
   :hook ((jacob-on-first-input-wrapper-hook . repeat-mode)))
+
+(use-package vc
+  :custom ((vc-deduce-backend-nonvc-modes t)
+           (vc-dir-save-some-buffers-on-revert t)
+           (vc-find-revision-no-save t)
+           (vc-use-incoming-outgoing-prefixes t)))
 
 (use-package vc-hooks
   :defer t
@@ -548,6 +577,9 @@ $0")
   :config
   (with-eval-after-load 'compile
     (remove-hook 'compilation-mode-hook #'tramp-compile-disable-ssh-controlmaster-options)))
+
+(use-package xref
+  :hook ((jacob-on-first-input-wrapper-hook . global-xref-mouse-mode)))
 
 (use-package dumb-jump
   :defer t
@@ -649,10 +681,10 @@ $0")
          (scala-mode-hook . electric-indent-local-mode)
          (scala-mode-hook . jacob-trim-quotes-mode)
          (scala-mode-hook . eglot-ensure)
-         (scala-mode-hook . flymake-mode)
-         (scala-mode-hook . stripspace-local-mode)))
+         (scala-mode-hook . flymake-mode)))
 
 (use-package scala-mode-map
+  :after (scala-mode)
   :defines (scala-mode-map)
   :bind ( :map scala-mode-map
           ("$" . jacob-scala-dollar)
@@ -705,7 +737,9 @@ $0")
 (use-package dired
   :hook ((dired-mode-hook . dired-hide-details-mode)
          (dired-mode-hook . auto-revert-mode))
-  :custom ((dired-auto-toggle-b-switch t)
+  :custom ((dired-auto-revert-buffer t)
+           (dired-auto-toggle-b-switch t)
+           (dired-mouse-drag-files t)
            (dired-recursive-copies 'always)
            (dired-dwim-target t)
            (dired-listing-switches "-hal") ; the h option needs to come first 🙃
@@ -738,7 +772,6 @@ $0")
   :hook ((jacob-on-first-file-wrapper-hook . nerd-icons-mode-line-global-mode)))
 
 (use-package nerd-icons-completion
-  :jacob-ensure-safely t
   :when (and (display-graphic-p)
              (not jacob-is-android))
   :hook ((prog-mode-hook . nerd-icons-completion-mode)))
@@ -776,7 +809,8 @@ $0")
                 #'jacob-eshell-windows-confirm-terminate-batch-job)))
 
 (use-package imenu
-  :custom ((imenu-use-popup-menu 'on-mouse)))
+  :custom ((imenu-auto-rescan t)
+           (imenu-use-popup-menu 'on-mouse)))
 
 (use-package eldoc
   :hook ((prog-mode-hook . global-eldoc-mode))
@@ -839,7 +873,6 @@ $0")
   :hook ((emacs-lisp-mode-hook . apheleia-mode)
          (emacs-lisp-mode-hook . jacob-font-lock-programming-setup)
          (emacs-lisp-mode-hook . yas-minor-mode)
-         (emacs-lisp-mode-hook . stripspace-local-mode)
          (emacs-lisp-mode-hook . electric-indent-local-mode)
          (emacs-lisp-mode-hook . flymake-mode))
   :config
@@ -872,8 +905,7 @@ $0")
 (use-package fennel-mode
   :hook ((fennel-mode-hook . yas-minor-mode)
          (fennel-mode-hook . apheleia-mode)
-         (fennel-mode-hook . electric-indent-mode)
-         (fennel-mode-hook . stripspace-local-mode)))
+         (fennel-mode-hook . electric-indent-mode)))
 
 (use-package geiser
   :after scheme)
@@ -1076,7 +1108,7 @@ $0")
                                               ("\\(warn\\|WARN\\)\\(ing\\|ING\\)?"
                                                (0 compilation-warning-face))))
   :custom ((compilation-always-kill t)
-           (compilation-scroll-output t)
+           (compilation-scroll-output 'first-error)
            (compilation-ask-about-save nil)))
 
 (use-package winnow
@@ -1198,8 +1230,12 @@ $0")
   (add-to-list 'apheleia-skip-functions #'jacob-apheleia-yas-active-p)
   (add-to-list 'apheleia-skip-functions #'jacob-apheleia-smerge-active-p))
 
+(use-package stripspace
+  :hook ((scala-mode-hook . stripspace-local-mode)
+         (emacs-lisp-mode-hook . stripspace-local-mode)
+         (fennel-mode-hook . stripspace-local-mode)))
+
 (use-package rainbow-mode
-  :jacob-ensure-safely t
   :hook ((prog-mode-hook . rainbow-mode)))
 
 (use-package eglot-booster
@@ -1443,7 +1479,6 @@ $0")
   :custom ((dictionary-server "localhost")))
 
 (use-package google-translate
-  :jacob-ensure-safely t
   :commands (google-translate-query-translate
              google-translate-query-translate-reverse)
   :config
