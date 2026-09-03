@@ -463,7 +463,7 @@ $0")
            (completion-category-overrides '((file (styles basic partial-completion))))
            (completion-eager-display t)
            (completion-eager-update t)
-           (completion-styles '(orderless basic initials))
+           (completion-styles '(basic initials))
            (completions-detailed t)
            (completions-group t)
            (completions-format 'one-column)
@@ -471,6 +471,10 @@ $0")
 
 (use-package mb-depth
   :hook ((jacob-first-minibuffer-use-hook . minibuffer-depth-indicate-mode)))
+
+(use-package orderless
+  :config
+  (add-to-list 'completion-styles 'orderless))
 
 (use-package man
   :defer t
