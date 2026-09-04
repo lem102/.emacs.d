@@ -32,6 +32,7 @@
                    geiser-guile
                    mermaid-mode
                    ob-mermaid
+                   tmr
                    winnow
                    treesit-auto
                    yaml-mode
