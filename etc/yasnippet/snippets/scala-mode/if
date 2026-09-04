@@ -1,6 +1,8 @@
 # -*- mode: snippet -*-
 # key: if
 # --
-if $1
-then $0
-else 
+if $1 then {
+  $2
+} else {
+  $0
+}
