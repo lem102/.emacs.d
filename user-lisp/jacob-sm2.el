@@ -13,20 +13,21 @@
 (defcustom jacob-sm2-config-directory "~/.sm2/service-manager-config/"
   "Directory where sm2 stores it's configuration.")
 
-;;;###autoload
+;; TODO: on my arch VM, this being an autoload causes issues... why?
+;;;###autoload (autoload 'jacob-sm2 "jacob-sm2" nil t)
 (transient-define-prefix jacob-sm2 ()
-  "Transient menu for sm2."
-  ["Commands"
-   ("i" "Status" jacob-sm2-status)
-   ("s" "Start service or profile" jacob-sm2-start)
-   ("c" "Clean then start service or profile" jacob-sm2-start-clean)
-   ("h" "See help" jacob-sm2-help)
-   ("k" "Stop service or profile" jacob-sm2-stop)
-   ("l" "View Logs for service" jacob-sm2-logs)
-   ("p" "Prune services" jacob-sm2-prune)
-   ("us" "Update sm2" jacob-sm2-update)
-   ("uc" "Update sm2 config" jacob-sm2-update-config)
-   ("q" "Quit" ignore)])
+                         "Transient menu for sm2."
+                         ["Commands"
+                          ("i" "Status" jacob-sm2-status)
+                          ("s" "Start service or profile" jacob-sm2-start)
+                          ("c" "Clean then start service or profile" jacob-sm2-start-clean)
+                          ("h" "See help" jacob-sm2-help)
+                          ("k" "Stop service or profile" jacob-sm2-stop)
+                          ("l" "View Logs for service" jacob-sm2-logs)
+                          ("p" "Prune services" jacob-sm2-prune)
+                          ("us" "Update sm2" jacob-sm2-update)
+                          ("uc" "Update sm2 config" jacob-sm2-update-config)
+                          ("q" "Quit" ignore)])
 
 (defun jacob-sm2-status ()
   "Run sm2 -s."
