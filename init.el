@@ -347,6 +347,10 @@ Setting this to a non-nil value will cause different features to be loaded.")
 
 (use-package saveplace
   :hook ((jacob-on-first-file-wrapper-hook . save-place-mode))
+  :config
+  (setq save-place-ignore-files-regexp (format "\\(%s\\)\\|\\(%s\\)"
+                                               (default-value 'save-place-ignore-files-regexp)
+                                               tramp-file-name-regexp))
   :custom ((save-place-forget-unreadable-files t)
            (save-place-autosave-interval jacob-5-minutes-in-seconds)))
 
