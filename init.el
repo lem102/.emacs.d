@@ -2,16 +2,6 @@
 ;;; Commentary:
 ;;; Code:
 
-(use-package package
-  :defer t
-  :config
-  (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
-  :custom ((package-install-upgrade-built-in t)
-           (package-menu-use-current-if-no-marks nil)))
-
-(use-package package-activate
-  :hook ((jacob-on-first-input-wrapper-hook . package-activate-mode)))
-
 ;; use-package
 
 (use-package use-package
@@ -32,6 +22,16 @@
   (setq use-package-keywords (append (seq-subseq use-package-keywords 0 2)
                                      (list :jacob-ensure-safely)
                                      (seq-subseq use-package-keywords 2))))
+
+(use-package package
+  :defer t
+  :config
+  (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
+  :custom ((package-install-upgrade-built-in t)
+           (package-menu-use-current-if-no-marks nil)))
+
+(use-package package-activate
+  :hook ((jacob-on-first-input-wrapper-hook . package-autosuggest-mode)))
 
 ;; `no-littering' needs to be loaded ASAP
 (use-package no-littering)
