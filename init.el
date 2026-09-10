@@ -318,6 +318,11 @@ Setting this to a non-nil value will cause different features to be loaded.")
            (split-height-threshold nil)
            (switch-to-buffer-obey-display-actions t)))
 
+(defvar-keymap jacob-error-navigation-repeat-map
+  :repeat t
+  "i" #'previous-error
+  "k" #'next-error)
+
 (defvar-keymap jacob-recenter-repeat-map
   :repeat t
   "p" #'recenter-top-bottom)
@@ -374,6 +379,11 @@ Setting this to a non-nil value will cause different features to be loaded.")
            (read-extended-command-predicate 'command-completion-default-include-p)
            (save-interprogram-paste-before-kill t)
            (shell-command-prompt-show-cwd t)))
+
+(use-package replace
+  :bind ( :map query-replace-map
+          ("l" . act)
+          ("j" . skip)))
 
 (use-package thingatpt
   :defer t
@@ -470,8 +480,7 @@ $0")
            (completion-styles '(basic initials))
            (completions-detailed t)
            (completions-group t)
-           (completions-format 'one-column)
-           (minibuffer-visible-completions 'up-down)))
+           (completions-format 'one-column)))
 
 (use-package mb-depth
   :hook ((jacob-first-minibuffer-use-hook . minibuffer-depth-indicate-mode)))

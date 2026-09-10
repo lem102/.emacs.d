@@ -107,6 +107,7 @@
                  ("SPC j v" . describe-key)
                  ("SPC j y" . describe-face)
                  ("SPC k ," . consult-imenu)
+                 ("SPC k ." . next-error)
                  ("SPC k b" . jacob-title-case)
                  ("SPC k c" . consult-register-store)
                  ("SPC k d" . consult-line)
