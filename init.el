@@ -713,6 +713,12 @@ $0")
   :config
   (advice-add #'sbt:initialize-for-compilation-mode :override #'ignore))
 
+(use-package sbt-mode-vars
+  :defer t
+  :config
+  (add-to-list 'sbt:program-options "--jvm-debug" "APPEND")
+  (add-to-list 'sbt:program-options "5005" "APPEND"))
+
 (use-package jacob-scala
   :hook ((scala-mode-hook . jacob-scala-font-lock-setup)
          (scala-mode-hook . jacob-scala-setup-flymake))
@@ -1264,9 +1270,7 @@ $0")
   :defer t
   :functions (dape-info)
   :config
-  (setopt dape-info-hide-mode-line nil
-          dape-buffer-window-arrangement 'right)
-
+  (remove-hook 'dape-start-hook #'dape-info)
   (add-to-list 'dape-configs '(netcoredbg-attach-port
                                modes (csharp-mode csharp-ts-mode)
                                ensure dape-ensure-command
@@ -1288,8 +1292,16 @@ $0")
                                         (selection (completing-read "process: "
                                                                     collection)))
                                    (cdr (assoc selection collection))))))
+  :custom ((dape-info-hide-mode-line nil)
+           (dape-buffer-window-arrangement 'right)))
 
-  (remove-hook 'dape-start-hook #'dape-info))
+(use-package jacob-dape
+  :after dape
+  :functions (jacob-dape-metals-config-function)
+  :config
+  (add-to-list 'dape-configs `(scala-debug-file fn ,#'jacob-dape-metals-config-function
+                                                modes (scala-mode scala-ts-mode)
+                                                :noDebug nil)))
 
 (use-package tex
   :commands (TeX-PDF-mode)
