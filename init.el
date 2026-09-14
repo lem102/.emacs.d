@@ -321,7 +321,8 @@ Setting this to a non-nil value will cause different features to be loaded.")
 (defvar-keymap jacob-error-navigation-repeat-map
   :repeat t
   "i" #'previous-error
-  "k" #'next-error)
+  "k" #'next-error
+  "." #'next-error)
 
 (defvar-keymap jacob-recenter-repeat-map
   :repeat t
