@@ -1093,30 +1093,19 @@ $0")
                  jacob-compilation-project-file
                  2))
 
-  (add-to-list 'compilation-error-regexp-alist 'jacob-sbt-test-fail-re)
-
   (add-to-list 'compilation-error-regexp-alist-alist
                '(jacob-sbt-stack-trace-re
                  "at .*(\\([a-zA-Z.]+\\):\\([0-9]+\\))"
                  jacob-compilation-project-file
                  2))
 
-  (add-to-list 'compilation-error-regexp-alist 'jacob-sbt-stack-trace-re)
-
   (add-to-list 'compilation-error-regexp-alist-alist
                '(jacob-sbt-error
                  "^\\[error][[:space:]]--[[:space:]].*Error: \\([^:]+\\):\\([[:digit:]]+\\):\\([[:digit:]]+\\)" 1 2 3 nil 1))
 
-  (add-to-list 'compilation-error-regexp-alist 'jacob-sbt-error)
-
   (add-to-list 'compilation-error-regexp-alist-alist
                '(jacob-sbt-warning
                  "^\\[warn][[:space:]]--[[:space:]].*Warning: \\([^:]+\\):\\([[:digit:]]+\\):\\([[:digit:]]+\\)" 1 2 3 1 1))
-
-  (add-to-list 'compilation-error-regexp-alist 'jacob-sbt-warning)
-
-  (dolist (re '(gcov-file gcov-header gcov-nomark gcov-called-line gcov-never-called guile-line guile-file))
-    (setq compilation-error-regexp-alist (remove re compilation-error-regexp-alist)))
 
   (setq compilation-mode-font-lock-keywords '((" --?o\\(?:utfile\\|utput\\)?[= ]\\(\\S +\\)" . 1)
                                               ("^Compilation \\(finished\\).*"
@@ -1131,6 +1120,13 @@ $0")
                                                (0 compilation-error-face))
                                               ("\\(warn\\|WARN\\)\\(ing\\|ING\\)?"
                                                (0 compilation-warning-face))))
+
+  (setq compilation-error-regexp-alist nil)
+  (add-to-list 'compilation-error-regexp-alist 'jacob-sbt-warning)
+  (add-to-list 'compilation-error-regexp-alist 'jacob-sbt-error)
+  (add-to-list 'compilation-error-regexp-alist 'jacob-sbt-test-fail-re)
+  (add-to-list 'compilation-error-regexp-alist 'jacob-sbt-stack-trace-re)
+
   :custom ((compilation-always-kill t)
            (compilation-scroll-output 'first-error)
            (compilation-ask-about-save nil)))
