@@ -66,7 +66,8 @@
                    pdf-tools
                    nov
                    dictionary
-                   google-translate)))
+                   google-translate
+                   vertico)))
   (dolist (package packages)
     (package-install package)))
 

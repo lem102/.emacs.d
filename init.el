@@ -483,6 +483,17 @@ $0")
            (completions-group t)
            (completions-format 'one-column)))
 
+(use-package vertico
+  :if (and (not jacob-is-android)
+           jacob-is-fast)
+  :hook ((jacob-first-minibuffer-use-hook . vertico-mode))
+  :custom ((vertico-count 20)
+           (vertico-resize t)))
+
+(use-package vertico-mouse
+  :if (not jacob-is-android)
+  :hook ((vertico-mode-hook . vertico-mouse-mode)))
+
 (use-package mb-depth
   :hook ((jacob-first-minibuffer-use-hook . minibuffer-depth-indicate-mode)))
 
