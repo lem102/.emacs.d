@@ -857,6 +857,10 @@ $0")
   :bind ( :map project-prefix-map
           ("l" . consult-git-log-grep)))
 
+(use-package proced
+  :defer t
+  :custom ((proced-enable-color-flag t)))
+
 (use-package prodigy
   :hook ((prodigy-view-mode-hook . (lambda ()
                                      "Disable view mode"
