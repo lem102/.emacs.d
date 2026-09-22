@@ -481,7 +481,8 @@ $0")
            (completion-styles '(basic initials))
            (completions-detailed t)
            (completions-group t)
-           (completions-format 'one-column)))
+           (completions-format 'one-column)
+           (completions-max-height 20)))
 
 (use-package vertico
   :if (and (not jacob-is-android)
