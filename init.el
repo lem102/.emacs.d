@@ -1146,7 +1146,15 @@ $0")
 (use-package winnow
   :hook ((compilation-mode-hook . winnow-mode)))
 
-(require 'jacob-sql)
+(use-package sql
+  :commands (sql-read-connection sql-send-paragraph)
+  :config
+  (require 'jacob-sql)
+  (advice-add #'sql-send-paragraph :before 'jacob-sqli-end-of-buffer)
+  (jacob-defhookf sql-interactive-mode-hook
+    (when (eq sql-product 'postgres)
+      (setq sql-prompt-regexp "^[-[:alnum:]_]*[-=]\\*?[#>] ")
+      (setq sql-prompt-cont-regexp "^\\(?:\\sw\\|\\s_\\)*[-(]\\*?[#>] "))))
 
 (use-package treesit
   :defer t
