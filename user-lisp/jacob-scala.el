@@ -49,7 +49,7 @@
                   (insert-file-contents file)
                   (treesit-node-text
                    (car
-                    (treesit-query-capture (treesit-buffer-root-node 'scala)
+                    (treesit-query-capture (jacob-scala-treesit-root-node)
                                            '((class_definition name: (identifier) @x))
                                            nil
                                            nil
@@ -115,7 +115,7 @@ When BUFFER-OR-FILE is:
          (lambda ()
            (treesit-node-text
             (seq-first
-             (treesit-query-capture (treesit-buffer-root-node 'scala)
+             (treesit-query-capture (jacob-scala-treesit-root-node)
                                     '((package_clause (package_identifier) @package))
                                     nil
                                     nil
@@ -427,11 +427,15 @@ This is a flymake backend, hence it uses REPORT-FN to report diagnostics."
                                                                       file-name))))
                                  nodes))))
 
+(defun jacob-scala-treesit-root-node ()
+  "Get the root node in the current scala buffer."
+  (treesit-parser-root-node (treesit-parser-create 'scala)))
+
 (defun jacob-flymake-scala-use-identity (report-fn &rest _args)
   "Check for anonymous functions that could be replaced by identity.
 
 This is a flymake backend, hence it uses REPORT-FN to report diagnostics."
-  (funcall report-fn (when-let* ((nodes (treesit-query-capture (treesit-buffer-root-node)
+  (funcall report-fn (when-let* ((nodes (treesit-query-capture (jacob-scala-treesit-root-node)
                                                                '((lambda_expression parameters:
                                                                                     (identifier) @x
                                                                                     "=>"
