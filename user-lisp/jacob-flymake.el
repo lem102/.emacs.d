@@ -37,7 +37,8 @@ This is a flymake backend, hence it uses REPORT-FN to report diagnostics."
     (save-excursion
       (goto-char (point-min))
       (while-let ((sexp (ignore-errors (read (current-buffer)))))
-        (when (eq 'use-package (car sexp))
+        (when (and (listp sexp)
+                   (eq 'use-package (car sexp)))
           (let* ((tree (named-let go ((declaration sexp) (tree nil))
                          (cond ((null declaration)
                                 (seq-map #'reverse (reverse tree)))
