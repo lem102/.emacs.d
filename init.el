@@ -725,12 +725,6 @@ $0")
   :config
   (advice-add #'sbt:initialize-for-compilation-mode :override #'ignore))
 
-(use-package sbt-mode-vars
-  :defer t
-  :config
-  (add-to-list 'sbt:program-options "--jvm-debug" "APPEND")
-  (add-to-list 'sbt:program-options "5005" "APPEND"))
-
 (use-package jacob-scala
   :hook ((scala-mode-hook . jacob-scala-font-lock-setup)
          (scala-mode-hook . jacob-scala-setup-flymake))
