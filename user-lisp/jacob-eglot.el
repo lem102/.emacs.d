@@ -40,12 +40,13 @@ Disables the eglot backend when inside a `.g8' template."
                   :workspace/executeCommand
                   (list :command "bsp-switch")))
 
-;; TODO: wip
+;; TODO: is this needed anymore?
 (cl-defmethod eglot-client-capabilities :around (server)
   "Try add support for workspace/willRenameFiles notification."
   (let* ((base (cl-call-next-method)))
-    (setf (cl-getf (cl-getf base :workspace)
-                   :willRenameFiles)
+    (setf (cl-getf (cl-getf (cl-getf base :workspace)
+                            :fileOperations)
+                   :willRename)
           t)
     base))
 
