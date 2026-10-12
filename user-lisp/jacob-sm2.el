@@ -9,6 +9,7 @@
 ;;; Code:
 
 (require 'transient)
+(require 'json)
 
 (defcustom jacob-sm2-config-directory "~/.sm2/service-manager-config/"
   "Directory where sm2 stores it's configuration.")
@@ -102,9 +103,6 @@
             (mapcar #'car
                     (json-read-file (file-name-concat jacob-sm2-config-directory
                                                       "profiles.json"))))
-          (mapcar #'car
-                  (json-read-file (file-name-concat jacob-sm2-config-directory
-                                                    "services.json")))
           (mapcar #'car
                   (apply #'append
                          (mapcar #'json-read-file
