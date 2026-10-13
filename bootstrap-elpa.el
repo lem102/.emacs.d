@@ -58,6 +58,7 @@
                    sly-quicklisp
                    sql-indent
                    gptel
+                   gptel-agent
                    mcp
                    elisp-dev-mcp
                    gdscript-mode
