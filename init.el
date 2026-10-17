@@ -1336,8 +1336,8 @@ $0")
 
 (use-package warnings
   :defer t
-  :custom ((display-warning-minimum-level :warning)
-           (log-warning-minimum-level :debug)))
+  :custom ((warning-minimum-level :error)
+           (warning-minimum-log-level :debug)))
 
 (use-package ace-window
   :defer t
