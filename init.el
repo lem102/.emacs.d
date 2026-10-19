@@ -302,13 +302,13 @@ Setting this to a non-nil value will cause different features to be loaded.")
   :bind ( :repeat-map jacob-window-repeat-map
           ("b" . consult-buffer)
           ("o" . other-window))
-  :custom ((display-buffer-alist '(((major-mode . sql-interactive-mode)
-                                    (display-buffer-reuse-mode-window
-                                     display-buffer-same-window))
-                                   ((major-mode . prodigy-mode)
-                                    (display-buffer-reuse-mode-window
-                                     display-buffer-same-window))
-                                   ((major-mode . magit-status-mode)
+  :custom ((display-buffer-alist '(((or (major-mode . sql-interactive-mode)
+                                        (major-mode . prodigy-mode)
+                                        (major-mode . magit-status-mode)
+                                        (lambda (buffer)
+                                          "Return t if gptel-mode is active in BUFFER."
+                                          (with-current-buffer buffer
+                                            gptel-mode)))
                                     (display-buffer-reuse-mode-window
                                      display-buffer-same-window))
                                    ((or (derived-mode . slack-mode)
