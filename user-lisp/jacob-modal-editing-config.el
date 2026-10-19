@@ -66,6 +66,7 @@
                  ("SPC SPC e o" . eglot-code-action-organize-imports)
                  ("SPC SPC e r" . eglot-rename)
                  ("SPC SPC e t" . eglot-find-typeDefinition)
+                 ("SPC SPC l" . gptel)
                  ("SPC SPC o a" . org-agenda)
                  ("SPC SPC o c" . org-capture)
                  ("SPC SPC o l" . org-store-link)
