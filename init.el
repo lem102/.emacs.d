@@ -307,8 +307,7 @@ Setting this to a non-nil value will cause different features to be loaded.")
                                         (major-mode . magit-status-mode)
                                         (lambda (buffer)
                                           "Return t if gptel-mode is active in BUFFER."
-                                          (with-current-buffer buffer
-                                            gptel-mode)))
+                                          (bound-and-true-p gptel-mode)))
                                     (display-buffer-reuse-mode-window
                                      display-buffer-same-window))
                                    ((or (derived-mode . slack-mode)
