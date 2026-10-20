@@ -1059,6 +1059,9 @@ $0")
 
 ;; (ox-extras-activate '(latex-header-blocks ignore-headlines))
 
+(use-package pulse
+  :custom ((pulse-flag t "emacsclient sets to nil in v31.1")))
+
 (use-package jacob-pulse
   :functions (jacob-pulse-jacob-line-content jacob-pulse-defun jacob-pulse-previous-sexp)
   :init
