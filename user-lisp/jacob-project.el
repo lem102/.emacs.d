@@ -6,6 +6,7 @@
 ;;; Code:
 
 (require 'project)
+(require 'gptel-agent)
 
 ;;;###autoload
 (defun jacob-dired-in-other-project ()
@@ -44,6 +45,15 @@ Currently this command assumes we are in a scala project."
     (if file-to-find
         (find-file file-to-find)
       (user-error "`jacob-project-visit-test' could not find a corresponding file"))))
+
+;;;###autoload
+(defun jacob-project-gptel-agent ()
+  "Start a `gptel-agent' session in the root of the current project."
+  (interactive)
+  (let* ((project (project-current t))
+         (root (project-root project)))
+    (let ((default-directory root))
+      (call-interactively #'gptel-agent))))
 
 (provide 'jacob-project)
 
