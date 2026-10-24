@@ -670,6 +670,7 @@ $0")
   (add-to-list 'eglot-server-programs '((gdscript-mode gdscript-ts-mode) "localhost" 6008))
 
   (add-to-list 'eglot-server-programs '(scala-ts-mode . ("metals" :initializationOptions (:isHttpEnabled t))))
+  (add-to-list 'eglot-server-programs '(kotlin-mode . ("kotlin-lsp" "--stdio")))
 
   (eglot--code-action eglot-code-action-organize-imports-ts "source.organizeImports.ts")
   (eglot--code-action eglot-code-action-add-missing-imports-ts "source.addMissingImports.ts")
