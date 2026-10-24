@@ -305,8 +305,8 @@ Setting this to a non-nil value will cause different features to be loaded.")
   :custom ((display-buffer-alist '(((or (major-mode . sql-interactive-mode)
                                         (major-mode . prodigy-mode)
                                         (major-mode . magit-status-mode)
-                                        (lambda (buffer)
-                                          "Return t if gptel-mode is active in BUFFER."
+                                        (lambda (&rest _args)
+                                          "Return t if gptel-mode is active in the current buffer."
                                           (bound-and-true-p gptel-mode)))
                                     (display-buffer-reuse-mode-window
                                      display-buffer-same-window))
