@@ -450,7 +450,8 @@ Setting this to a non-nil value will cause different features to be loaded.")
 (use-package jacob-project
   :after project
   :bind ( :map project-prefix-map
-          ("t" . jacob-project-visit-test)))
+          ("t" . jacob-project-visit-test)
+          ("a" . jacob-project-gptel-agent)))
 
 (use-package yasnippet
   :hook ((snippet-mode . yas-minor-mode)
