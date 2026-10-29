@@ -743,6 +743,10 @@ $0")
   :bind ( :map project-prefix-map
           ("S" . jacob-project-sbt)))
 
+(use-package jacob-sm2
+  :defer t
+  :custom ((jacob-sm2-workers 4)))
+
 (use-package web-mode
   :mode ("\\.scala\\.html\\'" . web-mode)
   :custom ((web-mode-engines-alist

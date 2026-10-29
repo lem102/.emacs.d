@@ -14,6 +14,9 @@
 (defcustom jacob-sm2-config-directory "~/.sm2/service-manager-config/"
   "Directory where sm2 stores it's configuration.")
 
+(defcustom jacob-sm2-workers 2
+  "Number of workers used while launching multiple services.")
+
 ;; TODO: on my arch VM, this being an autoload causes issues... why?
 ;;;###autoload (autoload 'jacob-sm2 "jacob-sm2" nil t)
 (transient-define-prefix jacob-sm2 ()
@@ -61,7 +64,8 @@
          (process-connection-type nil)
 
          )
-    (async-shell-command (format "sm2 --workers 4 --start %s"
+    (async-shell-command (format "sm2 --workers %s --start %s"
+                                 jacob-sm2-workers
                                  (completing-read "Start service or profile: "
                                                   (jacob-sm2--get-services "AND-PROFILES"))))))
 
@@ -69,7 +73,8 @@
   "Run sm2 --clean --start. Prompt for which service or profile should be started."
   (interactive)
   (let* ((process-connection-type nil))
-    (async-shell-command (format "sm2 --workers 4 --clean --start %s"
+    (async-shell-command (format "sm2 --workers %s --clean --start %s"
+                                 jacob-sm2-workers
                                  (completing-read "Start service or profile: "
                                                   (jacob-sm2--get-services "AND-PROFILES"))))))
 
