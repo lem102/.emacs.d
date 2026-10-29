@@ -675,7 +675,10 @@ $0")
   (eglot--code-action eglot-code-action-organize-imports-ts "source.organizeImports.ts")
   (eglot--code-action eglot-code-action-add-missing-imports-ts "source.addMissingImports.ts")
 
-  (setopt eglot-ignored-server-capabilities '(:documentOnTypeFormattingProvider :documentFormattingProvider)
+  (setopt eglot-ignored-server-capabilities '(:documentFormattingProvider
+                                              :documentOnTypeFormattingProvider
+                                              :documentHighlightProvider
+                                              :documentSymbolProvider)
           eglot-stay-out-of '(imenu flymake)
           eglot-code-action-indications '(eldoc-hint mode-line)))
 
