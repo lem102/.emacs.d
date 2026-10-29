@@ -723,6 +723,7 @@ $0")
          (scala-mode-hook . flymake-mode)
          (scala-mode-hook . corfu-mode)))
 
+;; TODO: return to scala ts mode
 (use-package scala-mode-map
   :after (scala-mode)
   :defines (scala-mode-map)

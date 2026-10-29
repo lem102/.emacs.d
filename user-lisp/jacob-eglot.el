@@ -19,12 +19,12 @@
       (add-hook 'jsonrpc-event-hook #'handle-code-actions))))
 
 (defun jacob-eglot-remove-ret-character-from-buffer (&rest _)
-  "Remove all occurances of ^M from the buffer.
+  "Remove all occurences of ^M from the buffer.
 
     Useful for deleting ^M after `eglot-code-actions'."
   (save-excursion
     (goto-char (point-min))
-    (while (search-forward (char-to-string 13) nil t)
+    (while (search-forward (char-to-string ?\) nil t)
       (replace-match ""))))
 
 (defun jacob-eglot-xref-backend ()

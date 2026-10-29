@@ -7,6 +7,8 @@
 
 (require 'eglot)
 
+;; TODO: investigate whether the "javac -g" flag does something????
+
 (defun jacob-dape-metals-config-function (config)
   "Setup metals debugging session.
 
