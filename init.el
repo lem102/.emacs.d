@@ -484,6 +484,11 @@ $0")
            (completions-format 'one-column)
            (completions-max-height 20)))
 
+(use-package corfu
+  :custom ((corfu-auto t)
+           (corfu-auto-delay 0.2)
+           (corfu-auto-prefix 2)))
+
 (use-package vertico
   :if (and (not jacob-is-android)
            jacob-is-fast)
@@ -715,7 +720,8 @@ $0")
          (scala-mode-hook . electric-indent-local-mode)
          (scala-mode-hook . jacob-trim-quotes-mode)
          (scala-mode-hook . eglot-ensure)
-         (scala-mode-hook . flymake-mode)))
+         (scala-mode-hook . flymake-mode)
+         (scala-mode-hook . corfu-mode)))
 
 (use-package scala-mode-map
   :after (scala-mode)
