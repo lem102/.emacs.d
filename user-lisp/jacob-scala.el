@@ -62,6 +62,9 @@
 
 (defun jacob-scala-dollar ()
   "Insert a dollar. If inside a string, enable string interpolation."
+  ;; TODO: if the string is algined with pipe characters and has a
+  ;; call to stripMargin, nudge the pipes by one character when adding
+  ;; the "s" to the start of the string
   (interactive)
   (unless (or (eq major-mode 'scala-mode)
               (eq major-mode 'scala-ts-mode))
