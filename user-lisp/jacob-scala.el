@@ -13,10 +13,18 @@
 
 ;;; Code:
 
-(defun jacob-project-sbt ()
-  "Open sbt shell for a project."
+(require 'cond-let)
+(require 'treesit)
+(require 'project)
+(require 'sbt-mode)
+(require 'jsonrpc)
+(require 'eglot)
+
+(defun jacob-project-sbt (&optional project)
+  "Open sbt shell for a PROJECT."
   (interactive)
-  (let* ((default-directory (project-root (project-current "MAYBE-PROMPT"))))
+  (let* ((project (if project project (project-current "MAYBE-PROMPT")))
+         (default-directory (project-root project)))
     (sbt-start)))
 
 (defun jacob-scala-indentation-to-block ()

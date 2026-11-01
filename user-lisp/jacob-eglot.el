@@ -5,6 +5,9 @@
 
 ;;; Code:
 
+(require 'eglot)
+(require 'jacob-scala)
+
 (defun jacob-eglot-yank ()
   "Yank text into the buffer, attempt to fix any import issues."
   (interactive)
@@ -18,6 +21,7 @@
       (save-buffer)
       (add-hook 'jsonrpc-event-hook #'handle-code-actions))))
 
+;;;###autoload
 (defun jacob-eglot-remove-ret-character-from-buffer (&rest _)
   "Remove all occurences of ^M from the buffer.
 
@@ -27,6 +31,7 @@
     (while (search-forward (char-to-string ?\) nil t)
       (replace-match ""))))
 
+;;;###autoload
 (defun jacob-eglot-xref-backend ()
   "Custom eglot xref backend.
 Disables the eglot backend when inside a `.g8' template."
@@ -39,6 +44,34 @@ Disables the eglot backend when inside a `.g8' template."
   (jsonrpc-notify (eglot-current-server)
                   :workspace/executeCommand
                   (list :command "bsp-switch")))
+
+;;;###autoload
+(defun jacob-eglot-metals-start-sbt (_interactive project)
+  "In the current PROJECT start metals and sbt.
+
+The idea being that they will establish a connection between each other."
+  (save-window-excursion
+    (message "Starting sbt...")
+    (let* ((sbt-buffer (jacob-project-sbt project))) ; start sbt in the project
+      (with-current-buffer sbt-buffer
+        (while (not (search-forward "started sbt server" nil "NOERROR")) ; wait for sbt to start its server
+          (accept-process-output)
+          (goto-char (point-min)))))
+    (message "Sbt started. Starting metals...")
+    '("metals" :initializationOptions (:isHttpEnabled t))))
+
+;;;###autoload
+(defun jacob-eglot-metals-shutdown-sbt-server (server &rest _args)
+  "Stop any associated sbt server associated to SERVER.
+
+Intended as an advice :before `eglot-shutdown'."
+  (let* ((nickname (eglot-project-nickname server))
+         (sbt-buffer (seq-find (lambda (buffer)
+                                 (string-match-p (format "\\*sbt\\*<~.*%s/>"
+                                                         nickname)
+                                                 (buffer-name buffer)))
+                               (buffer-list))))
+    (kill-buffer sbt-buffer)))
 
 ;; TODO: is this needed anymore?
 (cl-defmethod eglot-client-capabilities :around (server)

@@ -638,7 +638,8 @@ $0")
    ("C-c e y" . jacob-eglot-yank))
   :functions (eglot-semantic-tokens-mode
               eglot-alternatives
-              eglot-flymake-backend)
+              eglot-flymake-backend
+              eglot-shutdown)
   :config
   (jacob-defhookf eglot-managed-mode-hook
     (eglot-inlay-hints-mode 0)
@@ -674,7 +675,10 @@ $0")
 
   (add-to-list 'eglot-server-programs '((gdscript-mode gdscript-ts-mode) "localhost" 6008))
 
-  (add-to-list 'eglot-server-programs '(scala-ts-mode . ("metals" :initializationOptions (:isHttpEnabled t))))
+  ;; metals
+  (add-to-list 'eglot-server-programs (cons '(scala-mode scala-ts-mode) #'jacob-eglot-metals-start-sbt))
+  (advice-add #'eglot-shutdown :before #'jacob-eglot-metals-shutdown-sbt-server)
+
   (add-to-list 'eglot-server-programs '(kotlin-mode . ("kotlin-lsp" "--stdio")))
 
   (eglot--code-action eglot-code-action-organize-imports-ts "source.organizeImports.ts")
@@ -685,17 +689,18 @@ $0")
                                               :documentHighlightProvider
                                               :documentSymbolProvider)
           eglot-stay-out-of '(imenu flymake)
-          eglot-code-action-indications '(eldoc-hint mode-line)))
+          eglot-code-action-indications '(eldoc-hint mode-line))
 
-(use-package jacob-eglot
-  :defer t
-  :after (eglot)
-  :functions (jacob-eglot-xref-backend
-              jacob-eglot-remove-ret-character-from-buffer)
-  :config
   (advice-add 'eglot-xref-backend :override #'jacob-eglot-xref-backend)
   (advice-add 'eglot-code-actions :after #'jacob-eglot-remove-ret-character-from-buffer)
   (advice-add 'eglot-rename :after #'jacob-eglot-remove-ret-character-from-buffer))
+
+(use-package jacob-eglot
+  :defer t
+  :functions (jacob-eglot-xref-backend
+              jacob-eglot-remove-ret-character-from-buffer
+              jacob-eglot-metals-start-sbt
+              jacob-eglot-metals-shutdown-sbt-server))
 
 (require 'jacob-csharp-mode)
 
