@@ -15,17 +15,9 @@
 
 (require 'cond-let)
 (require 'treesit)
-(require 'project)
 (require 'sbt-mode)
 (require 'jsonrpc)
 (require 'eglot)
-
-(defun jacob-project-sbt (&optional project)
-  "Open sbt shell for a PROJECT."
-  (interactive)
-  (let* ((project (if project project (project-current "MAYBE-PROMPT")))
-         (default-directory (project-root project)))
-    (sbt-start)))
 
 (defun jacob-scala-indentation-to-block ()
   "Convert the indentation based syntax at point to block based syntax."
@@ -95,7 +87,9 @@
 (defun jacob-scala-. ()
   "Insert a dot.
 
-If inside a string using string interpolation and to the right of a value to be interpolated into the string, add curly braces appropriately."
+If inside a string using string interpolation and to the right of a
+value to be interpolated into the string, add curly braces
+appropriately."
   (interactive)
   (unless (or (eq major-mode 'scala-mode)
               (eq major-mode 'scala-ts-mode))
@@ -254,10 +248,10 @@ Leave escaped characters alone."
           (progn
             (goto-char (treesit-node-end string-node))
             (search-backward "\"\"\"")
-            (delete-forward-char 2)
+            (delete-char 2)
             (goto-char (treesit-node-start string-node))
             (search-forward "\"\"\"")
-            (backward-delete-char 2))
+            (delete-char -2))
         (goto-char (treesit-node-end string-node))
         (search-backward "\"")
         (insert "\"\"")
@@ -310,7 +304,7 @@ lets you select one via completion, and inserts it at the top of the file."
                   '( :command "bsp-switch")))
 
 (defun jacob-json-to-play-json (region-start region-end)
-  "Convert the json between REGION-START and REGION-END to an equivalent play json expression."
+  "Convert the json between REGION-START and REGION-END to a play json expression."
   (interactive "r")
   (let* ((json (buffer-substring-no-properties region-start region-end))
          (data (condition-case nil
@@ -401,12 +395,12 @@ lets you select one via completion, and inserts it at the top of the file."
            (rest-lines (seq-subseq lines 1 -1)))
       (insert first-line "\n")
       (dolist (line rest-lines)
-        (dotimes (i column)
+        (dotimes (_ column)
           (insert " "))
         (insert "|")
         (insert line)
         (insert "\n"))
-      (dotimes (i column)
+      (dotimes (_ column)
         (insert " "))
       (insert "|" last-line "\"\"\""))))
 

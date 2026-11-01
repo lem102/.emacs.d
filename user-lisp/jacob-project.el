@@ -7,6 +7,15 @@
 
 (require 'project)
 (require 'gptel-agent)
+(require 'sbt-mode)
+
+;;;###autoload
+(defun jacob-project-sbt (&optional project)
+  "Open sbt shell for a PROJECT."
+  (interactive)
+  (let* ((project (if project project (project-current "MAYBE-PROMPT")))
+         (default-directory (project-root project)))
+    (sbt-start)))
 
 ;;;###autoload
 (defun jacob-dired-in-other-project ()
