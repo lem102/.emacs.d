@@ -315,7 +315,8 @@ Setting this to a non-nil value will cause different features to be loaded.")
                                     (display-buffer-in-side-window)
                                     (side . right))))
            (split-height-threshold nil)
-           (switch-to-buffer-obey-display-actions t)))
+           (switch-to-buffer-obey-display-actions t))
+  :hook ((after-init-hook . toggle-frame-maximized)))
 
 (defvar-keymap jacob-error-navigation-repeat-map
   :repeat t
