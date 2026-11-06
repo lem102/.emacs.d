@@ -689,7 +689,7 @@ $0")
                                               :documentOnTypeFormattingProvider
                                               :documentHighlightProvider
                                               :documentSymbolProvider)
-          eglot-stay-out-of '(imenu flymake)
+          eglot-stay-out-of '(imenu)
           eglot-code-action-indications '(eldoc-hint mode-line))
 
   (advice-add 'eglot-xref-backend :override #'jacob-eglot-xref-backend)
@@ -726,7 +726,6 @@ $0")
          (scala-mode-hook . electric-indent-local-mode)
          (scala-mode-hook . jacob-trim-quotes-mode)
          (scala-mode-hook . eglot-ensure)
-         (scala-mode-hook . flymake-mode)
          (scala-mode-hook . corfu-mode)))
 
 ;; TODO: return to scala ts mode
