@@ -960,7 +960,8 @@ $0")
 (use-package fennel-mode
   :hook ((fennel-mode-hook . yas-minor-mode)
          (fennel-mode-hook . apheleia-mode)
-         (fennel-mode-hook . electric-indent-mode)))
+         (fennel-mode-hook . electric-indent-mode)
+         (fennel-mode-hook . eglot-ensure)))
 
 (use-package geiser
   :after scheme)
