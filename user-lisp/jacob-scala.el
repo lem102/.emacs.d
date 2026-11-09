@@ -19,6 +19,12 @@
 (require 'jsonrpc)
 (require 'eglot)
 
+(defun jacob-project-sbt ()
+  "Open sbt shell for a project."
+  (interactive)
+  (let* ((default-directory (project-root (project-current "MAYBE-PROMPT"))))
+    (sbt-start)))
+
 (defun jacob-scala-indentation-to-block ()
   "Convert the indentation based syntax at point to block based syntax."
   (interactive)
@@ -495,12 +501,36 @@ This is a flymake backend, hence it uses REPORT-FN to report diagnostics."
                                               :note
                                               "Package does not match directory structure"))))))
 
+(defun jacob-scala-flymake-final-case-class (report-fn &rest _args)
+  "Check for case classes that are not final.
+
+This is a flymake backend, hence it uses REPORT-FN to report diagnostics."
+  (funcall report-fn
+           (when-let* ((case-class-nodes (treesit-query-capture (treesit-buffer-root-node 'scala)
+                                                                '((class_definition "case" "class") @class)
+                                                                nil
+                                                                nil
+                                                                "NODE-ONLY"))
+                       (missing-final-nodes (seq-filter (lambda (node)
+                                                          (not (seq-find (lambda (node)
+                                                                           (string= "modifiers" (treesit-node-type node)))
+                                                                         (treesit-node-children node))))
+                                                        case-class-nodes)))
+             (seq-map (lambda (node)
+                        (flymake-make-diagnostic (current-buffer)
+                                                 (treesit-node-start node)
+                                                 (treesit-node-end node)
+                                                 :note
+                                                 "Case class is missing final."))
+                      missing-final-nodes))))
+
 (defun jacob-scala-setup-flymake ()
   "Activate flymake diagnostics functions."
   (add-hook 'flymake-diagnostic-functions #'jacob-flymake-scala-filename-alignment nil "LOCAL")
   (add-hook 'flymake-diagnostic-functions #'jacob-flymake-scala-directory-alignment nil "LOCAL")
   (add-hook 'flymake-diagnostic-functions #'jacob-flymake-scala-use-identity nil "LOCAL")
-  (add-hook 'flymake-diagnostic-functions #'jacob-flymake-scala-prefer-nil nil "LOCAL"))
+  (add-hook 'flymake-diagnostic-functions #'jacob-flymake-scala-prefer-nil nil "LOCAL")
+  (add-hook 'flymake-diagnostic-functions #'jacob-scala-flymake-final-case-class nil "LOCAL"))
 
 (provide 'jacob-scala)
 
