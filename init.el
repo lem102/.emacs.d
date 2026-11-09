@@ -681,7 +681,7 @@ $0")
   (add-to-list 'eglot-server-programs (cons '(scala-mode scala-ts-mode) #'jacob-eglot-metals-start-sbt))
   (advice-add #'eglot-shutdown :before #'jacob-eglot-metals-shutdown-sbt-server)
 
-  (add-to-list 'eglot-server-programs '(kotlin-mode . ("kotlin-lsp" "--stdio")))
+  (add-to-list 'eglot-server-programs '(kotlin-mode . ("kotlin-language-server")))
 
   (eglot--code-action eglot-code-action-organize-imports-ts "source.organizeImports.ts")
   (eglot--code-action eglot-code-action-add-missing-imports-ts "source.addMissingImports.ts")
