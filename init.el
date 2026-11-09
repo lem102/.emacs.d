@@ -344,7 +344,8 @@ Setting this to a non-nil value will cause different features to be loaded.")
 (use-package recentf
   :hook ((jacob-on-first-input-wrapper-hook . recentf-mode))
   :custom ((recentf-max-saved-items nil)
-           (recentf-autosave-interval jacob-5-minutes-in-seconds)))
+           (recentf-autosave-interval jacob-5-minutes-in-seconds)
+           (recentf-menu-before "Open File In Project...")))
 
 (use-package savehist
   :hook ((jacob-first-minibuffer-use-hook . savehist-mode))
