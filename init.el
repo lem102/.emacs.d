@@ -1337,11 +1337,15 @@ $0")
 
 (use-package jacob-dape
   :after dape
-  :functions (jacob-dape-metals-config-function)
+  :functions (jacob-dape-metals-config-function jacob-dape-metals-attach)
   :config
   (add-to-list 'dape-configs `(scala-debug-file fn ,#'jacob-dape-metals-config-function
                                                 modes (scala-mode scala-ts-mode)
-                                                :noDebug nil)))
+                                                :noDebug nil))
+  (add-to-list 'dape-configs `(scala-attach fn ,#'jacob-dape-metals-attach
+                                            modes (scala-mode scala-ts-mode)
+                                            :noDebug nil
+                                            :request "attach")))
 
 (use-package tex
   :commands (TeX-PDF-mode)

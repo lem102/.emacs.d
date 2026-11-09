@@ -45,6 +45,15 @@ Disables the eglot backend when inside a `.g8' template."
                   :workspace/executeCommand
                   (list :command "bsp-switch")))
 
+(defvar jacob-sbt-port-number 22200
+  "Next port number for an sbt server to use."
+  ;; we can try reserve 22200 to 22299 for sbt servers
+  ;; probably simple enough to use port 22200 initially then increment for each new server
+  )
+
+(defvar jacob-sbt-port-table nil
+  "Alist of sbt buffers to port numbers.")
+
 ;;;###autoload
 (defun jacob-eglot-metals-start-sbt (_interactive project)
   "In the current PROJECT start metals and sbt.
@@ -52,9 +61,15 @@ Disables the eglot backend when inside a `.g8' template."
 The idea being that they will establish a connection between each other."
   (save-window-excursion
     (message "Starting sbt...")
-    (let* ((sbt-buffer (jacob-project-sbt project))) ; start sbt in the project
+    (let* ((port (incf jacob-sbt-port-number))
+           (sbt:program-options (list "-Dsbt.supershell=false"
+                                      "-jvm-debug"
+                                      (number-to-string port)))
+           (sbt-buffer (jacob-project-sbt project))) ; start sbt in the project
+      (push (cons (buffer-name sbt-buffer) port) jacob-sbt-port-table) ; record the port used for later...
       (with-current-buffer sbt-buffer
         (while (not (search-forward "started sbt server" nil "NOERROR")) ; wait for sbt to start its server
+          ;; TODO: handle existing sbt server (kill and start new one)
           (accept-process-output)
           (goto-char (point-min)))))
     (message "Sbt started. Starting metals...")
@@ -74,6 +89,7 @@ Intended as an advice :before `eglot-shutdown'."
     (kill-buffer sbt-buffer)))
 
 ;; TODO: is this needed anymore?
+;; no i think it is builtin!
 (cl-defmethod eglot-client-capabilities :around (server)
   "Try add support for workspace/willRenameFiles notification."
   (let* ((base (cl-call-next-method)))
