@@ -6,6 +6,7 @@
 ;;; Code:
 
 (require 'eglot)
+(require 'jacob-sbt)
 
 ;; TODO: investigate whether the "javac -g" flag does something????
 
@@ -28,17 +29,6 @@
                'port
                (url-port url))))
 
-;; TODO: move to jacob sbt module
-(defun jacob-sbt-get-project-name ()
-  "Get the project name."
-  (with-current-buffer (sbt:buffer-name)
-    (sbt-command "project")
-    (accept-process-output (get-buffer-process (current-buffer))
-                           1)
-    (goto-char (point-min))
-    (re-search-forward "\\[info\\] \\([a-z-]+\\)")
-    (match-string 1)))
-
 (defun jacob-dape-metals-attach (config)
   "Setup a metals debugging session in which we attach to sbt.
 
@@ -60,17 +50,7 @@
                                      :hostName host
                                      :port sbt-port)
                                2)
-                config)
-    ;; (plist-put (plist-put (plist-put (plist-put config
-    ;;                                             'host
-    ;;                                             debugger-host)
-    ;;                                  'port
-    ;;                                  debugger-port)
-    ;;                       :hostName
-    ;;                       debugger-host)
-    ;;            :port
-    ;;            sbt-port)
-    ))
+                config)))
 
 
 
