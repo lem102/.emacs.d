@@ -5,6 +5,8 @@
 
 ;;; Code:
 
+(require 'cl-macs)
+
 (defun jacob-apheleia-yas-active-p ()
   "Return t when a yasnippet field is active.
 Created for `apheleia-skip-functions'."
@@ -19,19 +21,14 @@ Created for `apheleia-skip-functions'."
   (and (boundp 'smerge-mode)
        smerge-mode))
 
-(defun jacob-format-play-routes-file ()
-  "Format a play routes file."
-  (interactive)
-  (let ((regexp "^[^#+]\\([^[:space:]]+\\)\\([[:space:]]+\\)\\([^[:space:]]+\\)\\([[:space:]]+\\)"))
-    (align-regexp (point-min) (point-max) regexp 2 8)
-    (align-regexp (point-min) (point-max) regexp 4 8)))
-
-(cl-defun jacob-apheleia-format-play-routes-file (&key buffer scratch callback &allow-other-keys)
+(cl-defun jacob-apheleia-format-play-routes-file (&key _buffer scratch callback &allow-other-keys)
   "Format a play framework routes BUFFER.
 Use SCRATCH as a temporary buffer and CALLBACK to apply the
 transformation."
-  (with-current-buffer scratch
-    (jacob-format-play-routes-file)
+  (let ((regexp "^[^\n#+]\\([^[:space:]]+\\)\\([[:space:]]+\\)\\([^[:space:]]+\\)\\([[:space:]]+\\)"))
+    (with-current-buffer scratch
+      (align-regexp (point-min) (point-max) regexp 2 8)
+      (align-regexp (point-min) (point-max) regexp 4 8))
     (funcall callback)))
 
 (provide 'jacob-apheleia)
