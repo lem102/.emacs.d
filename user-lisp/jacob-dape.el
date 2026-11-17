@@ -36,8 +36,8 @@
     (accept-process-output (get-buffer-process (current-buffer))
                            1)
     (goto-char (point-min))
-    (search-forward "[info] ")
-    (thing-at-point 'symbol "NO-PROPERTIES")))
+    (re-search-forward "\\[info\\] \\([a-z-]+\\)")
+    (match-string 1)))
 
 (defun jacob-dape-metals-attach (config)
   "Setup a metals debugging session in which we attach to sbt.
