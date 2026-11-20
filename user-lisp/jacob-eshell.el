@@ -22,6 +22,13 @@
   "Print list of groups that USER belongs to."
   (shell-command-to-string (format "id -nG %s" (if user user ""))))
 
+(defun eshell/jacob-yay-install ()
+  "Install the Arch AUR helper called \"yay\"."
+  (let* ((default-directory "~/dev/"))
+    (shell-command-to-string "git clone https://aur.archlinux.org/yay.git")
+    (let* ((default-directory "~/dev/yay/"))
+      (async-shell-command "makepkg -si"))))
+
 (provide 'jacob-eshell)
 
 ;;; jacob-eshell.el ends here
