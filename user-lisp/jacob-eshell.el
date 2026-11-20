@@ -4,6 +4,8 @@
 
 ;;; Code:
 
+;; TODO: a thing that detects if a shell command is running for longer than 30 seconds and if so sends a notification when it has completed.
+
 (require 'esh-mode)
 
 (defun jacob-eshell-windows-confirm-terminate-batch-job ()
