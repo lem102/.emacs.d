@@ -51,6 +51,7 @@
                    embark-consult
                    cape
                    expreg
+                   expand-region
                    verb
                    sly
                    sly-overlay
