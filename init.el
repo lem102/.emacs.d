@@ -753,6 +753,10 @@ $0")
   :defer t
   :custom ((jacob-sm2-workers 4)))
 
+(use-package jacob-play-routes-mode)
+
+(use-package jacob-play-messages-mode)
+
 (use-package web-mode
   :mode ("\\.scala\\.html\\'" . web-mode)
   :custom ((web-mode-engines-alist
