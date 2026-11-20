@@ -327,8 +327,7 @@
                                 ("t" . calendar-set-mark)))
 
 (jme-major-mode-override-keys 'compilation-mode
-                              '(("g" . recompile)
-                                ("q" . quit-window)))
+                              '(("q" . quit-window)))
 
 (jme-major-mode-override-keys 'doc-view-mode
                               '(("l" . doc-view-next-page)
