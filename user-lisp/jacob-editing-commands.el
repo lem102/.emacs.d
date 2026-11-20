@@ -6,6 +6,7 @@
 ;;; Code:
 
 (require 'jacob-utils)
+(require 'expreg)
 
 (defvar-local jacob-backward-paragraph-function #'backward-paragraph
   "Function to use for backward paragraph in `jacob-beginning-of-line'.")
@@ -500,11 +501,18 @@ Prompt user for case."
 
 ;;;###autoload
 (defun jacob-mark ()
-  "Command to combine `expreg' with setting the mark."
+  "If mark is not set, set it.
+If mark is set and we are in a treesitter buffer, call expreg.
+If mark is set and we are not in a treesitter buffer, call expand-region."
   (interactive)
-  (if (region-active-p)
-      (call-interactively #'expreg-expand)
-    (call-interactively #'set-mark-command)))
+  (let* ((is-region-active (region-active-p))
+         (is-treesitter-buffer (treesit-parser-list)))
+    (if is-region-active
+        (if is-treesitter-buffer
+            (call-interactively #'expreg-expand)
+          (call-interactively #'expreg-expand) ; TODO: use either expand-region if buffer is not using treesitter
+          )
+      (call-interactively #'set-mark-command))))
 
 (provide 'jacob-editing-commands)
 
