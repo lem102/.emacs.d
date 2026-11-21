@@ -7,6 +7,7 @@
 
 (require 'eglot)
 (require 'jacob-scala)
+(require 'jacob-project)
 
 (defun jacob-eglot-yank ()
   "Yank text into the buffer, attempt to fix any import issues."
