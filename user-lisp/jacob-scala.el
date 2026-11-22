@@ -259,17 +259,6 @@ Leave escaped characters alone."
         (search-forward "\"")
         (insert "\"\"")))))
 
-(defun jacob-scala-font-lock-setup ()
-  "Setup faces locally for scala."
-  (setq-local treesit-font-lock-feature-list
-              '((comment doc-comment definition)
-                (type)
-                (import extra)
-                (function operator literal interpolation)))
-  (treesit-font-lock-recompute-features)
-  (face-remap-add-relative 'font-lock-comment-face
-                           :inherit 'font-lock-warning-face))
-
 (defun jacob-scala-steal-import ()
   "Try to import the symbol at point using grep.
 Finds existing import statements for the symbol in the current project,

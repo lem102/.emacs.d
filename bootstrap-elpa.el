@@ -15,7 +15,7 @@
                    dumb-jump
                    csproj-mode
                    fsharp-mode
-                   scala-mode
+                   scala-ts-mode
                    sbt-mode
                    web-mode
                    dired-rsync

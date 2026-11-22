@@ -721,19 +721,15 @@ $0")
   (remove-hook 'project-find-functions #'fsharp-mode-project-root)
   (setopt compilation-error-regexp-alist (remove 'fsharp compilation-error-regexp-alist)))
 
-(use-package scala-mode
-  :hook ((scala-mode-hook . apheleia-mode)
-         (scala-mode-hook . yas-minor-mode)
-         (scala-mode-hook . electric-indent-local-mode)
-         (scala-mode-hook . jacob-trim-quotes-mode)
-         (scala-mode-hook . eglot-ensure)
-         (scala-mode-hook . corfu-mode)))
-
-;; TODO: return to scala ts mode
-(use-package scala-mode-map
-  :after (scala-mode)
-  :defines (scala-mode-map)
-  :bind ( :map scala-mode-map
+(use-package scala-ts-mode
+  :defines (scala-ts-mode-map)
+  :hook ((scala-ts-mode-hook . apheleia-mode)
+         (scala-ts-mode-hook . yas-minor-mode)
+         (scala-ts-mode-hook . electric-indent-local-mode)
+         (scala-ts-mode-hook . jacob-trim-quotes-mode)
+         (scala-ts-mode-hook . eglot-ensure)
+         (scala-ts-mode-hook . corfu-mode))
+  :bind ( :map scala-ts-mode-map
           ("$" . jacob-scala-dollar)
           ("." . jacob-scala-.)))
 
@@ -744,8 +740,7 @@ $0")
   (advice-add #'sbt:initialize-for-compilation-mode :override #'ignore))
 
 (use-package jacob-scala
-  :hook ((scala-mode-hook . jacob-scala-font-lock-setup)
-         (scala-mode-hook . jacob-scala-setup-flymake))
+  :hook ((scala-ts-mode-hook . jacob-scala-setup-flymake))
   :bind ( :map project-prefix-map
           ("S" . jacob-project-sbt)))
 
