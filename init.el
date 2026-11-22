@@ -902,22 +902,6 @@ $0")
 (use-package hl-todo
   :hook ((after-init-hook . global-hl-todo-mode)))
 
-(defun jacob-font-lock-programming-setup ()
-  "Setup faces locally for programming."
-  (dolist (face '(font-lock-type-face
-                  font-lock-keyword-face
-                  font-lock-variable-use-face
-                  font-lock-function-call-face
-                  font-lock-preprocessor-face
-                  font-lock-property-use-face
-                  font-lock-builtin-face))
-    (face-remap-add-relative face
-                             :foreground (face-foreground 'default)
-                             :weight (face-attribute 'default :weight)))
-
-  (face-remap-add-relative 'font-lock-comment-face
-                           :inherit 'font-lock-warning-face))
-
 (use-package lisp-mode
   :bind ( :map lisp-mode-shared-map
           ("DEL" . nil)              ; `backward-delete-char-untabify'
@@ -925,7 +909,6 @@ $0")
 
 (use-package elisp-mode
   :hook ((emacs-lisp-mode-hook . apheleia-mode)
-         (emacs-lisp-mode-hook . jacob-font-lock-programming-setup)
          (emacs-lisp-mode-hook . yas-minor-mode)
          (emacs-lisp-mode-hook . electric-indent-local-mode)
          (emacs-lisp-mode-hook . flymake-mode))
