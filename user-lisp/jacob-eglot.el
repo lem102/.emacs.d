@@ -81,12 +81,12 @@ The idea being that they will establish a connection between each other."
   "Stop any associated sbt server associated to SERVER.
 
 Intended as an advice :before `eglot-shutdown'."
-  (let* ((nickname (eglot-project-nickname server))
-         (sbt-buffer (seq-find (lambda (buffer)
-                                 (string-match-p (format "\\*sbt\\*<~.*%s/>"
-                                                         nickname)
-                                                 (buffer-name buffer)))
-                               (buffer-list))))
+  (when-let* ((nickname (eglot-project-nickname server))
+              (sbt-buffer (seq-find (lambda (buffer)
+                                      (string-match-p (format "\\*sbt\\*<~.*%s/>"
+                                                              nickname)
+                                                      (buffer-name buffer)))
+                                    (buffer-list))))
     (kill-buffer sbt-buffer)))
 
 ;; TODO: is this needed anymore?
