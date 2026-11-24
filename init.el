@@ -435,6 +435,9 @@ Setting this to a non-nil value will cause different features to be loaded.")
   ("M-n" . flymake-goto-next-error)
   ("M-p" . flymake-goto-prev-error))
 
+(use-package jacob-flymake
+  :functions (jacob-flymake-use-package))
+
 (use-package consult-project-extra
   :defer t
   :functions (consult-project-extra-find)
@@ -929,7 +932,7 @@ $0")
   :after elisp-mode
   :bind ( :map lisp-interaction-mode-map
           ("C-j" . jacob-elisp-eval-print-last-sexp))
-  :functions (jacob-elisp-move-past-close-and-reindent)
+  :functions (jacob-elisp-move-past-close-and-reindent jacob-elisp-flymake-check-removals)
   :config
   (advice-add #'move-past-close-and-reindent :after #'jacob-elisp-move-past-close-and-reindent))
 
@@ -1163,7 +1166,10 @@ $0")
 
 (use-package treesit
   :defer t
+  :config
+  (add-to-list 'treesit-language-source-alist '(scala "https://github.com/tree-sitter/tree-sitter-scala.git"))
   :custom ((treesit-font-lock-level 4)))
+
 ;; TODO: write a function that sorts the lines inside a list
 (use-package treesit-auto
   :functions (treesit-auto-add-to-auto-mode-alist
