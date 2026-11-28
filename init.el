@@ -604,7 +604,8 @@ $0")
   :config
   (add-to-list 'tramp-remote-path 'tramp-own-remote-path)
   (setq tramp-archive-enabled nil) ; lots of problems. for now, disable it!
-  )
+  (when jacob-is-android
+    (setq tramp-encoding-shell "/data/data/com.termux/files/usr/bin/sh")))
 
 (use-package tramp-sh
   :defer t
